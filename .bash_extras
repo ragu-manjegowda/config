@@ -1,0 +1,21 @@
+export PATH=$PATH:/usr/local/cuda/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/lib64
+export PATH=$PATH:/usr/local/nvidia/tensorrt/bin
+export PATH=$PATH:/usr/local/cuda/dl/bin
+export PATH=$PATH:/usr/local/cuda/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/lib64
+export PATH=$PATH:/usr/local/nvidia/tensorrt/bin
+export PATH=$PATH:/usr/local/cuda/dl/bin
+export PATH=$PATH:/usr/local/cuda/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/lib64
+export PATH=$PATH:/usr/local/nvidia/tensorrt/bin
+export PATH=$PATH:/usr/local/cuda/dl/bin
+export PATH=$PATH:/opt/icecream/bin
+export PATH=$PATH:/opt/icecream/sbin
+export PATH=$PATH:/opt/icemon/bin
+export PATH=$PATH:/opt/icecream/libexec/icecc/bin
+export PATH=$PATH:/opt/icecream/lib
+export PATH=$PATH:/opt/icecream/libexec
+
+export PATH=$PATH:$HOME/.nucleus/bin
+export MAGLEV_API_KEY=ASRjNjRhNmNiMi0xZTc1LTU1ZmMtOWIwNC1hMjIzYzk0ZDI4NGNAJvvPUxg46bJsP9gEH9oH4w+7E/VBtSS4ctWK6HFV2/XI9etK7hflu/rLrosOt9j0vXnDVZmLLpEGmb7bIkhSFg==
