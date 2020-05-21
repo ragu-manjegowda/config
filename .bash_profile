@@ -109,5 +109,10 @@ export PATH="$HOMEBREW_PATH/opt/ncurses/bin:$PATH"
 export LDFLAGS="-L$HOMEBREW_PATH/opt/ncurses/lib"
 export CPPFLAGS="-I$HOMEBREW_PATH/opt/ncurses/include"
 
+# GCC linker warning fix
+# ld: warning: text-based stub file /System/Library/Frameworks//Cocoa.framework/Cocoa.tbd
+# and library file /System/Library/Frameworks//Cocoa.framework/Cocoa are out of sync.
+export SDKROOT="/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
+
 # Config alias
 alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
