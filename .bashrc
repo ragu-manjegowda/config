@@ -128,4 +128,5 @@ HISTTIMEFORMAT='%F %T '
 shopt -s cmdhist
 PROMPT_COMMAND='history -a'
 
-source .bash_extras
+source ~/.bash_extras
+
