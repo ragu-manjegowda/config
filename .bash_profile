@@ -114,5 +114,9 @@ export CPPFLAGS="-I$HOMEBREW_PATH/opt/ncurses/include"
 # and library file /System/Library/Frameworks//Cocoa.framework/Cocoa are out of sync.
 export SDKROOT="/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
 
+# Python 3.8
+export PATH="$PATH:/Users/ragu/Documents/homebrew/opt/python@3.8/bin"
+export LDFLAGS="-L/Users/ragu/Documents/homebrew/opt/python@3.8/lib"
+
 # Config alias
 alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
