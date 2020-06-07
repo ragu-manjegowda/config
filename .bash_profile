@@ -120,3 +120,8 @@ export LDFLAGS="-L/Users/ragu/Documents/homebrew/opt/python@3.8/lib"
 
 # Config alias
 alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
+
+# Java
+export PATH="/Users/ragu/Documents/homebrew/opt/openjdk/bin:$PATH"
+export CPPFLAGS="-I/Users/ragu/Documents/homebrew/opt/openjdk/include"
+
