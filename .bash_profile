@@ -37,6 +37,7 @@ export PKG_CONFIG_PATH="$HOMEBREW_PATH/opt/sqlite/lib/pkgconfig:$PKG_CONFIG_PATH
 # FFI
 export LDFLAGS="-L$HOMEBREW_PATH/opt/libffi/lib:$LDFLAGS"
 export PKG_CONFIG_PATH="$HOMEBREW_PATH/opt/libffi/lib/pkgconfig:$PKG_CONFIG_PATH"
+export CPPFLAGS="-I$HOMEBREW_PATH/opt/libffi/include:$CPPFLAGS"
 
 # ICU4C
 export PATH="$HOMEBREW_PATH/opt/icu4c/bin:$PATH"
@@ -96,6 +97,7 @@ export DY_PATH="$DY_PATH:$HOMEBREW_PATH/Cellar/gtk+3/3.24.18/lib"
 export DY_PATH="$DY_PATH:$HOMEBREW_PATH/Cellar/atk/2.36.0/lib"
 export DY_PATH="$DY_PATH:$HOMEBREW_PATH/Cellar/gdk-pixbuf/2.40.0_1/lib"
 export DY_PATH="$DY_PATH:$HOMEBREW_PATH/Cellar/gtk+3/3.24.18_1/lib"
+export DY_PATH="$DY_PATH:$HOMEBREW_PATH/lib"
 
 export DYLD_FALLBACK_LIBRARY_PATH="$DYLD_FALLBACK_LIBRARY_PATH:$DY_PATH"
 export XDG_DATA_DIRS="$HOMEBREW_PATH/share:/usr/local/share:/usr/share:$XDG_DATA_DIRS"
@@ -106,8 +108,8 @@ export LDFLAGS="-L$HOMEBREW_PATH/opt/bison/lib:$LDFLAGS"
 
 # Ncurses
 export PATH="$HOMEBREW_PATH/opt/ncurses/bin:$PATH"
-export LDFLAGS="-L$HOMEBREW_PATH/opt/ncurses/lib"
-export CPPFLAGS="-I$HOMEBREW_PATH/opt/ncurses/include"
+export LDFLAGS="-L$HOMEBREW_PATH/opt/ncurses/lib:$LDFLAGS"
+export CPPFLAGS="-I$HOMEBREW_PATH/opt/ncurses/include:$CPPFLAGS"
 
 # GCC linker warning fix
 # ld: warning: text-based stub file /System/Library/Frameworks//Cocoa.framework/Cocoa.tbd
@@ -115,13 +117,13 @@ export CPPFLAGS="-I$HOMEBREW_PATH/opt/ncurses/include"
 export SDKROOT="/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
 
 # Python 3.8
-export PATH="$PATH:/Users/ragu/Documents/homebrew/opt/python@3.8/bin"
-export LDFLAGS="-L/Users/ragu/Documents/homebrew/opt/python@3.8/lib"
+export PATH="$PATH:$HOMEBREW_PATH/opt/python@3.8/bin"
+export LDFLAGS="-L$HOMEBREW_PATH/opt/python@3.8/lib:$LDFLAGS"
 
 # Config alias
 alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
 
 # Java
-export PATH="/Users/ragu/Documents/homebrew/opt/openjdk/bin:$PATH"
-export CPPFLAGS="-I/Users/ragu/Documents/homebrew/opt/openjdk/include"
+export PATH="$PATH:$HOMEBREW_PATH/opt/openjdk/bin"
+export CPPFLAGS="-I$HOMEBREW_PATH/opt/openjdk/include:$CPPFLAGS"
 
