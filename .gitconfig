@@ -1,5 +1,8 @@
 [commit]
-	template = ~/.gitmessage.txt
+    template = ~/.gitmessage.txt
 [user]
-	email = raghavendrahm0410@gmail.com
-	name = Ragu Manjegowda
+    email = raghavendrahm0410@gmail.com
+    name = Ragu Manjegowda
+
+[core]
+    editor = "vim"
