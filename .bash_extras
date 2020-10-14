@@ -18,7 +18,6 @@ export PATH=$PATH:/opt/icecream/lib
 export PATH=$PATH:/opt/icecream/libexec
 
 export PATH=$PATH:$HOME/.nucleus/bin
-export MAGLEV_API_KEY=ASRjNjRhNmNiMi0xZTc1LTU1ZmMtOWIwNC1hMjIzYzk0ZDI4NGNAJvvPUxg46bJsP9gEH9oH4w+7E/VBtSS4ctWK6HFV2/XI9etK7hflu/rLrosOt9j0vXnDVZmLLpEGmb7bIkhSFg==
 
 source /media/ragu/drive/builds/dazel-out/_dazel_ragu/bazel-3.4.1-nvidia8/lib/bazel/bin/bazel-complete.bash
 export DAZEL_CACHE_ROOT=/media/ragu/drive/builds/dazel-out
