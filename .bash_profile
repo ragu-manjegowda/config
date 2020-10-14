@@ -127,3 +127,13 @@ alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
 export PATH="$PATH:$HOMEBREW_PATH/opt/openjdk/bin"
 export CPPFLAGS="-I$HOMEBREW_PATH/opt/openjdk/include:$CPPFLAGS"
 
+# LibPcap
+export PATH="$PATH:$HOMEBREW_PATH/opt/libpcap/bin"
+export LDFLAGS="-L/Users/ragu/Documents/homebrew/opt/libpcap/lib:$LDFLAGS"
+export CPPFLAGS="-I/Users/ragu/Documents/homebrew/opt/libpcap/include:$CPPFLAGS"
+
+# Vtk
+export PATH="$HOMEBREW_PATH/opt/vtk@8.2/bin:$PATH"
+export LDFLAGS="-L$HOMEBREW_PATH/opt/vtk@8.2/lib:$LDFLAGS"
+export CPPFLAGS="-I$HOMEBREW_PATH/opt/vtk@8.2/include:$CPPFLAGS"
+
