@@ -19,6 +19,5 @@ export PATH=$PATH:/opt/icecream/libexec
 
 export PATH=$PATH:$HOME/.nucleus/bin
 
-source /media/ragu/drive/builds/dazel-out/_dazel_ragu/bazel-3.4.1-nvidia8/lib/bazel/bin/bazel-complete.bash
 export DAZEL_CACHE_ROOT=/media/ragu/drive/builds/dazel-out
 

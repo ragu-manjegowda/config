@@ -26,6 +26,9 @@ alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
 ################            ENV exports of Packages and libs      ########################
 ##########################################################################################
 
+# Asciidoc
+export XML_CATALOG_FILES="$HOMEBREW_PATH/etc/xml/catalog:$XML_CATALOG_FILES"
+
 # Bison
 export PATH="$HOMEBREW_PATH/opt/bison/bin:$PATH"
 export LDFLAGS="-L$HOMEBREW_PATH/opt/bison/lib:$LDFLAGS"
@@ -51,6 +54,9 @@ export CPPFLAGS="-I$HOMEBREW_PATH/opt/gettext/include:$CPPFLAGS"
 # GNU-getopt
 export PATH="$HOMEBREW_PATH/opt/gnu-getopt/bin:$PATH"
 
+# Gnutls
+export GUILE_TLS_CERTIFICATE_DIRECTORY="$HOMEBREW_PATH/etc/gnutls"
+
 # Guile
 export GUILE_LOAD_PATH="$HOMEBREW_PATH/share/guile/site/3.0"
 export GUILE_LOAD_COMPILED_PATH="$HOMEBREW_PATH/lib/guile/3.0/site-ccache"
@@ -64,8 +70,8 @@ export CPPFLAGS="-I$HOMEBREW_PATH/opt/icu4c/include:$CPPFLAGS"
 export PKG_CONFIG_PATH="$HOMEBREW_PATH/opt/icu4c/lib/pkgconfig:$PKG_CONFIG_PATH"
 
 # Java
-export PATH="$PATH:$HOMEBREW_PATH/opt/openjdk/bin"
-export CPPFLAGS="-I$HOMEBREW_PATH/opt/openjdk/include:$CPPFLAGS"
+export PATH="$HOMEBREW_PATH/opt/openjdk@11/bin:$PATH"
+export CPPFLAGS="-I$HOMEBREW_PATH/opt/openjdk@11/include:$CPPFLAGS"
 
 # Jekyll
 export PATH="$HOMEBREW_PATH/lib/ruby/gems/2.6.0/bin/:$PATH"
@@ -136,6 +142,9 @@ export LDFLAGS="-L$HOMEBREW_PATH/opt/sqlite/lib:$LDFLAGS"
 export CPPFLAGS="-I$HOMEBREW_PATH/opt/sqlite/include:$CPPFLAGS"
 export PKG_CONFIG_PATH="$HOMEBREW_PATH/opt/sqlite/lib/pkgconfig:$PKG_CONFIG_PATH"
 
+# Tesseract
+export TESSDATA_PREFIX="$HOMEBREW_PATH/Cellar/tesseract/4.1.1/share/tessdata"
+
 # Tclap
 export CPPFLAGS="-I$HOMEBREW_PATH/opt/tclap/include:$CPPFLAGS"
 export PKG_CONFIG_PATH="$HOMEBREW_PATH/opt/tclap/lib/pkgconfig:$PKG_CONFIG_PATH"
@@ -157,8 +166,9 @@ export DY_PATH="$DY_PATH:$HOMEBREW_PATH/Cellar/gdk-pixbuf/2.42.2/lib"
 export DY_PATH="$DY_PATH:$HOMEBREW_PATH/Cellar/gobject-introspection/1.66.1_1/lib"
 export DY_PATH="$DY_PATH:$HOMEBREW_PATH/Cellar/gtk+3/3.24.26/lib"
 export DY_PATH="$DY_PATH:$HOMEBREW_PATH/Cellar/harfbuzz/2.7.4_1/lib"
-export DY_PATH="$DY_PATH:$HOMEBREW_PATH/Cellar/pango/1.48.2/lib"
+export DY_PATH="$DY_PATH:$HOMEBREW_PATH/Cellar/pango/1.48.4/lib"
 export DY_PATH="$DY_PATH:$HOMEBREW_PATH/lib"
 
 export DYLD_FALLBACK_LIBRARY_PATH="$DYLD_FALLBACK_LIBRARY_PATH:$DY_PATH"
 export XDG_DATA_DIRS="$HOMEBREW_PATH/share:/usr/local/share:/usr/share:$XDG_DATA_DIRS"
+

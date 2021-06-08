@@ -128,5 +128,9 @@ HISTTIMEFORMAT='%F %T '
 shopt -s cmdhist
 PROMPT_COMMAND='history -a'
 
+# Alias to notify ssh client
+CLIENT_IP=$(echo $SSH_CLIENT | awk '{ print $1}')
+alias notify='ssh ragu@$CLIENT_IP afplay /System/Library/Sounds/Glass.aiff'
+
 source ~/.bash_extras
 
