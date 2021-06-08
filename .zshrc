@@ -118,11 +118,16 @@ source "$HOMEBREW_PATH/etc/profile.d/bash_completion.sh"
 #   zstyle ':completion:*:*:git:*' script ~/.git-completion.bash
 # fi
 
+# Tab completion for aliases
+source "$HOME/.complete_alias"
+
 # Config alias
 alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
+complete -F _complete_alias config
 
 # Tmux alias
 alias tmux='TERM=xterm-256color tmux'
+complete -F _complete_alias tmux
 
 ##########################################################################################
 ################            ENV exports of Packages and libs      ########################
