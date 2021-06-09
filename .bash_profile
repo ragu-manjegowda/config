@@ -1,4 +1,5 @@
-PS1="\u:\w$ "
+# This is done is zsh
+# PS1="\u:\w$ "
 
 ##########################################################################################
 ################                Mac basic ENV exports             ########################
@@ -13,16 +14,16 @@ export PATH="$HOMEBREW_PATH/sbin:$PATH"
 [[ -r "$HOMEBREW_PATH/etc/profile.d/bash_completion.sh" ]]
 source "$HOMEBREW_PATH/etc/profile.d/bash_completion.sh"
 
-# Git-completion
-if [ -f ~/.git-completion.bash ]; then
-  . ~/.git-completion.bash
-fi
+## Git-completion (zsh already has plugin for git)
+# if [ -f ~/.git-completion.bash ]; then
+#   . ~/.git-completion.bash
+# fi
 
-# Config alias
-alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
+# # Config alias (done in zsh)
+# alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
 
-# Tmux alias
-alias tmux='TERM=xterm-256color tmux'
+# # Tmux alias
+# alias tmux='TERM=xterm-256color tmux'
 
 ##########################################################################################
 ################            ENV exports of Packages and libs      ########################
