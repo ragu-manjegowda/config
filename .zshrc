@@ -72,8 +72,6 @@ ZSH_CUSTOM=$HOME/zsh-custom
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git tmux zsh-autosuggestions)
 
-source $ZSH/oh-my-zsh.sh
-
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -87,6 +85,16 @@ source $ZSH/oh-my-zsh.sh
 # else
 #   export EDITOR='mvim'
 # fi
+
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    # Source bashrc
+    [[ -e ~/.profile ]] && emulate sh -c 'source ~/.profile'
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    # Source bash_profile
+    [[ -e ~/.bash_profile ]] && emulate sh -c 'source ~/.bash_profile'
+fi
+
+source $ZSH/oh-my-zsh.sh
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -106,14 +114,4 @@ source "$HOME/.complete_alias"
 # Config alias
 alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
 complete -F _complete_alias config
-
-if [[ "$OSTYPE" == "linux-gnu" ]]; then
-    # Source bashrc
-    [[ -e ~/.profile ]] && emulate sh -c 'source ~/.profile'
-    return
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-    # Source bash_profile
-    [[ -e ~/.bash_profile ]] && emulate sh -c 'source ~/.bash_profile'
-    return
-fi
 
