@@ -70,7 +70,7 @@ ZSH_CUSTOM=$HOME/zsh-custom
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-autosuggestions)
+plugins=(git tmux zsh-autosuggestions)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -107,10 +107,6 @@ source "$HOME/.complete_alias"
 alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
 complete -F _complete_alias config
 
-# Tmux alias
-alias tmux='TERM=xterm-256color tmux'
-complete -F _complete_alias tmux
-
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     # Source bashrc
     [[ -e ~/.profile ]] && emulate sh -c 'source ~/.profile'
@@ -120,3 +116,4 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     [[ -e ~/.bash_profile ]] && emulate sh -c 'source ~/.bash_profile'
     return
 fi
+
