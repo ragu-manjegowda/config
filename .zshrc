@@ -94,6 +94,8 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     [[ -e ~/.bash_profile ]] && emulate sh -c 'source ~/.bash_profile'
 fi
 
+fpath=($HOME/zsh-custom/completions $fpath)
+
 source $ZSH/oh-my-zsh.sh
 
 # Compilation flags
