@@ -94,6 +94,13 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     [[ -e ~/.bash_profile ]] && emulate sh -c 'source ~/.bash_profile'
 fi
 
+if type brew &>/dev/null; then
+    fpath=($(brew --prefix)/share/zsh/site-functions $fpath)
+
+  autoload -Uz compinit
+  compinit
+fi
+
 fpath=($HOME/zsh-custom/completions $fpath)
 
 source $ZSH/oh-my-zsh.sh
