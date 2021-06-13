@@ -94,13 +94,15 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     [[ -e ~/.bash_profile ]] && emulate sh -c 'source ~/.bash_profile'
 fi
 
+# Brew completion
 if type brew &>/dev/null; then
     fpath=($(brew --prefix)/share/zsh/site-functions $fpath)
 
-  autoload -Uz compinit
-  compinit
+    autoload -Uz compinit
+    compinit
 fi
 
+# Custom tab completions
 fpath=($HOME/zsh-custom/completions $fpath)
 
 source $ZSH/oh-my-zsh.sh
@@ -117,10 +119,7 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-# Tab completion for aliases
-source "$HOME/.complete_alias"
-
 # Config alias
 alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
-complete -F _complete_alias config
+compdef _git config=git
 
