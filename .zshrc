@@ -63,7 +63,7 @@ DISABLE_AUTO_TITLE="true"
 # HIST_STAMPS="mm/dd/yyyy"
 
 # Would you like to use another custom folder than $ZSH/custom?
-ZSH_CUSTOM=$HOME/zsh-custom
+ZSH_CUSTOM=$HOME/.zsh-custom
 
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
@@ -97,13 +97,17 @@ fi
 # Brew completion
 if type brew &>/dev/null; then
     fpath=($(brew --prefix)/share/zsh/site-functions $fpath)
-
-    autoload -Uz compinit
-    compinit
 fi
 
 # Custom tab completions
-fpath=($HOME/zsh-custom/completions $fpath)
+fpath=($ZSH_CUSTOM/completions $fpath)
+
+if [ ! -d ~/.zsh.cache ]; then
+  mkdir ~/.zsh.cache
+fi
+
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path ~/.zsh.cache
 
 source $ZSH/oh-my-zsh.sh
 
