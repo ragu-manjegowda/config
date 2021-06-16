@@ -125,5 +125,4 @@ source $ZSH/oh-my-zsh.sh
 
 # Config alias
 alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
-compdef _git config=git
 
