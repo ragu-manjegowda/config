@@ -11,8 +11,9 @@ export PATH="$HOMEBREW_PATH/bin:$PATH"
 export PATH="$HOMEBREW_PATH/sbin:$PATH"
 
 # Bash-completion
-[[ -r "$HOMEBREW_PATH/etc/profile.d/bash_completion.sh" ]]
-source "$HOMEBREW_PATH/etc/profile.d/bash_completion.sh"
+if [ -r "$HOMEBREW_PATH/etc/profile.d/bash_completion.sh" ]; then
+    source "$HOMEBREW_PATH/etc/profile.d/bash_completion.sh"
+fi
 
 ## Git-completion (zsh already has plugin for git)
 # if [ -f ~/.git-completion.bash ]; then
@@ -135,6 +136,35 @@ export PATH="$HOMEBREW_PATH/opt/ruby/bin:$PATH"
 export LDFLAGS="-L$HOMEBREW_PATH/opt/ruby/lib:$LDFLAGS"
 export CPPFLAGS="-I$HOMEBREW_PATH/opt/ruby/include:$CPPFLAGS"
 export PKG_CONFIG_PATH="$HOMEBREW_PATH/opt/ruby/lib/pkgconfig:$PKG_CONFIG_PATH"
+
+# Rust
+if [ -d "$HOMEBREW_PATH/Cellar/rust" ]; then
+
+    # Check the latest stable version
+    stableHomeBrew="$(curl -s \
+    https://raw.githubusercontent.com/Homebrew/homebrew-core/master/Formula/rust.rb \
+    | grep -A1 "stable do" | sed -e 's/.*rustc-\(.*\)-src.*/\1/' | tail -1)"
+
+    stable="$(curl --silent \
+    https://github.com/rust-lang/rust/releases/latest \
+    | sed 's#.*tag/\(.*\)\".*#\1#')"
+
+    # if curl succeeds
+    if [ ! -z "$stable" ]; then
+        # Check if we have stable version
+        if [ $stable != $(basename $(ls -d $HOMEBREW_PATH/Cellar/rust/*/)) ]
+        then
+            echo "Update rust to latest version $stable with \`rustup update\`"
+        fi
+    fi
+
+    # Export ENV variables
+    export CARGO_HOME="$(ls -d $HOMEBREW_PATH/Cellar/rust/$stable/)"
+    export PATH="$CARGO_HOME/bin:$PATH"
+
+    export CARGO_NAME="Ragu Manjegowda"
+    export CARGO_EMAIL="raghavendrahm0410@gmail.com"
+fi
 
 # Sphinx-doc
 export PATH="$HOMEBREW_PATH/opt/sphinx-doc/bin:$PATH"
