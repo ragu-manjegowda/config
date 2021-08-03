@@ -70,7 +70,7 @@ ZSH_CUSTOM=$HOME/.zsh-custom
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git-custom tmux zsh-autosuggestions alias-tips)
+plugins=(git-custom tmux zsh-autosuggestions zsh-autocomplete alias-tips)
 
 # User configuration
 
@@ -110,6 +110,9 @@ zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path ~/.zsh.cache
 
 source $ZSH/oh-my-zsh.sh
+
+# Unset auto cd as the auto suggestion theme makes it annoying
+unsetopt AUTO_CD
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
