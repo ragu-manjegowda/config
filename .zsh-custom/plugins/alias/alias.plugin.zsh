@@ -49,68 +49,29 @@ function git_main_branch() {
 
 alias ga='git add'
 alias gb='git branch'
-alias gc!='git commit -v --amend'
-alias gcn!='git commit -v --no-edit --amend'
-alias gcb='git checkout -b'
+
+alias gc='git commit -s'
+
 alias gcl='git clone --recurse-submodules'
-alias gpristine='git reset --hard && git clean -dffx'
-alias gcm='git checkout $(git_main_branch)'
 alias gco='git checkout'
-alias gcp='git cherry-pick'
-alias gcpa='git cherry-pick --abort'
-alias gcpc='git cherry-pick --continue'
-alias gcs='git commit -S'
 
 alias gd='git diff'
-
-alias gf='git fetch'
 
 # --jobs=<n> was added in git 2.8
 is-at-least 2.8 "$git_version" \
   && alias gfa='git fetch --all --prune --jobs=10' \
   || alias gfa='git fetch --all --prune'
 
-alias ggpull='git pull origin "$(git_current_branch)"'
-alias ggpush='git push origin "$(git_current_branch)"'
-
-alias ggsup='git branch --set-upstream-to=origin/$(git_current_branch)'
-alias gpsup='git push --set-upstream origin $(git_current_branch)'
 
 alias glog='git log --oneline --decorate --graph'
-alias glp="_git_log_prettily"
+alias glogp="_git_log_prettily"
 
-alias gp='git push'
-alias gpf!='git push --force'
-alias gpoat='git push origin --all && git push origin --tags'
-alias gpu='git push upstream'
-
-alias grb='git rebase'
-alias grba='git rebase --abort'
-alias grbc='git rebase --continue'
-alias grbi='git rebase -i'
-alias grbm='git rebase $(git_main_branch)'
-alias grhh='git reset --hard'
-alias groh='git reset origin/$(git_current_branch) --hard'
-alias grm='git rm'
-alias grset='git remote set-url'
-alias grv='git remote -v'
+alias gp='git push origin "$(git_current_branch)"'
 
 alias gst='git status'
 
-# use the default stash push on git 2.13 and newer
-is-at-least 2.13 "$git_version" \
-  && alias gsta='git stash push' \
-  || alias gsta='git stash save'
-
-alias gstaa='git stash apply'
-alias gstd='git stash drop'
-alias gstl='git stash list'
-alias gstp='git stash pop'
-alias gstu='gsta --include-untracked'
-alias gstall='git stash --all'
 alias gsu='git submodule update --init --recursive'
 
-alias gup='git pull --rebase'
 alias gupa='git pull --rebase --autostash'
 
 function grename() {
@@ -128,3 +89,14 @@ function grename() {
 }
 
 unset git_version
+
+# Unset auto cd as the auto suggestion theme makes it annoying
+unsetopt AUTO_CD
+
+# Unset alias l
+unalias \l
+alias l='ls'
+alias ldot='ls -d .*'
+
+# Config alias
+alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
