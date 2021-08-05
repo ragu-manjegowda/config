@@ -70,7 +70,7 @@ ZSH_CUSTOM=$HOME/.zsh-custom
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(alias tmux zsh-autosuggestions zsh-autocomplete alias-finder)
+plugins=(custom-alias tmux zsh-autosuggestions zsh-autocomplete alias-finder)
 
 # Enable alias finder by default for every command
 ZSH_ALIAS_FINDER_AUTOMATIC=true
