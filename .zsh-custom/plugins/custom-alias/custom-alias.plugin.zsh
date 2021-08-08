@@ -51,11 +51,13 @@ alias ga='git add'
 alias gb='git branch'
 
 alias gc='git commit -s'
+alias gcan='git commit --amend --no-edit'
 
 alias gcl='git clone --recurse-submodules'
 alias gco='git checkout'
 
 alias gd='git diff'
+alias gdc='git diff --cached'
 
 # --jobs=<n> was added in git 2.8
 is-at-least 2.8 "$git_version" \
@@ -66,13 +68,11 @@ is-at-least 2.8 "$git_version" \
 alias glog='git log --oneline --decorate --graph'
 alias glogp="_git_log_prettily"
 
-alias gp='git push origin "$(git_current_branch)"'
+alias gpush='git push origin "$(git_current_branch)"'
+alias gpulla='git pull --rebase --autostash'
 
 alias gst='git status'
-
 alias gsu='git submodule update --init --recursive'
-
-alias gupa='git pull --rebase --autostash'
 
 function grename() {
   if [[ -z "$1" || -z "$2" ]]; then
