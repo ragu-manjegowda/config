@@ -37,6 +37,21 @@ export XML_CATALOG_FILES="$HOMEBREW_PATH/etc/xml/catalog:$XML_CATALOG_FILES"
 export PATH="$HOMEBREW_PATH/opt/bison/bin:$PATH"
 export LDFLAGS="-L$HOMEBREW_PATH/opt/bison/lib:$LDFLAGS"
 
+# Conda
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('$HOMEBREW_PATH/Caskroom/miniconda/base/bin/conda' 'shell.bash' 'hook' \
+               2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "$HOMEBREW_PATH/Caskroom/miniconda/base/etc/profile.d/conda.sh" ]; then
+        . "$HOMEBREW_PATH/Caskroom/miniconda/base/etc/profile.d/conda.sh"
+    else
+        export PATH="$HOMEBREW_PATH/Caskroom/miniconda/base/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+
 # DocBook package in XML
 export XML_CATALOG_FILES="$HOMEBREW_PATH/etc/xml/catalog:$XML_CATALOG_FILES"
 
@@ -204,4 +219,3 @@ export DY_PATH="$DY_PATH:$HOMEBREW_PATH/lib"
 
 export DYLD_FALLBACK_LIBRARY_PATH="$DYLD_FALLBACK_LIBRARY_PATH:$DY_PATH"
 export XDG_DATA_DIRS="$HOMEBREW_PATH/share:/usr/local/share:/usr/share:$XDG_DATA_DIRS"
-
