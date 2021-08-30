@@ -95,8 +95,16 @@ unsetopt AUTO_CD
 
 # Unset alias l
 unalias \l
+
+# Define custom aliases
 alias l='ls'
 alias ldot='ls -d .*'
-
-# Config alias
+alias vim="nvim"
+## Config alias
 alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
+
+# Zsh-hist
+unsetopt HIST_REDUCE_BLANKS
+
+# Save command to history on if it is successful
+zshaddhistory() { whence ${${(z)1}[1]} >| /dev/null || return 1 }
