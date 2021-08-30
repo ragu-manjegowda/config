@@ -7,3 +7,6 @@
 [submodule ".zsh-custom/plugins/zsh-autocomplete"]
 	path = .zsh-custom/plugins/zsh-autocomplete
 	url = https://github.com/marlonrichert/zsh-autocomplete.git
+[submodule ".zsh-custom/plugins/zsh-hist"]
+	path = .zsh-custom/plugins/zsh-hist
+	url = https://github.com/marlonrichert/zsh-hist.git
