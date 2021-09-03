@@ -20,19 +20,11 @@ ZSH_THEME_GIT_PROMPT_AHEAD="%{$BLUE%}⇡"
 ZSH_THEME_GIT_PROMPT_BEHIND="%{$CYAN%}⇣"
 ZSH_THEME_GIT_PROMPT_CLEAN="%{$GREEN%}✔"
 ZSH_THEME_GIT_PROMPT_DIVERGED="%{$RED%}⇕"
-# ZSH_THEME_GIT_PROMPT_MODIFIED="%{$YELLOW%}!"
-# ZSH_THEME_GIT_PROMPT_RENAMED="%{$BLACK%}»"
 ZSH_THEME_GIT_PROMPT_STAGED="%{$YELLOW%}+"
 ZSH_THEME_GIT_PROMPT_STASHED="%{$WHITE%}ª"
 ZSH_THEME_GIT_PROMPT_UNMERGED="%{$RED%}✘"
 ZSH_THEME_GIT_PROMPT_UNSTAGED="%{$BLACK%}!"
 ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$WHITE%}?"
-
-function _git_info() {
-  if $(git rev-parse --is-inside-work-tree >/dev/null 2>&1); then
-    echo "♮$(git_current_branch)"
-  fi
-}
 
 ragu_git_branch () {
   ref=$(command git symbolic-ref HEAD 2> /dev/null) || \
@@ -86,7 +78,7 @@ ragu_git_prompt () {
   local _status=$(ragu_git_status)
   local _result=""
   if [[ "${_branch}x" != "x" ]]; then
-    _result="$ZSH_THEME_GIT_PROMPT_PREFIX$_branch"
+    _result="$ZSH_THEME_GIT_PROMPT_PREFIX$_branch"
     if [[ "${_status}x" != "x" ]]; then
       _result="$_result $_status"
     fi
@@ -97,6 +89,5 @@ ragu_git_prompt () {
 
 PROMPT='%(?:%{$GREEN_BOLD%}%n %{$GREEN_BOLD%}➜ :%{$RED_BOLD%}➜ )'
 PROMPT+='%{$CYAN%}%1c ♔%{$RESET_COLOR%} '
-# RPROMPT='%{$BLUE%}$(_git_info)'
 RPROMPT+='%{$BLUE%}$(ragu_git_prompt)%{$RESET_COLOR%}'
 
