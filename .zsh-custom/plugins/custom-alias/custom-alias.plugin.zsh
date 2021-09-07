@@ -90,9 +90,6 @@ function grename() {
 
 unset git_version
 
-# Unset auto cd as the auto suggestion theme makes it annoying
-unsetopt AUTO_CD
-
 # Unset alias l
 unalias \l
 
@@ -108,3 +105,18 @@ unsetopt HIST_REDUCE_BLANKS
 
 # Save command to history on if it is successful
 zshaddhistory() { whence ${${(z)1}[1]} >| /dev/null || return 1 }
+
+############# zsh-autocomplete specific
+
+# Wait this many seconds for typing to stop, before showing completions.
+zstyle ':autocomplete:*' min-delay 0.1  # float
+
+# Wait until this many characters have been typed, before showing completions.
+zstyle ':autocomplete:*' min-input 1  # int
+
+zstyle ':autocomplete:history-incremental-search-*:*' list-lines 5  # int
+
+# no:  Tab inserts the top completion.
+# yes: Tab first inserts a substring common to all listed completions, if any.
+zstyle ':autocomplete:*' insert-unambiguous yes
+
