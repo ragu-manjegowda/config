@@ -128,19 +128,5 @@ HISTTIMEFORMAT='%F %T '
 shopt -s cmdhist
 PROMPT_COMMAND='history -a'
 
-# Alias to notify ssh client
-CLIENT_IP=$(echo $SSH_CLIENT | awk '{ print $1}')
-alias notify='ssh ragu@$CLIENT_IP afplay /System/Library/Sounds/Glass.aiff'
-
-# Homebrew Path
-export HOMEBREW_PATH="$HOME/Documents/homebrew"
-export PATH="$HOMEBREW_PATH/bin:$PATH"
-export PATH="$HOMEBREW_PATH/sbin:$PATH"
-
-# Bash-completion
-if [ -r "$HOMEBREW_PATH/etc/profile.d/bash_completion.sh" ]; then
-    source "$HOMEBREW_PATH/etc/profile.d/bash_completion.sh"
-fi
-
-source ~/.bash_extras
+source ~/.bash_custom
 
