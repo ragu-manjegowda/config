@@ -12,5 +12,13 @@ if [ -r "$HOMEBREW_PATH/etc/profile.d/bash_completion.sh" ]; then
     emulate sh -c 'source "$HOMEBREW_PATH/etc/profile.d/bash_completion.sh"'
 fi
 
+# Python
+export PYTHONPATH="$HOMEBREW_PATH/bin:$PYTHONPATH"
+export PYTHONPATH="$HOMEBREW_PATH/etc:$PYTHONPATH"
+
+# Python 3.8
+export PATH="$PATH:$HOMEBREW_PATH/opt/python@3.8/bin"
+export LDFLAGS="-L$HOMEBREW_PATH/opt/python@3.8/lib:$LDFLAGS"
+
 source ~/.bash_extras
 
