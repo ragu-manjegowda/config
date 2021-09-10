@@ -1,10 +1,17 @@
-" let g:gutentags_ctags_executable = '/usr/bin/ctags'
+let g:gutentags_cache_dir = expand('~/.cache/nvim/tags/')
+let g:gutentags_generate_on_new = 1
+let g:gutentags_generate_on_missing = 1
+let g:gutentags_generate_on_write = 1
+let g:gutentags_generate_on_empty_buffer = 0
+let g:gutentags_ctags_extra_args = [
+      \ '--tag-relative=yes',
+      \ '--fields=+ailmnS',
+      \ ]
 
-" How each level is indented and what to prepend.
-" This could make the display more compact or more spacious.
-" e.g., more compact: ["▸ ", ""]
-" Note: this option only works for the kind renderer, not the tree renderer.
-let g:vista_icon_indent = ["╰─▸ ", "├─▸ "]
+if executable('rg')
+  let g:gutentags_file_list_command = 'rg --files'
+endif
 
-" Ensure you have installed some decent font to show these pretty symbols, then you can enable icon for the kind.
-let g:vista#renderer#enable_icon = 1
+" Clear the cache
+command! -nargs=0 GutentagsClearCache call system('rm ' . g:gutentags_cache_dir . '/*')
+

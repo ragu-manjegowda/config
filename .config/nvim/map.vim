@@ -62,17 +62,26 @@ let g:gutentags_ctags_exclude = [
   \'node_modules', '_build', 'build', 'CMakeFiles', '.mypy_cache', 'venv',
   \'*.md', '*.tex', '*.css', '*.html', '*.json', '*.xml', '*.xmls', '*.ui']
 
-" Annotate
-nnoremap <silent> <A-b> :Vista!!<CR>
+" ========== Gutentags ==================
 
-function! NearestMethodOrFunction() abort
-  return get(b:, 'vista_nearest_method_or_function', '')
-endfunction
+" enable gtags module
+let g:gutentags_modules = ['ctags']
 
-set statusline+=%{NearestMethodOrFunction()}
+" config project root markers.
+let g:gutentags_project_root = ['.root']
 
-" By default vista.vim never run if you don't call it explicitly.
-"
-" If you want to show the nearest function in your statusline automatically,
-" you can add the following line to your vimrc
-autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
+" generate datebases in my cache directory, prevent gtags files polluting my
+" project
+let g:gutentags_cache_dir = expand('~/.cache/tags')
+
+" change focus to quickfix window after search (optional).
+let g:gutentags_plus_switch = 1
+
+let g:gutentags_generate_on_new = "true"
+
+let g:gutentags_generate_on_missing = "true"
+
+let g:gutentags_ctags_extra_args = ['--ignore-unsupported-options', '--recursive']
+
+let g:gutentags_ctags_exclude = ["build", "bazel-*", "bin", ".git"]
+
