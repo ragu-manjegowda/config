@@ -120,3 +120,50 @@ zstyle ':autocomplete:history-incremental-search-*:*' list-lines 5  # int
 # yes: Tab first inserts a substring common to all listed completions, if any.
 zstyle ':autocomplete:*' insert-unambiguous yes
 
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=6'
+
+# function to toggle alacritty theme defined in colors.yml
+function toggle-theme () {
+    if ! test -f ~/.config/alacritty/colors.yml; then
+        echo "file $HOME/.config/alacritty/colors.yml doesn't exist"
+        return
+    fi
+
+    config_path="$HOME/.config/alacritty/colors.yml"
+
+    # Get current mode
+    mode=$(awk 'sub(/colors:\ \*solarized-/,""){print $1}' $config_path)
+
+    case $mode in
+        light)
+            sed -i -e "s#^colors: \*.*#colors: *solarized-dark#g" $config_path
+            ;;
+        dark)
+            sed -i -e "s#^colors: \*.*#colors: *solarized-light#g" $config_path
+            ;;
+    esac
+
+    echo "switched away from $mode."
+}
+
+# Set Alacritty theme (dark/light) on Mac
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    if ! test -f ~/.config/alacritty/colors.yml; then
+        echo "file $HOME/.config/alacritty/colors.yml doesn't exist"
+        return
+    fi
+
+    config_path="$HOME/.config/alacritty/colors.yml"
+
+    # Get current mode
+    mode=$(defaults read -g AppleInterfaceStyle 2>/dev/null)
+
+    case $mode in
+        Dark)
+            sed -i -e "s#^colors: \*.*#colors: *solarized-dark#g" $config_path
+            ;;
+        *)
+            sed -i -e "s#^colors: \*.*#colors: *solarized-light#g" $config_path
+            ;;
+    esac
+fi
