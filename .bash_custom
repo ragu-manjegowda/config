@@ -20,5 +20,7 @@ export PYTHONPATH="$HOMEBREW_PATH/etc:$PYTHONPATH"
 export PATH="$PATH:$HOMEBREW_PATH/opt/python@3.8/bin"
 export LDFLAGS="-L$HOMEBREW_PATH/opt/python@3.8/lib:$LDFLAGS"
 
+export PATH="$HOMEBREW_PATH/opt/sphinx-doc/bin:$PATH"
+
 source ~/.bash_extras
 
