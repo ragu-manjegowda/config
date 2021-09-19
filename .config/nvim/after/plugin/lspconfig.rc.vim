@@ -6,6 +6,12 @@ lua << EOF
 local nvim_lsp = require('lspconfig')
 local protocol = require'vim.lsp.protocol'
 
+local signs = { Error = "", Warning = "", Hint = " ", Information = " " }
+for type, icon in pairs(signs) do
+  local hl = "LspDiagnosticsSign" .. type
+  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
+end
+
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
 local on_attach = function(client, bufnr)
@@ -78,13 +84,18 @@ nvim_lsp.ccls.setup {
   filetypes = { "c", "cpp", "h", "hpp" },
   cmd = {
     'ccls',
-    '--log-file=/tmp/ccls.log',
+    '--log-file=/tmp/nvim/ccls.log',
     '-v=1',
-    '--init={"cache": {"directory": "/tmp/ccls-cache"}}',
+    '--init={"cache": {"directory": "/tmp/nvim/ccls-cache"}}',
     '--init={"index":{"blacklist":["dazel-out", "preFlightChecker", \
              "pilotnet", "apps/roadrunner", "tools/experimental/maps", \
              "tools/experimental/localization_metrics"]}}'
   };
+  capabilities = capabilities
+}
+
+nvim_lsp.rust_analyzer.setup {
+  on_attach = on_attach,
   capabilities = capabilities
 }
 

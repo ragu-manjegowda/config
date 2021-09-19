@@ -53,35 +53,5 @@ au BufEnter *.h  let b:fswitchdst = "c,cpp,cc,m"
 au BufEnter *.cc let b:fswitchdst = "h,hpp"
 " Switch between header and source file not in same directory
 au BufEnter *.h let b:fswitchdst = 'c,cpp,m,cc' | let b:fswitchlocs = 'reg:|include.*|src/**|'
-nnoremap <silent> <A-o> :FSSplitRight<cr>
-
-" Ctags ignore (like .gitignore :P)
-set tags=./tags;
-let g:gutentags_ctags_exclude_wildignore = 1
-let g:gutentags_ctags_exclude = [
-  \'node_modules', '_build', 'build', 'CMakeFiles', '.mypy_cache', 'venv',
-  \'*.md', '*.tex', '*.css', '*.html', '*.json', '*.xml', '*.xmls', '*.ui']
-
-" ========== Gutentags ==================
-
-" enable gtags module
-let g:gutentags_modules = ['ctags']
-
-" config project root markers.
-let g:gutentags_project_root = ['.root']
-
-" generate datebases in my cache directory, prevent gtags files polluting my
-" project
-let g:gutentags_cache_dir = expand('~/.cache/tags')
-
-" change focus to quickfix window after search (optional).
-let g:gutentags_plus_switch = 1
-
-let g:gutentags_generate_on_new = "true"
-
-let g:gutentags_generate_on_missing = "true"
-
-let g:gutentags_ctags_extra_args = ['--ignore-unsupported-options', '--recursive']
-
-let g:gutentags_ctags_exclude = ["build", "bazel-*", "bin", ".git"]
+nnoremap <silent> <leader>o :FSSplitRight<cr>
 

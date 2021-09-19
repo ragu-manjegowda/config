@@ -1,15 +1,17 @@
 
 lua << EOF
+
+local ignore_these = {
+  '.git/.*',
+  'bazel-sdk/.*',
+  'bazel-out/*',
+  'bazel-bin/*',
+}
+
 local actions = require("telescope.actions")
 require("telescope").setup({
     defaults = {
-        file_sorter = require("telescope.sorters").get_fzy_sorter,
-        prompt_prefix = " >",
-        color_devicons = true,
 
-        file_previewer = require("telescope.previewers").vim_buffer_cat.new,
-        grep_previewer = require("telescope.previewers").vim_buffer_vimgrep.new,
-        qflist_previewer = require("telescope.previewers").vim_buffer_qflist.new,
 
         mappings = {
             i = {
@@ -19,6 +21,20 @@ require("telescope").setup({
             n = {
                 ["q"] = actions.close
             },
+        },
+
+        file_previewer = require("telescope.previewers").vim_buffer_cat.new,
+        grep_previewer = require("telescope.previewers").vim_buffer_vimgrep.new,
+        qflist_previewer = require("telescope.previewers").vim_buffer_qflist.new,
+        file_sorter = require("telescope.sorters").get_fzy_sorter,
+        color_devicons = true,
+        prompt_prefix = '🔍 ',
+        sorting_strategy = 'ascending',
+        layout_strategy = 'vertical', --flex
+        file_ignore_patterns = ignore_these,
+
+        layout_config = {
+            preview_cutoff = 1,
         },
     },
     extensions = {
