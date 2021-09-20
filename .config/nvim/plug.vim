@@ -14,4 +14,6 @@ Plug 'ludovicchabant/vim-gutentags'
 Plug 'skywind3000/gutentags_plus'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'derekwyatt/vim-fswitch'
+Plug 'kyazdani42/nvim-tree.lua'
+Plug 'preservim/tagbar'
 call plug#end()

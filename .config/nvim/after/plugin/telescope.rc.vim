@@ -17,6 +17,8 @@ require("telescope").setup({
             i = {
                 ["<C-x>"] = false,
                 ["<C-q>"] = actions.send_to_qflist,
+                ["<leader><Tab>"] = actions.select_tab,
+                ["<leader>v"] = actions.select_vertical,
             },
             n = {
                 ["q"] = actions.close

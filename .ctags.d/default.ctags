@@ -1,4 +1,5 @@
 --append
+--c++-kinds=+pf
 --exclude=.git
 --exclude=*/data/*
 --exclude=*/bazel-out/*
@@ -17,5 +18,6 @@
 --exclude=test/elm/elm-stuff
 --exclude=priv/static
 --extra=+f
---fields=+ailmnS
+--extras=+q
+--fields=+ailmnSft
 --recurse=yes
