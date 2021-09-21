@@ -4,7 +4,7 @@ syntax enable                  " enable syntax highlighting (previously syntax o
 colorscheme desert             " set colorscheme
 highlight Normal ctermbg=Grey ctermfg=White
 filetype plugin indent on      " filetype detection[ON] plugin[ON] indent[ON]
-filetype indent on             " activates indenting for files
+filetype on
 
 set autoindent                 " auto-indent
 set cmdheight=2
@@ -25,16 +25,15 @@ set nohlsearch                 " Don't continue to highlight searched phrases.
 set noswapfile
 set nowrap                     " don't wrap text
 set number                     " show line numbers
-set relativenumber             " Always show info along bottom.
+set relativenumber
 set ruler                      " Always show info along bottom.
-set scrolloff=8                " always indent/outdent to the nearest tabstop
+set scrolloff=8
 set shiftround                 " always indent/outdent to the nearest tabstop
 set shiftwidth=4               " indent/outdent by 4 columns
 set shortmess+=c
-set signcolumn=yes             " indent at the start of a line spaces elsewhere
-set smartcase                  " indent at the start of a line spaces elsewhere
-set smartindent                " indent at the start of a line spaces elsewhere
-set smarttab                   " use tabs at the start of a line spaces elsewhere
+set signcolumn=yes
+set smartindent
+set smarttab
 set tabstop=4 softtabstop=4    " tab spacing
 set updatetime=50
 set undodir=~/.config/nvim/undodir
