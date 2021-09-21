@@ -80,6 +80,7 @@ au BufEnter *.h  let b:fswitchdst = "c,cpp,cc,m"
 au BufEnter *.cc let b:fswitchdst = "h,hpp"
 " Switch between header and source file not in same directory
 au BufEnter *.h let b:fswitchdst = 'c,cpp,m,cc' | let b:fswitchlocs = 'reg:|include.*|src/**|'
-nnoremap <silent> <leader>oh :FSSplitRight<cr>
+nnoremap <silent> <leader>oh :FSSplitRight<CR>
 
+nnoremap <silent> <leader>gst :tab G<CR>
 

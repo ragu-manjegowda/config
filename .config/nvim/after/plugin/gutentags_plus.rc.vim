@@ -22,7 +22,7 @@ command! -nargs=0 GutentagsClearCache call system('rm ' . g:gutentags_cache_dir 
 let g:gutentags_plus_nomap = 1
 
 " Find symbols
-noremap <silent> <leader>gs :GscopeFind s <C-R><C-W><cr>
+noremap <silent> <leader>gsy :GscopeFind s <C-R><C-W><cr>
 " Find definitions
 noremap <silent> <leader>gd :GscopeFind g <C-R><C-W><cr>
 " Find called by this function

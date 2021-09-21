@@ -5,3 +5,7 @@ if !exists('*fugitive#statusline')
   set statusline+=%{fugitive#statusline()}
 endif
 
+augroup GitStatus
+    au filetype fugitive nmap <buffer> dv :Gtabedit <Plug><cfile><Bar>Gvdiffsplit<CR>
+augroup END
+
