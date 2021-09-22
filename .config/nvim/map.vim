@@ -15,9 +15,9 @@ command! W w !sudo tee > /dev/null %
 
 " ============ Key maps for tabs
 " Open new empty tab
-noremap <leader><Tab> :tabedit<Return>
-noremap <S-Tab> :tabprev<Return>
-noremap <Tab> :tabnext<Return>
+noremap <leader>n<Tab> :tabedit<Return>
+noremap <leader><S-Tab> :tabprev<Return>
+noremap <leader><Tab> :tabnext<Return>
 " Close all tabs except current
 noremap <leader>co :tabonly<Return>
 
