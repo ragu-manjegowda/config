@@ -84,3 +84,5 @@ nnoremap <silent> <leader>oh :FSSplitRight<CR>
 
 nnoremap <silent> <leader>gst :tab G<CR>
 
+nnoremap <leader>fp 1<C-g><CR>
+
