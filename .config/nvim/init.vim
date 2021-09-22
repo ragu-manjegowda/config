@@ -58,4 +58,5 @@ endif
 
 runtime ./plug.vim
 runtime ./map.vim
+runtime ./after/plugin/bufOnly.rc.vim
 
