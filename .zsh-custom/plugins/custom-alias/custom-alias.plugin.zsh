@@ -109,7 +109,7 @@ zshaddhistory() { whence ${${(z)1}[1]} >| /dev/null || return 1 }
 ############# zsh-autocomplete specific
 
 # Wait this many seconds for typing to stop, before showing completions.
-zstyle ':autocomplete:*' min-delay 0.1  # float
+#zstyle ':autocomplete:*' min-delay 0.1  # float
 
 # Wait until this many characters have been typed, before showing completions.
 zstyle ':autocomplete:*' min-input 1  # int
@@ -118,7 +118,7 @@ zstyle ':autocomplete:history-incremental-search-*:*' list-lines 5  # int
 
 # no:  Tab inserts the top completion.
 # yes: Tab first inserts a substring common to all listed completions, if any.
-zstyle ':autocomplete:*' insert-unambiguous yes
+#zstyle ':autocomplete:*' insert-unambiguous yes
 
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=6'
 
