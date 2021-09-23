@@ -16,4 +16,6 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'derekwyatt/vim-fswitch'
 Plug 'kyazdani42/nvim-tree.lua'
 Plug 'preservim/tagbar'
+Plug 'nvim-telescope/telescope-dap.nvim'
+Plug 'mfussenegger/nvim-dap'
 call plug#end()
