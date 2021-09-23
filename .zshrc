@@ -34,18 +34,7 @@ ZSH_ALIAS_FINDER_AUTOMATIC=true
 # User configuration
 
 # Source user profiles
-if [[ "$OSTYPE" == "linux-gnu" ]]; then
-    # Source bashrc
-    [[ -e ~/.profile ]] && emulate sh -c 'source ~/.profile'
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-    # Source bash_profile
-    [[ -e ~/.bash_profile ]] && emulate sh -c 'source ~/.bash_profile'
-fi
-
-# Brew completion
-if type brew &>/dev/null; then
-    fpath=($(brew --prefix)/share/zsh/site-functions $fpath)
-fi
+[[ -e ~/.profile ]] && source ~/.profile
 
 # Custom tab completions
 fpath=($ZSH_CUSTOM/completions $fpath)

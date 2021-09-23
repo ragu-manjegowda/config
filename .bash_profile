@@ -10,9 +10,15 @@ export HOMEBREW_PATH="$HOME/Documents/homebrew"
 export PATH="$HOMEBREW_PATH/bin:$PATH"
 export PATH="$HOMEBREW_PATH/sbin:$PATH"
 
-# Bash-completion
-if [ -r "$HOMEBREW_PATH/etc/profile.d/bash_completion.sh" ]; then
-    source "$HOMEBREW_PATH/etc/profile.d/bash_completion.sh"
+# Completion
+if [ -n "$BASH_VERSION" ]; then
+  if [ -r "$HOMEBREW_PATH/etc/profile.d/bash_completion.sh" ]; then
+      source "$HOMEBREW_PATH/etc/profile.d/bash_completion.sh"
+  fi
+elif [ -n "$ZSH_VERSION" ]; then
+  if [ -r "$HOMEBREW_PATH/share/zsh/site-functions" ]; then
+    fpath=($HOMEBREW_PATH/share/zsh/site-functions $fpath)
+  fi
 fi
 
 ## Git-completion (zsh already has plugin for git)
