@@ -46,7 +46,6 @@ if exists("&termguicolors") && exists("&winblend")
   set winblend=0
   set wildoptions=pum
   set pumblend=5
-  set background=dark
   " Use NeoSolarized
   let g:neosolarized_termtrans=1
   let g:neosolarized_contrast = "high"
@@ -59,4 +58,6 @@ endif
 runtime ./plug.vim
 runtime ./map.vim
 runtime ./after/plugin/bufOnly.rc.vim
+
+set rtp+=~/Documents/homebrew/opt/fzf
 

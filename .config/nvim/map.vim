@@ -18,32 +18,29 @@ command! W w !sudo tee > /dev/null %
 
 " ============ Key maps for tabs
 " Open new empty tab
-noremap <leader>n<Tab> :tabedit<Return>
-noremap <leader><S-Tab> :tabprev<Return>
-noremap <leader><Tab> :tabnext<Return>
+noremap <leader>n<Tab> :tabedit<CR>
+noremap <leader><S-Tab> :tabprev<CR>
+noremap <leader><Tab> :tabnext<CR>
 " Close all tabs except current
-noremap <leader>co :tabonly<Return>
+noremap <leader>co :tabonly<CR>
 
 " Quit
-nnoremap <leader>q :q<Return>
+nnoremap <leader>q :q<CR>
+
+" Map to navigate QuickFix list
+nnoremap <leader>qo :copen<Return><C-w>T
+noremap <C-n> :cn<CR>
+noremap <C-p> :cp<CR>
 
 augroup QuickFix
-    " Open qf entry in new tab
-    au FileType qf nnoremap <buffer> <leader><Tab> <C-w><Enter><C-w>T
     " Open qf entry in vertical split
-    au FileType qf nnoremap <buffer> <leader>v <C-w><Enter><C-w>L
+    au FileType qf nnoremap <buffer> <leader>v <C-w><CR><C-w>L
     " Open qf list in new tab
     au FileType qf nnoremap <buffer> <leader>t <C-w>T
 augroup END
 
 " Open toggle undo tree
 nnoremap <leader>ut :UndotreeToggle<CR>
-
-" Telescope fuzzy finder shortcuts
-nnoremap <leader>ps :lua require('telescope.builtin').grep_string({ search = vim.fn.input("Grep For > ")})<CR>
-nnoremap <leader>pw :lua require('telescope.builtin').grep_string { search = vim.fn.expand("<cword>") }<CR>
-nnoremap <leader>pf :lua require('telescope.builtin').find_files()<CR>
-nnoremap <leader>pq :lua require('telescope.builtin').quickfix()<cr>
 
 " Delete space at the end
 augroup StripTrailingSpace
