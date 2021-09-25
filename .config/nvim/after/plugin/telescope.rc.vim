@@ -40,14 +40,21 @@ require("telescope").setup({
         },
     },
     extensions = {
-        fzy_native = {
+        fzf = {
             override_generic_sorter = false,
             override_file_sorter = true,
         },
     },
 })
 
-require("telescope").load_extension("fzy_native")
+require("telescope").load_extension("fzf")
 
 EOF
+
+" Telescope fuzzy finder shortcuts
+nnoremap <leader>ps :lua require('telescope.builtin').grep_string({ search = vim.fn.input("Grep For > ")})<CR>
+nnoremap <leader>pw :lua require('telescope.builtin').grep_string { search = vim.fn.expand("<cword>") }<CR>
+nnoremap <leader>pW :lua require('telescope.builtin').grep_string({ search = "'" .. vim.fn.expand('<cword>') })<CR>
+nnoremap <leader>pf :lua require('telescope.builtin').find_files()<CR>
+nnoremap <leader>pq :lua require('telescope.builtin').quickfix()<cr>
 
