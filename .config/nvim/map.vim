@@ -7,8 +7,9 @@ noremap <Down> <Nop>
 noremap <Left> <Nop>
 noremap <Right> <Nop>
 
-map <C-L> 5zl " Scroll 5 characters to the right
-map <C-H> 5zh " Scroll 5 characters to the left
+" Scroll horizontally
+noremap <C-L> 5zl " Scroll 5 characters to the right
+noremap <C-H> 5zh " Scroll 5 characters to the left
 
 " Delete without yank
 nnoremap <leader>d "_d

@@ -13,6 +13,7 @@ set colorcolumn=80
 set completeopt=menuone,noinsert,noselect
 set cursorline
 set expandtab                  " use spaces instead of tabs
+set formatoptions-=o           " don't start lines w/ comment on pressing 'o'
 set guicursor=
 set hidden                     " But do highlight as you type your search.
 set incsearch                  " But do highlight as you type your search.
@@ -26,11 +27,12 @@ set noswapfile
 set nowrap                     " don't wrap text
 set number                     " show line numbers
 set relativenumber
-set ruler                      " Always show info along bottom.
+set ruler
 set scrolloff=8
 set shiftround                 " always indent/outdent to the nearest tabstop
 set shiftwidth=4               " indent/outdent by 4 columns
 set shortmess+=c
+set sidescrolloff=25
 set signcolumn=yes
 set smartindent
 set smarttab
