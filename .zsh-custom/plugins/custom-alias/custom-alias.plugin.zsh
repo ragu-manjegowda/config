@@ -104,7 +104,9 @@ alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
 unsetopt HIST_REDUCE_BLANKS
 
 # Save command to history on if it is successful
-zshaddhistory() { whence ${${(z)1}[1]} >| /dev/null || return 1 }
+# zshaddhistory() { whence ${${(z)1}[1]} >| /dev/null || return 1 }
+zstyle ":completion:*:commands" rehash 1
+
 
 ############# zsh-autocomplete specific
 
@@ -119,6 +121,10 @@ zstyle ':autocomplete:history-incremental-search-*:*' list-lines 5  # int
 # no:  Tab inserts the top completion.
 # yes: Tab first inserts a substring common to all listed completions, if any.
 #zstyle ':autocomplete:*' insert-unambiguous yes
+
+# '':     Always show completions.
+# '..##': Don't show completions when the input consists of two or more dots.
+zstyle ':autocomplete:*' ignored-input '.;' # extended glob pattern
 
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=6'
 
