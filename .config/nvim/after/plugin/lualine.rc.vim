@@ -7,6 +7,10 @@ local function getFunctionName()
     return vim.api.nvim_call_function( "tagbar#currenttag", {'%s', ''})
 end
 
+local function getCtagsStatus()
+    return vim.api.nvim_call_function( "gutentags#statusline", {'[', ']'})
+end
+
 lualine.setup {
   options = {
     icons_enabled = true,
