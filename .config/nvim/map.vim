@@ -37,7 +37,7 @@ augroup QuickFix
     " Open qf entry in vertical split
     au FileType qf nnoremap <buffer> <leader>v <C-w><CR><C-w>L
     " Open qf list in new tab
-    au FileType qf nnoremap <buffer> <leader>t <C-w>T
+    au FileType qf nnoremap <buffer> <leader>t <C-w><CR><C-w>T
 augroup END
 
 " Open toggle undo tree
