@@ -5,6 +5,7 @@
 --exclude=*/bazel-out/*
 --exclude=*/bazel-bin/*
 --exclude=*/bazel-sdk/*
+--exclude=*/bazel-sdk_vanilla/*
 --exclude=*/partners/*
 --exclude=*/avdnn/*
 --exclude=*/apps/roadrunner-2.0/graphs/*
