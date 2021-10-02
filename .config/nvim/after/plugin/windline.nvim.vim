@@ -5,6 +5,11 @@ local function getFunctionName()
     return vim.api.nvim_call_function( "tagbar#currenttag", {'%s', ''})
 end
 
+local function getGitBranch()
+    local icon = ' ' -- e0a0
+    return icon .. ' ' .. vim.fn.FugitiveHead()
+end
+
 local windline = require('windline')
 local helper = require('windline.helpers')
 local sep = helper.separators
@@ -85,13 +90,11 @@ basic.section_a = {
     end,
 }
 
-local get_git_branch = git_comps.git_branch()
-
 basic.section_b = {
     hl_colors = airline_colors.b,
     text = function(_,_, width)
-        local branch_name = get_git_branch()
-        if width > width_breakpoint and #branch_name > 1 then
+        local branch_name = getGitBranch()
+        if width > width_breakpoint and #branch_name > 5 then
             return {
                 { branch_name , state.mode[2] },
                 { ' ', '' },

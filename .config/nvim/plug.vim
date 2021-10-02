@@ -19,4 +19,5 @@ Plug 'kyazdani42/nvim-tree.lua'
 Plug 'preservim/tagbar'
 Plug 'nvim-telescope/telescope-dap.nvim'
 Plug 'mfussenegger/nvim-dap'
+Plug 'itchyny/vim-cursorword'
 call plug#end()

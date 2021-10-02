@@ -83,9 +83,6 @@ au BufEnter *.cc let b:fswitchdst = "h,hpp"
 au BufEnter *.h let b:fswitchdst = 'c,cpp,m,cc' | let b:fswitchlocs = 'reg:|include.*|src/**|'
 nnoremap <silent> <leader>oh :FSSplitRight<CR>
 
-" Git status in new tab
-nnoremap <silent> <leader>gst :tab G<CR>
-
 " Get full path of the current buffer
 nnoremap <leader>fp 1<C-g><CR>
 
