@@ -20,8 +20,6 @@ command! W w !sudo tee > /dev/null %
 " ============ Key maps for tabs
 " Open new empty tab
 noremap <leader>n<Tab> :tabedit<CR>
-noremap <leader><S-Tab> :tabprev<CR>
-noremap <leader><Tab> :tabnext<CR>
 " Close all tabs except current
 noremap <leader>co :tabonly<CR>
 
@@ -30,14 +28,12 @@ nnoremap <leader>q :q<CR>
 
 " Map to navigate QuickFix list
 nnoremap <leader>qo :copen<Return><C-w>T
-noremap <C-n> :cn<CR>
-noremap <C-p> :cp<CR>
 
 augroup QuickFix
     " Open qf entry in vertical split
     au FileType qf nnoremap <buffer> <leader>v <C-w><CR><C-w>L
     " Open qf list in new tab
-    au FileType qf nnoremap <buffer> <leader>t <C-w><CR><C-w>T
+    au FileType qf nnoremap <buffer> <leader><Tab> <C-w><CR><C-w>T
 augroup END
 
 " Open toggle undo tree

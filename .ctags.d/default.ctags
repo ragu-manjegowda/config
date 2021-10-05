@@ -6,6 +6,9 @@
 --exclude=*/bazel-bin/*
 --exclude=*/bazel-sdk/*
 --exclude=*/bazel-sdk_vanilla/*
+--exclude=bazel-sdk_vanilla/*
+--exclude=*/dazel-install-sdk/*
+--exclude=dazel-install-sdk/*
 --exclude=*/partners/*
 --exclude=*/avdnn/*
 --exclude=*/apps/roadrunner-2.0/graphs/*
