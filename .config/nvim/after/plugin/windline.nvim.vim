@@ -27,6 +27,7 @@ local hl_list = {
     Inactive = { 'InactiveFg', 'InactiveBg' },
     Active = { 'ActiveFg', 'ActiveBg' },
 }
+
 local basic = {}
 
 local airline_colors = {}
@@ -90,11 +91,13 @@ basic.section_a = {
     end,
 }
 
+local get_git_branch = git_comps.git_branch()
+
 basic.section_b = {
     hl_colors = airline_colors.b,
     text = function(_,_, width)
-        local branch_name = getGitBranch()
-        if width > width_breakpoint and #branch_name > 5 then
+        local branch_name = get_git_branch()
+        if width > width_breakpoint and #branch_name > 1 then
             return {
                 { branch_name , state.mode[2] },
                 { ' ', '' },
@@ -104,7 +107,6 @@ basic.section_b = {
         return { { sep.right_filled, state.mode[2] .. 'Sep' } }
     end,
 }
-
 
 basic.section_c = {
     hl_colors = airline_colors.c,

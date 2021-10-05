@@ -1,6 +1,5 @@
 call plug#begin('~/.config/nvim/plugged')
 Plug 'tpope/vim-fugitive'
-Plug 'airblade/vim-gitgutter'
 Plug 'mbbill/undotree'
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
@@ -20,4 +19,5 @@ Plug 'preservim/tagbar'
 Plug 'nvim-telescope/telescope-dap.nvim'
 Plug 'mfussenegger/nvim-dap'
 Plug 'itchyny/vim-cursorword'
+Plug 'lewis6991/gitsigns.nvim'
 call plug#end()
