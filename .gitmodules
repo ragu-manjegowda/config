@@ -1,15 +1,15 @@
 [submodule ".oh-my-zsh"]
-	path = .oh-my-zsh
+	path = .config/zsh/oh-my-zsh
 	url = https://github.com/ohmyzsh/ohmyzsh.git
 [submodule "zsh-custom/plugins/zsh-autosuggestions"]
-	path = .zsh-custom/plugins/zsh-autosuggestions
+	path = .config/zsh/zsh-custom/plugins/zsh-autosuggestions
 	url = https://github.com/zsh-users/zsh-autosuggestions.git
 [submodule ".zsh-custom/plugins/zsh-autocomplete"]
-	path = .zsh-custom/plugins/zsh-autocomplete
+	path = .config/zsh/zsh-custom/plugins/zsh-autocomplete
 	url = https://github.com/marlonrichert/zsh-autocomplete.git
 [submodule ".zsh-custom/plugins/zsh-hist"]
-	path = .zsh-custom/plugins/zsh-hist
+	path = .config/zsh/zsh-custom/plugins/zsh-hist
 	url = https://github.com/marlonrichert/zsh-hist.git
 [submodule ".zsh-custom/themes/powerlevel10k"]
-	path = .zsh-custom/themes/powerlevel10k
+	path = .config/zsh/zsh-custom/themes/powerlevel10k
 	url = https://github.com/romkatv/powerlevel10k.git

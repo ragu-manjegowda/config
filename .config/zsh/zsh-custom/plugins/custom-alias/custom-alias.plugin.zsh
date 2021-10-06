@@ -96,7 +96,7 @@ unalias \l
 # Define custom aliases
 alias l='ls'
 alias ldot='ls -d .*'
-alias vim="nvim"
+
 ## Config alias
 alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
 

@@ -8,26 +8,48 @@
 # for ssh logins, install and configure the libpam-umask package.
 #umask 022
 
+export EDITOR=$VIM
+export FCEDIT=$EDITOR
+export PAGER=less
+export LESS='-iMRS -x2'
+export LANG=en_US.UTF-8
+export LC_CTYPE=en_US.UTF-8
+
+# prevent less from saving history in ~/.lesshst
+export LESSHISTFILE=/dev/null
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_DATA_HOME="$HOME/.local/share"
+export TMUX_TMPDIR="$XDG_RUNTIME_DIR"
+export ZDOTDIR="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
+
+export BASH_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/bash"
+
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
   # if running bash
   if [ -n "$BASH_VERSION" ]; then
     # include .bashrc if it exists
-    if [ -f "$HOME/.bashrc" ]; then
-  	  source "$HOME/.bashrc"
+    if [ -f "$BASH_DIR/.bashrc" ]; then
+  	  source "$BASH_DIR/.bashrc"
     fi
   # if running zsh
   elif [ -n "$ZSH_VERSION" ]; then
     # include .bash_custom if it exists
-    if [ -f "$HOME/.bash_custom" ]; then
-      source "$HOME/.bash_custom"
+    if [ -f "$BASH_DIR/.bash_custom" ]; then
+      source "$BASH_DIR/.bash_custom"
     fi
   fi
   # set PATH so it includes user's private bin directories
   PATH="$HOME/bin:$HOME/.local/bin:$PATH"
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   # include .bash_profile if it exists
-  if [ -f "$HOME/.bash_profile" ]; then
-  	source "$HOME/.bash_profile"
+  if [ -f "$BASH_DIR/.bash_profile" ]; then
+  	source "$BASH_DIR/.bash_profile"
   fi
 fi
+
+# use nvim if installed, vi default
+case "$(command -v nvim)" in
+  */nvim) VIM=nvim ;;
+  *)      VIM=vi   ;;
+esac
 

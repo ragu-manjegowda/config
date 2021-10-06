@@ -128,5 +128,7 @@ HISTTIMEFORMAT='%F %T '
 shopt -s cmdhist
 PROMPT_COMMAND='history -a'
 
-source ~/.bash_custom
+if [ -f $BASH_DIR/.bash_custom ]; then
+    . $BASH_DIR/.bash_custom
+fi
 

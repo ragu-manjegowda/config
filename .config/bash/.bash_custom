@@ -4,8 +4,8 @@ alias notify='ssh ragu@$CLIENT_IP afplay /System/Library/Sounds/Glass.aiff'
 
 # Homebrew Path
 export HOMEBREW_PATH="$HOME/Documents/homebrew"
-export PATH="$HOMEBREW_PATH/bin:$PATH"
-export PATH="$HOMEBREW_PATH/sbin:$PATH"
+export PATH="$PATH:$HOMEBREW_PATH/bin"
+export PATH="$PATH:$HOMEBREW_PATH/sbin"
 
 # Completion
 if [ -n "$BASH_VERSION" ]; then
@@ -26,7 +26,9 @@ export PYTHONPATH="$HOMEBREW_PATH/etc:$PYTHONPATH"
 export PATH="$PATH:$HOMEBREW_PATH/opt/python@3.8/bin"
 export LDFLAGS="-L$HOMEBREW_PATH/opt/python@3.8/lib:$LDFLAGS"
 
-export PATH="$HOMEBREW_PATH/opt/sphinx-doc/bin:$PATH"
+export PATH="$PATH:$HOMEBREW_PATH/opt/sphinx-doc/bin"
 
-source ~/.bash_extras
+if [ -f "$BASH_DIR/.bash_extras" ]; then
+    source "$BASH_DIR/.bash_extras"
+fi
 
