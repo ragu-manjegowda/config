@@ -32,3 +32,12 @@ if [ -f "$BASH_DIR/.bash_extras" ]; then
     source "$BASH_DIR/.bash_extras"
 fi
 
+# use nvim if installed, vi default
+case "$(command -v nvim)" in
+  */nvim) alias vim="nvim" ;;
+  *)         ;;
+esac
+
+## Config alias
+alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
+

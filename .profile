@@ -8,6 +8,12 @@
 # for ssh logins, install and configure the libpam-umask package.
 #umask 022
 
+# use nvim if installed, vi default
+case "$(command -v nvim)" in
+  */nvim) VIM=nvim ;;
+  *)      VIM=vi   ;;
+esac
+
 export EDITOR=$VIM
 export FCEDIT=$EDITOR
 export PAGER=less
@@ -46,10 +52,4 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
   	source "$BASH_DIR/.bash_profile"
   fi
 fi
-
-# use nvim if installed, vi default
-case "$(command -v nvim)" in
-  */nvim) VIM=nvim ;;
-  *)      VIM=vi   ;;
-esac
 
