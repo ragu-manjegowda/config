@@ -8,14 +8,6 @@
 # for ssh logins, install and configure the libpam-umask package.
 #umask 022
 
-# use nvim if installed, vi default
-case "$(command -v nvim)" in
-  */nvim) VIM=nvim ;;
-  *)      VIM=vi   ;;
-esac
-
-export EDITOR=$VIM
-export FCEDIT=$EDITOR
 export PAGER=less
 export LESS='-iMRS -x2'
 export LANG=en_US.UTF-8
@@ -30,51 +22,44 @@ export ZDOTDIR="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
 
 export BASH_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/bash"
 
+# if running bash
+if [ -n "$BASH_VERSION" ]; then
+
+    # include .bashrc if it exists
+    if [ -f "$BASH_DIR/bashrc" ]; then
+        source "$BASH_DIR/bashrc"
+    fi
+
+    HISTFILE="$HOME/.config/bash/.bash_history"
+
+# if running zsh
+elif [ -n "$ZSH_VERSION" ]; then
+
+    HISTFILE="$HOME/.config/zsh/.zsh_history"
+fi
+
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
 
-    # if running bash
-    if [ -n "$BASH_VERSION" ]; then
-
-        # include .bashrc if it exists
-        if [ -f "$BASH_DIR/bashrc" ]; then
-  	        source "$BASH_DIR/bashrc"
-        fi
-
-        HISTFILE="$HOME/.config/bash/.bash_history"
-
     # if running zsh
-    elif [ -n "$ZSH_VERSION" ]; then
+    if [ -n "$ZSH_VERSION" ]; then
 
         # include .bash_custom if it exists
         if [ -f "$BASH_DIR/bash_custom" ]; then
             source "$BASH_DIR/bash_custom"
         fi
 
-        HISTFILE="$HOME/.config/zsh/.zsh_history"
     fi
 
     # set PATH so it includes user's private bin directories
     PATH="$HOME/bin:$HOME/.local/bin:$PATH"
 
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-    # if running bash
-    if [ -n "$BASH_VERSION" ]; then
-
-        # include .bashrc if it exists
-        if [ -f "$BASH_DIR/bashrc" ]; then
-  	        source "$BASH_DIR/bashrc"
-        fi
-
-        HISTFILE="$HOME/.config/bash/.bash_history"
-
-    elif [ -n "$ZSH_VERSION" ]; then
-        HISTFILE="$HOME/.config/zsh/.zsh_history"
-    fi
 
     # include .bash_profile if it exists
     if [ -f "$BASH_DIR/bash_profile" ]; then
   	    source "$BASH_DIR/bash_profile"
     fi
+
 fi
 
 # use nvim if installed, vi default
@@ -82,6 +67,9 @@ case "$(command -v nvim)" in
   */nvim) alias vim="nvim" ;;
   *)         ;;
 esac
+
+export EDITOR=vim
+export FCEDIT=$EDITOR
 
 ## Config alias
 alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
