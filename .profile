@@ -31,25 +31,58 @@ export ZDOTDIR="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
 export BASH_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/bash"
 
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
-  # if running bash
-  if [ -n "$BASH_VERSION" ]; then
-    # include .bashrc if it exists
-    if [ -f "$BASH_DIR/.bashrc" ]; then
-  	  source "$BASH_DIR/.bashrc"
+
+    # if running bash
+    if [ -n "$BASH_VERSION" ]; then
+
+        # include .bashrc if it exists
+        if [ -f "$BASH_DIR/bashrc" ]; then
+  	        source "$BASH_DIR/bashrc"
+        fi
+
+        HISTFILE="$HOME/.config/bash/.bash_history"
+
+    # if running zsh
+    elif [ -n "$ZSH_VERSION" ]; then
+
+        # include .bash_custom if it exists
+        if [ -f "$BASH_DIR/bash_custom" ]; then
+            source "$BASH_DIR/bash_custom"
+        fi
+
+        HISTFILE="$HOME/.config/zsh/.zsh_history"
     fi
-  # if running zsh
-  elif [ -n "$ZSH_VERSION" ]; then
-    # include .bash_custom if it exists
-    if [ -f "$BASH_DIR/.bash_custom" ]; then
-      source "$BASH_DIR/.bash_custom"
-    fi
-  fi
-  # set PATH so it includes user's private bin directories
-  PATH="$HOME/bin:$HOME/.local/bin:$PATH"
+
+    # set PATH so it includes user's private bin directories
+    PATH="$HOME/bin:$HOME/.local/bin:$PATH"
+
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-  # include .bash_profile if it exists
-  if [ -f "$BASH_DIR/.bash_profile" ]; then
-  	source "$BASH_DIR/.bash_profile"
-  fi
+    # if running bash
+    if [ -n "$BASH_VERSION" ]; then
+
+        # include .bashrc if it exists
+        if [ -f "$BASH_DIR/bashrc" ]; then
+  	        source "$BASH_DIR/bashrc"
+        fi
+
+        HISTFILE="$HOME/.config/bash/.bash_history"
+
+    elif [ -n "$ZSH_VERSION" ]; then
+        HISTFILE="$HOME/.config/zsh/.zsh_history"
+    fi
+
+    # include .bash_profile if it exists
+    if [ -f "$BASH_DIR/bash_profile" ]; then
+  	    source "$BASH_DIR/bash_profile"
+    fi
 fi
+
+# use nvim if installed, vi default
+case "$(command -v nvim)" in
+  */nvim) alias vim="nvim" ;;
+  *)         ;;
+esac
+
+## Config alias
+alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
 

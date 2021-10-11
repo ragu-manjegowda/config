@@ -39,12 +39,12 @@ ZSH_ALIAS_FINDER_AUTOMATIC=true
 # Custom tab completions
 fpath=($ZSH_CUSTOM/completions $fpath)
 
-if [ ! -d ~/.zsh.cache ]; then
-  mkdir ~/.zsh.cache
+if [ ! -d $ZDOTDIR/.zsh.cache ]; then
+  mkdir $ZDOTDIR/.zsh.cache
 fi
 
 zstyle ':completion:*' use-cache on
-zstyle ':completion:*' cache-path ~/.zsh.cache
+zstyle ':completion:*' cache-path $ZDOTDIR/.zsh.cache
 
 source $ZSH/oh-my-zsh.sh
 

@@ -21,17 +21,6 @@ elif [ -n "$ZSH_VERSION" ]; then
   fi
 fi
 
-## Git-completion (zsh already has plugin for git)
-# if [ -f ~/.git-completion.bash ]; then
-#   . ~/.git-completion.bash
-# fi
-
-# # Config alias (done in zsh)
-# alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
-
-# # Tmux alias
-# alias tmux='TERM=xterm-256color tmux'
-
 ##########################################################################################
 ################            ENV exports of Packages and libs      ########################
 ##########################################################################################

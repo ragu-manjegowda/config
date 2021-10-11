@@ -97,12 +97,6 @@ unalias \l
 alias l='ls'
 alias ldot='ls -d .*'
 
-# use nvim if installed, vi default
-case "$(command -v nvim)" in
-  */nvim) alias vim="nvim" ;;
-  *)         ;;
-esac
-
 ## Config alias
 alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
 
