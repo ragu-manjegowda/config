@@ -22,6 +22,12 @@ command! W w !sudo tee > /dev/null %
 noremap <leader>n<Tab> :tabedit<CR>
 " Close all tabs except current
 noremap <leader>co :tabonly<CR>
+" Open terminal in new tab
+noremap <leader>zsh :tabnew term://zsh<CR>
+noremap <leader>bash :tabnew term://bash<CR>
+
+" Terminal exit insert mode
+tnoremap <ESC> <C-\><C-n>
 
 " Quit
 nnoremap <leader>q :q<CR>

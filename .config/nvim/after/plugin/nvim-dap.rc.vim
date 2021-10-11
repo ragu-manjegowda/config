@@ -10,7 +10,11 @@ dap.adapters.lldb = {
   name = "lldb"
 }
 
-local dap = require('dap')
+dap.adapters.cppdbg = {
+  type = 'executable',
+  command = HOME .. '/.config/nvim/cpptools/extension/debugAdapters/bin/OpenDebugAD7',
+}
+
 dap.configurations.cpp = {
   {
     name = "Launch",
@@ -19,9 +23,12 @@ dap.configurations.cpp = {
     program = function()
       return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
     end,
-    cwd = '${workspaceFolder}',
-    stopOnEntry = false,
-    args = {},
+    cwd = '/media/ragu/drive/sdk/bazel-bin',
+    stopOnEntry = true,
+    args = function()
+      local argument_string = vim.fn.input('Program arguments: ')
+      return vim.fn.split(argument_string, " ", true)
+    end,
 
     -- if you change `runInTerminal` to true, you might need to change the yama/ptrace_scope setting:
     --
@@ -33,7 +40,7 @@ dap.configurations.cpp = {
     --
     -- But you should be aware of the implications:
     -- https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
-    runInTerminal = false,
+    runInTerminal = true,
   },
   {
     -- If you get an "Operation not permitted" error using this, try disabling YAMA:
@@ -43,6 +50,18 @@ dap.configurations.cpp = {
     request = 'attach',
     pid = require('dap.utils').pick_process,
     args = {},
+  },
+  {
+    name = 'Attach to gdbserver',
+    type = 'cppdbg',
+    request = 'launch',
+    MIMode = 'gdb',
+    miDebuggerServerAddress = 'localhost:2159',
+    miDebuggerPath = '/usr/bin/gdb',
+    cwd = '/media/ragu/drive/sdk/bazel-bin',
+    program = function()
+      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+    end,
   },
 }
 
