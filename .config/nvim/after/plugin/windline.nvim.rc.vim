@@ -110,17 +110,32 @@ basic.section_b = {
 
 basic.section_c = {
     hl_colors = airline_colors.c,
-    text = function()
-        return {
-            { ' ', state.mode[2] },
-            { b_components.cache_file_name('[No Name]', 'unique'), '' },
-            { ' ', '' },
-            { getFunctionName, '' },
-            { ' ', '' },
-            { sep.right_filled, state.mode[2] .. 'Sep' },
-        }
+    text = function(_,_, width)
+        local function_name = getFunctionName()
+        if width > width_breakpoint and #function_name > 1 then
+            return {
+                { ' fn: ' , state.mode[2] },
+                { function_name , '' },
+                { ' ', '' },
+                { sep.right_filled, state.mode[2] .. 'Sep' },
+            }
+        end
+        return { { sep.right_filled, state.mode[2] .. 'Sep' } }
     end,
 }
+
+-- basic.section_c = {
+--     hl_colors = airline_colors.c,
+--     text = function()
+--         return {
+--             { ' ', state.mode[2] },
+--             { '  ', state.mode[2] },
+--             { getFunctionName, '' },
+--             { ' ', '' },
+--             { sep.right_filled, state.mode[2] .. 'Sep' },
+--         }
+--     end,
+-- }
 
 basic.section_x = {
     hl_colors = airline_colors.c,
@@ -286,8 +301,7 @@ windline.setup({
         default,
         quickfix,
         explorer,
-    },
-    tabline = {}
+    }
 })
 
 EOF

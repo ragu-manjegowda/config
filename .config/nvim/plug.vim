@@ -26,4 +26,5 @@ Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-nvim-lua'
 Plug 'onsails/lspkind-nvim'
 Plug 'hrsh7th/nvim-cmp'
+Plug 'nanozuki/tabby.nvim'
 call plug#end()
