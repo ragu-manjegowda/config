@@ -13,3 +13,9 @@
 [submodule ".zsh-custom/themes/powerlevel10k"]
 	path = .config/zsh/zsh-custom/themes/powerlevel10k
 	url = https://github.com/romkatv/powerlevel10k.git
+[submodule ".config/tmux/plugins/tmux-continuum"]
+	path = .config/tmux/plugins/tmux-continuum
+	url = https://github.com/tmux-plugins/tmux-continuum.git
+[submodule ".config/tmux/plugins/tmux-resurrect"]
+	path = .config/tmux/plugins/tmux-resurrect
+	url = https://github.com/tmux-plugins/tmux-resurrect.git
