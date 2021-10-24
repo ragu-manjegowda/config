@@ -1,11 +1,10 @@
-[Component]: 
+[Component]:
 
 Details:
 
 
 Resolves:
- * 
+ *
 
 Tests:
- * 
-
+ *

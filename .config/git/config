@@ -1,0 +1,43 @@
+[user]
+    email = raghavendrahm0410@gmail.com
+    name  = Ragu Manjegowda
+    signingkey = 91C27880D0BD8E18
+
+[color]
+    ui = true
+
+[core]
+    editor = nvim
+    pager = diff-so-fancy | less --tabs=4 -RFX
+
+[pager]
+    diff = diff-so-fancy | less --tabs=1,5 -RFX
+    show = diff-so-fancy | less --tabs=1,5 -RFX
+
+[status]
+    submodulesummary = true
+
+[github]
+    user = ragu-manjegowda
+
+[color "diff-highlight"]
+    oldNormal = red bold
+    oldHighlight = red bold 52
+    newNormal = green bold
+    newHighlight = green bold 22
+
+[color "diff"]
+    meta = yellow
+    frag = magenta bold
+    commit = yellow bold
+    old = red bold
+    new = green bold
+    whitespace = red reverse
+
+[diff-so-fancy]
+    first-run = false
+
+[commit]
+    gpgsign = true
+    template = ~/.config/git/gitmessage.txt
+
