@@ -97,8 +97,17 @@ unalias \l
 alias l='ls'
 alias ldot='ls -d .*'
 
-## Config alias
-alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
+# use nvim if installed, vi default
+case "$(command -v nvim)" in
+    */nvim)
+        VIM=nvim
+        alias vim="nvim"
+        ;;
+    *)  VIM=vi ;;
+esac
+
+export EDITOR=$VIM
+export FCEDIT=$EDITOR
 
 # Zsh-hist
 unsetopt HIST_REDUCE_BLANKS
