@@ -3,6 +3,7 @@ if !exists('g:lspconfig')
 endif
 
 lua << EOF
+
 local nvim_lsp = require('lspconfig')
 local protocol = require'vim.lsp.protocol'
 
@@ -81,14 +82,17 @@ nvim_lsp.flow.setup {
   on_attach = on_attach
 }
 
+local log_path = vim.fn.expand('~/.config/nvim/misc/ccls/ccls.log')
+local cache_dir = vim.fn.expand('~/.config/nvim/misc/ccls')
+
 nvim_lsp.ccls.setup {
   on_attach = on_attach,
   filetypes = { "c", "cpp", "h", "hpp" },
   cmd = {
     'ccls',
-    '--log-file=/tmp/nvim/ccls.log',
+    '--log-file='..log_path,
     '-v=1',
-    '--init={"cache": {"directory": "/tmp/nvim/ccls-cache"}}',
+    '--init={"cache": {"directory": cache_dir}}',
     '--init={"index":{"blacklist":["dazel-out", "preFlightChecker", \
              "pilotnet", "apps/roadrunner", "tools/experimental/maps", \
              "tools/experimental/localization_metrics"]}}'
