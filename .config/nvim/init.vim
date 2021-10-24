@@ -38,7 +38,7 @@ set smartindent
 set smarttab
 set tabstop=4 softtabstop=4    " tab spacing
 set updatetime=50
-set undodir=~/.config/nvim/undodir
+set undodir=~/.config/nvim/misc/undodir
 set undofile
 set undolevels=10000
 
