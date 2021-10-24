@@ -164,12 +164,13 @@ if [ -d "$HOMEBREW_PATH/Cellar/rust" ]; then
         # Check if we have stable version
         if [ $stable != $(basename $(ls -d $HOMEBREW_PATH/Cellar/rust/*/)) ]
         then
-            echo "Update rust to latest version $stable with \`rustup update\`"
+            echo "Update rust to $stable with \`rustup update stable\`"
         fi
     fi
 
     # Export ENV variables
-    export CARGO_HOME="$(ls -d $HOMEBREW_PATH/Cellar/rust/$stable/)"
+    export CARGO_HOME="$(ls -d $HOMEBREW_PATH/Cellar/rust/$stable)"
+    export RUSTUP_HOME="$HOME/.config/rustup"
     export PATH="$CARGO_HOME/bin:$PATH"
 
     export CARGO_NAME="Ragu Manjegowda"
