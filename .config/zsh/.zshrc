@@ -26,7 +26,7 @@ ZSH_CUSTOM=$ZDOTDIR/zsh-custom
 # Plugins to load?
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 plugins=(tmux zsh-autocomplete zsh-autosuggestions alias-finder custom-alias
-         zsh-hist)
+         zsh-hist history-sync)
 
 # Enable alias finder by default for every command
 ZSH_ALIAS_FINDER_AUTOMATIC=true
@@ -45,6 +45,8 @@ fi
 
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path $ZDOTDIR/.zsh.cache
+
+ZSH_COMPDUMP="${ZDOTDIR}/.zcompdump-${ZSH_VERSION}"
 
 source $ZSH/oh-my-zsh.sh
 

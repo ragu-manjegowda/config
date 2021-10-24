@@ -19,8 +19,9 @@ export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
 export TMUX_TMPDIR="$XDG_RUNTIME_DIR"
 export ZDOTDIR="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
-
 export BASH_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/bash"
+export GPG_TTY=$TTY
+export GNUPGHOME="${XDG_CONFIG_HOME:-$HOME/.config}/gnupg"
 
 # if running bash
 if [ -n "$BASH_VERSION" ]; then
