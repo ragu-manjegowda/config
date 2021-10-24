@@ -13,6 +13,22 @@ noremap <C-H> 5zh " Scroll 5 characters to the left
 
 " Delete without yank
 nnoremap <leader>d "_d
+vnoremap <leader>d "_d
+nnoremap x "_x
+nnoremap <Del> "_x
+
+" Keep it centered
+nnoremap n nzzzv
+nnoremap N Nzzzv
+nnoremap J mzJ`z
+
+" Moving text
+vnoremap J :m '>+1<CR>gv=gv
+vnoremap K :m '>-2<CR>gv=gv
+inoremap <C-j> <esc>:m .+1<CR>==i
+inoremap <C-k> <esc>:m .-2<CR>==i
+nnoremap <leader>j :m .+1<CR>==
+nnoremap <leader>k :m .-2<CR>==
 
 " Save with root permission
 command! W w !sudo tee > /dev/null %
