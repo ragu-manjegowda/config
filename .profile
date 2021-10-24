@@ -63,15 +63,6 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 
 fi
 
-# use nvim if installed, vi default
-case "$(command -v nvim)" in
-  */nvim) alias vim="nvim" ;;
-  *)         ;;
-esac
-
-export EDITOR=vim
-export FCEDIT=$EDITOR
-
 ## Config alias
 alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
 

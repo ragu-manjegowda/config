@@ -116,9 +116,6 @@ if ! shopt -oq posix; then
   fi
 fi
 
-# Config alias
-alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
-
 shopt -s histappend
 HISTFILESIZE=1000000
 HISTSIZE=1000000
@@ -131,4 +128,15 @@ PROMPT_COMMAND='history -a'
 if [ -f $BASH_DIR/bash_custom ]; then
     . $BASH_DIR/bash_custom
 fi
+
+# use nvim if installed, vi default
+case "$(command -v nvim)" in
+    */nvim)
+        VIM=nvim
+        alias vim="nvim" ;;
+    *)  VIM=vi ;;
+esac
+
+export EDITOR=$VIM
+export FCEDIT=$EDITOR
 
