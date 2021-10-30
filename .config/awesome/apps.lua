@@ -28,7 +28,7 @@ apps.default = {
     launcher = "rofi -modi drun -show drun",
     lock = "slock",
     screenshot = "gnome-screenshot",
-    filebrowser = "thunar",
+    filebrowser = "alacritty -e ranger",
     browser = "firefox",
     editor = "nvim"
 }
@@ -38,7 +38,6 @@ local run_on_start_up = {
     "picom",
     "redshift",
     "unclutter",
-    "thunar --daemon",
     "blueman-applet",
     "nm-applet",
     "xfce4-power-manager --restart",
