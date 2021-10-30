@@ -28,7 +28,7 @@ $ sudo apt-get update
 ```
 
 ```sh
-$ sudo apt-get install -y awesome feh rofi slock imagemagick acpi xfce4-power-manager bluez blueman 
+$ sudo apt-get install -y awesome feh rofi slock imagemagick acpi xfce4-power-manager bluez blueman ranger
 ```
 
 ```sh

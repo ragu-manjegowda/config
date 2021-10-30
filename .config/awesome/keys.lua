@@ -164,7 +164,7 @@ keys.globalkeys = gears.table.join(
         {description = "open browser", group = "launcher"}
     ),
     --launch file manager
-    awful.key({ modkey }, "f",
+    awful.key({ modkey }, "r",
         function ()
             awful.spawn(apps.filebrowser)
         end,
@@ -520,7 +520,7 @@ keys.globalkeys = gears.table.join(
 
 keys.clientkeys = gears.table.join(
     -- toggle fullscreen
-    awful.key({ modkey }, "F11",
+    awful.key({ modkey }, "f",
         function (c)
             c.fullscreen = not c.fullscreen
         end,
