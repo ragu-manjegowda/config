@@ -41,7 +41,7 @@ local run_on_start_up = {
     "blueman-applet",
     "nm-applet",
     "xfce4-power-manager --restart",
-    "xrdb -merge ~/.config/awesome/.Xresources"
+    "xrandr -s 2560x1440"
 }
 
 
