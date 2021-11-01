@@ -16,6 +16,14 @@ In addition to `awesome` following files/folders are the complementary setups ne
 - Volume control
   - Volume control need to be adapted depending on the output of the `amixer sget Master` command. Need to grep of "Mono" or "Right" in the file `components/volume-adjust.lua`. 
 
+- Screen resolution
+  - Get the screen resolution
+    ```sh
+    $ xdpyinfo | grep -B 2 resolution
+    ```
+
+  - Update startup apps in `apps.lua` and `dpi` in `~/.Xresources`
+
 ## Installation
 
 - Follow the README from [here](https://github.com/Stup0r38/iceberg-awesome)
