@@ -1,7 +1,7 @@
 // Config
 
 configuration {
-    modi:               "drun,window,run,combi";
+    modi:               "drun";
     cycle:              true;
     show-icons:         true;
     matching:           "glob";
@@ -12,6 +12,7 @@ configuration {
     padding:            50;
     font:               "Hack Nerd Font 20";
     hide-scrollbar:     true;
-    theme:              "javacafe";
-    display-combi:	"rofi";
+    theme:              "solarized";
+    display-combi:      "rofi";
+    terminal:           "alacritty";
 }
