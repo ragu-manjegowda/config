@@ -548,14 +548,27 @@ keys.clientkeys = gears.table.join(
     ),
 
     -- Maximize
+    -- awful.key({ modkey, }, "m",
+    --     function (c)
+    --         c.maximized = not c.maximized
+    --         c:raise()
+    --     end,
+    --     {description = "(un)maximize", group = "client"}
+    -- )
+
     awful.key({ modkey, }, "m",
         function (c)
-            c.maximized = not c.maximized
-            c:raise()
-        end,
-        {description = "(un)maximize", group = "client"}
+	    -- set padding before maximize
+	    if c.maximized then
+		awful.screen.focused().padding = { top = "0", bottom = "0", left = "0", right="0" }
+	    else
+		awful.screen.focused().padding = { top = beautiful.useless_gap, bottom = beautiful.useless_gap, left = beautiful.useless_gap, right=beautiful.useless_gap }
+	    end
+	    c.maximized = not c.maximized
+	    c:raise()
+	end ,
+	{description = "(un)maximize", group = "client"})
     )
-)
 
 -- Bind all key numbers to tags
 for i = 1, 9 do
