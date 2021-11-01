@@ -7,11 +7,11 @@ configuration {
     matching:           "glob";
     lines:              8;
     columns:            1;
-    width:              560;
+    width:              1120;
     location:           0;
     padding:            50;
-    font:               "IBM Plex Mono 12";
+    font:               "Hack Nerd Font 20";
     hide-scrollbar:     true;
     theme:              "javacafe";
-    display-combi:		"rofi";
+    display-combi:	"rofi";
 }
