@@ -18,6 +18,7 @@ local awful = require("awful")
 local xresources = require("beautiful.xresources")
 local beautiful = require("beautiful")
 local dpi = xresources.apply_dpi
+
 beautiful.init(gears.filesystem.get_configuration_dir() .. "theme.lua")
 
 -- Import Keybinds
@@ -77,10 +78,10 @@ awful.screen.connect_for_each_screen(function (s)
 
     --decrease useless gap size near the borders of the screen
     s.padding = {
-        left = dpi(-3),
-        right = dpi(-3),
-        top = dpi(-9),
-        bottom = dpi(-3)
+        left = dpi(0),
+        right = dpi(0),
+        top = dpi(0),
+        bottom = dpi(0)
     }
 end)
 
@@ -112,7 +113,7 @@ screen.connect_signal("arrange", function (s)
     -- but iterate over clients instead of tiled_clients as tiled_clients doesn't include maximized windows
     for _, c in pairs(s.clients) do
         if (max or only_one) and not c.floating or c.maximized then
-            c.border_width = 0
+            c.border_width = dpi(0)
         else
             c.border_width = beautiful.border_width
         end
