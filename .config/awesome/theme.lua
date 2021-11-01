@@ -24,8 +24,8 @@ local theme = {}
 
 
 -- Font
-theme.font          = "SF Pro Text 14"
-theme.title_font    = "SF Pro Display Medium 14"
+theme.font          = "Hack Nerd Font 10"
+theme.title_font    = "Hack Nerd Font Italic 10"
 
 -- Background
 theme.bg_normal     = "#161821"
