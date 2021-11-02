@@ -13,7 +13,7 @@ brew tap | while read tap; do echo "brew tap $tap"; done
 
 brew list --formula | while read item;
 do
-      echo "install_package $item '$(brew info $item | /usr/bin/grep 'Built from source with:' | /usr/bin/sed 's/^[ \t]*Built from source with:/ /g; s/\,/ /g')'"
+      echo "install_package $item '$(brew info $item | grep 'Built from source with:' | sed 's/^[ \t]*Built from source with:/ /g; s/\,/ /g')'"
   done
 
   echo '[ ! -z $failed_items ] && echo The following items were failed to install: && echo $failed_items'
