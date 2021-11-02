@@ -4,8 +4,8 @@
 ## Backup existing homebrew formulas
 
 ```
-$ ./.backup-homebrew.sh > .restore-homebrew.sh
-$ chmod u+x .restore-homebrew.sh
+$ ./.backup-homebrew.sh > .restore-homebrew_{OS}.sh
+$ chmod u+x .restore-homebrew_{OS}.sh
 ```
 
 ## Install homebrew on new machine
@@ -19,6 +19,6 @@ $ mkdir homebrew && \
 ## Restore homebrew formulas
 
 ```
-./.restore-homebrew.sh
+./.restore-homebrew_{OS}.sh
 ```
 
