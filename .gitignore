@@ -1,0 +1,13 @@
+.config.git
+.config/bash/.bash_history
+.config/nvim/autoload
+.config/nvim/misc
+.config/nvim/plugged
+.config/zsh/.zcompdump*
+.config/zsh/.zsh_history
+.config/gnupg/private-keys-v1.d
+.config/gnupg/pubring.kbx
+.config/gnupg/trustdb.gpg
+.ssh/id_ed25519
+.ssh/id_ed25519.pub
+.ssh/known_hosts

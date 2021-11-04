@@ -1,6 +1,8 @@
 # Profile Management with Git and GitHub
 
-The following describes a simple way to manage you profile configuration files using GitHub.
+`.config/homebrew-backup` has information about steps needs to be performed before following configs kick in action.
+
+The following describes a simple way to manage profile configuration files using GitHub.
 
 ### Features
 
@@ -40,10 +42,9 @@ $ echo -e '[branch "master"]\n  remote = origin\n  merge = refs/heads/master' >>
     `$ cd ~`
 3.  Backup your local configuration files, example:  
     `$ mv .bash_profile .bash_profile.bk`
+    `$ mv .bashrc .bashrc.bk`
 4.  Clone your configuration repository  
-    `$ git clone git@github.com:GITHUB_USERNAME/config.git config.git`  
-    ***Note: Using my repo needs sub-modules to be updated***  
-    `$ git submodule update --init --recursive`
+    `$ git clone git@github.com:GITHUB_USERNAME/config.git config.git`
 5.  Move the git metadata to `~/.config.git`  
     `$ mv config.git/.git .config.git`
 6.  Enable dotglob  
@@ -53,6 +54,8 @@ $ echo -e '[branch "master"]\n  remote = origin\n  merge = refs/heads/master' >>
 8.  Delete the `config.git` directory  
     `$ rmdir config.git`
 9.  Logout and log back in
+10. ***Note: Sub-modules needs to be updated***  
+    `$ git submodule update --init --recursive`
 
 ### Basic Usage
 *   `config pull` - get latest configuration changes
