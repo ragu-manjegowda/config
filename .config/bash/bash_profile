@@ -92,8 +92,8 @@ export PATH="$HOMEBREW_PATH/lib/ruby/gems/2.6.0/bin/:$PATH"
 
 # LibPcap
 export PATH="$PATH:$HOMEBREW_PATH/opt/libpcap/bin"
-export LDFLAGS="-L/Users/ragu/Documents/homebrew/opt/libpcap/lib:$LDFLAGS"
-export CPPFLAGS="-I/Users/ragu/Documents/homebrew/opt/libpcap/include:$CPPFLAGS"
+export LDFLAGS="-L$HOMEBREW_PATH/opt/libpcap/lib:$LDFLAGS"
+export CPPFLAGS="-I$HOMEBREW_PATH/opt/libpcap/include:$CPPFLAGS"
 
 # Libxml2
 export PATH="$HOMEBREW_PATH/opt/libxml2/bin:$PATH"

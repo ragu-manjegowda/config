@@ -3,7 +3,7 @@ CLIENT_IP=$(echo $SSH_CLIENT | awk '{ print $1}')
 alias notify='ssh ragu@$CLIENT_IP afplay /System/Library/Sounds/Glass.aiff'
 
 # Homebrew Path
-export HOMEBREW_PATH="$HOME/Documents/homebrew"
+export HOMEBREW_PATH="/home/linuxbrew/.linuxbrew/"
 export PATH="$PATH:$HOMEBREW_PATH/bin"
 export PATH="$PATH:$HOMEBREW_PATH/sbin"
 
