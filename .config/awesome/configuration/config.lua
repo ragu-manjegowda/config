@@ -24,9 +24,9 @@ return {
 
 		network = {
 			-- Wired interface
-			wired_interface = 'enp0s0',
+			wired_interface = 'enp0s31f6',
 			-- Wireless interface
-			wireless_interface = 'wlan0'
+			wireless_interface = 'wlp2s0'
 		},
 
 		clock = {

@@ -1,5 +1,5 @@
 configuration {
-	font: "Inter Regular 10";
+	font: "Hack Nerd Regular 16";
 	show-icons: true;
 	drun-display-format: "{name}";
 	fullscreen: false;
@@ -37,7 +37,7 @@ prompt {
 button {
 	action: "ok";
 	str: " ";
-	font: "FantasqueSansMono Nerd Font 11";
+	font: "Hack Nerd Font 11";
 	expand: false;
 	text-color: @foreground;
 	background-color: @transparent;
@@ -46,7 +46,7 @@ button {
 }
 
 entry {
-	font: "Inter Regular 11";
+	font: "Hack Nerd Regular 14";
 	background-color: @transparent;
 	text-color: @foreground;
 	expand: true;
@@ -77,7 +77,7 @@ inputbar {
 	text-color: @foreground;
 	expand: false;
 	border-radius: 6px;
-	margin: 0px calc((100% - 640px) / 2) 0px calc((100% - 640px) / 2);
+	margin: 0px 200px 0px 200px;
 	padding: 10px 10px 10px 10px;
 	position: north;
 	children: [ entry-wrapper ];
@@ -109,7 +109,7 @@ element {
 }
 
 element-icon {
-	size: 72px;
+	size: 82px;
 	border: 0;
 }
 

@@ -74,7 +74,7 @@ local create_profile = function()
 					naughty.notification({
 						app_name = 'FBI\'s ChatBot v69',
 						title = title_table[math.random(#title_table)],
-						message = message_table[math.random(#message_table)] .. 
+						message = message_table[math.random(#message_table)] ..
 						'\n\n- xXChatBOT69Xx',
 						urgency = 'normal'
 					})
@@ -84,7 +84,7 @@ local create_profile = function()
 	)
 
 	local profile_name = wibox.widget {
-		font = 'Inter Regular 10',
+		font = 'Hack Nerd Regular 10',
 		markup = 'User',
 		align = 'left',
 		valign = 'center',
@@ -119,7 +119,7 @@ local create_profile = function()
 		fi
 		'
 		]],
-		function(stdout) 
+		function(stdout)
 			local stdout = stdout:gsub('%\n', '')
 			profile_name:set_markup(stdout)
 		end

@@ -9,7 +9,7 @@ local clickable_container = require('widget.clickable-container')
 
 local action_name = wibox.widget {
 	text = 'Brightness',
-	font = 'Inter Bold 10',
+	font = 'Hack Nerd Bold 10',
 	align = 'left',
 	widget = wibox.widget.textbox
 }
@@ -70,7 +70,7 @@ brightness_slider:connect_signal(
 	'property::value',
 	function()
 		local brightness_level = brightness_slider:get_value()
-		
+
 		spawn('light -S ' ..
 			math.max(brightness_level, 5),
 			false
@@ -116,7 +116,7 @@ brightness_slider:buttons(
 
 local update_slider = function()
 	awful.spawn.easy_async_with_shell(
-		'light -G', 
+		'light -G',
 		function(stdout)
 			local brightness = string.match(stdout, '(%d+)')
 			brightness_slider:set_value(tonumber(brightness))

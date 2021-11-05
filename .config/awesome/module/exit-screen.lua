@@ -48,7 +48,7 @@ local msg_table = {
 
 local greeter_message = wibox.widget {
 	markup = 'Choose wisely!',
-	font = 'Inter UltraLight 48',
+	font = 'Hack Nerd UltraLight 48',
 	align = 'center',
 	valign = 'center',
 	widget = wibox.widget.textbox
@@ -56,7 +56,7 @@ local greeter_message = wibox.widget {
 
 local profile_name = wibox.widget {
 	markup = 'user@hostname',
-	font = 'Inter Bold 12',
+	font = 'Hack Nerd Bold 12',
 	align = 'center',
 	valign = 'center',
 	widget = wibox.widget.textbox
@@ -120,7 +120,7 @@ update_greeter_msg()
 local build_power_button = function(name, icon, callback)
 	local power_button_label= wibox.widget {
 		text = name,
-		font = 'Inter Regular 10',
+		font = 'Hack Nerd Regular 10',
 		align = 'center',
 		valign = 'center',
 		widget = wibox.widget.textbox
@@ -315,7 +315,7 @@ screen.connect_signal(
 local exit_screen_grabber = awful.keygrabber {
 	auto_start = true,
 	stop_event = 'release',
-	keypressed_callback = function(self, mod, key, command) 
+	keypressed_callback = function(self, mod, key, command)
 		if key == 's' then
 			suspend_command()
 
@@ -339,7 +339,7 @@ local exit_screen_grabber = awful.keygrabber {
 
 awesome.connect_signal(
 	'module::exit_screen:show',
-	function() 
+	function()
 		for s in screen do
 			s.exit_screen.visible = false
 		end

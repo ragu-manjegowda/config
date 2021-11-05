@@ -1,5 +1,5 @@
 configuration {
-	font: "Inter Regular 10";
+	font: "Hack Nerd Regular 10";
 	show-icons: true;
 	drun-display-format: "{name}";
 	fullscreen: false;
@@ -41,7 +41,7 @@ prompt {
 button {
 	action: "ok";
 	str: " ";
-	font: "FantasqueSansMono Nerd Font 11";
+	font: "Hack Nerd Font 11";
 	expand: false;
 	text-color: @foreground;
 	background-color: @transparent;
@@ -50,7 +50,7 @@ button {
 }
 
 entry {
-	font: "Inter Regular 11";
+	font: "Hack Nerd Regular 11";
 	background-color: @transparent;
 	text-color: @foreground;
 	expand: true;

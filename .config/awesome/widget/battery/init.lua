@@ -28,7 +28,7 @@ local return_button = function()
 	local battery_percentage_text = wibox.widget {
 		id = 'percent_text',
 		text = '100%',
-		font = 'Inter Bold 11',
+		font = 'Hack Nerd Bold 11',
 		align = 'center',
 		valign = 'center',
 		visible = false,
@@ -95,7 +95,7 @@ local return_button = function()
 
 	battery_widget:connect_signal(
 		'mouse::enter',
-		function() 
+		function()
 			get_battery_info()
 		end
 	)
@@ -141,7 +141,7 @@ local return_button = function()
 				end
 
 				-- Critical level warning message
-				if (battery_percentage > 0 and battery_percentage < 10) and status == 'discharging' then
+				if (battery_percentage > 0 and battery_percentage < 20) and status == 'discharging' then
 					icon_name = icon_name .. '-' .. 'alert-red'
 
 					if os.difftime(os.time(), last_battery_check) > 300 or notify_critcal_battery then
@@ -154,10 +154,11 @@ local return_button = function()
 				end
 
 				-- Discharging
-				if battery_percentage > 0 and battery_percentage < 20 then
-					icon_name = icon_name .. '-' .. status .. '-' .. '10'
+				--if battery_percentage > 0 and battery_percentage < 20 then
+				--	icon_name = icon_name .. '-' .. status .. '-' .. '10'
 
-				elseif battery_percentage >= 20 and battery_percentage < 30 then
+				--else
+                if battery_percentage >= 20 and battery_percentage < 30 then
 					icon_name = icon_name .. '-' .. status .. '-' .. '20'
 
 				elseif battery_percentage >= 30 and battery_percentage < 50 then
@@ -189,7 +190,7 @@ local return_button = function()
 		5,
 		function(widget, stdout)
 			local status = stdout:gsub('%\n', '')
-			
+
 			-- If no output or no battery detected
 			if status == nil or status == '' then
 				battery_widget.spacing = dpi(0)

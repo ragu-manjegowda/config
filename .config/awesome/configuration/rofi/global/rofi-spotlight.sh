@@ -9,7 +9,7 @@ MY_PATH="$(realpath "$0" | xargs dirname)"
 HIST_FILE="${MY_PATH}/history.txt"
 
 OPENER=xdg-open
-TERM_EMU=kitty
+TERM_EMU=alacritty
 TEXT_EDITOR=$EDITOR
 FILE_MANAGER=xdg-open
 BLUETOOTH_SEND=blueman-sendto
@@ -92,7 +92,7 @@ if [ -n "$*" ] && [[ "$*" = ":help" ]]
 then
     echo -en "Rofi Spotlight
 A Rofi with file and web searching functionality
- 
+
 Commands:
 :help to print this help message
 :h or :hidden to show hidden files/dirs
@@ -108,14 +108,14 @@ Examples:
 	:xdg down
 For more info about XDG dirs, see:
 \`man xdg-user-dir\`
- 
+
 File search syntaxes:
 !<search_query> to search for a file and web suggestions
 ?<search_query> to search parent directories
 Examples:
 	!half-life 3
  	?portal 3
- 
+
 Web search syntaxes:
 !<search_query> to gets search suggestions
 :web/:w <search_query> to also to gets search suggestions
@@ -213,7 +213,7 @@ function icon_file_type(){
 		"application/zip" )
 			icon_name='application-zip'
 			;;
-		"application/x-xz" ) 
+		"application/x-xz" )
 			icon_name='application-x-xz-compressed-tar'
 			;;
 		"application/x-7z-compressed" )
@@ -319,7 +319,7 @@ then
 
 	elif [[ "$@" == \?* ]]
 	then
-		find_query ${QUERY#\?}	
+		find_query ${QUERY#\?}
 
 	else
 		# Find the file
@@ -344,7 +344,7 @@ function create_notification() {
             ;;
         "trashed" )
 		    notify-send -a "Global Search" "Success!" \
-		    'The file has been moved to trash!'	
+		    'The file has been moved to trash!'
             ;;
         "cleared" )
 		    notify-send -a "Global Search" "Success!" \
@@ -387,19 +387,19 @@ function navigate_to() {
 			done
 		fi
 		for i in */
-		do 
+		do
 			[[ -d "${i}" ]] && icon_file_type "${i}"
 		done
 		#Group files
 		if [[ ${SHOW_HIDDEN} = true ]]
 		then
 			for i in .*
-			do 
+			do
 				[[ -f "${i}" ]] && icon_file_type "${i}"
 			done
 		fi
 		for i in *
-		do 
+		do
 			[[ -f "${i}" ]] && icon_file_type "${i}"
 		done
 	else
@@ -407,13 +407,13 @@ function navigate_to() {
 		export CUR_DIR
 		if [[ ${SHOW_HIDDEN} == true ]]
 		then
-			fd -Ht d -d 1 -x bash -c 'icon_file_type "$1/"' _ {} \ | sort -V --parallel=$THREADS 
+			fd -Ht d -d 1 -x bash -c 'icon_file_type "$1/"' _ {} \ | sort -V --parallel=$THREADS
 			fd -Ht f -d 1 -x bash -c 'icon_file_type "$1"' _ {} \ | sort -V --parallel=$THREADS
 		else
-			fd -t d -d 1 -x bash -c 'icon_file_type "$1/"' _ {} \ | sort -V --parallel=$THREADS 
+			fd -t d -d 1 -x bash -c 'icon_file_type "$1/"' _ {} \ | sort -V --parallel=$THREADS
 			fd -t f -d 1 -x bash -c 'icon_file_type "$1"' _ {} \ | sort -V --parallel=$THREADS
 		fi
-	fi	
+	fi
 }
 
 # Set XDG dir
@@ -423,43 +423,43 @@ function return_xdg_dir() {
 	if [[ "HOME" == *"${target_dir}"* ]]
 	then
 		CUR_DIR=$(xdg-user-dir)
-	
+
 	elif [[ "DESKTOP" == *"${target_dir}"* ]]
 		then
 		CUR_DIR=$(xdg-user-dir DESKTOP)
-	
+
 	elif [[ "DOCUMENTS" == *"${target_dir}"* ]]
 		then
 		CUR_DIR=$(xdg-user-dir DOCUMENTS)
-	
+
 	elif [[ "DOWNLOADS" == *"${target_dir}"* ]]
 		then
 		CUR_DIR=$(xdg-user-dir DOWNLOAD)
-	
+
 	elif [[ "MUSIC" == *"${target_dir}"* ]]
 		then
 		CUR_DIR=$(xdg-user-dir MUSIC)
-	
+
 	elif [[ "PICTURES" == *"${target_dir}"* ]]
 		then
 		CUR_DIR=$(xdg-user-dir PICTURES)
-	
+
 	elif [[ "PUBLICSHARE" == *"${target_dir}"* ]]
 		then
 		CUR_DIR=$(xdg-user-dir PUBLICSHARE)
-	
+
 	elif [[ "TEMPLATES" == *"${target_dir}"* ]]
 		then
 		CUR_DIR=$(xdg-user-dir TEMPLATES)
-	
+
 	elif [[ "VIDEOS" == *"${target_dir}"* ]]
 		then
 		CUR_DIR=$(xdg-user-dir VIDEOS)
-	
+
 	elif [[ "ROOT" == *"${target_dir}"* ]]
 		then
 		CUR_DIR="/"
-	
+
 	else
 		CUR_DIR="${HOME}"
 	fi
@@ -475,11 +475,11 @@ then
     echo -en "Back\0icon\x1fdraw-arrow-back\n"
 	[ -z "${hist}" ] && echo -en "No History Yet\0icon\x1ftext-plain\n"
 
-	while IFS= read -r line; 
-	do 
-		echo -en "${line}\0icon\x1f${MY_PATH}/icons/history.svg\n"; 
+	while IFS= read -r line;
+	do
+		echo -en "${line}\0icon\x1f${MY_PATH}/icons/history.svg\n";
 	done <<< "${hist}"
-	
+
 	exit;
 elif [ ! -z "$@" ] && ([[ "$@" == ":ch" ]] || [[ "$@" == ":clear_hist" ]])
 then
@@ -556,7 +556,7 @@ then
 			navigate_to
 			;;
 		"Send via Bluetooth" )
-			rfkill unblock bluetooth &&	bluetoothctl power on 
+			rfkill unblock bluetooth &&	bluetoothctl power on
 			sleep 1
 			blueman-sendto "$(< ${CURRENT_FILE})" & > /dev/null 2>&1
 			kill -9 $(pgrep rofi)
@@ -615,7 +615,7 @@ function context_menu_icons() {
 
 function print_context_menu() {
 	declare -a arg_arr=("${!1}")
-	
+
 	for menu in "${arg_arr[@]}"
 	do
 		printf "$menu$(context_menu_icons "${menu}")\n"
@@ -625,7 +625,7 @@ function print_context_menu() {
 function context_menu() {
 
 	type="$(file --mime-type -b "${CUR_DIR}")"
-	
+
 	if [ -w "${CUR_DIR}" ] && [[ "${type}" == "text/x-shellscript" ]]
 	then
 		if [ -x "${CUR_DIR}" ];
@@ -651,26 +651,26 @@ function context_menu() {
 	elif [[ "${type}" == "text/html" ]]
 	then
 		print_context_menu HTML_OPTIONS[@]
-	
+
 	elif [[ "${type}" == "image/jpeg" ]] || [[ "${type}" == "image/png" ]]
 	then
 		print_context_menu IMAGE_OPTIONS[@]
-	
+
 	elif [[ "${type}" == "image/x-xcf" ]] || [[ "${type}" == "image/svg+xml" ]]
 	then
 		print_context_menu XCF_SVG_OPTIONS[@]
-	
+
 	elif [ ! -w "${CUR_DIR}" ] && [[ "${type}" == "text/x-shellscript" ]]
 	then
 		coproc ( exec "${CUR_DIR}" & > /dev/null  2>&1 )
-	
+
 	else
 		if [ ! -d "${CUR_DIR}" ] && [ ! -f "${CUR_DIR}" ]
 		then
 			QUERY="${CUR_DIR//*\/\//}"
 
 			echo "${QUERY}" >> "${HIST_FILE}"
-			
+
 			find_query "${QUERY#!}"
 
 			web_search "!${QUERY}"

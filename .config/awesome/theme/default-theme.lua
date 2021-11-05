@@ -14,8 +14,8 @@ local tip = titlebar_icon_path
 local theme = {}
 
 -- Font
-theme.font = 'Inter Regular 10'
-theme.font_bold = 'Inter Bold 10'
+theme.font = 'Hack Nerd Regular 10'
+theme.font_bold = 'Hack Nerd Bold 10'
 
 -- Menu icon theme
 theme.icon_theme = 'Tela-blue-dark'
@@ -29,7 +29,7 @@ local awesome_overrides = function(theme)
 	theme.wallpaper = theme.dir .. '/wallpapers/morning-wallpaper.jpg'
 
 	-- Default font
-	theme.font = 'Inter Regular 10'
+	theme.font = 'Hack Nerd Regular 10'
 
 	-- Foreground
 	theme.fg_normal = '#ffffffde'
@@ -142,7 +142,7 @@ local awesome_overrides = function(theme)
 	end
 
 	-- Menu
-	theme.menu_font = 'Inter Regular 11'
+	theme.menu_font = 'Hack Nerd Regular 11'
 	theme.menu_submenu = '' -- ➤
 
 	theme.menu_height = dpi(34)
@@ -173,7 +173,7 @@ local awesome_overrides = function(theme)
 	theme.layout_tile = theme.icons .. 'layouts/tile.svg'
 	theme.layout_dwindle = theme.icons .. 'layouts/dwindle.svg'
 	theme.layout_floating = theme.icons .. 'layouts/floating.svg'
-	
+
 	-- Taglist
 	theme.taglist_bg_empty = theme.background .. '99'
 	theme.taglist_bg_occupied =  '#ffffff' .. '1A'
@@ -182,7 +182,7 @@ local awesome_overrides = function(theme)
 	theme.taglist_spacing = dpi(0)
 
 	-- Tasklist
-	theme.tasklist_font = 'Inter Regular 10'
+	theme.tasklist_font = 'Hack Nerd Regular 10'
 	theme.tasklist_bg_normal = theme.background .. '99'
 	theme.tasklist_bg_focus = theme.background
 	theme.tasklist_bg_urgent = '#E91E63' .. '99'
@@ -199,15 +199,15 @@ local awesome_overrides = function(theme)
 	theme.notification_spacing = dpi(5)
 	theme.notification_icon_resize_strategy = 'center'
 	theme.notification_icon_size = dpi(32)
-	
+
 	-- Client Snap Theme
 	theme.snap_bg = theme.background
 	theme.snap_shape = gears.shape.rectangle
 	theme.snap_border_width = dpi(15)
 
 	-- Hotkey popup
-	theme.hotkeys_font = 'Inter Bold'
-	theme.hotkeys_description_font   = 'Inter Regular Regular'
+	theme.hotkeys_font = 'Hack Nerd Bold 16'
+	theme.hotkeys_description_font   = 'Hack Nerd Regular Regular 14'
 	theme.hotkeys_bg = theme.background
 	theme.hotkeys_group_margin = dpi(20)
 end

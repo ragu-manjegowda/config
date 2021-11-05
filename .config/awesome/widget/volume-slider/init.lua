@@ -1,15 +1,18 @@
 local wibox = require('wibox')
 local gears = require('gears')
+local naughty = require('naughty')
 local awful = require('awful')
 local beautiful = require('beautiful')
 local spawn = awful.spawn
 local dpi = beautiful.xresources.apply_dpi
 local icons = require('theme.icons')
 local clickable_container = require('widget.clickable-container')
+local config_dir = gears.filesystem.get_configuration_dir()
+local widget_icon_dir = config_dir .. 'widget/volume-slider/icons/'
 
 local action_name = wibox.widget {
 	text = 'Volume',
-	font = 'Inter Bold 10',
+	font = 'Hack Nerd Bold 10',
 	align = 'left',
 	widget = wibox.widget.textbox
 }
@@ -70,8 +73,8 @@ volume_slider:connect_signal(
 	'property::value',
 	function()
 		local volume_level = volume_slider:get_value()
-		
-		spawn('amixer -D pulse sset Master ' .. 
+
+		spawn('amixer -D pulse sset Master ' ..
 			volume_level .. '%',
 			false
 		)
@@ -159,6 +162,26 @@ awesome.connect_signal(
 	'widget::volume',
 	function()
 		update_slider()
+	end
+)
+
+awesome.connect_signal(
+	'widget::volume_mute',
+	function()
+		awesome.emit_signal(
+			'module::brightness_osd:show',
+			false
+		)
+		awesome.emit_signal(
+			'module::volume_osd:show',
+			false
+		)
+        naughty.notification ({
+            icon = widget_icon_dir .. 'volume-muted.png',
+            app_name = 'System notification',
+            title = 'Volume Muted',
+            urgency = 'normal'
+        })
 	end
 )
 

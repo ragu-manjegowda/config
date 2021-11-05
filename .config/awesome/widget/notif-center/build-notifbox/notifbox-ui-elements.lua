@@ -32,7 +32,7 @@ end
 ui_noti_builder.notifbox_title = function(title)
 	return wibox.widget {
 		markup = title,
-		font   = 'Inter Bold 12',
+		font   = 'Hack Nerd Bold 12',
 		align  = 'left',
 		valign = 'center',
 		widget = wibox.widget.textbox
@@ -43,7 +43,7 @@ end
 ui_noti_builder.notifbox_message = function(msg)
 	return wibox.widget {
 		markup = msg,
-		font   = 'Inter Regular 11',
+		font   = 'Hack Nerd Regular 11',
 		align  = 'left',
 		valign = 'center',
 		widget = wibox.widget.textbox
@@ -54,7 +54,7 @@ end
 ui_noti_builder.notifbox_appname = function(app)
 	return wibox.widget {
 		markup  = app,
-		font   = 'Inter Bold 12',
+		font   = 'Hack Nerd Bold 12',
 		align  = 'left',
 		valign = 'center',
 		widget = wibox.widget.textbox
@@ -75,7 +75,7 @@ ui_noti_builder.notifbox_actions = function(n)
 					{
 						{
 							id     = 'text_role',
-							font   = 'Inter Regular 10',
+							font   = 'Hack Nerd Regular 10',
 							widget = wibox.widget.textbox
 						},
 						widget = wibox.container.place

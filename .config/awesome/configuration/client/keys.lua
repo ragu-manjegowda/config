@@ -7,82 +7,8 @@ local altkey = require('configuration.keys.mod').alt_key
 
 local client_keys = awful.util.table.join(
 	awful.key(
-		{modkey},
-		'f',
-		function(c)
-			c.fullscreen = not c.fullscreen
-			c:raise()
-		end,
-		{description = 'toggle fullscreen', group = 'client'}
-	),
-	awful.key(
-		{modkey},
-		'q',
-		function(c)
-			c:kill()
-		end,
-		{description = 'close', group = 'client'}
-	),
-	awful.key(
-		{modkey},
-		'd',
-		function()
-			awful.client.focus.byidx(1)
-		end,
-		{description = 'focus next by index', group = 'client'}
-	),
-	awful.key(
-		{modkey},
-		'a',
-		function()
-			awful.client.focus.byidx(-1)
-		end,
-		{description = 'focus previous by index', group = 'client'}
-	),
-	awful.key(
-		{ modkey, 'Shift'  },
-		'd',
-		function ()
-			awful.client.swap.byidx(1)
-		end,
-		{description = 'swap with next client by index', group = 'client'}
-	),
-	awful.key(
-		{ modkey, 'Shift' },
-		'a',
-		function ()
-			awful.client.swap.byidx(-1)
-		end,
-		{description = 'swap with next client by index', group = 'client'}
-	),
-	awful.key(
-		{modkey}, 
-		'u', 
-		awful.client.urgent.jumpto, 
-		{description = 'jump to urgent client', group = 'client'}
-	),
-	awful.key(
-		{modkey},
-		'Tab',
-		function()
-			awful.client.focus.history.previous()
-			if client.focus then
-				client.focus:raise()
-			end
-		end,
-		{description = 'go back', group = 'client'}
-	),
-    awful.key(
-        {modkey},
-        'n',
-        function(c)
-            c.minimized = true
-        end,
-        {description = 'minimize client', group = 'client'}
-    ),
-	awful.key(
-		{ modkey, 'Shift' }, 
-		'c', 
+		{modkey, 'Control'},
+		'c',
 		function(c)
 			local focused = awful.screen.focused()
 
@@ -94,15 +20,118 @@ local client_keys = awful.util.table.join(
 	),
 	awful.key(
 		{modkey},
-		'c',
+		'f',
 		function(c)
-			c.fullscreen = false
-			c.maximized = false
-			c.floating = not c.floating
+			c.fullscreen = not c.fullscreen
 			c:raise()
 		end,
-		{description = 'toggle floating', group = 'client'}
+		{description = 'toggle fullscreen', group = 'client'}
 	),
+    -- Focus client by direction (hjkl keys)
+    awful.key(
+        {modkey},
+        'h',
+        function()
+            awful.client.focus.bydirection("left")
+            if client.focus then client.focus:raise() end
+        end,
+        {description = "focus left", group = "client"}
+    ),
+    awful.key(
+        {modkey},
+       'j',
+        function()
+            awful.client.focus.bydirection("down")
+            if client.focus then client.focus:raise() end
+        end,
+        {description = "focus down", group = "client"}
+    ),
+    awful.key(
+        {modkey},
+        'k',
+        function()
+            awful.client.focus.bydirection("up")
+            if client.focus then client.focus:raise() end
+        end,
+        {description = "focus up", group = "client"}
+    ),
+    awful.key(
+        { modkey },
+        'l',
+        function()
+            awful.client.focus.bydirection("right")
+            if client.focus then client.focus:raise() end
+        end,
+        {description = "focus right", group = "client"}
+    ),
+    awful.key(
+        {modkey},
+        'm',
+        function (c)
+		    --if c.maximized then
+	        c.maximized = not c.maximized
+	        c:raise()
+        end,
+        {description = "maximize", group = "client"}
+    ),
+    awful.key(
+        {modkey},
+        'n',
+        function(c)
+            c.minimized = true
+        end,
+        {description = 'minimize client', group = 'client'}
+    ),
+    awful.key(
+		{modkey, 'Shift'},
+		'n',
+		function()
+			local c = awful.client.restore()
+			-- Focus restored client
+			if c then
+				c:emit_signal('request::activate')
+				c:raise()
+			end
+		end,
+		{description = 'restore minimized', group = 'client'}
+	),
+	awful.key(
+		{modkey},
+		'o',
+		function()
+			awful.tag.incgap(1)
+		end,
+		{description = 'increase gap', group = 'client'}
+	),
+	awful.key(
+		{modkey, 'Shift'},
+		'o',
+		function()
+			awful.tag.incgap(-1)
+		end,
+		{description = 'decrease gap', group = 'client'}
+	),
+	awful.key(
+		{modkey},
+		'p',
+		awful.tag.history.restore,
+		{description = 'alternate between current and previous tag', group = 'client'}
+	),
+	awful.key(
+		{modkey},
+		'q',
+		function(c)
+			c:kill()
+		end,
+		{description = 'close', group = 'client'}
+	),
+	awful.key(
+		{modkey},
+		'u',
+		awful.client.urgent.jumpto,
+		{description = 'jump to urgent client', group = 'client'}
+	),
+
 	awful.key(
 		{modkey},
 		'Up',

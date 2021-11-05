@@ -13,14 +13,14 @@ local ap_state = false
 
 local action_name = wibox.widget {
 	text = 'Airplane Mode',
-	font = 'Inter Bold 10',
+	font = 'Hack Nerd Bold 10',
 	align = 'left',
 	widget = wibox.widget.textbox
 }
 
 local action_status = wibox.widget {
 	text = 'Off',
-	font = 'Inter Regular 10',
+	font = 'Hack Nerd Regular 10',
 	align = 'left',
 	widget = wibox.widget.textbox
 }
@@ -74,11 +74,11 @@ local check_airplane_mode_state = function()
 	local cmd = 'cat ' .. widget_dir .. 'airplane_mode'
 
 	awful.spawn.easy_async_with_shell(
-		cmd, 
+		cmd,
 		function(stdout)
-			
+
 			local status = stdout
-			
+
 			if status:match('true') then
 				ap_state = true
 			elseif status:match('false') then
@@ -86,7 +86,7 @@ local check_airplane_mode_state = function()
 			else
 				ap_state = false
 				awful.spawn.easy_async_with_shell(
-					'echo "false" > ' .. widget_dir .. 'airplane_mode', 
+					'echo "false" > ' .. widget_dir .. 'airplane_mode',
 					function(stdout)
 					end
 				)
@@ -99,7 +99,7 @@ end
 check_airplane_mode_state()
 
 local ap_off_cmd = [[
-	
+
 	rfkill unblock wlan
 
 	# Create an AwesomeWM Notification
@@ -135,8 +135,8 @@ local ap_on_cmd = [[
 local toggle_action = function()
 	if ap_state then
 		awful.spawn.easy_async_with_shell(
-			ap_off_cmd, 
-			function(stdout) 
+			ap_off_cmd,
+			function(stdout)
 				ap_state = false
 				update_widget()
 			end
@@ -187,7 +187,7 @@ gears.timer {
 }
 
 local action_widget =  wibox.widget {
-	layout = wibox.layout.fixed.horizontal,	
+	layout = wibox.layout.fixed.horizontal,
 	spacing = dpi(10),
 	widget_button,
 	{

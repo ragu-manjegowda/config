@@ -11,9 +11,9 @@ local create_clock = function(s)
 
 	local clock_format = nil
 	if not military_mode then
-		clock_format = '<span font="Inter Bold 11">%I:%M %p</span>'
+		clock_format = '<span font="Hack Nerd Bold 11">%I:%M %p</span>'
 	else
-		clock_format = '<span font="Inter Bold 11">%H:%M</span>'
+		clock_format = '<span font="Hack Nerd Bold 11">%H:%M</span>'
 	end
 
 	s.clock_widget = wibox.widget.textclock(
@@ -66,8 +66,8 @@ local create_clock = function(s)
 			local day = os.date('%d')
 			local month = os.date('%B')
 
-			local first_digit = string.sub(day, 0, 1) 
-			local last_digit = string.sub(day, -1) 
+			local first_digit = string.sub(day, 0, 1)
+			local last_digit = string.sub(day, -1)
 
 			if first_digit == '0' then
 				day = last_digit
@@ -84,7 +84,7 @@ local create_clock = function(s)
 			end
 
 			local date_str = 'Today is the ' ..
-			'<b>' .. day .. ordinal .. 
+			'<b>' .. day .. ordinal ..
 			' of ' .. month .. '</b>.\n' ..
 			'And it\'s fucking ' .. os.date('%A')
 
@@ -101,11 +101,11 @@ local create_clock = function(s)
 			end
 		end
 	)
-	
+
 	s.month_calendar      = awful.widget.calendar_popup.month({
 		start_sunday      = true,
 		spacing           = dpi(5),
-		font              = 'Inter Regular 10',
+		font              = 'Hack Nerd Regular 10',
 		long_weekdays     = true,
 		margin            = dpi(5),
 		screen            = s,
@@ -119,22 +119,22 @@ local create_clock = function(s)
 				)
 			end
 		},
-		style_header      = { 
-			border_width    = 0, 
+		style_header      = {
+			border_width    = 0,
 			bg_color        = beautiful.transparent
 		},
-		style_weekday     = { 
-			border_width    = 0, 
+		style_weekday     = {
+			border_width    = 0,
 			bg_color        = beautiful.transparent
 		},
-		style_normal      = { 
-			border_width    = 0, 
+		style_normal      = {
+			border_width    = 0,
 			bg_color        = beautiful.transparent
 		},
-		style_focus       = { 
-			border_width    = dpi(0), 
-			border_color    = beautiful.fg_normal, 
-			bg_color        = beautiful.accent, 
+		style_focus       = {
+			border_width    = dpi(0),
+			border_color    = beautiful.fg_normal,
+			bg_color        = beautiful.accent,
 			shape           = function(cr, width, height)
 				gears.shape.partially_rounded_rect(
 					cr, width, height, true, true, true, true, dpi(4)
@@ -144,11 +144,11 @@ local create_clock = function(s)
 	})
 
 	s.month_calendar:attach(
-		s.clock_widget, 
-		'tc', 
-		{ 
+		s.clock_widget,
+		'tc',
+		{
 			on_pressed = true,
-			on_hover = false 
+			on_hover = false
 		}
 	)
 

@@ -12,14 +12,14 @@ local device_state = false
 
 local action_name = wibox.widget {
 	text = 'Blue Light',
-	font = 'Inter Bold 10',
+	font = 'Hack Nerd Bold 10',
 	align = 'left',
 	widget = wibox.widget.textbox
 }
 
 local action_status = wibox.widget {
 	text = 'Off',
-	font = 'Inter Regular 10',
+	font = 'Hack Nerd Regular 10',
 	align = 'left',
 	widget = wibox.widget.textbox
 }
@@ -136,7 +136,7 @@ action_info:buttons(
 )
 
 local action_widget =  wibox.widget {
-	layout = wibox.layout.fixed.horizontal,	
+	layout = wibox.layout.fixed.horizontal,
 	spacing = dpi(10),
 	widget_button,
 	{
@@ -151,7 +151,7 @@ local action_widget =  wibox.widget {
 
 awesome.connect_signal(
 	'widget::blue_light:toggle',
-	function() 
+	function()
 		toggle_action()
 	end
 )

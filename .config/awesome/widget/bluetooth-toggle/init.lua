@@ -13,14 +13,14 @@ local device_state = false
 
 local action_name = wibox.widget {
 	text = 'Bluetooth',
-	font = 'Inter Bold 10',
+	font = 'Hack Nerd Bold 10',
 	align = 'left',
 	widget = wibox.widget.textbox
 }
 
 local action_status = wibox.widget {
 	text = 'Off',
-	font = 'Inter Regular 10',
+	font = 'Hack Nerd Regular 10',
 	align = 'left',
 	widget = wibox.widget.textbox
 }
@@ -71,15 +71,15 @@ end
 
 local check_device_state = function()
 	awful.spawn.easy_async_with_shell(
-		'rfkill list bluetooth', 
+		'rfkill list bluetooth',
 		function(stdout)
-		
+
 			if stdout:match('Soft blocked: yes') then
 				device_state = false
 			else
 				device_state = true
 			end
-		
+
 			update_widget()
 		end
 	)
@@ -102,7 +102,7 @@ local power_on_cmd = [[
 
 	# Add a delay here so we can enable the bluetooth
 	sleep 1
-	
+
 	bluetoothctl power on
 ]]
 
@@ -125,8 +125,8 @@ local power_off_cmd = [[
 local toggle_action = function()
 	if device_state then
 		awful.spawn.easy_async_with_shell(
-			power_off_cmd, 
-			function(stdout) 
+			power_off_cmd,
+			function(stdout)
 				device_state = false
 				update_widget()
 			end
@@ -169,7 +169,7 @@ action_info:buttons(
 )
 
 watch(
-	'rfkill list bluetooth', 
+	'rfkill list bluetooth',
 	5,
 	function(_, stdout)
 		check_device_state()
@@ -178,7 +178,7 @@ watch(
 )
 
 local action_widget =  wibox.widget {
-	layout = wibox.layout.fixed.horizontal,	
+	layout = wibox.layout.fixed.horizontal,
 	spacing = dpi(10),
 	widget_button,
 	{
