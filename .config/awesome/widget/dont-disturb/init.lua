@@ -14,14 +14,14 @@ _G.dont_disturb_state = false
 
 local action_name = wibox.widget {
 	text = 'Don\'t Disturb' ,
-	font = 'Inter Bold 10',
+	font = 'Hack Nerd Bold 10',
 	align = 'left',
 	widget = wibox.widget.textbox
 }
 
 local action_status = wibox.widget {
 	text = 'Off',
-	font = 'Inter Regular 10',
+	font = 'Hack Nerd Regular 10',
 	align = 'left',
 	widget = wibox.widget.textbox
 }
@@ -72,11 +72,11 @@ end
 
 local check_disturb_status = function()
 	awful.spawn.easy_async_with_shell(
-		'cat ' .. widget_dir .. 'disturb_status', 
+		'cat ' .. widget_dir .. 'disturb_status',
 		function(stdout)
-			
+
 			local status = stdout
-			
+
 			if status:match('true') then
 				dont_disturb_state = true
 			elseif status:match('false') then
@@ -134,7 +134,7 @@ action_info:buttons(
 )
 
 local action_widget =  wibox.widget {
-	layout = wibox.layout.fixed.horizontal,	
+	layout = wibox.layout.fixed.horizontal,
 	spacing = dpi(10),
 	widget_button,
 	{
@@ -148,7 +148,7 @@ local action_widget =  wibox.widget {
 
 -- Create a notification sound
 naughty.connect_signal(
-	'request::display', 
+	'request::display',
 	function(n)
 		if not dont_disturb_state then
 			awful.spawn.with_shell('canberra-gtk-play -i message')

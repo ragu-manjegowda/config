@@ -47,14 +47,14 @@ local email_icon_widget = wibox.widget {
 
 local email_header = wibox.widget {
 	text   = 'Email',
-	font   = 'Inter Bold 14',
+	font   = 'Hack Nerd Bold 14',
 	align  = 'left',
 	valign = 'center',
 	widget = wibox.widget.textbox
 }
 
 local email_from_text = wibox.widget {
-	font = 'Inter Regular 10',
+	font = 'Hack Nerd Regular 10',
 	markup = 'From:',
 	align = 'left',
 	valign = 'center',
@@ -63,7 +63,7 @@ local email_from_text = wibox.widget {
 
 
 local email_recent_from = wibox.widget {
-	font = 'Inter Regular 10',
+	font = 'Hack Nerd Regular 10',
 	markup = 'loading@stdout.sh',
 	align = 'left',
 	valign = 'center',
@@ -71,7 +71,7 @@ local email_recent_from = wibox.widget {
 }
 
 local email_subject_text = wibox.widget {
-	font = 'Inter Regular 10',
+	font = 'Hack Nerd Regular 10',
 	markup = 'Subject:',
 	align = 'left',
 	valign = 'center',
@@ -79,7 +79,7 @@ local email_subject_text = wibox.widget {
 }
 
 local email_recent_subject = wibox.widget {
-	font = 'Inter Regular 10',
+	font = 'Hack Nerd Regular 10',
 	markup = 'Loading data',
 	align = 'left',
 	valign = 'center',
@@ -87,7 +87,7 @@ local email_recent_subject = wibox.widget {
 }
 
 local email_date_text = wibox.widget {
-	font = 'Inter Regular 10',
+	font = 'Hack Nerd Regular 10',
 	markup = 'Local Date:',
 	align = 'left',
 	valign = 'center',
@@ -95,7 +95,7 @@ local email_date_text = wibox.widget {
 }
 
 local email_recent_date = wibox.widget {
-	font = 'Inter Regular 10',
+	font = 'Hack Nerd Regular 10',
 	markup = 'Loading date...',
 	align = 'left',
 	valign = 'center',
@@ -229,7 +229,7 @@ END
 ]]
 
 local notify_all_unread_email = function(email_data)
-	
+
 	local unread_counter = email_data:match('Unread Count: (.-)From:'):sub(1, -2)
 
 	local email_data = email_data:match('(From:.*)'):sub(1, -2)
@@ -241,7 +241,7 @@ local notify_all_unread_email = function(email_data)
 	else
 		title = 'You have ' .. unread_counter .. ' unread email!'
 	end
-	
+
 	naughty.notification ({
 		app_name = 'Email',
 		title = title,
@@ -257,7 +257,7 @@ local notify_new_email = function(count, from, subject)
 
 		local message = "From: " .. from ..
 		"\nSubject: " .. subject
-		
+
 		naughty.notification ({
 			app_name = 'Email',
 			title = 'You have a new unread email!',
@@ -273,7 +273,7 @@ end
 
 local set_email_data_tooltip = function(email_data)
 	local email_data = email_data:match('(From:.*)')
-	local counter = "<span font='Inter Regular 10'>Unread Count: </span>" .. unread_email_count
+	local counter = "<span font='Hack Nerd Regular 10'>Unread Count: </span>" .. unread_email_count
 	email_details_tooltip:set_markup(counter .. '\n\n' .. email_data)
 end
 
@@ -293,7 +293,7 @@ local set_no_connection_msg = function()
 		'message@stderr.sh',
 		'Check network connection!',
 		os.date('%d-%m-%Y %H:%M:%S'),
-		'No internet connection!'		
+		'No internet connection!'
 	)
 end
 
@@ -321,7 +321,7 @@ local set_latest_email_data = function(email_data)
 	elseif count > 9 then
 		email_icon_widget.icon:set_image(widget_icon_dir .. 'email-9+.svg')
 	end
-	
+
 	set_widget_markup(
 		recent_from,
 		recent_subject,
@@ -398,7 +398,7 @@ local update_widget_timer = gears.timer {
 	autostart = true,
 	call_now = true,
 	callback  = function()
-		check_secrets() 
+		check_secrets()
 	end
 }
 
@@ -414,7 +414,7 @@ awesome.connect_signal(
 	function()
 		gears.timer.start_new(
 			5,
-			function() 
+			function()
 				check_secrets()
 			end
 		)

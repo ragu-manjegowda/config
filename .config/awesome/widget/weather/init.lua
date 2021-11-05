@@ -19,7 +19,7 @@ local secrets = {
 
 local weather_header = wibox.widget {
 	text   = 'Weather Forecast',
-	font   = 'Inter Bold 14',
+	font   = 'Hack Nerd Bold 14',
 	align  = 'left',
 	valign = 'center',
 	widget = wibox.widget.textbox
@@ -99,7 +99,7 @@ local weather_desc_temp = wibox.widget {
 	{
 		id 	   = 'description',
 		markup = 'Dust and clouds, -1000°C',
-		font   = 'Inter Regular 10',
+		font   = 'Hack Nerd Regular 10',
 		align  = 'left',
 		valign = 'center',
 		widget = wibox.widget.textbox
@@ -119,7 +119,7 @@ local weather_location = wibox.widget {
 	{
 		id 	   = 'location',
 		markup = 'Earth, Milky Way',
-		font   = 'Inter Regular 10',
+		font   = 'Hack Nerd Regular 10',
 		align  = 'left',
 		valign = 'center',
 		widget = wibox.widget.textbox
@@ -137,7 +137,7 @@ local weather_location = wibox.widget {
 
 local weather_sunrise = wibox.widget {
 	markup = '00:00',
-	font   = 'Inter Regular 10',
+	font   = 'Hack Nerd Regular 10',
 	align  = 'center',
 	valign = 'center',
 	widget = wibox.widget.textbox
@@ -145,7 +145,7 @@ local weather_sunrise = wibox.widget {
 
 local weather_sunset = wibox.widget {
 	markup = '00:00',
-	font   = 'Inter Regular 10',
+	font   = 'Hack Nerd Regular 10',
 	align  = 'center',
 	valign = 'center',
 	widget = wibox.widget.textbox
@@ -153,7 +153,7 @@ local weather_sunset = wibox.widget {
 
 local weather_data_time = wibox.widget {
 	markup = '00:00',
-	font   = 'Inter Regular 10',
+	font   = 'Hack Nerd Regular 10',
 	align  = 'center',
 	valign = 'center',
 	widget = wibox.widget.textbox
@@ -216,7 +216,7 @@ local weather_report =  wibox.widget {
 							}
 						}
 					},
-					nil				
+					nil
 				}
 			}
 		},
@@ -226,9 +226,9 @@ local weather_report =  wibox.widget {
 	forced_height = dpi(110),
 	bg = beautiful.groups_bg,
 	shape = function(cr, width, height)
-		gears.shape.partially_rounded_rect(cr, width, height, true, true, true, true, beautiful.groups_radius) 
+		gears.shape.partially_rounded_rect(cr, width, height, true, true, true, true, beautiful.groups_radius)
 	end,
-	widget = wibox.container.background	
+	widget = wibox.container.background
 }
 
 -- Return weather symbol
@@ -298,19 +298,19 @@ awesome.connect_signal(
 
 awesome.connect_signal(
 	'widget::weather_fetch',
-	function() 
+	function()
 
 		awful.spawn.easy_async_with_shell(
 			create_weather_script('weather'),
 			function(stdout)
 				if stdout:match('error') then
 					awesome.emit_signal(
-						'widget::weather_update', 
-						'...', 
-						'Dust and clouds, -1000°C', 
-						'Earth, Milky Way', 
-						'00:00', 
-						'00:00', 
+						'widget::weather_update',
+						'...',
+						'Dust and clouds, -1000°C',
+						'Earth, Milky Way',
+						'00:00',
+						'00:00',
 						'00:00'
 					)
 				else
@@ -337,12 +337,12 @@ awesome.connect_signal(
 					local weather_location = location .. ', ' .. country
 
 					awesome.emit_signal(
-						'widget::weather_update', 
-						weather_icon, 
-						weather_description, 
-						weather_location, 
-						sunrise, 
-						sunset, 
+						'widget::weather_update',
+						weather_icon,
+						weather_description,
+						weather_location,
+						sunrise,
+						sunset,
 						refresh
 					)
 				end
@@ -365,10 +365,10 @@ local update_widget_timer = gears.timer {
 
 awesome.connect_signal(
 	'system::network_connected',
-	function() 
+	function()
 		gears.timer.start_new(
 			5,
-			function() 
+			function()
 				awesome.emit_signal('widget::weather_fetch')
 				awesome.emit_signal('widget::forecast_fetch')
 			end
@@ -377,7 +377,7 @@ awesome.connect_signal(
 )
 
 awesome.connect_signal(
-	'widget::weather_update', 
+	'widget::weather_update',
 	function(code, desc, location, sunrise, sunset, data_receive)
 		local widget_icon_name = 'weather-error'
 
@@ -407,7 +407,7 @@ awesome.connect_signal(
 
 		weather_icon_widget.icon:set_image(widget_icon_dir .. widget_icon_name)
 		weather_icon_widget.icon:emit_signal('widget::redraw_needed')
-		
+
 		weather_desc_temp.description:set_markup(desc)
 		weather_location.location:set_markup(location)
 		weather_sunrise:set_markup(sunrise)

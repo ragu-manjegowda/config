@@ -9,7 +9,7 @@ local clickable_container = require('widget.clickable-container')
 
 local action_name = wibox.widget {
 	text = 'Blur Strength',
-	font = 'Inter Bold 10',
+	font = 'Hack Nerd Bold 10',
 	align = 'left',
 	widget = wibox.widget.textbox
 }
@@ -69,7 +69,7 @@ local update_slider_value = function()
 
 	awful.spawn.easy_async_with_shell(
 		[[bash -c "
-		grep -F 'strength =' $HOME/.config/awesome/configuration/picom.conf | 
+		grep -F 'strength =' $HOME/.config/awesome/configuration/picom.conf |
 		awk 'NR==1 {print $3}' | tr -d ';'
 		"]],
 		function(stdout, stderr)
@@ -136,13 +136,13 @@ blur_slider:connect_signal(
 -- Adjust slider value to change blur strength
 awesome.connect_signal(
 	'widget::blur:increase',
-	function() 
+	function()
 
 		-- On startup, the slider.value returns nil so...
 		if blur_slider:get_value() == nil then
 			return
 		end
-	 
+
 		local blur_value = blur_slider:get_value() + 10
 
 		-- No more than 100!
@@ -158,8 +158,8 @@ awesome.connect_signal(
 -- Decrease blur
 awesome.connect_signal(
 	'widget::blur:decrease',
-	function() 
-	
+	function()
+
 		-- On startup, the slider.value returns nil so...
 		if blur_slider:get_value() == nil then
 			return

@@ -44,9 +44,9 @@ ruled.notification.connect_signal(
 		-- Critical notifs
 		ruled.notification.append_rule {
 			rule       = { urgency = 'critical' },
-			properties = { 
-				font        		= 'Inter Bold 10',
-				bg 					= '#ff0000', 
+			properties = {
+				font        		= 'Hack Nerd Bold 10',
+				bg 					= '#ff0000',
 				fg 					= '#ffffff',
 				margin 				= dpi(16),
 				position 			= 'top_left',
@@ -58,8 +58,8 @@ ruled.notification.connect_signal(
 		ruled.notification.append_rule {
 			rule       = { urgency = 'normal' },
 			properties = {
-				font        		= 'Inter Regular 10',
-				bg      			= beautiful.transparent, 
+				font        		= 'Hack Nerd Regular 10',
+				bg      			= beautiful.transparent,
 				fg 					= beautiful.fg_normal,
 				margin 				= dpi(16),
 				position 			= 'top_left',
@@ -70,8 +70,8 @@ ruled.notification.connect_signal(
 		-- Low notifs
 		ruled.notification.append_rule {
 			rule       = { urgency = 'low' },
-			properties = { 
-				font        		= 'Inter Regular 10',
+			properties = {
+				font        		= 'Hack Nerd Regular 10',
 				bg     				= beautiful.transparent,
 				fg 					= beautiful.fg_normal,
 				margin 				= dpi(16),
@@ -129,7 +129,7 @@ naughty.connect_signal(
 						{
 							{
 								id     = 'text_role',
-								font   = 'Inter Regular 10',
+								font   = 'Hack Nerd Regular 10',
 								widget = wibox.widget.textbox
 							},
 							widget = wibox.container.place
@@ -166,7 +166,7 @@ naughty.connect_signal(
 												{
 													{
 														markup = n.app_name or 'System Notification',
-														font = 'Inter Bold 10',
+														font = 'Hack Nerd Bold 10',
 														align = 'center',
 														valign = 'center',
 														widget = wibox.widget.textbox
@@ -242,7 +242,7 @@ naughty.connect_signal(
 				},
 				bg = beautiful.background,
 				shape = gears.shape.rounded_rect,
-				widget = wibox.container.background	
+				widget = wibox.container.background
 			}
 		}
 

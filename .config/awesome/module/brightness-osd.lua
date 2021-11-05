@@ -9,7 +9,7 @@ local spawn = require('awful.spawn')
 
 local osd_header = wibox.widget {
 	text = 'Brightness',
-	font = 'Inter Bold 12',
+	font = 'Hack Nerd Bold 12',
 	align = 'left',
 	valign = 'center',
 	widget = wibox.widget.textbox
@@ -17,7 +17,7 @@ local osd_header = wibox.widget {
 
 local osd_value = wibox.widget {
 	text = '0%',
-	font = 'Inter Bold 12',
+	font = 'Hack Nerd Bold 12',
 	align = 'center',
 	valign = 'center',
 	widget = wibox.widget.textbox
@@ -60,7 +60,7 @@ bri_osd_slider:connect_signal(
 
 		if awful.screen.focused().show_bri_osd then
 			awesome.emit_signal(
-				'module::brightness_osd:show', 
+				'module::brightness_osd:show',
 				true
 			)
 		end
@@ -169,7 +169,7 @@ screen.connect_signal(
 
 		-- Reset timer on mouse hover
 		s.brightness_osd_overlay:connect_signal(
-			'mouse::enter', 
+			'mouse::enter',
 			function()
 				s.show_bri_osd = true
 				awesome.emit_signal('module::brightness_osd:rerun')
@@ -202,19 +202,21 @@ awesome.connect_signal(
 local placement_placer = function()
 	local focused = awful.screen.focused()
 	local brightness_osd = focused.brightness_osd_overlay
-	awful.placement.next_to(
+	awful.placement.bottom(
 		brightness_osd,
 		{
-			preferred_positions = 'top',
-			preferred_anchors = 'middle',
-			geometry = focused.bottom_panel or s,
-			offset = { x = 0, y = dpi(-20)}
-		   }
-	   )
+            margins = {
+				left = 0,
+				right = 0,
+				top = 0,
+				bottom = osd_margin
+			}
+        }
+	)
 end
 
 awesome.connect_signal(
-	'module::brightness_osd:show', 
+	'module::brightness_osd:show',
 	function(bool)
 		placement_placer()
 		awful.screen.focused().brightness_osd_overlay.visible = bool

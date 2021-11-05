@@ -6,6 +6,8 @@ local icons = require('theme.icons')
 local dpi = beautiful.xresources.apply_dpi
 local clickable_container = require('widget.clickable-container')
 local task_list = require('widget.task-list')
+local tag_list = require('widget.tag-list')
+local vseparator = require('widget.vseparator')
 
 local top_panel = function(s)
 
@@ -30,14 +32,14 @@ local top_panel = function(s)
 
 	panel:connect_signal(
 		'mouse::enter',
-		function() 
+		function()
 			local w = mouse.current_wibox
 			if w then
 				w.cursor = 'left_ptr'
 			end
 		end
 	)
-	
+
 	s.systray = wibox.widget {
 		visible = false,
 		base_size = dpi(20),
@@ -48,12 +50,12 @@ local top_panel = function(s)
 
 	local clock 			= require('widget.clock')(s)
 	local layout_box 		= require('widget.layoutbox')(s)
-	local add_button 		= require('widget.open-default-app')(s)
 	s.tray_toggler  		= require('widget.tray-toggle')
 	s.updater 				= require('widget.package-updater')()
 	s.screen_rec 			= require('widget.screen-recorder')()
 	s.bluetooth   			= require('widget.bluetooth')()
 	s.battery     			= require('widget.battery')()
+	--s.vpn     			    = require('widget.vpn')()
 	s.network       		= require('widget.network')()
 	s.control_center_toggle = require('widget.control-center-toggle')()
 	s.global_search			= require('widget.global-search')()
@@ -64,9 +66,11 @@ local top_panel = function(s)
 		expand = 'none',
 		{
 			layout = wibox.layout.fixed.horizontal,
+            vseparator,
+            tag_list.create(s),
+            vseparator,
 			task_list(s),
-			add_button
-		}, 
+		},
 		clock,
 		{
 			layout = wibox.layout.fixed.horizontal,
@@ -82,6 +86,7 @@ local top_panel = function(s)
 			s.network,
 			s.bluetooth,
 			s.battery,
+            s.vpn,
 			s.control_center_toggle,
 			s.global_search,
 			layout_box,

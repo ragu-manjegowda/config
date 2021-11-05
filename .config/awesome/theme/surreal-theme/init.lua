@@ -4,8 +4,8 @@ local theme_dir = filesystem.get_configuration_dir() .. '/theme'
 local theme = {}
 
 theme.icons = theme_dir .. '/icons/'
-theme.font = 'Inter Regular 10'
-theme.font_bold = 'Inter Bold 10'
+theme.font = 'Hack Nerd Regular 10'
+theme.font_bold = 'Hack Nerd Bold 10'
 
 -- Colorscheme
 theme.system_black_dark = '#3D4C5F'
@@ -20,7 +20,7 @@ theme.system_green_light = '#A1EFD3'
 theme.system_yellow_dark = '#F1FF52'
 theme.system_yellow_light = '#F1FA8C'
 
-theme.system_blue_dark = '#6498EF' 
+theme.system_blue_dark = '#6498EF'
 theme.system_blue_light = '#92B6F4'
 
 theme.system_magenta_dark = '#985EFF'

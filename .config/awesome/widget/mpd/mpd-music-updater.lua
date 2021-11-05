@@ -9,7 +9,7 @@ local vol_slider = ui_content.volume_slider
 local media_buttons = ui_content.media_buttons
 
 local update_cover = function()
-	
+
 	local extract_script = [=[
 		MUSIC_DIR="$(xdg-user-dir MUSIC)"
 		TMP_DIR="/tmp/awesomewm/${USER}/"
@@ -26,7 +26,7 @@ local update_cover = function()
 
 			SONG="$MUSIC_DIR/$(mpc -p 6600 --format "%file%" current)"
 			PICTURE_TAG="-Picture"
-			
+
 			if [[ "$SONG" == *".m4a" ]]; then
 				PICTURE_TAG="-CoverArt"
 			fi
@@ -49,7 +49,7 @@ local update_cover = function()
 
 			rm "$TMP_SONG"
 		fi
-			
+
 		img_data=$(identify $TMP_COVER_PATH 2>&1)
 
 		# Delete the cover.jpg if it's not a valid image
@@ -57,13 +57,13 @@ local update_cover = function()
 			rm $TMP_COVER_PATH
 		fi
 
-		if [ -f $TMP_COVER_PATH ]; then 
-			echo $TMP_COVER_PATH; 
+		if [ -f $TMP_COVER_PATH ]; then
+			echo $TMP_COVER_PATH;
 		fi
 	]=]
 
 	awful.spawn.easy_async_with_shell(
-		extract_script, 
+		extract_script,
 		function(stdout)
 			local album_icon = widget_icon_dir .. 'vinyl' .. '.svg'
 			if not (stdout == nil or stdout == '') then
@@ -81,7 +81,7 @@ local update_file = function()
 	awful.spawn.easy_async_with_shell(
 		[[
 		mpc -f %file% current
-		]], 
+		]],
 		function(stdout)
 			file_name = stdout:gsub('%\n','')
 		end
@@ -106,7 +106,7 @@ local update_title = function()
 				awful.spawn.easy_async_with_shell(
 					[[
 					mpc -f %file% current
-					]], 
+					]],
 					function(stdout)
 						if not (stdout == nil or stdout == '') then
 							file_name = stdout:gsub('%\n','')
@@ -135,7 +135,7 @@ local update_artist = function()
 		mpc -f %artist% current
 		]],
 		function(stdout)
-		
+
 			-- Remove new lines
 			local artist = stdout:gsub('%\n', '')
 			local artist_widget = song_info.music_artist
@@ -146,14 +146,12 @@ local update_artist = function()
 				awful.spawn.easy_async_with_shell(
 					[[
 					mpc -f %file% current
-					]], 
+					]],
 					function(stdout)
 						if not (stdout == nil or stdout == '') then
 
 							artist_text:set_text('unknown artist')
 
-						else
-							artist_text:set_text('or play some porn?')
 						end
 						artist_widget:emit_signal('widget::redraw_needed')
 						artist_widget:emit_signal('widget::layout_changed')
@@ -203,18 +201,18 @@ mpc idleloop player
 ]]
 
 local kill_mpd_change_event_listener = [[sh -c "
-ps x | 
-grep 'mpc idleloop player' | 
-grep -v grep | 
-awk '{print $1}' | 
+ps x |
+grep 'mpc idleloop player' |
+grep -v grep |
+awk '{print $1}' |
 xargs kill
 "]]
 
 awful.spawn.easy_async_with_shell(
-	mpd_startup, 
+	mpd_startup,
 	function ()
 		awful.spawn.easy_async_with_shell(
-			kill_mpd_change_event_listener, 
+			kill_mpd_change_event_listener,
 			function ()
 				update_all_content()
 				awful.spawn.with_line_callback(

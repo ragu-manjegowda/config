@@ -27,12 +27,12 @@ notifbox_box = function(notif, icon, title, message, app, bgcolor)
 
 	local time_of_pop = return_date_time('%H:%M:%S')
 	local exact_time = return_date_time('%I:%M %p')
-	local exact_date_time = return_date_time('%b %d, %I:%M %p')  
+	local exact_date_time = return_date_time('%b %d, %I:%M %p')
 
 	local notifbox_timepop =  wibox.widget {
 		id = 'time_pop',
 		markup = nil,
-		font = 'Inter Regular 10',
+		font = 'Hack Nerd Regular 10',
 		align = 'left',
 		valign = 'center',
 		visible = true,
@@ -152,7 +152,7 @@ notifbox_box = function(notif, icon, title, message, app, bgcolor)
 	-- Add hover, and mouse leave events
 	notifbox_template:connect_signal(
 		'mouse::enter',
-		function() 
+		function()
 			notifbox.bg = beautiful.groups_bg
 			notifbox_timepop.visible = false
 			notifbox_dismiss.visible = true
@@ -161,7 +161,7 @@ notifbox_box = function(notif, icon, title, message, app, bgcolor)
 
 	notifbox_template:connect_signal(
 		'mouse::leave',
-		function() 
+		function()
 			notifbox.bg = beautiful.tranparent
 			notifbox_timepop.visible = true
 			notifbox_dismiss.visible = false
@@ -169,7 +169,7 @@ notifbox_box = function(notif, icon, title, message, app, bgcolor)
 	)
 
 	collectgarbage('collect')
-	
+
 	return notifbox
 end
 

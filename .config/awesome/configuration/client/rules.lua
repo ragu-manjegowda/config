@@ -125,167 +125,195 @@ ruled.client.connect_signal(
 			}
 		}
 
-		-- Terminal emulators
 		ruled.client.append_rule {
-			id = 'terminals',
+			id = 'cisco',
 			rule_any = {
 				class = {
-					'URxvt',
-					'XTerm',
-					'UXTerm',
-					'kitty',
-					'K3rmit'
+                    'Cisco AnyConnect Secure Mobility Client'
 				}
 			},
 			properties = {
-				tag = '1',
-				switch_to_tags = true,
-				size_hints_honor = false,
-				titlebars_enabled = true
+                skip_taskbar = true
 			}
 		}
+
+		ruled.client.append_rule {
+			id        = 'file_browser',
+			rule_any  = {
+				instance    = {
+					'ranger'
+				},
+			},
+			properties = {
+				titlebars_enabled = true,
+				skip_decoration = true,
+				floating = true,
+				ontop = true,
+				placement = awful.placement.centered
+			}
+		}
+
+		-- Terminal emulators
+		-- ruled.client.append_rule {
+		-- 	id = 'terminals',
+		-- 	rule_any = {
+		-- 		class = {
+		-- 			'URxvt',
+		-- 			'XTerm',
+		-- 			'UXTerm',
+		-- 			'kitty',
+		-- 			'K3rmit'
+		-- 		}
+		-- 	},
+		-- 	properties = {
+		-- 		tag = '1',
+		-- 		switch_to_tags = true,
+		-- 		size_hints_honor = false,
+		-- 		titlebars_enabled = true
+		-- 	}
+		-- }
 
 		-- Browsers and chats
-		ruled.client.append_rule {
-			id = 'internet',
-			rule_any = {
-				class = {
-					'firefox',
-					'Tor Browser',
-					'discord',
-					'Chromium',
-					'Google-chrome',
-					'TelegramDesktop'
-				}
-			},
-			properties = {
-				tag = '2'
-			}
-		}
+		-- ruled.client.append_rule {
+		-- 	id = 'internet',
+		-- 	rule_any = {
+		-- 		class = {
+		-- 			'firefox',
+		-- 			'Tor Browser',
+		-- 			'discord',
+		-- 			'Chromium',
+		-- 			'Google-chrome',
+		-- 			'TelegramDesktop'
+		-- 		}
+		-- 	},
+		-- 	properties = {
+		-- 		tag = '2'
+		-- 	}
+		-- }
 
 		-- Text editors and word processing
-		ruled.client.append_rule {
-			id = 'text',
-			rule_any = {
-				class = {
-					'Geany',
-					'Atom',
-					'Subl3',
-					'code-oss'
-				},
-				name  = {
-					'LibreOffice',
-					'libreoffice'
-				}
-			},
-			properties = {
-				tag = '3'
-			}
-		}
+		-- ruled.client.append_rule {
+		-- 	id = 'text',
+		-- 	rule_any = {
+		-- 		class = {
+		-- 			'Geany',
+		-- 			'Atom',
+		-- 			'Subl3',
+		-- 			'code-oss'
+		-- 		},
+		-- 		name  = {
+		-- 			'LibreOffice',
+		-- 			'libreoffice'
+		-- 		}
+		-- 	},
+		-- 	properties = {
+		-- 		tag = '3'
+		-- 	}
+		-- }
 
 		-- File managers
-		ruled.client.append_rule {
-			id = 'files',
-			rule_any = {
-				class = {
-					'dolphin',
-					'ark',
-					'Nemo',
-					'File-roller'
-				}
-			},
-			properties = {
-				tag = '4',
-				switch_to_tags = true
-			}
-		}
+		-- ruled.client.append_rule {
+		-- 	id = 'files',
+		-- 	rule_any = {
+		-- 		class = {
+		-- 			'dolphin',
+		-- 			'ark',
+		-- 			'Nemo',
+		-- 			'File-roller'
+		-- 		}
+		-- 	},
+		-- 	properties = {
+		-- 		tag = '4',
+		-- 		switch_to_tags = true
+		-- 	}
+		-- }
 
 		-- Multimedia
-		ruled.client.append_rule {
-			id = 'multimedia',
-			rule_any = {
-				class = {
-					'vlc',
-					'Spotify'
-				}
-			},
-			properties = {
-				tag = '5',
-				switch_to_tags = true,
-				placement = awful.placement.centered
-			}
-		}
+		-- ruled.client.append_rule {
+		-- 	id = 'multimedia',
+		-- 	rule_any = {
+		-- 		class = {
+		-- 			'vlc',
+		-- 			'Spotify'
+		-- 		}
+		-- 	},
+		-- 	properties = {
+		-- 		tag = '5',
+		-- 		switch_to_tags = true,
+		-- 		placement = awful.placement.centered
+		-- 	}
+		-- }
 
 		-- Gaming
-		ruled.client.append_rule {
-			id = 'gaming',
-			rule_any = {
-				class = {
-					'Wine',
-					'dolphin-emu',
-					'Steam',
-					'Citra',
-					'supertuxkart'
-				},
-				name = {'Steam'}
-			},
-			properties = {
-				tag = '6',
-				skip_decoration = true,
-				switch_to_tags = true,
-				placement = awful.placement.centered
-			}
-		}
+		-- ruled.client.append_rule {
+		-- 	id = 'gaming',
+		-- 	rule_any = {
+		-- 		class = {
+		-- 			'Wine',
+		-- 			'dolphin-emu',
+		-- 			'Steam',
+		-- 			'Citra',
+		-- 			'supertuxkart'
+		-- 		},
+		-- 		name = {'Steam'}
+		-- 	},
+		-- 	properties = {
+		-- 		tag = '6',
+		-- 		skip_decoration = true,
+		-- 		switch_to_tags = true,
+		-- 		placement = awful.placement.centered
+		-- 	}
+		-- }
 
 		-- Multimedia Editing
-		ruled.client.append_rule {
-			id = 'graphics',
-			rule_any = {
-				class = {
-					'Gimp-2.10',
-					'Inkscape',
-					'Flowblade'
-				}
-			},
-			properties = {
-				tag = '7'
-			}
-		}
+		-- ruled.client.append_rule {
+		-- 	id = 'graphics',
+		-- 	rule_any = {
+		-- 		class = {
+		-- 			'Gimp-2.10',
+		-- 			'Inkscape',
+		-- 			'Flowblade'
+		-- 		}
+		-- 	},
+		-- 	properties = {
+		-- 		tag = '7'
+		-- 	}
+		-- }
 
 		-- Sandboxes and VMs
-		ruled.client.append_rule {
-			id = 'sandbox',
-			rule_any = {
-				class = {
-					'VirtualBox Manage',
-					'VirtualBox Machine',
-					'Gnome-boxes',
-					'Virt-manager'
-				}
-			},
-			properties = {
-				tag = '8'
-			}
-		}
+		-- ruled.client.append_rule {
+		-- 	id = 'sandbox',
+		-- 	rule_any = {
+		-- 		class = {
+		-- 			'VirtualBox Manage',
+		-- 			'VirtualBox Machine',
+		-- 			'Gnome-boxes',
+		-- 			'Virt-manager'
+		-- 		}
+		-- 	},
+		-- 	properties = {
+		-- 		tag = '8'
+		-- 	}
+		-- }
 
 		-- IDEs and Tools
-		ruled.client.append_rule {
-			id = 'development',
-			rule_any = {
-				class = {
-					'Oomox',
-					'Unity',
-					'UnityHub',
-					'jetbrains-studio',
-					'Ettercap',
-					'scrcpy'
-				}
-			},
-			properties = {
-				tag = '9',
-				skip_decoration = true
-			}
-		}
+		-- ruled.client.append_rule {
+		-- 	id = 'development',
+		-- 	rule_any = {
+		-- 		class = {
+		-- 			'Oomox',
+		-- 			'Unity',
+		-- 			'UnityHub',
+		-- 			'jetbrains-studio',
+		-- 			'Ettercap',
+		-- 			'scrcpy'
+		-- 		}
+		-- 	},
+		-- 	properties = {
+		-- 		tag = '9',
+		-- 		skip_decoration = true
+		-- 	}
+		-- }
 
 		-- Image viewers
 		ruled.client.append_rule {
@@ -341,8 +369,8 @@ ruled.client.connect_signal(
 	end
 )
 
--- Normally we'd do this with a rule, but some program like spotify doesn't set its class or name
--- until after it starts up, so we need to catch that signal.
+-- Normally we'd do this with a rule, but some program like spotify doesn't
+-- set its class or name until it starts up, we need to catch that signal.
 client.connect_signal(
 	'property::class',
 	function(c)

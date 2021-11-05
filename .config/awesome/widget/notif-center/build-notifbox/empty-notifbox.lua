@@ -14,7 +14,7 @@ local empty_notifbox = wibox.widget {
 		{
 			expand = 'none',
 			layout = wibox.layout.align.horizontal,
-			nil, 
+			nil,
 			{
 				image = widget_icon_dir .. 'empty-notification' .. '.svg',
 				resize = true,
@@ -26,14 +26,14 @@ local empty_notifbox = wibox.widget {
 		},
 		{
 			text = 'Wow, such empty.',
-			font = 'Inter Bold 14',
+			font = 'Hack Nerd Bold 14',
 			align = 'center',
 			valign = 'center',
 			widget = wibox.widget.textbox
 		},
 		{
 			text = 'Come back later.',
-			font = 'Inter Regular 10',
+			font = 'Hack Nerd Regular 10',
 			align = 'center',
 			valign = 'center',
 			widget = wibox.widget.textbox

@@ -1,76 +1,47 @@
 local awful = require('awful')
 local gears = require('gears')
 local beautiful = require('beautiful')
-local icons = require('theme.icons')
 local apps = require('configuration.apps')
+
+local dir = os.getenv("HOME") .. "/.config/awesome/theme/icons/tags/"
 
 local tags = {
 	{
-		type = 'terminal',
-		icon = icons.terminal,
-		default_app = apps.default.terminal,
+        icon = dir .. "1.png",
 		gap = beautiful.useless_gap
 	},
 	{
-		type = 'internet',
-		icon = icons.web_browser,
-		default_app = apps.default.web_browser,
+        icon = dir .. "2.png",
 		gap = beautiful.useless_gap
 	},
 	{
-		type = 'code',
-		icon = icons.text_editor,
-		default_app = apps.default.text_editor,
+        icon = dir .. "3.png",
 		gap = beautiful.useless_gap
 	},
 	{
-		type = 'files',
-		icon = icons.file_manager,
-		default_app = apps.default.file_manager,
+        icon = dir .. "4.png",
 		gap = beautiful.useless_gap,
-		layout = awful.layout.suit.tile
 	},
 	{
-		type = 'multimedia',
-		icon = icons.multimedia,
-		default_app = apps.default.multimedia,
+        icon = dir .. "5.png",
 		gap = beautiful.useless_gap,
-		layout = awful.layout.suit.floating,
-		gap = 0
 	},
 	{
-		type = 'games',
-		icon = icons.games,
-		default_app = apps.default.game,
+        icon = dir .. "6.png",
 		gap = beautiful.useless_gap,
-		layout = awful.layout.suit.floating
 	},
 	{
-		type = 'graphics',
-		icon = icons.graphics,
-		default_app = apps.default.graphics,
+        icon = dir .. "7.png",
 		gap = beautiful.useless_gap
 	},
 	{
-		type = 'sandbox',
-		icon = icons.sandbox,
-		default_app = apps.default.sandbox,
-		layout = awful.layout.suit.max,
-		gap = 0
+        icon = dir .. "8.png",
+		gap = beautiful.useless_gap,
 	},
 	{
-		type = 'any',
-		icon = icons.development,
-		default_app = apps.default.development,
+        icon = dir .. "9.png",
 		gap = beautiful.useless_gap,
-		layout = awful.layout.suit.floating
 	}
-	-- {
-	--   type = 'social',
-	--   icon = icons.social,
-	--   default_app = 'discord',
-	--   gap = beautiful.useless_gap
-	-- }
 }
 
 -- Set tags layout
@@ -95,12 +66,11 @@ screen.connect_signal(
 				i,
 				{
 					icon = tag.icon,
-					icon_only = true,
-					layout = tag.layout or awful.layout.suit.spiral.dwindle,
+                    icon_only = true,
+					layout = awful.layout.suit.tile,
 					gap_single_client = true,
 					gap = tag.gap,
 					screen = s,
-					default_app = tag.default_app,
 					selected = i == 1
 				}
 			)
