@@ -50,24 +50,28 @@ $ brew install gcc
 $ # zsh comes out of the box
 ```
 
-```sh	
+```sh
 $ brew install alacritty
 ```
-	
+
 ### Ubuntu
 
 ```sh
 $ sudo apt-get update && sudo apt-get install zsh
-```	
+```
 
 ```sh
 $ sudo add-apt-repository ppa:mmstick76/alacritty
 ```
-	
+
 ```sh
 $ sudo apt-get update && sudo apt-get install alacritty
 ```
-	
+
+```sh
+$ sudo apt-get update && sudo apt-get install awesome
+```
+
 ## Change default shell
 
 ```sh
