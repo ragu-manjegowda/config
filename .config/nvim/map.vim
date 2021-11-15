@@ -43,7 +43,7 @@ noremap <leader>zsh :tabnew term://zsh<CR>
 noremap <leader>bash :tabnew term://bash<CR>
 
 " Terminal exit insert mode
-tnoremap <ESC> <C-\><C-n>
+tnoremap <ESC><ESC> <C-\><C-n>
 
 " Exit insert mode
 inoremap jj <ESC>
