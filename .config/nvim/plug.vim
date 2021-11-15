@@ -29,4 +29,6 @@ Plug 'hrsh7th/nvim-cmp'
 Plug 'nanozuki/tabby.nvim'
 Plug 'xolox/vim-misc'
 Plug 'xolox/vim-session'
+Plug 'hrsh7th/cmp-cmdline'
+Plug 'hrsh7th/cmp-nvim-lsp-document-symbol'
 call plug#end()

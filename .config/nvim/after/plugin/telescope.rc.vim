@@ -12,7 +12,6 @@ local actions = require("telescope.actions")
 require("telescope").setup({
     defaults = {
 
-
         mappings = {
             i = {
                 ["<C-x>"] = false,
@@ -49,6 +48,23 @@ require("telescope").setup({
 
 require("telescope").load_extension("fzf")
 
+function _G.explorer()
+    if current_buffer and is_directory(current_buffer) then
+        require("telescope.builtin").file_browser({
+        cwd = "%:p:h",
+        hidden = true,
+        file_ignore_patterns = { ".git" },
+        })
+    else
+        require("telescope.builtin").file_browser({
+        hidden = true,
+        file_ignore_patterns = { ".git" },
+        })
+    end
+end
+
+vim.cmd "autocmd User TelescopePreviewerLoaded setlocal number"
+
 EOF
 
 " Telescope fuzzy finder shortcuts
@@ -56,5 +72,6 @@ nnoremap <leader>ps :lua require('telescope.builtin').grep_string({ search = vim
 nnoremap <leader>pw :lua require('telescope.builtin').grep_string { search = vim.fn.expand("<cword>") }<CR>
 nnoremap <leader>pW :lua require('telescope.builtin').grep_string({ search = "'" .. vim.fn.expand('<cword>') })<CR>
 nnoremap <leader>pf :lua require('telescope.builtin').find_files()<CR>
-nnoremap <leader>pq :lua require('telescope.builtin').quickfix()<cr>
+nnoremap <leader>pq :lua require('telescope.builtin').quickfix()<CR>
+nnoremap <leader>pb :lua explorer()<CR>
 

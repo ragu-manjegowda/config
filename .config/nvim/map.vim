@@ -45,6 +45,12 @@ noremap <leader>bash :tabnew term://bash<CR>
 " Terminal exit insert mode
 tnoremap <ESC> <C-\><C-n>
 
+" Exit insert mode
+inoremap jj <ESC>
+
+" Write
+nnoremap <leader>w :w<CR>
+
 " Quit
 nnoremap <leader>q :q<CR>
 
