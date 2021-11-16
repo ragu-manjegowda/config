@@ -182,3 +182,67 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
             ;;
     esac
 fi
+
+# function to encrypt and decrypt files
+function gpg-encrypt-decrypt () {
+    if ! type gpg > /dev/null; then
+        echo "command `gpg` doesn't exist"
+        return
+    fi
+
+    echo "Welcome to gpg file encryption/decryption"
+    echo "0: Encrypt"
+    echo "1: Decrypt"
+    echo -n "Enter your choice: "
+    read cipherChoice
+
+    case $cipherChoice in
+        0)
+            echo "Requested encryption"
+            cipher=encrypt
+            ;;
+        1)
+            echo "Requested decryption"
+            cipher=decrypt
+            ;;
+        *)
+            echo "No kidding please!!"
+            return
+            ;;
+    esac
+
+    case $cipher in
+        encrypt)
+            echo -n "Enter GPG recipient name: "
+            read recipientName
+
+            vared -p "Enter name of the file to be encrypted: " -c fileName
+
+            if ! test -f "$fileName"; then
+                echo "File does not exist"
+                return
+            fi
+
+            encryptedFileName="${fileName}_encrypted"
+            echo "Enter encrypted file name (default $encryptedFileName): "
+            vared encryptedFileName
+
+            gpg --yes -v -r ${recipientName} --encrypt --sign --armor --output ${encryptedFileName} ${fileName}
+            ;;
+
+        decrypt)
+            vared -p "Enter name of the file to be decrypted: " -c fileName
+
+            if ! test -f "$fileName"; then
+                echo "File does not exist"
+                return
+            fi
+
+            decryptedFileName="${fileName}_decrypted"
+            echo "Enter decrypted file name (default $decryptedFileName): "
+            vared decryptedFileName
+
+            gpg --output ${decryptedFileName} --decrypt ${fileName}
+            ;;
+    esac
+}
