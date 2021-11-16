@@ -34,8 +34,13 @@ export LDFLAGS="-L$HOMEBREW_PATH/opt/bison/lib:$LDFLAGS"
 
 # Conda
 # !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('$HOMEBREW_PATH/Caskroom/miniconda/base/bin/conda' 'shell.bash' 'hook' \
-               2> /dev/null)"
+if [ -n "$BASH_VERSION" ]; then
+    __conda_setup="$('$HOMEBREW_PATH/Caskroom/miniconda/base/bin/conda' \
+                     'shell.bash' 'hook' 2> /dev/null)"
+elif [ -n "$ZSH_VERSION" ]; then
+    __conda_setup="$('$HOMEBREW_PATH/Caskroom/miniconda/base/bin/conda' \
+                     'shell.zsh' 'hook' 2> /dev/null)"
+fi
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
 else
