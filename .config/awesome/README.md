@@ -76,6 +76,7 @@ Installation process is pretty much covered in the wiki of this repo, following 
 
 ### 6. Other misc apps
 *  Install `ranger` as it is used as file browser.
+* Install `w3m-img` for image preview in terminal.
 
 ### 7. Other configurations
 * Wifi connection needs to be updated in configuration/config.lua
