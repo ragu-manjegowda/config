@@ -30,7 +30,7 @@ return {
 		-- Default power manager
 		power_manager = 'xfce4-power-manager',
 		-- Default GUI package manager
-		package_manager = '',
+		package_manager = 'update-manager',
 		-- Default locker
 		lock = 'awesome-client "awesome.emit_signal(\'module::lockscreen_show\')"',
 		-- Default quake terminal

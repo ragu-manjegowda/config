@@ -11,11 +11,12 @@
 .config/bash/.bash_history
 .config/coc
 .config/cppman
-.config/dconf/
-.config/enchant/
-.config/eog/
+.config/dconf
+.config/enchant
+.config/eog
 .config/Fonts/.uuid
-.config/gedit/
+.config/gedit
+.config/GIMP
 .config/git/.git-completion.bash
 .config/git/.git-completion.zsh
 .config/gnome-initial-setup-done
@@ -73,7 +74,7 @@
 .ssh/known_hosts.old
 .subversion
 .sudo_as_admin_successful
-.Trash/
+.Trash
 .viminfo
 .vscode
 .Xauthority
