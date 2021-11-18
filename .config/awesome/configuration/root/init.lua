@@ -19,15 +19,15 @@ root.buttons(
 			3,
 			function ()
 				if mymainmenu then
-					mymainmenu:toggle()
-				end 
+					--mymainmenu:toggle()
+				end
 			end
 		),
 		awful.button(
 			{},
 			2,
 			function ()
-				awful.util.spawn(apps.default.rofi_appmenu)
+				--awful.util.spawn(apps.default.rofi_appmenu)
 			end
 		),
 		awful.button(
