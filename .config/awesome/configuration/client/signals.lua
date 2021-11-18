@@ -50,13 +50,13 @@ client.connect_signal(
 client.connect_signal(
 	'mouse::enter',
 	function(c)
-		c:emit_signal(
-			'request::activate',
-			'mouse_enter',
-			{
-				raise = true
-			}
-		)
+		-- c:emit_signal(
+		-- 	'request::activate',
+		-- 	'mouse_enter',
+		-- 	{
+		-- 		raise = true
+		-- 	}
+		-- )
 	end
 )
 

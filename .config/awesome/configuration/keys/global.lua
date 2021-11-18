@@ -95,6 +95,27 @@ local global_keys = awful.util.table.join(
 		{description = 'lock the screen', group = 'launcher'}
 	),
 
+    awful.key(
+		{modkey, 'Shift'},
+		'n',
+		function()
+			local c = awful.client.restore()
+			-- Focus restored client
+			if c then
+				c:emit_signal('request::activate')
+				c:raise()
+			end
+		end,
+		{description = 'restore minimized', group = 'client'}
+	),
+
+	awful.key(
+		{modkey},
+		'p',
+		awful.tag.history.restore,
+		{description = 'alternate between current and previous tag', group = 'tag'}
+	),
+
 	awful.key(
 		{ },
 		'Print',
