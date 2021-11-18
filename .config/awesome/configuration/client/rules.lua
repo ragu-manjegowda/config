@@ -138,17 +138,17 @@ ruled.client.connect_signal(
 		}
 
 		ruled.client.append_rule {
-			id        = 'file_browser',
+			id        = 'floating_windows',
 			rule_any  = {
 				instance    = {
-					'ranger'
+					'ranger',
+                    'update-manager'
 				},
 			},
 			properties = {
 				titlebars_enabled = true,
 				skip_decoration = true,
 				floating = true,
-				ontop = true,
 				placement = awful.placement.centered
 			}
 		}

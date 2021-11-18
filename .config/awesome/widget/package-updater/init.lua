@@ -45,13 +45,13 @@ local return_button = function()
 				1,
 				nil,
 				function()
-					
-					if update_available then
-						awful.spawn(apps.default.package_manager .. ' --updates', false)
-					
+
+                    if update_available then
+                        awful.spawn(apps.default.package_manager .. ' --proposed --class update-manager', false)
+
 					else
-						awful.spawn(apps.default.package_manager, false)
-					
+						awful.spawn(apps.default.package_manager .. ' --class update-manager', false)
+
 					end
 				end
 			)
@@ -72,26 +72,38 @@ local return_button = function()
 				else
 					return 'We are up-to-date!'
 				end
-			
+
 			end,
 			preferred_positions = {'right', 'left', 'top', 'bottom'}
 		}
 	)
 
 	watch(
-		'pamac checkupdates',
+		'/usr/lib/update-notifier/apt-check --human-readable',
 		60,
 		function(_, stdout)
-			number_of_updates_available = tonumber(stdout:match('.-\n'):match('%d*'))
+			--number_of_updates_available = tonumber(stdout:match('.-\n'):match('%d*'))
+
+            -- https://stackoverflow.com/a/66843631
+            local words = {}
+            words[1], words[2] = stdout:match("(%w+)(%W+)")
+            number_of_updates_available = words[1]
+
+            -- naughty.notification({
+		    --     app_name = 'notification',
+		    --     title = 'number_of_updates_available',
+	    	--     message = number_of_updates_available
+	        -- })
+
 			update_package = stdout
 			local icon_name = nil
-			if number_of_updates_available ~= nil then
+			if number_of_updates_available ~= '0' then
 				update_available = true
 				icon_name = 'package-up'
 			else
 				update_available = false
 				icon_name = 'package'
-				
+
 			end
 
 			widget.icon:set_image(widget_icon_dir .. icon_name .. '.svg')
