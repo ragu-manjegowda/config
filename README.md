@@ -34,6 +34,11 @@
 |:--:|
 | ***AweomeWM with multiple clients*** |
 
+### [Windows Subsystem for linux](.wsl-i3)
+
+| <img src="man/figures/wsl.png" width="900" height="350" /> |
+|:--:|
+| ***WSL in action using Xserver*** |
 
 ## Setup Instructions
 
