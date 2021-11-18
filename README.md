@@ -1,45 +1,5 @@
 # Profile Management with Git and GitHub
 
-## Screenshots
-
-### [ZSH](.config/zsh)
-
-| <img src="man/figures/zsh.png" width="900" height="100" /> |
-|:--:|
-| ***ZSH command prompt with powerlevel9k theme*** |
-
-| <img src="man/figures/zsh02.png" width="900" height="250" /> |
-|:--:|
-| ***ZSH command prompt with auto-suggestions*** |
-
-### [Tmux](.config/tmux)
-
-| <img src="man/figures/tmux.png" width="900" height="40" /> |
-|:--:|
-| ***TMUX status line showing host OS, session name and other things*** |
-
-### [Nvim](.config/nvim)
-
-| <img src="man/figures/nvim.png" width="900" height="350" /> |
-|:--:|
-| ***Neovim setup, customized for C++ developement*** |
-
-### [AwesomeWM](.config/awesome)
-
-| <img src="man/figures/awesome.png" width="900" height="350" /> |
-|:--:|
-| ***AweomeWM showing notifications and file browser*** |
-
-| <img src="man/figures/awesome02.png" width="900" height="350" /> |
-|:--:|
-| ***AweomeWM with multiple clients*** |
-
-### [Windows Subsystem for linux](.wsl-i3)
-
-| <img src="man/figures/wsl.png" width="900" height="350" /> |
-|:--:|
-| ***WSL in action using Xserver*** |
-
 ## Setup Instructions
 
 `.config/homebrew-backup` has information about steps needs to be performed before following configs kick in action.
