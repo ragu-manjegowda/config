@@ -154,6 +154,20 @@ ruled.client.connect_signal(
 		}
 
 		-- Terminal emulators
+		ruled.client.append_rule {
+			id = 'terminals',
+			rule_any = {
+				instance = {
+					'terminal_no_title'
+				},
+			},
+			properties = {
+				size_hints_honor = false,
+				titlebars_enabled = false
+			}
+		}
+
+		-- Terminal emulators
 		-- ruled.client.append_rule {
 		-- 	id = 'terminals',
 		-- 	rule_any = {

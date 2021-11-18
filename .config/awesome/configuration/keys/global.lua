@@ -163,7 +163,7 @@ local global_keys = awful.util.table.join(
 		{modkey},
 		'Return',
 		function()
-			awful.spawn(apps.default.terminal)
+			awful.spawn(apps.default.terminal .. " --class terminal_no_title")
 		end,
 		{description = 'open default terminal', group = 'launcher'}
 	),
