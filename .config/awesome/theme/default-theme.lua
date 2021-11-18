@@ -206,8 +206,8 @@ local awesome_overrides = function(theme)
 	theme.snap_border_width = dpi(15)
 
 	-- Hotkey popup
-	theme.hotkeys_font = 'Hack Nerd Bold 16'
-	theme.hotkeys_description_font   = 'Hack Nerd Regular Regular 14'
+	theme.hotkeys_font = 'Hack Nerd Bold 14'
+	theme.hotkeys_description_font   = 'Hack Nerd Regular Regular 12'
 	theme.hotkeys_bg = theme.background
 	theme.hotkeys_group_margin = dpi(20)
 end
