@@ -5,6 +5,58 @@ require('awful.autofocus')
 local modkey = require('configuration.keys.mod').mod_key
 local altkey = require('configuration.keys.mod').alt_key
 
+-- Resize client in given direction
+local floating_resize_amount = dpi(20)
+local tiling_resize_factor = 0.05
+
+local function resize_client(c, key, direction)
+    if awful.layout.get(mouse.screen) == awful.layout.suit.floating or (c and c.floating) then
+        if key == "Shift" then -- increase
+            if direction == "up" then
+                c:relative_move(0, -floating_resize_amount, 0, floating_resize_amount)
+            elseif direction == "down" then
+                c:relative_move(0, 0, 0, floating_resize_amount)
+            elseif direction == "left" then
+                c:relative_move(-floating_resize_amount, 0, floating_resize_amount, 0)
+            elseif direction == "right" then
+                c:relative_move(0, 0, floating_resize_amount, 0)
+            end
+        elseif key == "Control" then -- decrease
+            if direction == "up" then
+			    if c.height > 10 then
+                    c:relative_move(0, 0, 0, -floating_resize_amount)
+			    end
+            elseif direction == "down" then
+			    local c_height = c.height
+			    c:relative_move(0, 0, 0, -floating_resize_amount)
+			    if c.height ~= c_height and c.height > 10 then
+			    	c:relative_move(0, floating_resize_amount, 0, 0)
+			    end
+            elseif direction == "left" then
+			    if c.width > 10 then
+			    	c:relative_move(0, 0, -floating_resize_amount, 0)
+			    end
+            elseif direction == "right" then
+			    local c_width = c.width
+			    c:relative_move(0, 0, -floating_resize_amount, 0)
+			    if c.width ~= c_width and c.width > 10 then
+			    	c:relative_move(floating_resize_amount, 0 , 0, 0)
+			    end
+            end
+        end
+    else
+        if direction == "up" then
+            awful.client.incwfact(-tiling_resize_factor)
+        elseif direction == "down" then
+            awful.client.incwfact(tiling_resize_factor)
+        elseif direction == "left" then
+            awful.tag.incmwfact(-tiling_resize_factor)
+        elseif direction == "right" then
+            awful.tag.incmwfact(tiling_resize_factor)
+        end
+    end
+end
+
 local client_keys = awful.util.table.join(
 	awful.key(
 		{modkey, 'Control'},
@@ -152,7 +204,6 @@ local client_keys = awful.util.table.join(
 		awful.client.urgent.jumpto,
 		{description = 'jump to urgent client', group = 'client'}
 	),
-
 	awful.key(
 		{modkey},
 		'Up',
@@ -189,77 +240,65 @@ local client_keys = awful.util.table.join(
 		{modkey, 'Shift'},
 		'Up',
 		function(c)
-			c:relative_move(0, dpi(-10), 0, dpi(10))
+            resize_client(client.focus, "Shift", "up")
 		end,
-		{description = 'increase floating client size vertically by 10 px up', group = 'client'}
+		{description = 'increase client size vertically by 20 px up', group = 'client'}
 	),
 	awful.key(
 		{modkey, 'Shift'},
 		'Down',
 		function(c)
-			c:relative_move(0, 0, 0, dpi(10))
+            resize_client(client.focus, "Shift", "down")
 		end,
-		{description = 'increase floating client size vertically by 10 px down', group = 'client'}
+		{description = 'increase client size vertically by 20 px down', group = 'client'}
 	),
 	awful.key(
 		{modkey, 'Shift'},
 		'Left',
 		function(c)
-			c:relative_move(dpi(-10), 0, dpi(10), 0)
+            resize_client(client.focus, "Shift", "left")
 		end,
-		{description = 'increase floating client size horizontally by 10 px left', group = 'client'}
+		{description = 'increase client size horizontally by 20 px left', group = 'client'}
 	),
 	awful.key(
 		{modkey, 'Shift'},
 		'Right',
 		function(c)
-			c:relative_move(0, 0, dpi(10), 0)
+            resize_client(client.focus, "Shift", "right")
 		end,
-		{description = 'increase floating client size horizontally by 10 px right', group = 'client'}
+		{description = 'increase client size horizontally by 20 px right', group = 'client'}
 	),
 	awful.key(
 		{modkey, 'Control'},
 		'Up',
 		function(c)
-			if c.height > 10 then
-				c:relative_move(0, 0, 0, dpi(-10))
-			end
+            resize_client(client.focus, "Control", "up")
 		end,
-		{description = 'decrease floating client size vertically by 10 px up', group = 'client'}
+		{description = 'decrease client size vertically by 20 px up', group = 'client'}
 	),
 	awful.key(
 		{modkey, 'Control'},
 		'Down',
 		function(c)
-			local c_height = c.height
-			c:relative_move(0, 0, 0, dpi(-10))
-			if c.height ~= c_height and c.height > 10 then
-				c:relative_move(0, dpi(10), 0, 0)
-			end
+            resize_client(client.focus, "Control", "down")
 		end,
-		{description = 'decrease floating client size vertically by 10 px down', group = 'client'}
+		{description = 'decrease client size vertically by 20 px down', group = 'client'}
 	),
 	awful.key(
 		{modkey, 'Control'},
 		'Left',
 		function(c)
-			if c.width > 10 then
-				c:relative_move(0, 0, dpi(-10), 0)
-			end
+            resize_client(client.focus, "Control", "left")
 		end,
-		{description = 'decrease floating client size horizontally by 10 px left', group = 'client'}
+		{description = 'decrease client size horizontally by 20 px left', group = 'client'}
 	),
 	awful.key(
 		{modkey, 'Control'},
 		'Right',
 		function(c)
-			local c_width = c.width
-			c:relative_move(0, 0, dpi(-10), 0)
-			if c.width ~= c_width and c.width > 10 then
-				c:relative_move(dpi(10), 0 , 0, 0)
-			end
+            resize_client(client.focus, "Control", "right")
 		end,
-		{description = 'decrease floating client size horizontally by 10 px right', group = 'client'}
+		{description = 'decrease client size horizontally by 20 px right', group = 'client'}
 	)
 )
 
