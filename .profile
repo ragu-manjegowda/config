@@ -69,4 +69,5 @@ fi
 
 ## Config alias
 alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
+alias cvim='GIT_DIR=$HOME/.config.git/ GIT_WORK_TREE=$HOME vim'
 
