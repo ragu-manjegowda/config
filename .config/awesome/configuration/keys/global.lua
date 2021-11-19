@@ -66,6 +66,15 @@ local global_keys = awful.util.table.join(
 
 	awful.key(
 		{modkey},
+		'e',
+		function()
+			awful.spawn("rofi -show run")
+		end,
+		{description = 'Rofi run menu', group = 'launcher'}
+	),
+
+	awful.key(
+		{modkey},
 		'g',
 		function()
 			awful.spawn(apps.default.web_browser)
