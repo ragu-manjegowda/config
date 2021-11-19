@@ -8,6 +8,7 @@
 .conda
 .config.git
 .config/alacritty/colors.yml-e
+.config/autostart
 .config/bash/.bash_history
 .config/coc
 .config/cppman
@@ -28,11 +29,11 @@
 .config/gnupg/sshcontrol
 .config/gnupg/trustdb.gpg
 .config/gtk-2.0
-.config/gtk-3.0
-.config/htop
 .config/ibus
+.config/Microsoft
 .config/mimeapps.list
 .config/nautilus
+.config/neofetch/config.conf
 .config/nvim/autoload
 .config/nvim/misc
 .config/nvim/plugged
@@ -64,6 +65,7 @@
 .npm
 .nx
 .photorec.cfg
+.pki
 .python_history
 .ssh/authorized_keys
 .ssh/id_ed25519
