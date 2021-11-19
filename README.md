@@ -59,6 +59,12 @@ $ echo -e '[branch "master"]\n  remote = origin\n  merge = refs/heads/master' >>
 10. ***Note: Sub-modules needs to be updated***
     `$ git submodule update --init --recursive`
 
+### Git tracking using vim plugins
+1.  Set `core.worktree` like the following
+    `$ git --git-dir=$HOME/.config.git --work-tree=$HOME config --local core.worktree $HOME`
+2.  open files of this repository with the alias `cvim`
+
+
 ### Basic Usage
 *   `config pull` - get latest configuration changes
 *   `config add FILENAME` - add a configuration file
