@@ -220,6 +220,13 @@ local global_keys = awful.util.table.join(
 		{description = 'toggle blur effects', group = 'Utility'}
 	),
 
+	awful.key(
+		{modkey},
+		'u',
+		awful.client.urgent.jumpto,
+		{description = 'jump to urgent client', group = 'client'}
+	),
+
     awful.key(
 		{modkey},
 		'w',

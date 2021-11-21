@@ -28,6 +28,7 @@
 .config/gnupg/random_seed
 .config/gnupg/sshcontrol
 .config/gnupg/trustdb.gpg
+.config/google-chrome
 .config/gtk-2.0
 .config/ibus
 .config/Microsoft
@@ -41,6 +42,7 @@
 .config/pulse
 .config/rclone/rclone.conf
 .config/rustup
+.config/Slack
 .config/tmux/.tmux_history
 .config/tmux/session-restore
 .config/user-dirs.dirs
