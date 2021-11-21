@@ -200,12 +200,6 @@ local client_keys = awful.util.table.join(
 	),
 	awful.key(
 		{modkey},
-		'u',
-		awful.client.urgent.jumpto,
-		{description = 'jump to urgent client', group = 'client'}
-	),
-	awful.key(
-		{modkey},
 		'Up',
 		function(c)
 			c:relative_move(0, dpi(-10), 0, 0)
