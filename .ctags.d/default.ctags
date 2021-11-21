@@ -5,6 +5,7 @@
 --exclude=*/bazel-out/*
 --exclude=*/bazel-bin/*
 --exclude=*/bazel-sdk/*
+--exclude=*/bazel-sdkbare/*
 --exclude=*/bazel-sdk_vanilla/*
 --exclude=bazel-sdk_vanilla/*
 --exclude=*/dazel-install-sdk/*
