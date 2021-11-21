@@ -9,7 +9,7 @@ let g:gutentags_plus_switch = 1
 let g:gutentags_generate_on_write = 1
 let g:gutentags_generate_on_empty_buffer = 0
 let g:gutentags_ctags_auto_set_tags = 0
-let g:gutentags_project_root = [ '.git' ]
+let g:gutentags_project_root = [ '.git', 'CONTRIBUTING.md' ]
 
 if executable('rg')
   let g:gutentags_file_list_command = 'rg --files'
@@ -34,3 +34,21 @@ noremap <silent> <leader>gi :GscopeFind i <C-R>=expand("<cfile>")<cr><cr>
 " Find where this symbol is assigned value
 noremap <silent> <leader>ga :GscopeFind a <C-R><C-W><cr>
 
+lua <<EOF
+
+-- Register mappings description with which-key
+local wk = require("which-key")
+
+wk.register({
+  g = {
+    name = "Gscope",
+    sy = "Find symbols",
+    d = "Find definitions",
+    c = "Called by this function",
+    C = "Calling this function",
+    i = "Files including this file",
+    a = "Where this symbol is assigned value"
+  },
+}, { prefix = "<leader>" })
+
+EOF
