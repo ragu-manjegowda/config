@@ -109,6 +109,14 @@ esac
 export EDITOR=$VIM
 export FCEDIT=$EDITOR
 
+# Config git aliases, config alias by itself is set in bash_profile
+alias cc='config commit -s'
+alias cfa='config fetch --all --prune'
+alias clog='config log'
+alias cpulla='config pull --rebase --autostash'
+alias cpush='config push'
+alias cst='config status'
+
 # Zsh-hist
 unsetopt HIST_REDUCE_BLANKS
 
@@ -246,3 +254,7 @@ function gpg-encrypt-decrypt () {
             ;;
     esac
 }
+
+## fzf <3
+export FZF_DEFAULT_COMMAND='find . -printf "%P\\n"'
+
