@@ -32,4 +32,5 @@ Plug 'xolox/vim-session'
 Plug 'hrsh7th/cmp-cmdline'
 Plug 'hrsh7th/cmp-nvim-lsp-document-symbol'
 Plug 'junegunn/vim-peekaboo'
+Plug 'Yggdroot/indentLine'
 call plug#end()
