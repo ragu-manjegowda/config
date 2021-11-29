@@ -180,7 +180,9 @@ local global_keys = awful.util.table.join(
 	awful.key(
 		{modkey},
 		's',
-		hotkeys_popup.show_help,
+        function()
+            hotkeys_popup.show_help(nil, awful.screen.focused())
+        end,
 		{description = 'show help', group = 'awesome'}
 	),
 
