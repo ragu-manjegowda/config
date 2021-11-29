@@ -116,6 +116,7 @@ alias clog='config log'
 alias cpulla='config pull --rebase --autostash'
 alias cpush='config push'
 alias cst='config status'
+alias csu='config submodule update --init --recursive'
 
 # Zsh-hist
 unsetopt HIST_REDUCE_BLANKS
