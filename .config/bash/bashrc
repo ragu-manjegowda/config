@@ -140,3 +140,5 @@ esac
 export EDITOR=$VIM
 export FCEDIT=$EDITOR
 
+eval "$(starship init bash)"
+
