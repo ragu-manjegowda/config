@@ -6,7 +6,7 @@
 ##########################################################################################
 
 # Homebrew Path
-export HOMEBREW_PATH="$HOME/Documents/homebrew"
+export HOMEBREW_PATH="/usr/local"
 export PATH="$HOMEBREW_PATH/bin:$PATH"
 export PATH="$HOMEBREW_PATH/sbin:$PATH"
 
