@@ -54,6 +54,7 @@
 .config/zsh/.zcompdump*
 .config/zsh/.zsh_history
 .config/zsh/.zsh_history.backup
+.config/zsh/.zsh_sessions
 .cups
 .docker
 .DS_Store
@@ -100,4 +101,4 @@ snap
 syncWiki.sh
 Templates
 Videos
-
+UPSC
