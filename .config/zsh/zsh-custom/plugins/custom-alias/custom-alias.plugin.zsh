@@ -110,7 +110,10 @@ export EDITOR=$VIM
 export FCEDIT=$EDITOR
 
 # Config git aliases, config alias by itself is set in bash_profile
-alias cc='config commit -s'
+alias ca='config add'
+alias ccm='config commit -s'
+alias cco='config checkout'
+alias ccd='config diff'
 alias cfa='config fetch --all --prune'
 alias clog='config log'
 alias cpulla='config pull --rebase --autostash'
