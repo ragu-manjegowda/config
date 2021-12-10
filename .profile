@@ -70,4 +70,14 @@ fi
 ## Config alias
 alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
 alias cvim='GIT_DIR=$HOME/.config.git/ GIT_WORK_TREE=$HOME vim'
+alias ca='config add'
+alias ccd='config diff'
+alias ccm='config commit -s'
+alias cco='config checkout'
+alias cfa='config fetch --all --prune'
+alias clog='config log'
+alias cpulla='config pull --rebase --autostash'
+alias cpush='config push'
+alias cst='config status'
+alias csu='config submodule update --init --recursive'
 

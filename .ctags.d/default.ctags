@@ -2,6 +2,7 @@
 --c++-kinds=+pf
 --exclude=.git
 --exclude=*/data/*
+--exclude=*/bazel-*/*
 --exclude=*/bazel-out/*
 --exclude=*/bazel-bin/*
 --exclude=*/bazel-sdk/*
