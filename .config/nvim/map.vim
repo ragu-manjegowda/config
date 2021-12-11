@@ -110,3 +110,6 @@ nnoremap <silent> <leader>oh :FSSplitRight<CR>
 " Get full path of the current buffer
 nnoremap <leader>fp 1<C-g><CR>
 
+" go substitute because the default map for sleeping is silly
+nnoremap gs :%s/ / /gic<Left><Left><Left><Left><Left><Left><Left>
+
