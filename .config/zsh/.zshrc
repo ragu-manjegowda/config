@@ -53,3 +53,7 @@ source $ZSH/oh-my-zsh.sh
 # To customize prompt, run `p10k configure` or edit $ZDOTDIR/.p10k.zsh.
 [[ ! -f $ZDOTDIR/.p10k.zsh ]] || source $ZDOTDIR/.p10k.zsh
 
+if [ -f "$ZDOTDIR/.fzf.zsh" ] ; then
+    source "$ZDOTDIR/.fzf.zsh"
+fi
+
