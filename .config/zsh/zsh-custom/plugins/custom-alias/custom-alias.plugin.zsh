@@ -111,7 +111,7 @@ export FCEDIT=$EDITOR
 
 # Zsh-hist
 HISTSIZE=10000000
-SAVEHIST=10000000
+SAVEHIST=8000000
 setopt BANG_HIST                 # Treat the '!' character specially during expansion.
 setopt EXTENDED_HISTORY          # Write the history file in the ":start:elapsed;command" format.
 setopt INC_APPEND_HISTORY        # Write to the history file immediately, not when the shell exits.
@@ -129,7 +129,6 @@ setopt HIST_VERIFY               # Don't execute immediately upon history expans
 # zshaddhistory() { whence ${${(z)1}[1]} >| /dev/null || return 1 }
 zstyle ":completion:*:commands" rehash 1
 
-
 ############# zsh-autocomplete specific
 
 # Wait this many seconds for typing to stop, before showing completions.
@@ -143,6 +142,11 @@ zstyle ':autocomplete:history-incremental-search-*:*' list-lines 5  # int
 # no:  Tab inserts the top completion.
 # yes: Tab first inserts a substring common to all listed completions, if any.
 #zstyle ':autocomplete:*' insert-unambiguous yes
+
+# no:  Tab uses Zsh's completion system only.
+# yes: Tab first tries Fzf's completion, then falls back to Zsh's.
+zstyle ':autocomplete:*' fzf-completion no
+zstyle ':autocomplete:*' fuzzy-search off
 
 # '':     Always show completions.
 # '..##': Don't show completions when the input consists of two or more dots.
@@ -260,11 +264,21 @@ function gpg-encrypt-decrypt () {
     esac
 }
 
-## fzf <3
-export FZF_DEFAULT_COMMAND='find . -printf "%P\\n"'
-
 function cliclick()
 {
     while true; do xdotool click 1; sleep 120; done
+}
+
+function compresspdf() {
+    if [[ "$1" == "--help" ]]; then
+        echo 'Usage: compresspdf [input file] [output file] [screen|ebook|printer|prepress]'
+        return
+    fi
+
+    gs -sDEVICE=pdfwrite -dNOPAUSE -dQUIET -dBATCH -dPDFSETTINGS=/${3:-"screen"} -dCompatibilityLevel=1.4 -sOutputFile="$2" "$1"
+}
+
+function listAlias() {
+    noglob alias -m c*
 }
 
