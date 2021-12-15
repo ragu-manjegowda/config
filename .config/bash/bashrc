@@ -142,7 +142,7 @@ export FCEDIT=$EDITOR
 
 eval "$(starship init bash)"
 
-if [ -f "$BASH_DIR/.fzf.bash" ] ; then
-    source "$BASH_DIR/.fzf.bash"
+if [ -f "$BASH_DIR/fzf.bash" ] ; then
+    source "$BASH_DIR/fzf.bash"
 fi
 

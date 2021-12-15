@@ -1,6 +1,6 @@
 # Setup fzf
 # ---------
-if [[ ! "$PATH" == */home/linuxbrew/.linuxbrew/Cellar/fzf/0.28.0/bin* ]]; then
+if [[ ! "$PATH" == */$(brew --prefix)/Cellar/fzf/0.28.0/bin* ]]; then
     export PATH="${PATH:+${PATH}:}$(brew --prefix)/Cellar/fzf/0.28.0/bin"
 fi
 
