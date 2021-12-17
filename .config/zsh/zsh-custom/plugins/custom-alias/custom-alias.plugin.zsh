@@ -125,8 +125,8 @@ setopt HIST_SAVE_NO_DUPS         # Don't write duplicate entries in the history 
 setopt HIST_REDUCE_BLANKS        # Remove superfluous blanks before recording entry.
 setopt HIST_VERIFY               # Don't execute immediately upon history expansion.
 
-# Save command to history on if it is successful
-# zshaddhistory() { whence ${${(z)1}[1]} >| /dev/null || return 1 }
+# Save command to history only if it is successful
+zshaddhistory() { whence ${${(z)1}[1]} >| /dev/null || return 1 }
 zstyle ":completion:*:commands" rehash 1
 
 ############# zsh-autocomplete specific
@@ -141,16 +141,16 @@ zstyle ':autocomplete:history-incremental-search-*:*' list-lines 5  # int
 
 # no:  Tab inserts the top completion.
 # yes: Tab first inserts a substring common to all listed completions, if any.
-#zstyle ':autocomplete:*' insert-unambiguous yes
+zstyle ':autocomplete:*' insert-unambiguous yes
 
-# no:  Tab uses Zsh's completion system only.
-# yes: Tab first tries Fzf's completion, then falls back to Zsh's.
-zstyle ':autocomplete:*' fzf-completion no
-zstyle ':autocomplete:*' fuzzy-search off
+# complete-word: (Shift-)Tab inserts the top (bottom) completion.
+# menu-complete: Press again to cycle to next (previous) completion.
+# menu-select:   Same as `menu-complete`, but updates selection in menu.
+zstyle ':autocomplete:*' widget-style complete-word
 
 # '':     Always show completions.
 # '..##': Don't show completions when the input consists of two or more dots.
-zstyle ':autocomplete:*' ignored-input '.;' # extended glob pattern
+zstyle ':autocomplete:*' ignored-input ';;##' # extended glob pattern
 
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=6'
 
