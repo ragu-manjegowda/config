@@ -169,9 +169,11 @@ function toggle-theme () {
     case $mode in
         light)
             sed -i -e "s#^colors: \*.*#colors: *solarized-dark#g" $config_path
+            export BAT_THEME="Solarized (dark)"
             ;;
         dark)
             sed -i -e "s#^colors: \*.*#colors: *solarized-light#g" $config_path
+            export BAT_THEME="Solarized (light)"
             ;;
     esac
 
@@ -193,9 +195,11 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     case $mode in
         Dark)
             sed -i -e "s#^colors: \*.*#colors: *solarized-dark#g" $config_path
+            export BAT_THEME="Solarized (dark)"
             ;;
         *)
             sed -i -e "s#^colors: \*.*#colors: *solarized-light#g" $config_path
+            export BAT_THEME="Solarized (light)"
             ;;
     esac
 fi
