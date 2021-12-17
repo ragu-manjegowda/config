@@ -84,9 +84,18 @@ alias csu='config submodule update --init --recursive'
 
 # fzf
 export FZF_DEFAULT_COMMAND='fd --type f --color=never --hidden'
-export FZF_DEFAULT_OPTS='--no-height --color=bg+:#343d46,gutter:-1,pointer:#ff3c3c,info:#0dbc79,hl:#0dbc79,hl+:#23d18b'
+
+FZF_DEFAULT_OPTS1="--no-height --color=bg+:#343d46,gutter:-1"
+FZF_DEFAULT_OPTS2=",pointer:#ff3c3c,info:#0dbc79,hl:#0dbc79,hl+:#23d18b"
+export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS1$FZF_DEFAULT_OPTS2"
+
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :50 {}'"
+
+T_OPTS_PREVIEW="--preview 'bat --color=always --line-range :50 {}'"
+T_OPTS_BIND_OPTS1="--bind 'ctrl-d:preview-down,ctrl-u:preview-up'"
+T_OPTS_BIND_OPTS2="',ctrl-w:toggle-preview-wrap,ctrl-f:jump'"
+export FZF_CTRL_T_OPTS="$T_OPTS_PREVIEW $T_OPTS_BIND_OPTS1$T_OPTS_BIND_OPTS2"
+
 export FZF_ALT_C_COMMAND='fd --type d . --color=never --hidden'
 export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -50'"
 
