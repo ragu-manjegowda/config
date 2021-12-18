@@ -14,11 +14,14 @@ nnoremap <silent> <leader>gca :tab Git commit --amend<CR>
 nnoremap <silent> <leader>gcan :Git commit --amend --no-edit<CR>
 nnoremap <silent> <leader>gcm :tab Git commit -s<CR>
 nnoremap <silent> <leader>gfa :Git fetch --all --prune<CR>
-nnoremap <silent> <leader>glf :tab Git log --oneline --decorate --graph -- %<CR>
-nnoremap <silent> <leader>glg :tab Git log<CR>
+nnoremap <silent> <leader>glog :GcLog!<Bar>cclose<Bar>tab copen<CR>
+nnoremap <silent> <leader>glogf :tab Git log --oneline --decorate --graph -- %<CR>
+nnoremap <silent> <leader>glogp :tab Git log --pretty=full<CR>
 nnoremap <silent> <leader>gpulla :Git pull --rebase --autostash<CR>
 nnoremap <silent> <leader>gpush :Git push<CR>
 nnoremap <silent> <leader>gst :tab G<CR>
+nnoremap <silent> <leader>gstash :GcLog -g stash<Bar>cclose<Bar>tab copen<CR>
+nnoremap <silent> <leader>gstasha :Git stash apply <C-R><C-G><CR>
 
 " Resolve merge conflict
 nnoremap <silent> <leader>gpf :diffget //2<CR>
@@ -33,8 +36,9 @@ wk.register({
   g = {
     name = "Git",
     dv = "Git diff view in new tab",
-    lf = "Git log current file in new tab",
-    lp = "Git log in new tab",
+    log = "Git log commits in new quick fix tab",
+    logf = "Git log current file in new tab",
+    logp = "Git log pretty in new tab",
     pf = "Git merge apply left diff",
     pj = "Git merge apply right diff"
   },
