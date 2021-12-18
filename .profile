@@ -80,6 +80,7 @@ alias clog='config log'
 alias cpulla='config pull --rebase --autostash'
 alias cpush='config push'
 alias cst='config status'
+alias cstv='cvim +Git +only'
 alias csu='config submodule update --init --recursive'
 
 # fzf
@@ -98,4 +99,5 @@ export FZF_CTRL_T_OPTS="$T_OPTS_PREVIEW $T_OPTS_BIND_OPTS1$T_OPTS_BIND_OPTS2"
 
 export FZF_ALT_C_COMMAND='fd --type d . --color=never --hidden'
 export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -50'"
+export FZF_TMUX_OPTS="-d 40%"
 

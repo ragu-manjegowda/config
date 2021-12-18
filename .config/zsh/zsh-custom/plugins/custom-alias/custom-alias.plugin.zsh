@@ -72,6 +72,7 @@ alias gpush='git push origin "$(git_current_branch)"'
 alias gpulla='git pull --rebase --autostash'
 
 alias gst='git status'
+alias gstv='vim +Git +only'
 alias gsu='git submodule update --init --recursive'
 
 function grename() {
