@@ -10,6 +10,7 @@
 .config/alacritty/colors.yml-e
 .config/autostart
 .config/bash/.bash_history
+.config/bash/bash_extras
 .config/coc
 .config/cppman
 .config/dconf
