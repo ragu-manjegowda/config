@@ -68,10 +68,19 @@ vim.cmd "autocmd User TelescopePreviewerLoaded setlocal number"
 EOF
 
 " Telescope fuzzy finder shortcuts
-nnoremap <leader>pb :lua explorer()<CR>
-nnoremap <leader>pf :lua require('telescope.builtin').find_files({ find_command = {'rg', '--files', '--hidden', '-g', '!.git' }})<CR>
-nnoremap <leader>pq :lua require('telescope.builtin').quickfix()<CR>
-nnoremap <leader>ps :lua require('telescope.builtin').grep_string({ search = vim.fn.input("Grep For > ")})<CR>
-nnoremap <leader>pw :lua require('telescope.builtin').grep_string { search = vim.fn.expand("<cword>") }<CR>
-nnoremap <leader>pW :lua require('telescope.builtin').grep_string({ search = "'" .. vim.fn.expand('<cword>') })<CR>
+nnoremap <silent> <leader>pb :lua require('telescope.builtin').buffers()<CR>
+nnoremap <silent> <leader>pf :lua require('telescope.builtin').find_files({ find_command = {'rg', '--files', '--hidden', '-g', '!.git' }})<CR>
+nnoremap <silent> <leader>ph :lua require('telescope.builtin').help_tags()<CR>
+nnoremap <silent> <leader>po :lua explorer()<CR>
+nnoremap <silent> <leader>pq :lua require('telescope.builtin').quickfix()<CR>
+nnoremap <silent> <leader>ps :lua require('telescope.builtin').grep_string({ search = vim.fn.input("Grep For > ")})<CR>
+nnoremap <silent> <leader>pw :lua require('telescope.builtin').grep_string { search = vim.fn.expand("<cword>") }<CR>
+nnoremap <silent> <leader>pW :lua require('telescope.builtin').grep_string({ search = "'" .. vim.fn.expand('<cword>') })<CR>
+
+" Git shortcuts
+nnoremap <silent> <leader>gco :lua require('telescope.builtin').git_commits()<CR>
+nnoremap <silent> <leader>glogf :lua require('telescope.builtin').git_bcommits()<CR>
+" nnoremap <silent> <leader>glogp :lua require('telescope.builtin').git_commits({ git_command = {'git', 'log', '--pretty=full'}})<CR>
+" nnoremap <silent> <leader>gst :lua require('telescope.builtin').git_status()<CR>
+nnoremap <silent> <leader>gstash :lua require('telescope.builtin').git_stash()<CR>
 
