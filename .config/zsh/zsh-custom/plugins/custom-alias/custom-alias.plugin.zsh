@@ -203,6 +203,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
             export BAT_THEME="Solarized (light)"
             ;;
     esac
+
+    bindkey "ç" fzf-cd-widget
 fi
 
 # function to encrypt and decrypt files
