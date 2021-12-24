@@ -92,12 +92,19 @@ export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS1$FZF_DEFAULT_OPTS2"
 
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
-T_OPTS_PREVIEW="--preview 'bat --color=always --line-range :50 {}'"
-T_OPTS_BIND_OPTS1="--bind 'ctrl-d:preview-down,ctrl-u:preview-up'"
+T_OPTS_PREVIEW="--preview 'bat --color=always {}'"
+T_OPTS_BIND_OPTS1="--bind 'ctrl-j:preview-down,ctrl-k:preview-up'"
 T_OPTS_BIND_OPTS2="',ctrl-w:toggle-preview-wrap,ctrl-f:jump'"
-export FZF_CTRL_T_OPTS="$T_OPTS_PREVIEW $T_OPTS_BIND_OPTS1$T_OPTS_BIND_OPTS2"
+T_OPTS_BIND_OPTS3="',ctrl-u:preview-top,ctrl-d:preview-bottom'"
+export FZF_CTRL_T_OPTS="$T_OPTS_PREVIEW $T_OPTS_BIND_OPTS1$T_OPTS_BIND_OPTS2$T_OPTS_BIND_OPTS3"
 
 export FZF_ALT_C_COMMAND='fd --type d . --color=never --hidden'
-export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -50'"
+
+C_OPTS_PREVIEW="--preview 'tree -C {}'"
+C_OPTS_BIND_OPTS1="--bind 'ctrl-j:preview-down,ctrl-k:preview-up'"
+C_OPTS_BIND_OPTS2="',ctrl-w:toggle-preview-wrap,ctrl-f:jump'"
+C_OPTS_BIND_OPTS3="',ctrl-u:preview-top,ctrl-d:preview-bottom'"
+export FZF_ALT_C_OPTS="$C_OPTS_PREVIEW $C_OPTS_BIND_OPTS1$C_OPTS_BIND_OPTS2$C_OPTS_BIND_OPTS3"
+
 export FZF_TMUX_OPTS="-d 40%"
 
