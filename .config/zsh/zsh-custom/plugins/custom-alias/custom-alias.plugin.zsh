@@ -289,3 +289,58 @@ function listAlias() {
     noglob alias -m c*
 }
 
+function start-web-server () {
+    if ! type http-file-server > /dev/null; then
+        echo "Download binary: "
+        echo "For Linux: "
+        echo "curl -L https://github.com/sgreben/http-file-server/releases/download/1.6.1/http-file-server_1.6.1_linux_x86_64.tar.gz | tar xz"
+        echo "For Mac: "
+        echo "curl -L https://github.com/sgreben/http-file-server/releases/download/1.6.1/http-file-server_1.6.1_osx_x86_64.tar.gz | tar xz"
+        return
+    fi
+
+    echo "Welcome to file http-file-server"
+    echo "0: Download Server only"
+    echo "1: Upload/Download Server"
+    echo -n "Enter your choice: "
+    read serverChoice
+
+    case $serverChoice in
+        0)
+            echo "Requested to start download server"
+            serverType=downloadOnly
+            ;;
+        1)
+            echo "Requested decryption"
+            serverType=allowUpload
+            ;;
+        *)
+            echo "No kidding please!!"
+            return
+            ;;
+    esac
+
+    echo -n "Enter server address: "
+    read serverAddress
+
+    echo -n "Enter server port: "
+    read port
+
+    vared -p "Enter path to be served: " -c serverPath
+
+    echo -e "\033[0;31mTo download from command line use: "
+    echo -e "curl -O ${serverAddress}:${port}${serverPath}/filename\033[0m\n"
+
+    case $serverType in
+        downloadOnly)
+            http-file-server -a $serverAddress:$port $serverPath
+            ;;
+
+        allowUpload)
+            echo -e "\033[0;31mTo upload from command line use: "
+            echo -e "curl -LF 'file=@example.txt' ${serverAddress}:${port}${serverPath}\033[0m\n"
+            http-file-server -u -a $serverAddress:$port $serverPath
+            ;;
+    esac
+}
+
