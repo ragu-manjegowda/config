@@ -80,8 +80,6 @@ Installation process is pretty much covered in the wiki of this repo, following 
 
 ### 7. Other configurations
 * Wifi connection needs to be updated in configuration/config.lua
-* To set tranparency in apps (like alacritty), use `transset` command,
-    example `transset 0.9`.
 
 ## Misc: Various Issues fixed so far (maintaining for my reference as I couldn't push meaningful patched while ricing AWESOME)
 
@@ -127,4 +125,10 @@ Installation process is pretty much covered in the wiki of this repo, following 
 13. Added notification for volume mute
 
 14. Changed the low battery notification from 10% to 20%
+
+15. To set tranparency in apps (like alacritty), use `transset` command,
+    example `transset 0.9`.
+
+16. Update control-center width according to need
+    .config/awesome/layout/control-center/init.lua:173
 

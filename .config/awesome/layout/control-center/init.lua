@@ -170,7 +170,7 @@ local monitor_control_row_progressbars = wibox.widget {
 
 local control_center = function(s)
 	-- Set the control center geometry
-	local panel_width = dpi(400)
+	local panel_width = dpi(250)
 	local panel_margins = dpi(5)
 
 	local panel = awful.popup {
@@ -246,7 +246,7 @@ local control_center = function(s)
 		width = s.geometry.width,
 		height = s.geometry.height
 	}
-	
+
 	local open_panel = function()
 		local focused = awful.screen.focused()
 		panel_visible = true
@@ -263,7 +263,7 @@ local control_center = function(s)
 
 		focused.control_center.visible = false
 		focused.backdrop_control_center.visible = false
-		
+
 		panel:emit_signal('closed')
 	end
 
