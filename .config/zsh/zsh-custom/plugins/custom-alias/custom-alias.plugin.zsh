@@ -132,26 +132,35 @@ zstyle ":completion:*:commands" rehash 1
 
 ############# zsh-autocomplete specific
 
+# '': Start each new command line with normal autocompletion.
+# history-incremental-search-backward: Start in live history search mode.
+zstyle ':autocomplete:*' default-context ''
+
 # Wait this many seconds for typing to stop, before showing completions.
 #zstyle ':autocomplete:*' min-delay 0.1  # float
 
 # Wait until this many characters have been typed, before showing completions.
 zstyle ':autocomplete:*' min-input 1  # int
 
-zstyle ':autocomplete:history-incremental-search-*:*' list-lines 5  # int
+# '':     Always show completions.
+# '..##': Don't show completions when the input consists of two or more dots.
+zstyle ':autocomplete:*' ignored-input ';;##' # extended glob pattern
+
+# If there are fewer than this many lines below the prompt, move the prompt up
+# to make room for showing this many lines of completions (approximately).
+zstyle ':autocomplete:*' list-lines 5  # int
+
+# Show this many history lines when pressing ↑.
+zstyle ':autocomplete:history-search:*' list-lines 5  # int
 
 # no:  Tab inserts the top completion.
 # yes: Tab first inserts a substring common to all listed completions, if any.
-zstyle ':autocomplete:*' insert-unambiguous yes
+zstyle ':autocomplete:*' insert-unambiguous no
 
 # complete-word: (Shift-)Tab inserts the top (bottom) completion.
 # menu-complete: Press again to cycle to next (previous) completion.
 # menu-select:   Same as `menu-complete`, but updates selection in menu.
 zstyle ':autocomplete:*' widget-style complete-word
-
-# '':     Always show completions.
-# '..##': Don't show completions when the input consists of two or more dots.
-zstyle ':autocomplete:*' ignored-input ';;##' # extended glob pattern
 
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=6'
 
@@ -344,3 +353,46 @@ function start-web-server () {
     esac
 }
 
+###############################################################################
+#################################### FZF ######################################
+###############################################################################
+
+is_in_git_repo() {
+  git rev-parse HEAD > /dev/null 2>&1 || echo "This_is_not_a_git_repository"
+}
+
+FZF_PREFIX="fzf-git"
+
+function "${FZF_PREFIX}gg" () {
+  config -c color.status=always status --short |
+  fzf -m --ansi --nth 2..,.. \
+    --preview '(config diff --color=always -- {-1} | sed 1,4d; cat {-1}) | head -500' |
+  cut -c4- | sed 's/.* -> //'
+}
+
+function "${FZF_PREFIX}gh" () {
+  is_in_git_repo || return
+  git -c color.status=always status --short |
+  fzf -m --ansi --nth 2..,.. \
+    --preview '(git diff --color=always -- {-1} | sed 1,4d; cat {-1}) | head -500' |
+  cut -c4- | sed 's/.* -> //'
+}
+
+join-lines() {
+  local item
+  while read item; do
+    echo -n "${(q)item} "
+  done
+}
+
+bind-git-helper() {
+  local char
+  for c in $@; do
+    eval "fzf-g$c-widget() { local result=\$(${FZF_PREFIX}g$c | join-lines); zle reset-prompt; LBUFFER+=\$result }"
+    eval "zle -N fzf-g$c-widget"
+    eval "bindkey '^[$c' fzf-g$c-widget"
+  done
+}
+
+bind-git-helper g h
+unset -f bind-git-helper
