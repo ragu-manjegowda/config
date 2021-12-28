@@ -37,6 +37,19 @@ require("telescope").setup({
         layout_config = {
             preview_cutoff = 1,
         },
+
+        vimgrep_arguments = {
+            "rg",
+          "--color=never",
+          "--no-heading",
+          "--with-filename",
+          "--line-number",
+          "--column",
+          "--smart-case",
+          "--hidden",
+          "-g",
+          "!.git"
+        },
     },
     extensions = {
         fzf = {
