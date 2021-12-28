@@ -163,7 +163,8 @@ ruled.client.connect_signal(
 			},
 			properties = {
 				size_hints_honor = false,
-				titlebars_enabled = false
+				titlebars_enabled = false,
+                opacity = 0.8
 			}
 		}
 
