@@ -85,6 +85,8 @@ alias csu='config submodule update --init --recursive'
 
 # fzf
 export FZF_DEFAULT_COMMAND='fd --type f --color=never --hidden'
+FZF_ROOT_SEARCH_COMMAND='fd --type f . / --color=never'
+FZF_HOME_SEARCH_COMMAND='fd --type f . $HOME --color=never --hidden'
 
 FZF_DEFAULT_OPTS1="--no-height --color=bg+:#343d46,gutter:-1"
 FZF_DEFAULT_OPTS2=",pointer:#ff3c3c,info:#0dbc79,hl:#0dbc79,hl+:#23d18b"
@@ -96,15 +98,21 @@ T_OPTS_PREVIEW="--preview 'bat --color=always {}'"
 T_OPTS_BIND_OPTS1="--bind 'ctrl-j:preview-down,ctrl-k:preview-up'"
 T_OPTS_BIND_OPTS2="',ctrl-w:toggle-preview-wrap,ctrl-f:jump'"
 T_OPTS_BIND_OPTS3="',ctrl-u:preview-top,ctrl-d:preview-bottom'"
-export FZF_CTRL_T_OPTS="$T_OPTS_PREVIEW $T_OPTS_BIND_OPTS1$T_OPTS_BIND_OPTS2$T_OPTS_BIND_OPTS3"
+T_OPTS_BIND_OPTS4="',ctrl-h:reload($FZF_HOME_SEARCH_COMMAND),ctrl-r:reload($FZF_ROOT_SEARCH_COMMAND)'"
+FZF_CTRL_T_OPTS="$T_OPTS_PREVIEW $T_OPTS_BIND_OPTS1$T_OPTS_BIND_OPTS2$T_OPTS_BIND_OPTS3"
+export FZF_CTRL_T_OPTS="${FZF_CTRL_T_OPTS}$T_OPTS_BIND_OPTS4"
 
 export FZF_ALT_C_COMMAND='fd --type d . --color=never --hidden'
+FZF_ROOT_D_SEARCH_COMMAND='fd --type d . / --color=never'
+FZF_HOME_D_SEARCH_COMMAND='fd --type d . $HOME --color=never --hidden'
 
 C_OPTS_PREVIEW="--preview 'tree -C {}'"
 C_OPTS_BIND_OPTS1="--bind 'ctrl-j:preview-down,ctrl-k:preview-up'"
 C_OPTS_BIND_OPTS2="',ctrl-w:toggle-preview-wrap,ctrl-f:jump'"
 C_OPTS_BIND_OPTS3="',ctrl-u:preview-top,ctrl-d:preview-bottom'"
-export FZF_ALT_C_OPTS="$C_OPTS_PREVIEW $C_OPTS_BIND_OPTS1$C_OPTS_BIND_OPTS2$C_OPTS_BIND_OPTS3"
+C_OPTS_BIND_OPTS4="',ctrl-h:reload($FZF_HOME_D_SEARCH_COMMAND),ctrl-r:reload($FZF_ROOT_D_SEARCH_COMMAND)'"
+FZF_ALT_C_OPTS="$C_OPTS_PREVIEW $C_OPTS_BIND_OPTS1$C_OPTS_BIND_OPTS2$C_OPTS_BIND_OPTS3"
+export FZF_ALT_C_OPTS="${FZF_ALT_C_OPTS}$C_OPTS_BIND_OPTS4"
 
-export FZF_TMUX_OPTS="-d 40%"
+export FZF_TMUX_OPTS="-d 70%"
 
