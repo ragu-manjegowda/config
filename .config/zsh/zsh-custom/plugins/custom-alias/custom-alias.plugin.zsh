@@ -338,7 +338,7 @@ function start-web-server () {
     vared -p "Enter path to be served: " -c serverPath
 
     echo -e "\033[0;31mTo download from command line use: "
-    echo -e "curl -O ${serverAddress}:${port}${serverPath}/filename\033[0m\n"
+    echo -e "curl -O ${serverAddress}:${port}/path_from_below/filename\033[0m\n"
 
     case $serverType in
         downloadOnly)
@@ -347,7 +347,7 @@ function start-web-server () {
 
         allowUpload)
             echo -e "\033[0;31mTo upload from command line use: "
-            echo -e "curl -LF 'file=@example.txt' ${serverAddress}:${port}${serverPath}\033[0m\n"
+            echo -e "curl -LF 'file=@example.txt' ${serverAddress}:${port}/path_from_below\033[0m\n"
             http-file-server -u -a $serverAddress:$port $serverPath
             ;;
     esac
