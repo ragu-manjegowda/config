@@ -4,7 +4,8 @@ local naughty = require("naughty")
 
 require('awful.autofocus')
 
-local hotkeys_popup = require('awful.hotkeys_popup').widget
+local hotkeys_popup = require('awful.hotkeys_popup').widget.new({
+        width = 2500, height = 1350})
 
 local modkey = require('configuration.keys.mod').mod_key
 local altkey = require('configuration.keys.mod').alt_key
@@ -193,7 +194,7 @@ local global_keys = awful.util.table.join(
 		{modkey},
 		's',
         function()
-            hotkeys_popup.show_help(nil, awful.screen.focused())
+            hotkeys_popup:show_help(nil, awful.screen.focused())
         end,
 		{description = 'show help', group = 'awesome'}
 	),
