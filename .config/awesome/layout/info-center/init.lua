@@ -15,7 +15,7 @@ local vertical_separator =  wibox.widget {
 
 local info_center = function(s)
 	-- Set the info center geometry
-	local panel_width = dpi(350)
+	local panel_width = dpi(200)
 	local panel_margins = dpi(5)
 
 	local panel = awful.popup {
@@ -25,9 +25,9 @@ local info_center = function(s)
 					layout = wibox.layout.fixed.vertical,
 					forced_width = dpi(panel_width),
 					spacing = dpi(10),
-					require('widget.email'),
-					require('widget.weather'),
-					require('widget.notif-center')(s)
+                    require('widget.notif-center')(s),
+					require('widget.weather')
+                    -- require('widget.email')
 				},
 				margins = dpi(16),
 				widget = wibox.container.margin
@@ -75,7 +75,7 @@ local info_center = function(s)
 		width = s.geometry.width,
 		height = s.geometry.height
 	}
-	
+
 	local open_panel = function()
 		local focused = awful.screen.focused()
 		panel_visible = true
@@ -92,7 +92,7 @@ local info_center = function(s)
 
 		focused.info_center.visible = false
 		focused.backdrop_info_center.visible = false
-		
+
 		panel:emit_signal('closed')
 	end
 

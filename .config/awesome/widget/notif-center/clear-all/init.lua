@@ -58,4 +58,11 @@ local clear_all_button_wrapped = wibox.widget {
 	layout = wibox.layout.align.vertical
 }
 
+awesome.connect_signal(
+	'widget::notif-center:clear_all',
+	function()
+	    reset_notifbox_layout()
+	end
+)
+
 return clear_all_button_wrapped

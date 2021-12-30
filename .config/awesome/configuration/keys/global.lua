@@ -105,6 +105,18 @@ local global_keys = awful.util.table.join(
 	),
 
     awful.key(
+		{modkey, 'Control'},
+		'n',
+		function()
+			local focused = awful.screen.focused()
+			if focused.info_center and focused.info_center.visible then
+			    awesome.emit_signal('widget::notif-center:clear_all')
+			end
+		end,
+		{description = 'clear notifications', group = 'launcher'}
+	),
+
+    awful.key(
 		{modkey, 'Shift'},
 		'n',
 		function()
