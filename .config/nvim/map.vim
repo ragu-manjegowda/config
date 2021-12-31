@@ -162,5 +162,5 @@ function! s:SortUniqQFList()
   call setqflist(uniqedList)
 endfunction
 
-autocmd! QuickfixCmdPost * call s:SortUniqQFList()
+command! QFSort call s:SortUniqQFList()
 
