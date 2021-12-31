@@ -113,3 +113,54 @@ nnoremap <leader>fp 1<C-g><CR>
 " go substitute because the default map for sleeping is silly
 nnoremap gs :%s/ / /gic<Left><Left><Left><Left><Left><Left><Left>
 
+" Delete all other lines except ones containing args
+function! GrepQuickFix(pat)
+  let all = getqflist()
+  for d in all
+    if bufname(d['bufnr']) !~ a:pat && d['text'] !~ a:pat
+        call remove(all, index(all,d))
+    endif
+  endfor
+  call setqflist(all)
+endfunction
+
+command! -nargs=* QFGrep call GrepQuickFix(<q-args>)
+
+" Delete all other lines except ones containing args
+function! RemoveQuickFix(pat)
+  let all = getqflist()
+  for d in all
+    if bufname(d['bufnr']) =~ a:pat || d['text'] =~ a:pat
+        call remove(all, index(all,d))
+    endif
+  endfor
+  call setqflist(all)
+endfunction
+
+command! -nargs=* QFRemove call RemoveQuickFix(<q-args>)
+
+" Sort quick fix list
+function! s:CompareQuickfixEntries(i1, i2)
+  if bufname(a:i1.bufnr) == bufname(a:i2.bufnr)
+    return a:i1.lnum == a:i2.lnum ? 0 : (a:i1.lnum < a:i2.lnum ? -1 : 1)
+  else
+    return bufname(a:i1.bufnr) < bufname(a:i2.bufnr) ? -1 : 1
+  endif
+endfunction
+
+function! s:SortUniqQFList()
+  let sortedList = sort(getqflist(), 's:CompareQuickfixEntries')
+  let uniqedList = []
+  let last = ''
+  for item in sortedList
+    let this = bufname(item.bufnr) . "\t" . item.lnum
+    if this !=# last
+      call add(uniqedList, item)
+      let last = this
+    endif
+  endfor
+  call setqflist(uniqedList)
+endfunction
+
+autocmd! QuickfixCmdPost * call s:SortUniqQFList()
+
