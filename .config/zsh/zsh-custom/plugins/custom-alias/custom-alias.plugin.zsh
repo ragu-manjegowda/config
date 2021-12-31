@@ -396,3 +396,12 @@ bind-git-helper() {
 
 bind-git-helper g h
 unset -f bind-git-helper
+
+###############################################################################
+########################### ZSH History merge #################################
+###############################################################################
+
+function merge-zsh-history () {
+    eval "${ZDOTDIR}/merge_zsh_histories.rb ${ZDOTDIR}/.zsh_history_*.bak \
+          ${ZDOTDIR}/.zsh_history > ${HOME}/zsh_history_merged"
+}

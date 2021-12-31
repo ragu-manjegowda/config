@@ -40,7 +40,11 @@ if [ -n "$BASH_VERSION" ]; then
 # if running zsh
 elif [ -n "$ZSH_VERSION" ]; then
 
+    ## .profile is always sourced by zsh, safe to add this here
     HISTFILE="$ZDOTDIR/.zsh_history"
+
+    ## Back up zsh_history
+    cp ${HISTFILE} ${ZDOTDIR}/.zsh_history_$(date +\%Y_\%m_\%d).bak
 
 fi
 
