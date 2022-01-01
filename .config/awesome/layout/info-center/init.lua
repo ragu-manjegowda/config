@@ -26,7 +26,8 @@ local info_center = function(s)
 					forced_width = dpi(panel_width),
 					spacing = dpi(10),
                     require('widget.notif-center')(s),
-					require('widget.weather')
+	                require('widget.stocks'),
+                    require('widget.weather'),
                     -- require('widget.email')
 				},
 				margins = dpi(16),
@@ -84,6 +85,8 @@ local info_center = function(s)
 		focused.info_center.visible = true
 
 		panel:emit_signal('opened')
+		--Not a good idea because we have API rate limit
+        --awesome.emit_signal('widget::update_stocks')
 	end
 
 	local close_panel = function()

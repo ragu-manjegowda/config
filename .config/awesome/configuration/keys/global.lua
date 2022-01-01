@@ -107,6 +107,18 @@ local global_keys = awful.util.table.join(
 
     awful.key(
 		{modkey, 'Control'},
+		'm',
+		function()
+			local focused = awful.screen.focused()
+			if focused.info_center and focused.info_center.visible then
+			    awesome.emit_signal('widget::update_stocks')
+			end
+		end,
+		{description = 'update stocks price', group = 'launcher'}
+	),
+
+    awful.key(
+		{modkey, 'Control'},
 		'n',
 		function()
 			local focused = awful.screen.focused()
