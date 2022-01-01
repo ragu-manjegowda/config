@@ -144,13 +144,17 @@ local date_value = function()
 	return date .. ordinal .. ' of ' .. month .. ', ' .. day
 end
 
-local date = wibox.widget {
+local date_today = wibox.widget {
 	markup = date_value(),
 	font = 'Hack Nerd Bold 20',
 	align = 'center',
 	valign = 'center',
 	widget = wibox.widget.textbox
 }
+
+local update_date_text = function()
+    date_today.markup = date_value()
+end
 
 local circle_container = wibox.widget {
 	bg = beautiful.transparent,
@@ -613,7 +617,7 @@ local locker = function(s)
 						layout = wibox.layout.align.horizontal,
 						expand = 'none',
 						nil,
-						date,
+						date_today,
 						nil
 					},
 					expand = 'none',
@@ -655,6 +659,10 @@ local locker = function(s)
 		if lock_again == true or lock_again == nil then
 			-- Force update clock widget
 			time:emit_signal('widget::redraw_needed')
+
+            -- Force update data widget
+            update_date_text()
+            date_today:emit_signal('widget::redraw_needed')
 
 			-- Check capslock status
 			check_caps()
