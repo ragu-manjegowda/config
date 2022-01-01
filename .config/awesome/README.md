@@ -129,6 +129,9 @@ Installation process is pretty much covered in the wiki of this repo, following 
 15. To set tranparency in apps (like alacritty), use `transset` command,
     example `transset 0.9`.
 
-16. Update control-center width according to need
+16. Update control-center, info-center and help page width according to
+    need,
     .config/awesome/layout/control-center/init.lua:173
+    .config/awesome/layout/info-center/init.lua:18
+    .config/awesome/configuration/keys/global.lua:8
 
