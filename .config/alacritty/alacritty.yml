@@ -531,6 +531,7 @@ key_bindings:
   #- { key: Return,   mods: Alt,           action: ToggleFullscreen }
 
   # (macOS only)
+  - { key: C,              mods: Alt,                             chars: "\x1bc"           }
   - { key: G,              mods: Alt,                             chars: "\x1bg"           }
   - { key: H,              mods: Alt,                             chars: "\x1bh"           }
 
