@@ -67,13 +67,28 @@ local top_panel = function(s)
                 {
 	    	        type = 'dock',
 	    		    layout = wibox.layout.fixed.horizontal,
+                    {
+                        {
+	    		            layout = wibox.layout.fixed.horizontal,
+                            tag_list.create(s),
+                        },
+                        bg = beautiful.background,
+                        shape = gears.shape.rounded_rect,
+                        widget = wibox.container.background,
+                    },
                     vseparator,
-                    tag_list.create(s),
-                    vseparator,
-	    		    task_list(s),
+                    {
+                        {
+	    		            layout = wibox.layout.fixed.horizontal,
+	    		            task_list(s),
+                        },
+                        bg = beautiful.background,
+                        shape = gears.shape.rounded_rect,
+                        widget = wibox.container.background,
+                    },
                 },
 
-                bg = beautiful.background,
+                bg = '#0000',
                 shape = gears.shape.rounded_rect,
                 widget = wibox.container.background,
 	    	},
