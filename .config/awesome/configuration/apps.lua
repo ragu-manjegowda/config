@@ -30,7 +30,7 @@ return {
 		-- Default power manager
 		power_manager = 'xfce4-power-manager',
 		-- Default GUI package manager
-		package_manager = 'update-manager',
+		package_manager = '',
 		-- Default locker
 		lock = 'awesome-client "awesome.emit_signal(\'module::lockscreen_show\')"',
 		-- Default quake terminal
@@ -59,10 +59,10 @@ return {
 		-- Blueman applet
 		'blueman-applet',
 		-- Music server
-		'mpd',
+		'',
 		-- Polkit and keyring
-		'/usr/bin/lxqt-policykit-agent &' ..
-		' eval $(gnome-keyring-daemon -s --components=pkcs11,secrets,ssh,gpg)',
+		--'/usr/bin/lxqt-policykit-agent &' ..
+		--' eval $(gnome-keyring-daemon -s --components=pkcs11,secrets,ssh,gpg)',
 		-- Load X colors
 		'xrdb $HOME/.Xresources',
 		-- Audio equalizer

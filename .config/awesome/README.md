@@ -74,11 +74,15 @@ Installation process is pretty much covered in the wiki of this repo, following 
         target_link_libraries(lua_pam lua.so.5.3.6 pam)
         ```
 
-### 6. Other misc apps
-*  Install `ranger` as it is used as file browser.
-* Install `w3m-img` for image preview in terminal.
+### 6. Install xidlehook
+ * curl -L https://nixos.org/nix/install | sh
+ * nix-env -iA nixos.xidlehook
 
-### 7. Other configurations
+### 7. Other misc apps
+ *  Install `ranger` as it is used as file browser.
+ * Install `w3m-img` for image preview in terminal.
+
+### 8. Other configurations
 * Wifi connection needs to be updated in configuration/config.lua
 
 ## Misc: Various Issues fixed so far (maintaining for my reference as I couldn't push meaningful patched while ricing AWESOME)
