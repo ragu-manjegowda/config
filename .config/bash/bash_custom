@@ -10,7 +10,7 @@ export PATH="$PATH:$HOMEBREW_PATH/sbin"
 # Completion
 if [ -n "$BASH_VERSION" ]; then
   if [ -r "$HOMEBREW_PATH/etc/profile.d/bash_completion.sh" ]; then
-      source "$HOMEBREW_PATH/etc/profile.d/bash_completion.sh"
+    source "$HOMEBREW_PATH/etc/profile.d/bash_completion.sh"
   fi
 elif [ -n "$ZSH_VERSION" ]; then
   if [ -r "$HOMEBREW_PATH/share/zsh/site-functions" ]; then

@@ -28,6 +28,7 @@
 .config/advanced-rest-client
 .config/alacritty/colors.yml-e
 .config/autostart
+.config/awesome/configuration/api_keys.lua
 .config/bash/.bash_history
 .config/bash/.bash_maglev
 .config/bash/.bash_ros
@@ -76,6 +77,7 @@
 .config/nvim/misc
 .config/nvim/plugged
 .config/nvim/undodir
+.config/pavucontrol.ini
 .config/pip
 .config/pulse
 .config/rclone/rclone.conf
@@ -130,6 +132,9 @@
 .mozilla
 .nano
 .netrc
+.nix-channels
+.nix-defexpr
+.nix-profile
 .npm
 .npmrc
 .nucleus
