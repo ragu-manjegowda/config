@@ -12,7 +12,7 @@
 -- It checks the difference between the current time and the next scheduled time
 -- Then convert it to seconds to set it as a timeout value
 
--- Limitations: 
+-- Limitations:
 -- Timeout paused when laptop/pc is suspended or in sleep mode, and there's probably some bugs too so whatever
 local awful = require('awful')
 local gears = require('gears')
@@ -26,6 +26,16 @@ local config = require('configuration.config')
 --	     Change your preference here
 --  ========================================
 
+local wallpaper_name = ''
+
+function get_wallpaper_name()
+    return wallpaper_name
+end
+
+local set_wallpaper_name = function(name)
+    wallpaper_name = name
+end
+
 local wall_config = {
 	-- Wallpaper directory. The default is:
 	-- local wall_config.wall_dir = os.getenv('HOME') .. 'Pictures/Wallpapers/'
@@ -37,10 +47,18 @@ local wall_config = {
 
 	-- Table mapping schedule to wallpaper filename
 	wallpaper_schedule = config.module.dynamic_wallpaper.wallpaper_schedule or {
-		['00:00:00'] = 'midnight-wallpaper.jpg',
-		['06:22:00'] = 'morning-wallpaper.jpg',
-		['12:00:00'] = 'noon-wallpaper.jpg',
-		['17:58:00'] = 'night-wallpaper.jpg'
+		['01:00:00'] = 'night02-wallpaper.jpg',
+		['03:30:00'] = 'night03-wallpaper.jpg',
+		['06:22:00'] = 'morning01-wallpaper.jpg',
+		['07:45:00'] = 'morning02-wallpaper.jpeg',
+		['09:15:00'] = 'morning03-wallpaper.jpeg',
+		['11:00:00'] = 'morning04-wallpaper.jpeg',
+		['12:30:00'] = 'noon01-wallpaper.jpg',
+		['14:30:00'] = 'noon02-wallpaper.jpeg',
+		['16:30:00'] = 'noon03-wallpaper.jpeg',
+		['18:30:00'] = 'evening01-wallpaper.jpg',
+		['20:30:00'] = 'evening02-wallpaper.jpg',
+		['23:00:00'] = 'night-wallpaper.jpg'
 	},
 
 	-- Don't stretch wallpaper on multihead setups if true
@@ -216,7 +234,7 @@ if #wall_config.wallpaper_schedule == 0 then
 		-- Get any pictures that match keywords
 		local pictures = filter_files_by_format(get_dir_contents(wall_config.wall_dir), wall_config.valid_picture_formats)
 		pictures = find_files_containing_keywords(pictures, keywords)
-		
+
 		-- Replace keywords with files
 		for index, time in ipairs(ordered_times) do
 			local word = wall_config.wallpaper_schedule[time]
@@ -233,7 +251,7 @@ else --Schedule is list of keywords
 	-- Get any pictures that match keywords
 	local pictures = filter_files_by_format(get_dir_contents(wall_config.wall_dir), wall_config.valid_picture_formats)
 	pictures = find_files_containing_keywords(pictures, keywords)
-	
+
 	-- Order files by keyword (if a file was found for the keyword)
 	local ordered_pictures = {}
 	for _, word in ipairs(keywords) do
@@ -326,7 +344,8 @@ local manage_timer = function()
 
 	-- Update Wallpaper
 	update_wallpaper(wall_config.wallpaper_schedule[previous_time])
-	
+	set_wallpaper_name(wall_config.wallpaper_schedule[previous_time])
+
 	-- Get the time difference to set as timeout for the wall_updater timer below
 	the_countdown = time_diff(next_time, current_time())
 
@@ -343,6 +362,7 @@ local wall_updater = gears.timer {
 	callback  = function()
 		-- Emit signal to update wallpaper
     	awesome.emit_signal('module::change_wallpaper')
+    	awesome.emit_signal('module::change_background_wallpaper')
   	end
 }
 

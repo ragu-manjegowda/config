@@ -10,6 +10,8 @@ local apps = require('configuration.apps')
 local widget_icon_dir = config_dir .. 'configuration/user-profile/'
 local config = require('configuration.config')
 
+require('module.dynamic-wallpaper')
+
 -- Add paths to package.cpath
 package.cpath = package.cpath .. ';' .. config_dir .. '/library/?.so;' .. '/usr/lib/lua-pam/?.so;'
 
@@ -30,7 +32,7 @@ local locker_config = {
 	-- Background directory
 	bg_dir = config.module.lockscreen.bg_dir or (config_dir .. 'theme/wallpapers/'),
 	-- Default background
-	bg_image = config.module.lockscreen.bg_image or 'morning-wallpaper.jpg',
+	-- bg_image = config.module.lockscreen.bg_image or 'morning-wallpaper.jpg',
 	-- /tmp directory
 	tmp_wall_dir = config.module.lockscreen.tmp_wall_dir or '/tmp/awesomewm/' .. os.getenv('USER') .. '/'
 }
@@ -838,12 +840,20 @@ local apply_ls_bg_image = function(wall_name)
 	end
 end
 
+awesome.connect_signal(
+	'module::change_background_wallpaper',
+	function()
+		-- Update lockscreen wallpaper
+		apply_ls_bg_image(get_wallpaper_name())
+	end
+)
+
 -- Create a lockscreen and its background for each screen on start-up
 screen.connect_signal(
 	'request::desktop_decoration',
 	function(s)
 		create_lock_screens(s)
-		apply_ls_bg_image(locker_config.bg_image)
+		apply_ls_bg_image(get_wallpaper_name())
 	end
 )
 
@@ -852,6 +862,6 @@ screen.connect_signal(
 	'removed',
 	function(s)
 		create_lock_screens(s)
-		apply_ls_bg_image(locker_config.bg_image)
+		apply_ls_bg_image(get_wallpaper_name())
 	end
 )
