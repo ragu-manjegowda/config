@@ -50,18 +50,14 @@ fi
 
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
 
-    # if running zsh
-    if [ -n "$ZSH_VERSION" ]; then
-
-        # include .bash_custom if it exists
-        if [ -f "$BASH_DIR/bash_custom" ]; then
-            source "$BASH_DIR/bash_custom"
-        fi
-
+    # include .bash_custom if it exists
+    if [ -f "$BASH_DIR/bash_custom" ]; then
+        source "$BASH_DIR/bash_custom"
     fi
 
-    # set PATH so it includes user's private bin directories
-    PATH="$HOME/bin:$HOME/.local/bin:$PATH"
+    if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then
+        source $HOME/.nix-profile/etc/profile.d/nix.sh;
+    fi
 
 elif [[ "$OSTYPE" == "darwin"* ]]; then
 
