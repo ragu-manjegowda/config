@@ -8,6 +8,9 @@ local config = require('configuration.config')
 local debug_mode = config.module.auto_start.debug_mode or false
 
 local run_once = function(cmd)
+    if cmd == '' then
+        return
+    end
     local findme = cmd
     local firstspace = cmd:find(' ')
     if firstspace then
@@ -16,15 +19,14 @@ local run_once = function(cmd)
     awful.spawn.easy_async_with_shell(
         string.format('pgrep -u $USER -x %s > /dev/null || (%s)', findme, cmd),
         function(stdout, stderr)
-            -- Debugger 
+            -- Debugger
             if not stderr or stderr == '' or not debug_mode then
-                return 
+                return
             end
             naughty.notification({
                 app_name = 'Start-up Applications',
-                title = '<b>Oof! Error detected when starting an application!</b>',
+                title = '<b>Oof! Error detected when starting ' .. cmd .. '!</b>',
                 message = stderr:gsub('%\n', ''),
-                timeout = 20,
                 icon = require('beautiful').awesome_icon
             })
         end
