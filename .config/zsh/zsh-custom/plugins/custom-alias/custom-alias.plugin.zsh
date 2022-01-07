@@ -364,7 +364,8 @@ FZF_PREFIX="fzf-git"
 function "${FZF_PREFIX}gg" () {
   config -c color.status=always status --short |
   fzf -m --ansi --nth 2..,.. \
-    --preview '(config diff --color=always -- {-1} | sed 1,4d; cat {-1}) | head -500' |
+    --preview '(git --git-dir=$HOME/.config.git/ --work-tree=$HOME diff \
+    --color=always -- {-1} | sed 1,4d; cat {-1}) | head -500' |
   cut -c4- | sed 's/.* -> //'
 }
 
