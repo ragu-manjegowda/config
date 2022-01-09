@@ -774,6 +774,10 @@ naughty.connect_signal(
 	'request::display',
 	function(_)
 		if check_lockscreen_visibility() then
+            -- Update wallpaper (needed when we come back from sleep)
+            awesome.emit_signal('module::change_wallpaper')
+            awesome.emit_signal('module::change_background_wallpaper')
+
 			naughty.destroy_all_notifications(nil, 1)
 		end
 	end
