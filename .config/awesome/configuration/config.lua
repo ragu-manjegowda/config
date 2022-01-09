@@ -63,8 +63,8 @@ return {
 			valid_picture_formats = {'jpg', 'png', 'jpeg'},
 			-- Leave this table empty for full auto scheduling
 			wallpaper_schedule = {
-				['01:00:00'] = 'night02-wallpaper.jpg',
-				['03:30:00'] = 'night03-wallpaper.jpg',
+				['01:30:00'] = 'night02-wallpaper.jpg',
+				['04:00:00'] = 'night03-wallpaper.jpg',
 				['06:22:00'] = 'morning01-wallpaper.jpg',
 				['07:45:00'] = 'morning02-wallpaper.jpeg',
 				['09:15:00'] = 'morning03-wallpaper.jpeg',
