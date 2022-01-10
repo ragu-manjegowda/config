@@ -32,4 +32,5 @@ Plug 'hrsh7th/cmp-nvim-lsp-document-symbol'
 Plug 'junegunn/vim-peekaboo'
 Plug 'Yggdroot/indentLine'
 Plug 'numToStr/FTerm.nvim'
+Plug 'ggandor/lightspeed.nvim'
 call plug#end()
