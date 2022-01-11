@@ -13,6 +13,8 @@ set colorcolumn=80
 set completeopt=menuone,noinsert,noselect
 set cursorline
 set expandtab                  " use spaces instead of tabs
+set foldmethod=indent          " set folds
+set foldlevel=1
 set formatoptions-=o           " don't start lines w/ comment on pressing 'o'
 set guicursor=
 set hidden                     " But do highlight as you type your search.
