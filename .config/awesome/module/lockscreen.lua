@@ -662,7 +662,7 @@ local locker = function(s)
 			-- Force update clock widget
 			time:emit_signal('widget::redraw_needed')
 
-            -- Force update data widget
+            -- Force update date widget
             update_date_text()
             date_today:emit_signal('widget::redraw_needed')
 
@@ -777,6 +777,10 @@ naughty.connect_signal(
             -- Update wallpaper (needed when we come back from sleep)
             awesome.emit_signal('module::change_wallpaper')
             awesome.emit_signal('module::change_background_wallpaper')
+
+            -- Force update date widget
+            update_date_text()
+            date_today:emit_signal('widget::redraw_needed')
 
 			naughty.destroy_all_notifications(nil, 1)
 		end
