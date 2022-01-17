@@ -19,3 +19,6 @@
 [submodule ".config/tmux/plugins/tmux-resurrect"]
 	path = .config/tmux/plugins/tmux-resurrect
 	url = https://github.com/tmux-plugins/tmux-resurrect.git
+[submodule ".config/rEFInd/refind-theme-regular"]
+	path = .config/rEFInd/refind-theme-regular
+	url = https://github.com/munlik/refind-theme-regular.git
