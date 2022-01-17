@@ -79,6 +79,14 @@ ruled.notification.connect_signal(
 				implicit_timeout	= 5
 			}
 		}
+
+		ruled.notification.append_rule {
+			rule       = { app_name = 'Slack' },
+			properties = {
+				implicit_timeout	= 0
+			}
+		}
+
 	end
 	)
 
