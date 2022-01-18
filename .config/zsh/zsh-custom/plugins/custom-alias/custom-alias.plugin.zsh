@@ -296,7 +296,7 @@ function listAlias() {
     noglob alias -m c*
 }
 
-function start-web-server () {
+function start-http-web-server () {
     if ! type http-file-server > /dev/null; then
         echo "Download binary: "
         echo "For Linux: "
@@ -419,4 +419,13 @@ function notflix() {
 
 function ytfzf() {
     eval "${ZDOTDIR}/ytfzf $@"
+}
+
+
+###############################################################################
+################################  ytfzf #######################################
+###############################################################################
+
+function grep-functions() {
+    print -l ${(ok)functions} | fzf
 }
