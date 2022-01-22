@@ -145,3 +145,5 @@ Installation process is pretty much covered in the wiki of this repo, following 
 18. Suspend needs sudo privilages, add
     `ragu ALL= NOPASSWD: /usr/bin/systemctl suspend` to `/etc/sudoers`
 
+19. Install xsettingsd to enable auto light-dark mode switch
+
