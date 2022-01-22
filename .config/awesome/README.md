@@ -139,3 +139,9 @@ Installation process is pretty much covered in the wiki of this repo, following 
     .config/awesome/layout/info-center/init.lua:18
     .config/awesome/configuration/keys/global.lua:8
 
+17. Some floating windows does not respect xdpi, apps.lua should call
+    `xrdb ~/.Xresources` at statup.
+
+18. Suspend needs sudo privilages, add
+    `ragu ALL= NOPASSWD: /usr/bin/systemctl suspend` to `/etc/sudoers`
+

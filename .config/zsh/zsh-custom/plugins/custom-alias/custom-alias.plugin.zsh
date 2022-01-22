@@ -174,7 +174,7 @@ function toggle-theme () {
     config_path="$HOME/.config/alacritty/colors.yml"
 
     # Get current mode
-    mode=$(awk 'sub(/colors:\ \*solarized-/,""){print $1}' $config_path)
+    mode=$(awk 'sub(/colors:[[:space:]]\*solarized-/,""){print $1}' $config_path)
 
     case $mode in
         light)

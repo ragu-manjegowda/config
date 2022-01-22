@@ -64,7 +64,7 @@ return {
 		--'/usr/bin/lxqt-policykit-agent &' ..
 		--' eval $(gnome-keyring-daemon -s --components=pkcs11,secrets,ssh,gpg)',
 		-- Load X colors
-		'xrdb $HOME/.Xresources',
+		'xrdb ~/.Xresources',
 		-- Audio equalizer
 		'',
 		-- Lockscreen timer
