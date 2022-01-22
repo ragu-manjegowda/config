@@ -25,6 +25,7 @@
 .config/QtProject
 .config/QtProject.conf
 .config/Slack
+.config/Thunar
 .config/advanced-rest-client
 .config/alacritty/colors.yml-e
 .config/autostart
@@ -129,6 +130,7 @@
 .lesshst
 .lldb
 .local
+.lyxauth
 .minirc.dfl
 .mozilla
 .nano

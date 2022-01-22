@@ -12,7 +12,8 @@ configuration {
     padding:            50;
     font:               "Hack Nerd Font 20";
     hide-scrollbar:     true;
-    theme:              "solarized";
     display-combi:      "rofi";
     terminal:           "alacritty";
 }
+
+@theme              "solarized"
