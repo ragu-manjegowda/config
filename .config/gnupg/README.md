@@ -36,6 +36,9 @@ $ ssh USER@IP "cat gpg_secret.key" | gpg --import
         ```sh
         $ sudo update-alternatives --config pinentry
         ```
-    * Alternatively command line parameter `--pinentry-mode loopback` can also
-    be used.
+    * Config now defaults to curses (tty), to change to something else,
+        ```sh
+        $ echo "pinentry-program /usr/bin/pinentry-curses" >> ~/.config/gnupg/gpg-agent.conf
+        $ gpg-connect-agent reloadagent /bye
+        ```
 
