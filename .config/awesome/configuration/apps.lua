@@ -8,7 +8,7 @@ return {
 		-- Default terminal emulator
 		terminal = 'alacritty',
 		-- Default web browser
-		web_browser = 'google-chrome',
+		web_browser = 'firefox',
 		-- Default text editor
 		text_editor = 'nvim',
 		-- Default file manager
@@ -72,6 +72,8 @@ return {
 		xidlehook --not-when-fullscreen --not-when-audio --timer 600 \
 		"awesome-client 'awesome.emit_signal(\"module::lockscreen_show\")'" ""
 		]],
+        -- Xsettingsd
+        'xsettingsd &',
 
 		-- You can add more start-up applications here
         -- Use `xinput list` command to get touchpad device name

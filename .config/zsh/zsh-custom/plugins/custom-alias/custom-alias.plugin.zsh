@@ -165,7 +165,7 @@ zstyle ':autocomplete:*' widget-style complete-word
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=6'
 
 # function to toggle alacritty theme defined in colors.yml
-function toggle-theme () {
+function toggle-alacritty-theme () {
     if ! test -f ~/.config/alacritty/colors.yml; then
         echo "file $HOME/.config/alacritty/colors.yml doesn't exist"
         return
@@ -174,7 +174,7 @@ function toggle-theme () {
     config_path="$HOME/.config/alacritty/colors.yml"
 
     # Get current mode
-    mode=$(awk 'sub(/colors:[[:space:]]\*solarized-/,""){print $1}' $config_path)
+    mode=$(awk 'sub(/colors:'\ '\*solarized-/,""){print $1}' $config_path)
 
     case $mode in
         light)
@@ -186,6 +186,35 @@ function toggle-theme () {
             export BAT_THEME="Solarized (light)"
             ;;
     esac
+
+    echo "switched away from $mode."
+}
+
+# function to toggle GTK theme defined in xsettingsd.conf
+function toggle-gtk-theme () {
+    if [[ "$OSTYPE" != "linux-gnu" ]]; then
+        echo "Supported only on Linux!"
+        return
+    fi
+
+    config_path="$HOME/.config/xsettingsd/xsettingsd.conf"
+    if ! test -f $config_path; then
+        echo "file $config_path doesn't exist"
+        return
+    fi
+
+    mode=$(awk -F '["]' 'sub(/Net\/ThemeName'\ ''\"'Adwaita-/,""){print $1}' $config_path)
+
+    case $mode in
+        light)
+            sed -i -e "s#-light#-dark#g" $config_path
+            ;;
+        dark)
+            sed -i -e "s#-dark#-light#g" $config_path
+            ;;
+    esac
+
+    eval "killall -HUP xsettingsd"
 
     echo "switched away from $mode."
 }
