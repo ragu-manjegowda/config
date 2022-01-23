@@ -2,5 +2,11 @@
 
 xdg_config_path="$HOME/.config/xsettingsd/xsettingsd.conf"
 sed -i -e "s#-light#-dark#g" $xdg_config_path
-killall -HUP xsettingsd
+
+if ! pgrep -x "xsettingsd" > /dev/null
+then
+    xsettingsd &
+else
+    killall -HUP xsettingsd
+fi
 

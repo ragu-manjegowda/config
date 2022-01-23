@@ -61,8 +61,8 @@ return {
 		-- Music server
 		'',
 		-- Polkit and keyring
-		--'/usr/bin/lxqt-policykit-agent &' ..
-		--' eval $(gnome-keyring-daemon -s --components=pkcs11,secrets,ssh,gpg)',
+		'/usr/bin/lxqt-policykit-agent &' ..
+		' eval $(gnome-keyring-daemon -s --components=pkcs11,secrets,ssh,gpg)',
 		-- Load X colors
 		'xrdb ~/.Xresources',
 		-- Audio equalizer
@@ -72,10 +72,11 @@ return {
 		xidlehook --not-when-fullscreen --not-when-audio --timer 600 \
 		"awesome-client 'awesome.emit_signal(\"module::lockscreen_show\")'" ""
 		]],
-        -- Xsettingsd
-        'xsettingsd &',
-
 		-- You can add more start-up applications here
+        -- Xsettingsd
+        'systemctl --user reload-or-restart xsettingsd',
+        -- Darkman
+        'systemctl --user reload-or-restart darkman',
         -- Use `xinput list` command to get touchpad device name
         -- `SynPS/2 Synaptics TouchPad` in this case
         'xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Tapping Enabled" 1'
