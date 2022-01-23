@@ -53,6 +53,7 @@
 .config/gnome-initial-setup-done
 .config/gnote
 .config/gnupg/.*
+.config/gnupg/crls.d
 .config/gnupg/openpgp-revocs.d
 .config/gnupg/private-keys-v1.d
 .config/gnupg/pubring.kbx*
@@ -67,6 +68,7 @@
 .config/kde.org
 .config/libaccounts-glib
 .config/libreoffice
+.config/lxqt
 .config/maglev
 .config/menus
 .config/mimeapps.list
@@ -123,7 +125,9 @@
 .gem
 .globalrc
 .gnome
+.gtkrc-2.0
 .httpie
+.icons
 .ignition
 .java
 .jfrog
