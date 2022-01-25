@@ -62,6 +62,7 @@
 .config/gnupg/trustdb.gpg
 .config/google-chrome
 .config/gtk-2.0
+.config/gtk-3.0
 .config/ibus
 .config/indicator-stickynotes
 .config/kazam
@@ -89,6 +90,7 @@
 .config/remmina
 .config/rustup
 .config/systemd
+.config/teams
 .config/tmux/.tmux_history
 .config/tmux/session-restore
 .config/totem
