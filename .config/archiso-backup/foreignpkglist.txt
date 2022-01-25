@@ -1,0 +1,11 @@
+awesome-git
+darkman
+light-git
+ly
+picom-git
+python-gtkspellcheck
+slack-desktop
+teams
+w3m-imgcat
+xidlehook
+yay
