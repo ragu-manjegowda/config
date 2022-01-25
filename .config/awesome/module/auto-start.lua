@@ -8,9 +8,6 @@ local config = require('configuration.config')
 local debug_mode = config.module.auto_start.debug_mode or false
 
 local run_once = function(cmd)
-    if cmd == '' then
-        return
-    end
     local findme = cmd
     local firstspace = cmd:find(' ')
     if firstspace then
@@ -32,6 +29,14 @@ local run_once = function(cmd)
         end
     )
 end
+
+awesome.connect_signal(
+	'module::spawn_apps',
+	function()
+        -- Just a fail safe mechanism in case darkman service fails
+        run_once('XDG_DATA_DIRS=~/.config/darkman darkman')
+	end
+)
 
 for _, app in ipairs(apps.run_on_start_up) do
     run_once(app)

@@ -147,3 +147,7 @@ Installation process is pretty much covered in the wiki of this repo, following 
 
 19. Install xsettingsd to enable auto light-dark mode switch
 
+20. Install `darkman` and configure to start as service
+    `ln -s ~/.config/darkman/dark-mode.d ~/.local/share/dark-mode.d`
+    `ln -s ~/.config/darkman/light-mode.d ~/.local/share/light-mode.d`
+
