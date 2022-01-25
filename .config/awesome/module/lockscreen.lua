@@ -11,6 +11,7 @@ local widget_icon_dir = config_dir .. 'configuration/user-profile/'
 local config = require('configuration.config')
 
 require('module.dynamic-wallpaper')
+require('module.auto-start')
 
 -- Add paths to package.cpath
 package.cpath = package.cpath .. ';' .. config_dir .. '/library/?.so;' .. '/usr/lib/lua-pam/?.so;'
@@ -774,9 +775,10 @@ naughty.connect_signal(
 	'request::display',
 	function(_)
 		if check_lockscreen_visibility() then
-            -- Update wallpaper (needed when we come back from sleep)
+            -- Needed when we come back from sleep
             awesome.emit_signal('module::change_wallpaper')
             awesome.emit_signal('module::change_background_wallpaper')
+            awesome.emit_signal('module::spawn_apps')
 
             -- Force update date widget
             update_date_text()
