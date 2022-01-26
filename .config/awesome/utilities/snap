@@ -12,7 +12,7 @@
 # -- @script snap
 # ----------------------------------------------------------------------------
 
-screenshot_dir=$(xdg-user-dir PICTURES)/Screenshots/
+screenshot_dir=~/Pictures/Screenshots/
 
 # Check save directory
 # Create it if it doesn't exist
@@ -29,7 +29,7 @@ function shot() {
 	check_dir
 
 	file_loc="${screenshot_dir}$(date +%Y%m%d_%H%M%S).png"
-	
+
 	maim_command="$1"
 	notif_message="$2"
 
