@@ -67,8 +67,10 @@ return {
 		-- Audio equalizer
 		-- Lockscreen timer
 		[[
-		xidlehook --not-when-fullscreen --not-when-audio --timer 600 \
-		"awesome-client 'awesome.emit_signal(\"module::lockscreen_show\")'" ""
+		xidlehook --not-when-fullscreen --not-when-audio --timer 300 \
+        "awesome-client 'awesome.emit_signal(\"module::lockscreen_show\")'" \
+        "" --timer 600 "systemctl suspend" "" \
+        --timer 3600 "systemctl hibernate" ""
 		]],
 		-- You can add more start-up applications here
         -- Darkman

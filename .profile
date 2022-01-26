@@ -19,9 +19,6 @@ export LESSHISTFILE=/dev/null
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
 
-# For darkman
-export XDG_DATA_DIRS="$HOME/.config/darkman"
-
 export TMUX_TMPDIR="$XDG_RUNTIME_DIR"
 export ZDOTDIR="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
 export BASH_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/bash"
