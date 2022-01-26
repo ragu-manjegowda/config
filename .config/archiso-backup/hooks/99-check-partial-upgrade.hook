@@ -1,0 +1,11 @@
+[Trigger]
+Operation = Upgrade
+Operation = Install
+Operation = Remove
+Type = Package
+Target = *
+
+[Action]
+Description = Checking for packages that need to be upgraded...
+When = PostTransaction
+Exec = /usr/bin/bash -c "for i in $(pacman -Qqu); do echo '-->' $i; done"
