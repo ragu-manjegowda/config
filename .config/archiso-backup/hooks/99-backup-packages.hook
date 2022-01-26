@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Type = Package
+Target = *
+[Action]
+Description = Backing up installed packages
+When = PostTransaction
+Exec = /var/archiso-backup/backup-archiso.sh

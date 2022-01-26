@@ -1,10 +1,15 @@
 awesome-git
+check-broken-packages-pacman-hook-git
 darkman
+informant
 light-git
 ly
+pacman-cleanup-hook
 picom-git
 python-gtkspellcheck
+reflector-pacman-hook-git
 slack-desktop
+sync-pacman-hook-git
 teams
 w3m-imgcat
 xidlehook

@@ -8,6 +8,7 @@ base
 bison
 blueman
 bluez
+check-broken-packages-pacman-hook-git
 cups
 cups-pdf
 darkman
@@ -24,9 +25,10 @@ garcon
 gcc
 gimp
 git
-gnome-keyring
 gnu-free-fonts
 groff
+inetutils
+informant
 intel-ucode
 iw
 libreoffice-fresh
@@ -38,7 +40,6 @@ linux-headers
 linux-lts
 linux-lts-headers
 lxappearance
-lxqt-policykit
 ly
 m4
 maim
@@ -52,6 +53,7 @@ nvidia
 nvidia-lts
 openssh
 os-prober
+pacman-cleanup-hook
 patch
 picom-git
 pkgconf
@@ -61,14 +63,17 @@ python-gtkspellcheck
 ranger
 redshift
 refind
+reflector-pacman-hook-git
 rofi
 slack-desktop
 sudo
+sync-pacman-hook-git
 system-config-printer
 teams
 texinfo
 thunar
 thunar-volman
+ttf-dejavu
 tumbler
 vala
 vi

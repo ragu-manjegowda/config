@@ -22,9 +22,9 @@ garcon
 gcc
 gimp
 git
-gnome-keyring
 gnu-free-fonts
 groff
+inetutils
 intel-ucode
 iw
 libreoffice-fresh
@@ -35,7 +35,6 @@ linux-headers
 linux-lts
 linux-lts-headers
 lxappearance
-lxqt-policykit
 m4
 maim
 make
@@ -61,6 +60,7 @@ system-config-printer
 texinfo
 thunar
 thunar-volman
+ttf-dejavu
 tumbler
 vala
 vi
