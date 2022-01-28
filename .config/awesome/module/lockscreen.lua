@@ -776,9 +776,9 @@ naughty.connect_signal(
 	function(_)
 		if check_lockscreen_visibility() then
             -- Needed when we come back from sleep
+            awesome.emit_signal('module::spawn_apps')
             awesome.emit_signal('module::change_wallpaper')
             awesome.emit_signal('module::change_background_wallpaper')
-            awesome.emit_signal('module::spawn_apps')
 
             -- Force update date widget
             update_date_text()

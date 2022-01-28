@@ -47,6 +47,7 @@
 .config/eog
 .config/evolution
 .config/filezilla
+.config/fontconfig
 .config/gedit
 .config/git/.git-completion.bash
 .config/git/.git-completion.zsh
@@ -185,6 +186,7 @@ CoreBrightness-backup
 Desktop
 Documents
 Downloads
+GNUstep
 Library
 Movies
 Music
