@@ -30,6 +30,7 @@ groff
 inetutils
 informant
 intel-ucode
+inter-font
 iw
 libreoffice-fresh
 libtool
@@ -48,13 +49,14 @@ mtools
 neovim
 network-manager-applet
 networkmanager
+noto-fonts
+noto-fonts-emoji
 ntfs-3g
-nvidia
-nvidia-lts
 openssh
 os-prober
 pacman-cleanup-hook
 patch
+pavucontrol
 picom-git
 pkgconf
 pulseaudio-alsa
@@ -97,6 +99,7 @@ xorg-fonts-100dpi
 xorg-fonts-75dpi
 xorg-iceauth
 xorg-mkfontscale
+xorg-server
 xorg-server-devel
 xorg-server-xephyr
 xorg-server-xnest

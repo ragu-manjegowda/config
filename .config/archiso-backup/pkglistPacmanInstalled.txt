@@ -26,6 +26,7 @@ gnu-free-fonts
 groff
 inetutils
 intel-ucode
+inter-font
 iw
 libreoffice-fresh
 libtool
@@ -42,12 +43,13 @@ mtools
 neovim
 network-manager-applet
 networkmanager
+noto-fonts
+noto-fonts-emoji
 ntfs-3g
-nvidia
-nvidia-lts
 openssh
 os-prober
 patch
+pavucontrol
 pkgconf
 pulseaudio-alsa
 pulseaudio-bluetooth
@@ -82,6 +84,7 @@ xorg-fonts-100dpi
 xorg-fonts-75dpi
 xorg-iceauth
 xorg-mkfontscale
+xorg-server
 xorg-server-devel
 xorg-server-xephyr
 xorg-server-xnest
