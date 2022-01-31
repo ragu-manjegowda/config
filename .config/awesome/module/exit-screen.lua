@@ -18,7 +18,6 @@ local msg_table = {
 	'Yamete, onii-chan~. UwU',
 	'Okay...bye, fry guy!',
 	'Peace out!',
-	'Peace out, bitch!',
 	'Gotta get going.',
 	'Out to the door, dinosaur.',
 	'Don\'t forget to come back!',
@@ -28,12 +27,10 @@ local msg_table = {
 	'Begone!',
 	'Arrivederci.',
 	'Never look back!',
-	'So long, sucker!',
 	'Au revoir!',
 	'Later, skater!',
 	'That\'ll do pig. That\'ll do.',
 	'Happy trails!',
-	'Smell ya later!',
 	'See you soon, baboon!',
 	'Bye Felicia!',
 	'Sayonara!',
@@ -48,7 +45,7 @@ local msg_table = {
 
 local greeter_message = wibox.widget {
 	markup = 'Choose wisely!',
-	font = 'Hack Nerd UltraLight 48',
+	font = 'Hack Nerd 48',
 	align = 'center',
 	valign = 'center',
 	widget = wibox.widget.textbox
@@ -168,7 +165,7 @@ end
 
 local suspend_command = function()
 	awesome.emit_signal('module::exit_screen:hide')
-	awful.spawn.with_shell(apps.default.lock .. ' & systemctl suspend')
+	awful.spawn.with_shell(apps.default.lock .. ' & systemctl hybrid-sleep')
 end
 
 local logout_command = function()
