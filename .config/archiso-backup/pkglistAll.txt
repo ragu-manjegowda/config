@@ -13,6 +13,7 @@ cups
 cups-pdf
 darkman
 dialog
+docker
 dosfstools
 efibootmgr
 exo
