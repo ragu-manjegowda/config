@@ -4,27 +4,27 @@
 
 ### [rEFInd](.config/rEFInd)
 
-| <img src="man/figures/rEFInd.png" width="900" height="350" /> |
+| <img src="man/figures/rEFInd.png" width="900" height="450" /> |
 |:--:|
 | ***EFI boot picker screen*** |
 
-| <img src="man/figures/rEFInd-menu-options.png" width="900" height="350" /> |
+| <img src="man/figures/rEFInd-menu-options.png" width="900" height="450" /> |
 |:--:|
 | ***EFI menu screen*** |
 
 ### [ZSH](.config/zsh)
 
-| <img src="man/figures/zsh.png" width="900" height="100" /> |
+| <img src="man/figures/zsh.png" width="900" height="60" /> |
 |:--:|
 | ***ZSH command prompt with powerlevel9k theme*** |
 
-| <img src="man/figures/zsh02.png" width="900" height="250" /> |
+| <img src="man/figures/zsh02.png" width="900" height="120" /> |
 |:--:|
 | ***ZSH command prompt with auto-suggestions*** |
 
 ### [Tmux](.config/tmux)
 
-| <img src="man/figures/tmux.png" width="900" height="40" /> |
+| <img src="man/figures/tmux.png" width="900" height="20" /> |
 |:--:|
 | ***TMUX status line showing host OS, session name and other things*** |
 
