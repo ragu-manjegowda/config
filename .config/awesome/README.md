@@ -47,8 +47,7 @@ Installation process is pretty much covered in the wiki of this repo, following 
     xfce4-power-manager upower xdg-user-dirs iproute2 iw ffmpeg
 
 ### 5. Install lua-pam for lock screen - follow README from repo
-* Library compiled for Ubuntu is included in **MY** repo already.
-    If it doesn't work, follow the instructions below.
+* Follow the instructions below to install
 * [Read wiki](https://github.com/manilarome/the-glorious-dotfiles/wiki#how-tos) from the-glorious-dotfiles and then
 * $ git clone https://github.com/RMTT/lua-pam.git
 * On Ubuntu, need dependency

@@ -30,6 +30,7 @@
 .config/alacritty/colors.yml-e
 .config/autostart
 .config/awesome/configuration/api_keys.lua
+.config/awesome/library/liblua_pam.so
 .config/bash/.bash_history
 .config/bash/.bash_maglev
 .config/bash/.bash_ros
