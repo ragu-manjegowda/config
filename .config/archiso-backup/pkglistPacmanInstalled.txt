@@ -41,6 +41,7 @@ m4
 maim
 make
 mtools
+neomutt
 neovim
 network-manager-applet
 networkmanager

@@ -11,6 +11,7 @@ reflector-pacman-hook-git
 slack-desktop
 sync-pacman-hook-git
 teams
+timeshift
 w3m-imgcat
 xidlehook
 yay

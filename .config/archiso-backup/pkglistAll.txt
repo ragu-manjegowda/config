@@ -47,6 +47,7 @@ m4
 maim
 make
 mtools
+neomutt
 neovim
 network-manager-applet
 networkmanager
@@ -76,6 +77,7 @@ teams
 texinfo
 thunar
 thunar-volman
+timeshift
 ttf-dejavu
 tumbler
 vala
