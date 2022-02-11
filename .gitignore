@@ -79,6 +79,7 @@
 .config/monitors.xml~
 .config/nautilus
 .config/neofetch/config.conf
+.config/neomutt/account.*.outlook
 .config/nvim/autoload
 .config/nvim/misc
 .config/nvim/plugged
