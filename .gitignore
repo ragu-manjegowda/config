@@ -80,7 +80,9 @@
 .config/monitors.xml~
 .config/nautilus
 .config/neofetch/config.conf
+.config/neomutt/TOKEN_FILENAME
 .config/neomutt/account.*.outlook
+.config/neomutt/pass.gpg_decrypted
 .config/nvim/autoload
 .config/nvim/misc
 .config/nvim/plugged
