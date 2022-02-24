@@ -2,6 +2,7 @@ awesome-git
 check-broken-packages-pacman-hook-git
 darkman
 informant
+libxcrypt-compat
 light-git
 ly
 pacman-cleanup-hook

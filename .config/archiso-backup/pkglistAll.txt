@@ -35,6 +35,7 @@ inter-font
 iw
 libreoffice-fresh
 libtool
+libxcrypt-compat
 light-git
 linux
 linux-firmware
@@ -64,6 +65,7 @@ pkgconf
 pulseaudio-alsa
 pulseaudio-bluetooth
 python-gtkspellcheck
+python-vobject
 ranger
 redshift
 refind
