@@ -76,6 +76,29 @@ set tmpdir = "$HOME/.cache/neomutt"
 
 set quit = ask-yes
 
+# composing
+# save attachments with the body
+set fcc_attach
+set include
+
+set forward_decode = yes
+
+# Forward message as attachement
+set mime_forward = ask-yes
+set mime_forward_rest = ask-yes
+
+# Spelling
+set ispell = "aspell -e -c"
+
+set send_charset = "utf-8"
+
+set abort_noattach = ask-yes
+
+# number of input lines for prompts to remember
+set history = 10000
+set history_file = "$XDG_CONFIG_HOME/neomutt/history"
+set save_history = 10000
+
 # }}}
 
 # HTML Rendering ============================{{{

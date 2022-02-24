@@ -39,6 +39,8 @@ function create_alias(){
       printf "%s\n" "alias $nickname-$count ${line[*]:1}" >> $alias_file
     fi
   fi
+
+  tmp=$(sort -k 2,2  $alias_file) && echo "$tmp" > "$alias_file"
 }
 
 # pass stdin to create_alias and stdout

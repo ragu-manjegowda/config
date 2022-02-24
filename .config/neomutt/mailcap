@@ -4,23 +4,27 @@
 text/html; w3m -I %{charset} -T text/html -dump; copiousoutput;
 
 # }}}
+
 # Text/plain ==========================={{{
 
 text/plain; nvim %s
 
 # }}}
+
 # MS Word documents ===================={{{
 
 application/vnd.openxmlformats-officedocument.wordprocessingml.document; nvim %s; copiousoutput
 application/msword ; nvim %s ; copiousoutput
 
 # }}}
+
 # Images ==============================={{{
 
 # Save the image in .mutt/tmp/attachments/ and opens it
 image/*; sxiv -a -b %s &
 
 # }}}
+
 # PDFs ================================={{{
 
 # See pdf inside mutt, it turns .pdf in .html and shows it from w3m
@@ -30,15 +34,22 @@ application/pdf; pdftohtml -q -stdout %s | w3m -T text/html; copiousoutput
 #application/pdf; $BROWSER 2> /dev/null '%s';
 
 # }}}
+
+
 # Calendar invites ===================== {{{
 
-# text/calendar; ~/.mutt/scripts/view_attachment.sh %s ics com.flexibits.fantastical2.mac
+# for replying
+text/calendar; ~/.config/neomutt/mutt-ical.py -i -e "rmanjegowda@nvidia.com" %s
+application/ics; ~/.config/neomutt/mutt-ical.py -i -e "rmanjegowda@nvidia.com" %s
+# for auto-view
+text/calendar; ~/.config/neomutt/mutt-ical.py -D %s; copiousoutput
+application/ics; ~/.config/neomutt/mutt-ical.py -D %s; copiousoutput
+
 
 # }}}
+
 # Unidentified files ==================={{{
 
 application/octet-stream; mimeopen %s
 
 # }}}
-
-#}}}

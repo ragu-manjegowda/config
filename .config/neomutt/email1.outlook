@@ -36,3 +36,14 @@ set message_cachedir = $XDG_CONFIG_HOME/neomutt/account.$my_user.outlook/cache/b
 set certificate_file = $XDG_CONFIG_HOME/neomutt/account.$my_user.outlook/certificates
 
 mailboxes +Inbox +"Junk Email" +Drafts +"Sent Items" +"Deleted Items"
+
+index-format-hook attachment_info '~M text/calendar ~X > 0' ' '
+index-format-hook attachment_info '~M text/calendar' "  "
+index-format-hook attachment_info '~X > 0' "  "
+index-format-hook attachment_info '~A' "   "
+
+folder-hook Inbox 'set sort=threads sort_aux=reverse-last-date-received index_format=" %4C %zc %zs %zt  | %-35.35L   %@attachment_info@  %?M10?~(%1M) ?%-30.50s %> %?Y?%Y ? %(!%a %d %h %H:%M)'
+folder-hook "Junk Email" 'set sort=reverse-date-sent index_format=" %4C %zc %zs %zt  | %-35.35L   %?M10?~(%1M) ?%-30.50s %> %?Y?%Y ? %(!%a %d %h %H:%M)'
+folder-hook "Drafts" 'set sort=reverse-date-sent index_format=" %4C %zc %zs %zt  | %-35.35L   %?M10?~(%1M) ?%-30.50s %> %?Y?%Y ? %(!%a %d %h %H:%M)'
+folder-hook "Sent Items" 'set sort=reverse-date-sent index_format=" %4C %zc %zs %zt  | %-35.35L   %?M10?~(%1M) ?%-30.50s %> %?Y?%Y ? %(!%a %d %h %H:%M)'
+folder-hook "Deleted Items" 'set sort=reverse-date-sent index_format=" %4C %zc %zs %zt  | %-35.35L   %?M10?~(%1M) ?%-30.50s %> %?Y?%Y ? %(!%a %d %h %H:%M)'
