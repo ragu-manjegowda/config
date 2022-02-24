@@ -1,0 +1,254 @@
+set ts_status_format = 'mutt %m messages%?n?, %n new?'
+
+set folder_format = '%4C %t %f'
+
+set pager_format="%n %T %s%*  %{!%d %b · %H:%M} %?X? %X?%P"
+
+set forward_format = "Fwd: %s"
+
+set attach_format = "%u%D  %T%-75.75d %?T?%&   ? %5s · %m/%M"
+
+set status_chars = " "
+
+set status_format = " %D %?u? %u ?%?R? %R ?%?d? %d ?%?t? %t ?%?F? %F ?%?p? %p? "
+
+set date_format="!%a %b %d, %Y at %I:%M:%S%p %Z"
+
+index-format-hook attachment_info '~M text/calendar ~X > 0' ' '
+index-format-hook attachment_info '~M text/calendar' "  "
+index-format-hook attachment_info '~X > 0' "  "
+index-format-hook attachment_info '~A' "   "
+
+set index_format="  %zc %zs %zt  | %-35.35L   %@attachment_info@  %?M10?~(%1M) ?%-30.100s %> %?Y?%Y ? %(!%a %d %h %H:%M)  "
+
+set sidebar_format = '%B%?F? [%F]?%* %?N?%N/? %?S?%S?'
+
+set compose_format="-- NeoMutt: Compose  [Approx. msg size: %l   Atts: %a]%>-"
+
+set vfolder_format = "%N %?n?%3n&   ?  %8m  · %f"
+
+### # General Colors   ------------------------------------------------------------------
+### color normal default default                            # general text
+### color error color231 color212                           # error messages
+### color message default default                           # messages at the bottom
+### color prompt default default                            # prompt text
+### color search black color10                              # search highlight
+###
+###
+### # Statusbar Colors   ----------------------------------------------------------------
+### color status color141 default
+### color status color7 color8 '([a-zA-Z0-9\.,]|\[|\])(\s)'  # bubble content 1
+### color status color7 color8 '(\s)([a-zA-Z0-9\.,]|\[|\])'  # bubble content 2
+### color status color7 color8 '(\% )'                       # % symbol
+### color status color7 color8 '(\S)'                        # empty spaces
+### color status color8 default '(|)'                      # statusline "bubbles"
+### color status color69 black '(\` )'                      # bubble account variation
+### color status white color69 '([a-zA-Z0-9\.]+)( )'         # account text
+### color status green color8 ''                            # Unread messages count
+### color status blue color8 ''                             # Read messages count icon
+### color status yellow color8 ''                           # Flagged icon
+### color status red color8 ''                              # Pending delete icon
+###
+###
+### # Index Colors   --------------------------------------------------------------------
+### color index color15 default '~N'                # new messages
+### color index color8 default '~R'                 # read messages
+### color index color8 default '~Q'                 # messages which have been replied to
+### color index_collapsed color4 default            # collapsed thread (message count text)
+### color index color5 default '!~Q^~p'             # sent only to me and haven't been replied to
+### color index color22 default '~h X-Label..'     # messages with a complete label
+### color index color6 default '~F'                 # flagged messages
+### color index color6 default '~F~N'               # flagged messages (new)
+### color index color14 default '~F~R'              # flagged messages (read)
+### color index color1 default '~D'                 # deleted messages
+### color index color1 default '~D~N'               # deleted messages (new)
+### color index color9 default '~D~R'               # deleted messages (read)
+### color index color3 default '~T'                 # tagged messages
+### color index color3 default '~T~N'               # tagged messages (new)
+### color index color11 default '~T~R'              # tagged messages (read)
+### color tree  color8 color8                       # thread tree lines/arrow
+### color indicator default color8                  # selection indicator
+### color index_date color8 default                 # date is always the same colour
+### color index_label color6 default                # label is always the same colour
+###
+###
+### # Sidebar Colors   ------------------------------------------------------------------
+### color sidebar_indicator color14 black   # currently selected mailbox
+### color sidebar_highlight white color8    # highlighted, but not open, mailbox.
+### color sidebar_ordinary color8 default   # Color to give mailboxes by default
+### color sidebar_divider color8 black      # divider between sidebar & content
+### color sidebar_flagged red black         # mailboxes containing flagged mail
+### color sidebar_new green black           # mailboxes containing new mail
+### color sidebar_unread color7 default     # mailboxes containing unread mail
+### color sidebar_unread color7 default     # mailboxes containing unread mail
+###
+###
+### # Message Headers   -----------------------------------------------------------------
+### color hdrdefault color8 default
+###
+###
+### # Message Body   --------------------------------------------------------------------
+###
+### # Attachments
+### color attachment color8 default
+###
+### # Signature
+### color signature color8 default
+###
+### # emails
+### # color body  color14 default  '[\-\.+_a-zA-Z0-9]+@[\-\.a-zA-Z0-9]+'
+###
+### # hide "mailto"
+### color body  color0 color0  '<mailto:[\-\.+_a-zA-Z0-9]+@[\-\.a-zA-Z0-9]+>'
+###
+### # URLs
+### color body  color3 default  '(https?|ftp)://[-\.,/%~_:?&=\#a-zA-Z0-9\+]+'
+###
+### # Dividers
+### color body color8 default '(^[-_]*$)'
+###
+### # Important info in calendar invites
+### color body color6 default '^(Date\/Time|Location|Organiser|Invitees|Teams Meeting)(:| \~\~)'
+###
+### # Quotes
+### color quoted		color61		default
+### color quoted1		color117	default
+### color quoted2		color84		default
+### color quoted3		color215	default
+### color quoted4		color212	default
+###
+### # Forward/reply headers
+### color body color8 default '(^(To|From|Sent|Subject):.*)'
+###
+### # Patch syntax highlighting
+### # color   body    brightwhite     default         '^[[:space:]].*'
+### # color   body    yellow          default         ^(diff).*
+### # color   body    white           default         ^[\-\-\-].*
+### # color   body    white           default         ^[\+\+\+].*
+### # color   body    green           default         ^[\+].*
+### # color   body    red             default         ^[\-].*
+### # color   body    brightblue      default         [@@].*
+### # color   body    cyan            default         ^(Signed-off-by).*
+### # color   body    brightwhite     default         ^(Cc)
+### # color   body    yellow          default         "^diff \-.*"
+### # color   body    brightwhite     default         "^index [a-f0-9].*"
+### # color   body    brightblue      default         "^---$"
+### # color   body    white           default         "^\-\-\- .*"
+### # color   body    white           default         "^[\+]{3} .*"
+### # color   body    green           default         "^[\+][^\+]+.*"
+### # color   body    red             default         "^\-[^\-]+.*"
+### # color   body    brightblue      default         "^@@ .*"
+### # color   body    green           default         "LGTM"
+### # color   body    brightmagenta   default         "-- Commit Summary --"
+### # color   body    brightmagenta   default         "-- File Changes --"
+### # color   body    brightmagenta   default         "-- Patch Links --"
+### # color   body    green           default         "^Merged #.*"
+### # color   body    red             default         "^Closed #.*"
+### # color   body    brightblue      default         "^Reply to this email.*"
+###
+###
+### # Misc  -----------------------------------------------------------------------------
+###
+### # no addressed to me, to me, group, cc, sent by me, mailing list
+set to_chars=" "
+###
+### # unchanged mailbox, changed, read only, attach mode
+set status_chars = " "
+ifdef crypt_chars set crypt_chars = " "
+set flag_chars = "     "
+###
+### # hide some tags
+### set hidden_tags = "unread,draft,flagged,passed,replied,attachment,signed,encrypted"
+tag-transforms "replied" "↻ "  \
+               "encrytpted" "" \
+               "signed" "" \
+               "attachment" "" \
+               "invites" ""
+###
+### # The formats must start with 'G' and the entire sequence is case sensitive.
+tag-formats "replied" "GR" \
+            "encrypted" "GE" \
+            "signed" "GS" \
+            "attachment" "GA" \
+            "invites" "GI"
+###
+
+# Status Bar -----------------------------------------
+# Controls the characters used by the ``%r'' indicator in
+# $status_format. The first character is used when the mailbox is
+# unchanged. The second is used when the mailbox has been changed, and
+# it needs to be resynchronized. The third is used if the mailbox is in
+# read-only mode, or if the mailbox will not be written when exiting
+# that mailbox (You can toggle whether to write changes to a mailbox
+# with the <toggle-write> operation, bound by default to ``%''). The fourth
+# is used to indicate that the current folder has been opened in attach-
+# message mode (Certain operations like composing a new mail, replying,
+# forwarding, etc. are not permitted in this mode).
+
+
+
+# %b      number of mailboxes with new mail *
+# %d      number of deleted messages *
+# %f      the full pathname of the current mailbox
+# %F      number of flagged messages *
+# %h      local hostname
+# %l      size (in bytes) of the current mailbox *
+# %L      size (in bytes) of the messages shown (i.e., which match the current limit) *
+# %m      the number of messages in the mailbox *
+# %M      the number of messages shown (i.e., which match the current limit) *
+# %n      number of new messages in the mailbox *
+# %o      number of old unread messages *
+# %p      number of postponed messages *
+# %P      percentage of the way through the index
+# %r      modified/read-only/won't-write/attach-message indicator, according to $status_chars
+# %s      current sorting mode ($sort)
+# %S      current aux sorting method ($sort_aux)
+# %t      number of tagged messages *
+# %u      number of unread messages *
+# %v      Mutt version string
+# %V      currently active limit pattern, if any *
+
+
+# Index View Options ---------------------------------
+# %a      address of the author
+# %A      reply-to address (if present; otherwise: address of author)
+# %b      filename of the original message folder (think mailbox)
+# %B      the list to which the letter was sent, or else the folder name (%b).
+# %c      number of characters (bytes) in the message
+# %C      current message number
+# %d      date and time of the message in the format specified by
+# $date_format         converted to sender's time zone
+# %D      date and time of the message in the format specified by
+# $date_format         converted to the local time zone
+# %e      current message number in thread
+# %E      number of messages in current thread
+# %f      sender (address + real name), either From: or Return-Path:
+# %F      author name, or recipient name if the message is from you
+# %H      spam attribute(s) of this message
+# %i      message-id of the current message
+# %l      number of lines in the message (does not work with maildir,
+#         mh, and possibly IMAP folders)
+# %L      If an address in the ``To:'' or ``Cc:'' header field matches an address
+#         defined by the users ``subscribe'' command, this displays
+#         "To <list-name>", otherwise the same as %F.
+# %m      total number of message in the mailbox
+# %M      number of hidden messages if the thread is collapsed.
+# %N      message score
+# %n      author's real name (or address if missing)
+# %O      original save folder where mutt would formerly have
+#         stashed the message: list name or recipient name
+#         if not sent to a list
+# %P      progress indicator for the built-in pager (how much of the file has been displayed)
+# %s      subject of the message
+# %S      status of the message (``N''/``D''/``d''/``!''/``r''/*)
+# %t      ``To:'' field (recipients)
+# %T      the appropriate character from the $to_chars string
+# %u      user (login) name of the author
+# %v      first name of the author, or the recipient if the message is from you
+# %X      number of attachments
+#         (please see the ``attachments'' section for possible speed effects)
+# %y      ``X-Label:'' field, if present
+# %Y      ``X-Label:'' field, if present, and (1) not at part of a thread tree,
+#         (2) at the top of a thread, or (3) ``X-Label:'' is different from
+#         preceding message's ``X-Label:''.
+# %Z      message status flags

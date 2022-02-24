@@ -1,4 +1,4 @@
-source "gpg -dq ~/.config/neomutt/pass.gpg |"
+source "gpg -dq --for-your-eyes-only ~/.config/neomutt/pass.gpg |"
 unmailboxes *
 
 # The variables $my_username, $my_password and $my_name are stored in pass.gpg,

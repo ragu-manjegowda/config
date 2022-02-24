@@ -11,12 +11,19 @@ bind pager                      gg  top
 bind pager                      G   bottom
 bind pager                      k   previous-line
 bind pager                      j   next-line
+bind index                      h collapse-thread
+bind index                      l collapse-thread
+bind index                      zz current-middle
+bind index                      zt current-top
+bind index                      zb current-bottom
 
 # Scrolling
 bind attach,browser,pager,index \CF next-page
 bind attach,browser,pager,index \CB previous-page
 bind attach,browser,pager,index \Cu half-up
 bind attach,browser,pager,index \Cd half-down
+bind browser,pager,index        n search-next
+bind browser,pager,index        N  search-opposite
 bind browser,pager              \Ce next-line
 bind browser,pager              \Cy previous-line
 bind index                      \Ce next-line
@@ -31,33 +38,38 @@ bind pager <BackSpace> noop # Normally <previous-line>.
 bind pager <space> next-page
 bind pager Q noop # Normally <quit>.
 bind pager T noop # Normally <toggle-quoted>.
-#bind pager V noop # Normally <show-version>.
+bind pager V noop # Normally <show-version>.
 bind pager ^ noop # Normally <top>, which we have bound to gg.
 bind pager i noop # Normally <exit>, but that is also bound to q.
 bind pager o noop # Normally <sort-mailbox>.
 bind pager u exit
 
 # Bindings for sidebar
+macro index b '<enter-command>toggle sidebar_visible<enter><refresh>'
+macro pager b '<enter-command>toggle sidebar_visible<enter><redraw-screen>'
 bind index,pager \Ck sidebar-prev
 bind index,pager \Cj sidebar-next
 bind index,pager \Co sidebar-open
-bind index,pager <F3> sidebar-page-up
-bind index,pager <F4> sidebar-page-down
-bind index,pager \Cp sidebar-prev-new
-bind index,pager \Cn sidebar-next-new
 
-bind attach,index,pager p noop # Normally <print-entry> or <print-message>.
 bind editor <Tab> complete-query
-bind editor <space> noop # So line-editor can accept folders with spaces in their names.
 bind editor \CT complete
+bind editor <space> noop # So line-editor can accept folders with spaces in their names.
 bind generic * noop # Normally <last-entry>.
 bind generic < noop # Normally <previous-line>.
 bind generic = noop # Normally <first-entry>.
 bind generic > noop # Normally <next-line>.
 bind generic [ noop # Normally <half-up>.
-#bind generic \; noop # Normally <tag-prefix>.
 bind generic ] noop # Normally <half-down>.
-bind index <space> next-page
 bind index V noop # Normally bound to "show-version".
-bind pager <space> next-page
+#bind attach,index,pager p noop # Normally <print-entry> or <print-message>.
+#bind generic \; noop # Normally <tag-prefix>.
+#bind index <space> next-page
+#bind pager <space> next-page
+
+# Misc
+macro index,pager \cl '<pipe-message>urlscan -d -w 80<enter>' "call urlscan to open links"
+macro attach,compose \cl "<pipe-entry> urlscan -d -w 80<Enter>" "call urlscan to extract URLs out of a message"
+macro index,pager,generic <F1> "!w3m /usr/share/doc/neomutt/manual.html\n" "Show Mutt documentation"
+macro attach s '<save-entry><kill-line>~/Downloads/<enter>a' "Save file to ~/Downloads"
+bind index,pager $ sync-mailbox # more like a refresh than a sync
 
