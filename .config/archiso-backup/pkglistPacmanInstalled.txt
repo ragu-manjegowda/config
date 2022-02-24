@@ -66,6 +66,7 @@ thunar
 thunar-volman
 ttf-dejavu
 tumbler
+urlscan
 vala
 vi
 w3m
@@ -123,5 +124,7 @@ xorg-xwd
 xorg-xwininfo
 xorg-xwud
 xsettingsd
+zathura
+zathura-pdf-mupdf
 zim
 zsh

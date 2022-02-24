@@ -80,6 +80,7 @@ thunar-volman
 timeshift
 ttf-dejavu
 tumbler
+urlscan
 vala
 vi
 w3m
@@ -140,5 +141,7 @@ xorg-xwininfo
 xorg-xwud
 xsettingsd
 yay
+zathura
+zathura-pdf-mupdf
 zim
 zsh
