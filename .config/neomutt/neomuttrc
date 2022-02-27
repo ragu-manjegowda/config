@@ -148,7 +148,7 @@ set sidebar_component_depth = 5
 
 # Colors ===================================={{{
 
-source "$XDG_CONFIG_HOME/neomutt/dracula.muttrc"
+source "$XDG_CONFIG_HOME/neomutt/colors-custom.muttrc"
 
 #}}}
 
