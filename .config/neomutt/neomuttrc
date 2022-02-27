@@ -1,11 +1,14 @@
+# vim: filetype=neomuttrc
+# muttrc file for account outlook offline
+
 # General settings =========================={{{
 
-# Folder hooks
-folder-hook 'email1.outlook' 'source $XDG_CONFIG_HOME/neomutt/email1.outlook'
-set rfc2047_parameters = yes
+# Source stored password
+source "gpg -dq --for-your-eyes-only ~/.config/neomutt/pass.gpg |"
 
-# Default account
-source $XDG_CONFIG_HOME/neomutt/email1.outlook
+# Folder hooks
+# folder-hook 'email1.outlook' 'source $XDG_CONFIG_HOME/neomutt/email1.outlook'
+set rfc2047_parameters = yes
 
 # Delete without confirming
 set delete
@@ -53,14 +56,17 @@ set tilde
 set quote_regexp = "^( {0,4}[>|:#%]| {0,4}[a-z0-9]+[>|]+)+"
 
 # set sort = 'reverse-date'		# sorting the mails in threads in index (mails-list-view)
-set sort = 'threads'
-set sort_aux = reverse-last-date-received		# and the thread themselves reverse-date
-# set sort=reverse-threads
-# set sort_aux=date-received
+# set sort = 'threads'
+# set sort_aux = reverse-last-date-received		# and the thread themselves reverse-date
+set sort = reverse-threads
+set sort_aux = date-received
 set narrow_tree=no
 set uncollapse_jump                        # don't collapse on an unread message
 set sort_re                                # thread based on regex
 set reply_regexp = "^(([Rr][Ee]?(\[[0-9]+\])?: *)?(\[[^]]+\] *)?)*"
+
+# set collapse_all = yes
+# set uncollapse_new = no # (default is yes)
 
 set mime_forward = yes
 
@@ -129,14 +135,6 @@ source "$XDG_CONFIG_HOME/neomutt/styles.muttrc"
 
 # Sidebar ==================================={{{
 
-# Sidebar for Mutt
-#set sidebar_visible = yes
-#set sidebar_width = 25
-## Color to give mailboxes containing flagged mail
-#color sidebar_flagged red default
-## Color to give mailboxes containing new mail
-#color sidebar_new yellow default
-
 # Sidebar for neomutt
 set sidebar_visible = yes
 set sidebar_width = 25
@@ -165,18 +163,12 @@ source "cat $alias_file 2> /dev/null |" # only source if file exists
 
 # }}}
 
+# Accounts ==========================={{{
 
+# Default account
+source $XDG_CONFIG_HOME/neomutt/accounts/outlook
 
-##############
-#  Contacts  #
-##############
+macro index,pager i1 '<sync-mailbox><enter-command>source $XDG_CONFIG_HOME/neomutt/accounts/outlook<enter><change-folder>!<enter>;<check-stats>' "switch to outlook - online"
+macro index,pager i2 '<sync-mailbox><enter-command>source $XDG_CONFIG_HOME/neomutt/accounts/outlook-offline<enter><change-folder>!<enter>;<check-stats>' "switch to outlook - offline"
 
-# # Automatically add email addresses to abook, whenever email is opened
-# set display_filter = "pee 'abook --add-email-quiet' 'cat -'"
-# # When looking for contacts, use this command
-# set query_command= "abook --mutt-query '%s'"
-# # Add current sender to address book
-# macro index,pager  a "<pipe-message>abook --add-email-quiet<return>" "Add this sender to Abook"
-# # Auto-complete email addresses by pushing tab
-# bind editor <Tab> complete-query
-
+# }}}

@@ -24,10 +24,6 @@ bind attach,browser,pager,index \Cu half-up
 bind attach,browser,pager,index \Cd half-down
 bind browser,pager,index        n search-next
 bind browser,pager,index        N  search-opposite
-bind browser,pager              \Ce next-line
-bind browser,pager              \Cy previous-line
-bind index                      \Ce next-line
-bind index                      \Cy previous-line
 
 bind attach <enter> view-mailcap # Normally <view-attach>.
 bind attach <return> view-mailcap
@@ -74,3 +70,5 @@ macro attach s '<save-entry><kill-line>~/Downloads/<enter>a' "Save file to ~/Dow
 bind index,pager $ sync-mailbox # more like a refresh than a sync
 macro index \cr "<tag-pattern>.<enter><tag-prefix><clear-flag>N<untag-pattern>.<enter>"
 macro pager \cr "<tag-pattern>.<enter><tag-prefix><clear-flag>N<untag-pattern>.<enter>"
+
+macro index,pager Mi ";<save-message>=INBOX<enter>" "move mail to inbox"

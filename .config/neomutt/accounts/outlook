@@ -1,4 +1,6 @@
-source "gpg -dq --for-your-eyes-only ~/.config/neomutt/pass.gpg |"
+# vim: filetype=neomuttrc
+# muttrc file for account outlook offline
+
 unmailboxes *
 
 # The variables $my_username, $my_password and $my_name are stored in pass.gpg,
@@ -7,11 +9,11 @@ set my_user = "$my_username"
 set imap_pass = "$my_password"
 set realname = "$my_name"
 
-set imap_user = "$my_user@nvidia.com"
-set smtp_url = "smtp://rmanjegowda@nvidia.com@smtp.office365.com:587"
+set from = "$my_email"
+set imap_user = "$from"
+set smtp_url = "smtp://$from@smtp.office365.com:587"
 set smtp_pass = "$imap_pass"
-set from = "$imap_user"
-set folder = "imaps://rmanjegowda@nvidia.com@outlook.office365.com:993"
+set folder = "imaps://$from@outlook.office365.com:993"
 set spoolfile = "+Inbox"
 set use_from=yes
 set imap_authenticators="oauthbearer:xoauth2"
@@ -42,8 +44,15 @@ index-format-hook attachment_info '~M text/calendar' "  "
 index-format-hook attachment_info '~X > 0' "  "
 index-format-hook attachment_info '~A' "   "
 
-folder-hook Inbox 'set sort=threads sort_aux=reverse-last-date-received index_format=" %4C %zc %zs %zt  | %-35.35L   %@attachment_info@  %?M10?~(%1M) ?%-30.50s %> %?Y?%Y ? %(!%a %d %h %H:%M)'
-folder-hook "Junk Email" 'set sort=reverse-date-sent index_format=" %4C %zc %zs %zt  | %-35.35L   %?M10?~(%1M) ?%-30.50s %> %?Y?%Y ? %(!%a %d %h %H:%M)'
-folder-hook "Drafts" 'set sort=reverse-date-sent index_format=" %4C %zc %zs %zt  | %-35.35L   %?M10?~(%1M) ?%-30.50s %> %?Y?%Y ? %(!%a %d %h %H:%M)'
-folder-hook "Sent Items" 'set sort=reverse-date-sent index_format=" %4C %zc %zs %zt  | %-35.35L   %?M10?~(%1M) ?%-30.50s %> %?Y?%Y ? %(!%a %d %h %H:%M)'
-folder-hook "Deleted Items" 'set sort=reverse-date-sent index_format=" %4C %zc %zs %zt  | %-35.35L   %?M10?~(%1M) ?%-30.50s %> %?Y?%Y ? %(!%a %d %h %H:%M)'
+# Do not group threads and search through messages for attachment_info
+set my_indexing = 'set sort=reverse-date-sent index_format=" %4C %zc %zs %zt  | %-35.35L   %?M10?~(%1M) ?%-30.50s %> %?Y?%Y ? %(!%a %d %h %H:%M)'
+
+folder-hook Inbox 'set sort=reverse-threads sort_aux=date-received index_format=" %4C %zc %zs %zt  | %-35.35L   %@attachment_info@  %?M10?~(%1M) ?%-30.50s %> %?Y?%Y ? %(!%a %d %h %H:%M)'
+
+folder-hook "Junk Email" "$my_indexing"
+folder-hook "Drafts" "$my_indexing"
+folder-hook "Sent Items" "$my_indexing"
+folder-hook "Deleted Items" "$my_indexing"
+
+set my_account = "$from (mutt-imap)"
+set status_format = "$my_account %D %?u? %u ?%?R? %R ?%?d? %d ?%?t? %t ?%?F? %F ?%?p? %p? "

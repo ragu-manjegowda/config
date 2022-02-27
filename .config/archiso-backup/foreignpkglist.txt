@@ -1,8 +1,8 @@
 awesome-git
 check-broken-packages-pacman-hook-git
+cyrus-sasl-xoauth2-git
 darkman
 informant
-libxcrypt-compat
 light-git
 ly
 pacman-cleanup-hook
