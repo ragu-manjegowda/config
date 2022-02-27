@@ -84,11 +84,15 @@
 .config/neomutt/account.*.outlook
 .config/neomutt/aliases
 .config/neomutt/history
+.config/neomutt/maildir/
+.config/neomutt/msmtp.log
 .config/neomutt/pass.gpg_decrypted
 .config/nvim/autoload
 .config/nvim/misc
 .config/nvim/plugged
 .config/nvim/undodir
+.config/oauth2ms/config.json
+.config/oauth2ms/oauth2ms
 .config/pavucontrol.ini
 .config/pip
 .config/pulse

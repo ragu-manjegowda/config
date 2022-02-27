@@ -11,6 +11,7 @@ bluez
 check-broken-packages-pacman-hook-git
 cups
 cups-pdf
+cyrus-sasl-xoauth2-git
 darkman
 dialog
 docker
@@ -32,6 +33,7 @@ inetutils
 informant
 intel-ucode
 inter-font
+isync
 iw
 libreoffice-fresh
 libtool
@@ -47,6 +49,7 @@ ly
 m4
 maim
 make
+msmtp
 mtools
 neomutt
 neovim
@@ -76,6 +79,7 @@ sudo
 sync-pacman-hook-git
 system-config-printer
 teams
+testdisk
 texinfo
 thunar
 thunar-volman

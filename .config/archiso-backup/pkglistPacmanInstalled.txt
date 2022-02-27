@@ -28,9 +28,11 @@ groff
 inetutils
 intel-ucode
 inter-font
+isync
 iw
 libreoffice-fresh
 libtool
+libxcrypt-compat
 linux
 linux-firmware
 linux-headers
@@ -40,6 +42,7 @@ lxappearance
 m4
 maim
 make
+msmtp
 mtools
 neomutt
 neovim
@@ -62,6 +65,7 @@ refind
 rofi
 sudo
 system-config-printer
+testdisk
 texinfo
 thunar
 thunar-volman

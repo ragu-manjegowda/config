@@ -1,0 +1,44 @@
+# vim: filetype=neomuttrc
+# muttrc file for account outlook offline
+
+# The variables $my_username, $my_password and $my_name are stored in pass.gpg,
+# neomutt decrypt that file and source them
+set my_user = "$my_username"
+set imap_pass = "$my_password"
+set realname = "$my_name"
+
+set from = "$my_email"
+set sendmail = "msmtp -C ~/.config/neomutt/msmtprc -a nvidia"
+set folder = $XDG_CONFIG_HOME/neomutt/maildir/nvidia
+set header_cache = $XDG_CONFIG_HOME/neomutt/account.$my_user.outlook/cache/headers
+set message_cachedir = $XDG_CONFIG_HOME/neomutt/account.$my_user.outlook/cache/bodies
+set mbox_type = Maildir
+
+macro index o "<shell-escape>mbsync -V -c ~/.config/neomutt/mbsyncrc nvidia<enter>" "run mbsync to sync nvidia"
+unmailboxes *
+
+set spoolfile = "+Inbox"
+set record = "+Sent Items"
+set postponed = "+Drafts"
+set trash = "+Deleted Items"
+
+mailboxes +Inbox +"Junk Email" +Drafts +"Sent Items" +"Deleted Items"
+
+index-format-hook attachment_info '~M text/calendar ~X > 0' ' '
+index-format-hook attachment_info '~M text/calendar' "  "
+index-format-hook attachment_info '~X > 0' "  "
+index-format-hook attachment_info '~A' "   "
+
+# Do not group threads and search through messages for attachment_info
+set my_indexing = 'set sort=reverse-date-sent index_format=" %4C %zc %zs %zt  | %-35.35L   %?M10?~(%1M) ?%-30.50s %> %?Y?%Y ? %(!%a %d %h %H:%M)'
+
+folder-hook Inbox 'set sort=reverse-threads sort_aux=date-received index_format=" %4C %zc %zs %zt  | %-35.35L   %@attachment_info@  %?M10?~(%1M) ?%-30.50s %> %?Y?%Y ? %(!%a %d %h %H:%M)'
+
+folder-hook "Junk Email" "$my_indexing"
+folder-hook "Drafts" "$my_indexing"
+folder-hook "Sent Items" "$my_indexing"
+folder-hook "Deleted Items" "$my_indexing"
+
+set my_account = "$from (mbsync-imap)"
+set status_format = "$my_account %D %?u? %u ?%?R? %R ?%?d? %d ?%?t? %t ?%?F? %F ?%?p? %p? "
+
