@@ -26,8 +26,9 @@ local info_center = function(s)
 					forced_width = dpi(panel_width),
 					spacing = dpi(10),
                     require('widget.notif-center')(s),
+                    require('widget.email'),
 	                require('widget.stocks'),
-                    require('widget.weather'),
+                    require('widget.weather')
                     -- require('widget.email')
 				},
 				margins = dpi(16),

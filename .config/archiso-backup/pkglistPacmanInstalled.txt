@@ -24,6 +24,7 @@ gcc
 gimp
 git
 gnu-free-fonts
+goimapnotify
 groff
 inetutils
 intel-ucode
