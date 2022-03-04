@@ -60,8 +60,9 @@ return {
 		'blueman-applet',
 		-- Music server
 		-- Polkit and keyring
-		--'/usr/bin/lxqt-policykit-agent &' ..
-		--' eval $(gnome-keyring-daemon -s --components=pkcs11,secrets,ssh,gpg)',
+		'/usr/bin/lxqt-policykit-agent &',
+		-- '/usr/bin/lxqt-policykit-agent &' ..
+		-- ' eval $(gnome-keyring-daemon -s --components=gpg)',
 		-- Load X colors
 		'xrdb ~/.Xresources',
 		-- Audio equalizer

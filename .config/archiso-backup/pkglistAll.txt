@@ -46,6 +46,7 @@ linux-headers
 linux-lts
 linux-lts-headers
 lxappearance
+lxqt-policykit
 ly
 m4
 maim
