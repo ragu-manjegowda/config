@@ -40,6 +40,7 @@ linux-headers
 linux-lts
 linux-lts-headers
 lxappearance
+lxqt-policykit
 m4
 maim
 make
