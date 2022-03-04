@@ -2,6 +2,7 @@
 
 # text/html; elinks -dump %s -dump-charset %{charset} -force-html; nametemplate=%s.html; copiousoutput
 text/html; w3m -I %{charset} -T text/html -dump; copiousoutput;
+# text/html; firefox -new-window 2> /dev/null %s &
 
 # }}}
 
@@ -28,10 +29,10 @@ image/*; sxiv -a -b %s &
 # PDFs ================================={{{
 
 # See pdf inside mutt, it turns .pdf in .html and shows it from w3m
-application/pdf; pdftohtml -q -stdout %s | w3m -T text/html; copiousoutput
+#application/pdf; pdftohtml -q -stdout %s | w3m -T text/html; copiousoutput
 
 # See pdf with BROWSER
-#application/pdf; $BROWSER 2> /dev/null '%s';
+application/pdf; zathura 2> /dev/null '%s';
 
 # }}}
 
