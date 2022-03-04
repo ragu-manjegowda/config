@@ -72,13 +72,14 @@ return {
         "" --timer 600 "systemctl suspend" "" \
         --timer 3600 "systemctl hibernate" ""
 		]],
-		-- You can add more start-up applications here
         -- Darkman
         --'XDG_DATA_DIRS=~/.config/darkman darkman',
         'systemctl --user reload-or-restart --now darkman.service',
         -- Use `xinput list` command to get touchpad device name
         -- `SynPS/2 Synaptics TouchPad` in this case
-        'xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Tapping Enabled" 1'
+        'xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Tapping Enabled" 1',
+        -- Start imapnotify
+        'systemctl --user reload-or-restart goimapnotify.service'
 	},
 
 	-- List of binaries/shell scripts that will execute for a certain task

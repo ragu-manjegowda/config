@@ -100,7 +100,8 @@
 .config/redshift.conf
 .config/remmina
 .config/rustup
-.config/systemd
+.config/systemd/user/*
+!.config/systemd/user/goimapnotify.service
 .config/teams
 .config/tmux/.tmux_history
 .config/tmux/session-restore
