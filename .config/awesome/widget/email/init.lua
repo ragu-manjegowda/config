@@ -15,6 +15,8 @@ local secrets = {
 	port = config.widget.email.port
 }
 
+local mails_path = config_dir .. 'widget/email/mails.txt'
+
 local unread_email_count = 0
 local startup_show = true
 
@@ -169,65 +171,6 @@ local email_details_tooltip = awful.tooltip
 	margin_topbottom = dpi(8)
 }
 
-local fetch_email_command = [[
-python3 - <<END
-import imaplib
-import email
-import datetime
-import re
-import sys
-from email.policy import default
-
-def process_mailbox(M):
-	rv, data = M.search(None, "(UNSEEN)")
-	if rv != 'OK':
-		print ("No messages found!")
-		return
-
-	for num in reversed(data[0].split()):
-		rv, data = M.fetch(num, '(BODY.PEEK[])')
-		if rv != 'OK':
-			print ("ERROR getting message", num)
-			return
-
-		msg = email.message_from_bytes(data[0][1], policy=default)
-		print ('From:', msg['From'])
-		print ('Subject: %s' % (msg['Subject']))
-		date_tuple = email.utils.parsedate_tz(msg['Date'])
-		if date_tuple:
-			local_date = datetime.datetime.fromtimestamp(email.utils.mktime_tz(date_tuple))
-			print ("Local Date:", local_date.strftime("%a, %H:%M:%S %b %d, %Y") + "\n")
-			# with code below you can process text of email
-			# if msg.is_multipart():
-			#     for payload in msg.get_payload():
-			#         if payload.get_content_maintype() == 'text':
-			#             print  payload.get_payload()
-			#         else:
-			#             print msg.get_payload()
-
-
-try:
-	M=imaplib.IMAP4_SSL("]] .. secrets.imap_server .. [[", ]] .. secrets.port .. [[)
-	M.login("]] .. secrets.email_address .. [[","]] .. secrets.app_password .. [[")
-
-	status, counts = M.status("INBOX","(MESSAGES UNSEEN)")
-
-	rv, data = M.select("INBOX")
-	if rv == 'OK':
-		unread = re.search(r'UNSEEN\s(\d+)', counts[0].decode('utf-8')).group(1)
-		print ("Unread Count: " + unread)
-		process_mailbox(M)
-
-	M.close()
-	M.logout()
-
-except Exception as e:
-	if e:
-		print (e)
-
-END
-]]
-
 local notify_all_unread_email = function(email_data)
 
 	local unread_counter = email_data:match('Unread Count: (.-)From:'):sub(1, -2)
@@ -245,8 +188,6 @@ local notify_all_unread_email = function(email_data)
 	naughty.notification ({
 		app_name = 'Email',
 		title = title,
-		message = email_data,
-		timeout = 30,
 		icon = widget_icon_dir .. 'email-unread.svg'
 	})
 end
@@ -340,37 +281,47 @@ local set_empty_inbox_msg = function()
 	)
 end
 
-local fetch_email_data = function()
-	awful.spawn.easy_async_with_shell(
-		fetch_email_command,
-		function(stdout)
-			stdout = gears.string.xml_escape(stdout:sub(1, -2))
+awesome.connect_signal(
+	'module::email:show',
+    function()
+        fetch_email_data()
+    end
+)
 
-			if stdout:match('Temporary failure in name resolution') then
-				set_no_connection_msg()
-				return
-			elseif stdout:match('Invalid credentials') then
-				set_invalid_credentials_msg()
-				return
-			elseif stdout:match('Unread Count: 0') then
-				email_icon_widget.icon:set_image(widget_icon_dir .. 'email.svg')
-				set_empty_inbox_msg()
-				return
-			elseif not stdout:match('Unread Count: (.-)From:') then
-				return
-			elseif not stdout or stdout == '' then
-				return
-			end
+function fetch_email_data()
+    open = io.open
+    file = open(tostring(mails_path), "rb") -- r read mode and b binary mode
 
-			set_latest_email_data(stdout)
-			set_email_data_tooltip(stdout)
+    if not file then return end
 
-			if startup_show then
-				notify_all_unread_email(stdout)
-				startup_show = false
-			end
-		end
-	)
+    content = file:read "*a" -- *a or *all reads the whole file
+    file:close()
+
+	stdout = content
+
+	if stdout:match('Temporary failure in name resolution') then
+		set_no_connection_msg()
+		return
+	elseif stdout:match('Invalid credentials') then
+		set_invalid_credentials_msg()
+		return
+	elseif stdout:match('Unread Count: 0') then
+		email_icon_widget.icon:set_image(widget_icon_dir .. 'email.svg')
+		set_empty_inbox_msg()
+		return
+	elseif not stdout:match('Unread Count: (.-)From:') then
+		return
+	elseif not stdout or stdout == '' then
+		return
+	end
+
+	set_latest_email_data(stdout)
+	set_email_data_tooltip(stdout)
+
+	if startup_show then
+		notify_all_unread_email(stdout)
+		startup_show = false
+	end
 end
 
 local set_missing_secrets_msg = function()
@@ -383,7 +334,7 @@ local set_missing_secrets_msg = function()
 end
 
 local check_secrets = function()
-	if secrets.email_address == '' or secrets.app_password == '' or secrets.imap_server == '' or secrets.port == '' then
+	if secrets.email_address == '' and secrets.app_password == '' and secrets.imap_server == '' and secrets.port == '' then
 		set_missing_secrets_msg()
 		return
 	else
@@ -392,15 +343,6 @@ local check_secrets = function()
 end
 
 check_secrets()
-
-local update_widget_timer = gears.timer {
-	timeout = 30,
-	autostart = true,
-	call_now = true,
-	callback  = function()
-		check_secrets()
-	end
-}
 
 email_report:connect_signal(
 	'mouse::enter',
