@@ -78,6 +78,8 @@ return {
         -- Use `xinput list` command to get touchpad device name
         -- `SynPS/2 Synaptics TouchPad` in this case
         'xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Tapping Enabled" 1',
+        -- Fetch unread emails upon login
+        '~/.config/imapnotify/notify.sh',
         -- Start imapnotify
         'systemctl --user reload-or-restart goimapnotify.service'
 	},
