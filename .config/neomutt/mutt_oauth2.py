@@ -45,7 +45,7 @@ import subprocess
 # input and write to standard output. The example values here invoke GPG,
 # although won't work until an appropriate identity appears in the first line.
 ENCRYPTION_PIPE = ['gpg', '--encrypt', '--recipient', 'Ragu Manjegowda']
-DECRYPTION_PIPE = ['gpg', '--decrypt']
+DECRYPTION_PIPE = ['gpg', '--decrypt', '--no-emit-version']
 
 registrations = {
     'google': {

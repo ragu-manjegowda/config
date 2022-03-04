@@ -11,11 +11,15 @@ bind pager                      gg  top
 bind pager                      G   bottom
 bind pager                      k   previous-line
 bind pager                      j   next-line
-bind index                      h collapse-thread
-bind index                      l collapse-thread
-bind index                      zz current-middle
-bind index                      zt current-top
-bind index                      zb current-bottom
+bind index                      k   previous-entry
+bind index                      j   next-entry
+bind index                      h   collapse-thread
+bind index                      l   collapse-thread
+bind index                      D   delete-thread
+bind index                      U   undelete-thread
+bind index                      zz  current-middle
+bind index                      zt  current-top
+bind index                      zb  current-bottom
 
 # Scrolling
 bind attach,browser,pager,index \CF next-page

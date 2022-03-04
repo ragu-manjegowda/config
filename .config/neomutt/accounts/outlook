@@ -14,7 +14,6 @@ set imap_user = "$from"
 set smtp_url = "smtp://$from@smtp.office365.com:587"
 set smtp_pass = "$imap_pass"
 set folder = "imaps://$from@outlook.office365.com:993"
-set spoolfile = "+Inbox"
 set use_from=yes
 set imap_authenticators="oauthbearer:xoauth2"
 set smtp_authenticators=${imap_authenticators}
@@ -23,8 +22,11 @@ set smtp_oauth_refresh_command = ${imap_oauth_refresh_command}
 set ssl_force_tls = "yes"
 set ssl_starttls  = "yes"
 
+set spoolfile = "+Inbox"
+set record = "+Sent Items"
 # Specify where to save and/or look for postponed messages
 set postponed = "+Drafts"
+set trash = "+Deleted Items"
 
 # Store message headers locally to speed things up
 # If hcache is a folder, Mutt will create sub cache folders for each account which may speeds things up even more
@@ -37,7 +39,23 @@ set message_cachedir = $XDG_CONFIG_HOME/neomutt/account.$my_user.outlook/cache/b
 
 set certificate_file = $XDG_CONFIG_HOME/neomutt/account.$my_user.outlook/certificates
 
-mailboxes +Inbox +"Junk Email" +Drafts +"Sent Items" +"Deleted Items"
+# To list all the mailboxes
+# mbsync -Vl -c ~/.config/neomutt/mbsyncrc nvidia
+named-mailboxes "   Inbox" +Inbox
+named-mailboxes "   Drafts" +Drafts
+named-mailboxes "   Sent Items" +"Sent Items"
+named-mailboxes "   Deleted Items" +"Deleted Items"
+mailboxes +"Archive" +"HR" +"HR/Approvals" +"HR/Benefits and Tax" +"HR/Car"
+mailboxes +"HR/Immigration " +"HR/*NEW HIRE INFO*" +"HR/Personal" +"HR/Purchase"
+mailboxes +"Junk Email" +"Outbox" +"Sent Items" +"Team" +"Team/AI Infra"
+mailboxes +"Team/Autosar" +"Team/Bazel" +"Team/Bugs " +"Team/Camera"
+mailboxes +"Team/Codecs" +"Team/Garage" +"Team/GVS" +"Team/IMU"
+mailboxes +"Team/IMU/Plugin" +"Team/LiDAR" +"Team/LiDAR/Cepton"
+mailboxes +"Team/LiDAR/Hesai" +"Team/LiDAR/Luminar" +"Team/LiDAR/Luminar/Iris"
+mailboxes +"Team/LiDAR/Ouster" +"Team/LiDAR/Velodyne" +"Team/MB" +"Team/Misc"
+mailboxes +"Team/Monorepo" +"Team/Platform" +"Team/Radar"
+mailboxes +"Team/Radar/Conti ARS430" +"Team/Recorder"
+mailboxes +"Team/Recorder/Perf with Drivehub" +"Team/Recorder/SATA3" +"Team/Release" +"Team/Release/DW4.0" +"Team/Release/DW5.x" +"Team/Sensor Auth" +"Team/Time Sensor" +"Team/USS" +"Team/VAL" +"Team/VT" +"Team/Weekly Status" +"Trash"
 
 index-format-hook attachment_info '~M text/calendar ~X > 0' ' '
 index-format-hook attachment_info '~M text/calendar' "  "
@@ -47,12 +65,17 @@ index-format-hook attachment_info '~A' "   "
 # Do not group threads and search through messages for attachment_info
 set my_indexing = 'set sort=reverse-date-sent index_format=" %4C %zc %zs %zt  | %-35.35L   %?M10?~(%1M) ?%-30.50s %> %?Y?%Y ? %(!%a %d %h %H:%M)'
 
-folder-hook Inbox 'set sort=reverse-threads sort_aux=date-received index_format=" %4C %zc %zs %zt  | %-35.35L   %@attachment_info@  %?M10?~(%1M) ?%-30.50s %> %?Y?%Y ? %(!%a %d %h %H:%M)'
+folder-hook Inbox 'set sort=reverse-threads sort_aux=date-received index_format=" %4C  %Z  | %-35.35L   %@attachment_info@  %?M10?~(%1M) ?%-30.50s %> %?Y?%Y ? %(!%a %d %h %H:%M)'
 
 folder-hook "Junk Email" "$my_indexing"
 folder-hook "Drafts" "$my_indexing"
 folder-hook "Sent Items" "$my_indexing"
 folder-hook "Deleted Items" "$my_indexing"
+folder-hook "Archive" "$my_indexing"
+folder-hook "HR" "$my_indexing"
+folder-hook "HR/*NEW HIRE INFO*" "$my_indexing"
+folder-hook "HR/Approvals" "$my_indexing"
+folder-hook "Team" "$my_indexing"
 
 set my_account = "$from (mutt-imap)"
 set status_format = "$my_account %D %?u? %u ?%?R? %R ?%?d? %d ?%?t? %t ?%?F? %F ?%?p? %p? "

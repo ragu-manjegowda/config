@@ -1,3 +1,5 @@
+!.config/systemd/user/goimapnotify.service
+!.config/zim/style.conf
 .CFUserTextEncoding
 .DS_Store
 .Trash
@@ -31,6 +33,7 @@
 .config/autostart
 .config/awesome/configuration/api_keys.lua
 .config/awesome/library/liblua_pam.so
+.config/awesome/widget/email/mails.txt
 .config/bash/.bash_history
 .config/bash/.bash_maglev
 .config/bash/.bash_ros
@@ -66,6 +69,7 @@
 .config/gtk-2.0
 .config/gtk-3.0
 .config/ibus
+.config/imapnotify/
 .config/indicator-stickynotes
 .config/kazam
 .config/kde.org
@@ -101,7 +105,6 @@
 .config/remmina
 .config/rustup
 .config/systemd/user/*
-!.config/systemd/user/goimapnotify.service
 .config/teams
 .config/tmux/.tmux_history
 .config/tmux/session-restore
@@ -118,7 +121,6 @@
 .config/xpad
 .config/yelp
 .config/zim/*
-!.config/zim/style.conf
 .config/zsh/.zcompdump*
 .config/zsh/.zsh_history
 .config/zsh/.zsh_history.backup

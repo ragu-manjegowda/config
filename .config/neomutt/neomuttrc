@@ -4,7 +4,7 @@
 # General settings =========================={{{
 
 # Source stored password
-source "gpg -dq --for-your-eyes-only ~/.config/neomutt/pass.gpg |"
+source "gpg -dq --no-emit-version --for-your-eyes-only ~/.config/neomutt/pass.gpg |"
 
 # Folder hooks
 # folder-hook 'email1.outlook' 'source $XDG_CONFIG_HOME/neomutt/email1.outlook'
@@ -16,7 +16,7 @@ set delete
 unset confirmappend
 
 # Check for new emails
-set timeout             = 5   # press artificially a key after 10 seconds
+set timeout             = 5   # press artificially a key after 5 seconds
 set mail_check          = 10 # How often to check for new mail (time in seconds) but not more often then once in 300 seconds
 set beep
 set beep_new                  # beep on new messages in the mailboxes
@@ -58,15 +58,12 @@ set quote_regexp = "^( {0,4}[>|:#%]| {0,4}[a-z0-9]+[>|]+)+"
 # set sort = 'reverse-date'		# sorting the mails in threads in index (mails-list-view)
 # set sort = 'threads'
 # set sort_aux = reverse-last-date-received		# and the thread themselves reverse-date
-set sort = reverse-threads
-set sort_aux = date-received
 set narrow_tree=no
-set uncollapse_jump                        # don't collapse on an unread message
 set sort_re                                # thread based on regex
 set reply_regexp = "^(([Rr][Ee]?(\[[0-9]+\])?: *)?(\[[^]]+\] *)?)*"
 
-# set collapse_all = yes
-# set uncollapse_new = no # (default is yes)
+set collapse_all = yes
+set uncollapse_new = no # (default is yes)
 
 set mime_forward = yes
 
@@ -142,6 +139,8 @@ set sidebar_short_path = yes
 set sidebar_next_new_wrap = yes
 set mail_check_stats
 set sidebar_component_depth = 5
+set sidebar_folder_indent = yes
+set sidebar_indent_string = '  ' # Two spaces
 
 #}}}
 

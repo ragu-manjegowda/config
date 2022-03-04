@@ -20,7 +20,7 @@ index-format-hook attachment_info '~A' "   "
 
 set index_format=" %4C %zc %zs %zt  | %-35.35L   %@attachment_info@  %?M10?~(%1M) ?%-30.50s %> %?Y?%Y ? %(!%a %d %h %H:%M)  "
 
-set sidebar_format = '%B%?F? [%F]?%* %?N?%N/? %?S?%S?'
+set sidebar_format = '%D%?F? [%F]?%* %?N?%N/? %?S?%S?'
 
 set compose_format="-- NeoMutt: Compose  [Approx. msg size: %l   Atts: %a]%>-"
 
