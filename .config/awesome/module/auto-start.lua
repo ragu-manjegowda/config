@@ -35,6 +35,8 @@ awesome.connect_signal(
 	function()
         -- Just a fail safe mechanism in case darkman service fails
         run_once('XDG_DATA_DIRS=~/.config/darkman darkman')
+        -- Update email's list when we come back from sleep
+        run_once('~/.config/imapnotify/notify.sh')
 	end
 )
 
