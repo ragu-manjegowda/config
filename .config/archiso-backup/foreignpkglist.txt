@@ -2,6 +2,7 @@ awesome-git
 check-broken-packages-pacman-hook-git
 cyrus-sasl-xoauth2-git
 darkman
+gtk-theme-numix-solarized
 informant
 light-git
 ly

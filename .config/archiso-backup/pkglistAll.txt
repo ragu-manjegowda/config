@@ -30,6 +30,7 @@ git
 gnu-free-fonts
 goimapnotify
 groff
+gtk-theme-numix-solarized
 inetutils
 informant
 intel-ucode
