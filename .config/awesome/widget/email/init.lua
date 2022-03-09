@@ -18,6 +18,9 @@ local secrets = {
 local mails_path = config_dir .. 'widget/email/mails.txt'
 
 local unread_email_count = 0
+local unread_recent_email_from = ""
+local unread_recent_email_subject = ""
+
 local startup_show = true
 
 local scroll_container = function(widget)
@@ -193,8 +196,21 @@ local notify_all_unread_email = function(email_data)
 end
 
 local notify_new_email = function(count, from, subject)
-	if not startup_show and (tonumber(count) > tonumber(unread_email_count)) then
+	if not startup_show then
+
+        -- We might get here even without push from IMAP server (waking up from
+        -- sleep), so check if there is really a new email
+        if (unread_email_count == tonumber(count)) then
+            if (unread_recent_email_from == from) then
+                if (unread_recent_email_subject == subject) then
+                    return
+                end
+            end
+        end
+
 		unread_email_count = tonumber(count)
+        unread_recent_email_from = from
+        unread_recent_email_subject = subject
 
 		local message = "From: " .. from ..
 		"\nSubject: " .. subject
@@ -208,6 +224,8 @@ local notify_new_email = function(count, from, subject)
 		})
 	else
 		unread_email_count = tonumber(count)
+        unread_recent_email_from = from
+        unread_recent_email_subject = subject
 	end
 
 end
@@ -275,18 +293,11 @@ end
 local set_empty_inbox_msg = function()
 	set_widget_markup(
 		'empty@stdout.sh',
-		'Empty inbox',
+		'No unread emails in inbox',
 		os.date('%d-%m-%Y %H:%M:%S'),
 		'Empty inbox.'
 	)
 end
-
-awesome.connect_signal(
-	'module::email:show',
-    function()
-        fetch_email_data()
-    end
-)
 
 function fetch_email_data()
     open = io.open
@@ -324,43 +335,18 @@ function fetch_email_data()
 	end
 end
 
-local set_missing_secrets_msg = function()
-	set_widget_markup(
-		'message@stderr.sh',
-		'Credentials are missing!',
-		os.date('%d-%m-%Y %H:%M:%S'),
-		'Missing credentials!'
-	)
-end
-
-local check_secrets = function()
-	if secrets.email_address == '' and secrets.app_password == '' and secrets.imap_server == '' and secrets.port == '' then
-		set_missing_secrets_msg()
-		return
-	else
-		fetch_email_data()
-	end
-end
-
-check_secrets()
-
 email_report:connect_signal(
-	'mouse::enter',
+	'mouse::press',
 	function()
-		check_secrets()
+		awesome.emit_signal('module::spawn_apps')
 	end
 )
 
 awesome.connect_signal(
-	'system::network_connected',
-	function()
-		gears.timer.start_new(
-			5,
-			function()
-				check_secrets()
-			end
-		)
-	end
+	'module::email:show',
+    function()
+        fetch_email_data()
+    end
 )
 
 return email_report
