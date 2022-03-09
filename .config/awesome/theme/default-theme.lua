@@ -31,25 +31,12 @@ local awesome_overrides = function(theme)
 	-- Default font
 	theme.font = 'Hack Nerd Regular 10'
 
-	-- Foreground
-	theme.fg_normal = '#ffffffde'
-	theme.fg_focus = '#e4e4e4'
-	theme.fg_urgent = '#CC9393'
-
-	theme.bg_normal = theme.background
-	theme.bg_focus = '#5a5a5a'
-	theme.bg_urgent = '#3F3F3F'
-
 	-- System tray
 	theme.bg_systray = theme.background
 	theme.systray_icon_spacing = dpi(16)
 
 	-- Titlebar
 	theme.titlebar_size = dpi(34)
-	theme.titlebar_bg_focus = gtk_variable().bg_color:sub(1,7) .. '66'
-	theme.titlebar_bg_normal = gtk_variable().base_color:sub(1,7) .. '66'
-	theme.titlebar_fg_focus = gtk_variable().fg_color
-	theme.titlebar_fg_normal = gtk_variable().fg_color
 
 	-- Close Button
 	theme.titlebar_close_button_normal = tip .. 'close_normal.svg'
@@ -129,9 +116,6 @@ local awesome_overrides = function(theme)
 	-- Client Decorations
 
 	-- Borders
-	theme.border_focus = gtk_variable().bg_color
-	theme.border_normal = gtk_variable().base_color
-	theme.border_marked = '#CC9393'
 	theme.border_width = dpi(0)
 	theme.border_radius = dpi(12)
 
@@ -175,20 +159,10 @@ local awesome_overrides = function(theme)
 	theme.layout_floating = theme.icons .. 'layouts/floating.svg'
 
 	-- Taglist
-	theme.taglist_bg_empty = theme.background .. '99'
-	theme.taglist_bg_occupied =  '#ffffff' .. '1A'
-	theme.taglist_bg_urgent = '#E91E63' .. '99'
-	theme.taglist_bg_focus = theme.background
 	theme.taglist_spacing = dpi(0)
 
 	-- Tasklist
 	theme.tasklist_font = 'Hack Nerd Regular 10'
-	theme.tasklist_bg_normal = theme.background .. '99'
-	theme.tasklist_bg_focus = theme.background
-	theme.tasklist_bg_urgent = '#E91E63' .. '99'
-	theme.tasklist_fg_focus = '#DDDDDD'
-	theme.tasklist_fg_urgent = '#ffffff'
-	theme.tasklist_fg_normal = '#AAAAAA'
 
 	-- Notification
 	theme.notification_position = 'top_left'
