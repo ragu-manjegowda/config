@@ -89,7 +89,7 @@ local stocks_template =  wibox.widget {
         widget = wibox.container.margin
     },
     margins = dpi(10),
-    bg = beautiful.groups_bg,
+    bg = beautiful.background,
     shape = function(cr, w, h)
         gears.shape.rounded_rect(cr, w, h, beautiful.groups_radius)
     end,

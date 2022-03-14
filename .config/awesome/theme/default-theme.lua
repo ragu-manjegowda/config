@@ -103,15 +103,7 @@ local awesome_overrides = function(theme)
 	theme.titlebar_maximized_button_focus_active_hover  = tip .. 'maximized_focus_active_hover.svg'
 
 	-- UI Groups
-	theme.groups_title_bg = '#ffffff' .. '15'
-	theme.groups_bg = '#ffffff' .. '10'
 	theme.groups_radius = dpi(16)
-
-	-- UI events
-	theme.leave_event = transparent
-	theme.enter_event = '#ffffff' .. '10'
-	theme.press_event = '#ffffff' .. '15'
-	theme.release_event = '#ffffff' .. '10'
 
 	-- Client Decorations
 
@@ -132,17 +124,17 @@ local awesome_overrides = function(theme)
 	theme.menu_height = dpi(34)
 	theme.menu_width = dpi(200)
 	theme.menu_border_width = dpi(20)
-	theme.menu_bg_focus = theme.accent .. 'CC'
+	theme.menu_bg_focus = theme.accent
 
-	theme.menu_bg_normal =  theme.background:sub(1,7) .. '33'
-	theme.menu_fg_normal = '#ffffff'
-	theme.menu_fg_focus = '#ffffff'
+	theme.menu_bg_normal =  theme.background
+	theme.menu_fg_normal = theme.fg_normal
+	theme.menu_fg_focus = theme.fg_focus
 	theme.menu_border_color = theme.background:sub(1,7) .. '5C'
 
 	-- Tooltips
 
 	theme.tooltip_bg = theme.background
-	theme.tooltip_border_color = theme.transparent
+	theme.tooltip_border_color = theme.background
 	theme.tooltip_border_width = 0
 	theme.tooltip_gaps = dpi(5)
 	theme.tooltip_shape = function(cr, w, h)
@@ -150,13 +142,13 @@ local awesome_overrides = function(theme)
 	end
 
 	-- Separators
-	theme.separator_color = '#f2f2f244'
+	theme.separator_color = theme.accent
 
 	-- Layoutbox icons
-	theme.layout_max = theme.icons .. 'layouts/max.svg'
-	theme.layout_tile = theme.icons .. 'layouts/tile.svg'
-	theme.layout_dwindle = theme.icons .. 'layouts/dwindle.svg'
-	theme.layout_floating = theme.icons .. 'layouts/floating.svg'
+	theme.layout_max = theme.icons .. 'layouts/max.png'
+	theme.layout_tile = theme.icons .. 'layouts/tile.png'
+	theme.layout_dwindle = theme.icons .. 'layouts/dwindle.png'
+	theme.layout_floating = theme.icons .. 'layouts/floating.png'
 
 	-- Taglist
 	theme.taglist_spacing = dpi(0)
@@ -166,10 +158,10 @@ local awesome_overrides = function(theme)
 
 	-- Notification
 	theme.notification_position = 'top_left'
-	theme.notification_bg = theme.transparent
+	theme.notification_bg = theme.background
 	theme.notification_margin = dpi(5)
 	theme.notification_border_width = dpi(0)
-	theme.notification_border_color = theme.transparent
+	theme.notification_border_color = theme.background_light
 	theme.notification_spacing = dpi(5)
 	theme.notification_icon_resize_strategy = 'center'
 	theme.notification_icon_size = dpi(32)

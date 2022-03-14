@@ -190,10 +190,10 @@ local locker_widget = wibox.widget {
 local rotation_direction = {'north', 'west', 'south', 'east'}
 
 -- Red, Green, Yellow, Blue
-local red = beautiful.system_red_dark
-local green = beautiful.system_green_dark
-local yellow = beautiful.system_yellow_dark
-local blue = beautiful.system_blue_dark
+local red = beautiful.system_red_light
+local green = beautiful.system_green_light
+local yellow = beautiful.system_yellow_light
+local blue = beautiful.system_blue_light
 
 -- Color table
 local arc_color = {red, green, yellow, blue}
@@ -392,7 +392,7 @@ local locker = function(s)
 
 	-- Login failed
 	local stoprightthereyoucriminalscum = function()
-		circle_container.bg = red .. 'AA'
+		circle_container.bg = red
 		if capture_now then
 			intruder_capture()
 		else
@@ -408,7 +408,7 @@ local locker = function(s)
 
 	-- Login successful
 	local generalkenobi_ohhellothere = function()
-		circle_container.bg = green .. 'AA'
+		circle_container.bg = green
 
 		-- Add a little delay before unlocking completely
 		gears.timer.start_new(

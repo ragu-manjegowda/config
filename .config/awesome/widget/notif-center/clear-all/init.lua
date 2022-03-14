@@ -14,7 +14,7 @@ local reset_notifbox_layout = notifbox_core.reset_notifbox_layout
 
 local clear_all_imagebox = wibox.widget {
 	{
-		image = widget_icon_dir .. 'clear_all.svg',
+		image = widget_icon_dir .. 'clear_all.png',
 		resize = true,
 		forced_height = dpi(17),
 		forced_width = dpi(17),
