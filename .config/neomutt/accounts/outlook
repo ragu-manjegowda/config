@@ -23,7 +23,7 @@ set ssl_force_tls = "yes"
 set ssl_starttls  = "yes"
 
 set spoolfile = "+Inbox"
-set record = "+Sent Items"
+# set record = "+Sent Items"
 # Specify where to save and/or look for postponed messages
 set postponed = "+Drafts"
 set trash = "+Deleted Items"

@@ -50,6 +50,8 @@ macro pager b '<enter-command>toggle sidebar_visible<enter><redraw-screen>'
 bind index,pager \Ck sidebar-prev
 bind index,pager \Cj sidebar-next
 bind index,pager \Co sidebar-open
+bind index,pager r   reply
+bind index,pager R   group-reply
 
 bind editor <Tab> complete-query
 bind editor \CT complete
@@ -76,3 +78,12 @@ macro index \cr "<tag-pattern>.<enter><tag-prefix><clear-flag>N<untag-pattern>.<
 macro pager \cr "<tag-pattern>.<enter><tag-prefix><clear-flag>N<untag-pattern>.<enter>"
 
 macro index,pager Mi ";<save-message>=INBOX<enter>" "move mail to inbox"
+
+# Open attachment with
+macro attach O \
+"\
+<enter-command>unset wait_key<enter>\
+<shell-escape>rm -f /tmp/mutt-attach<enter>\
+<save-entry><kill-line>/tmp/mutt-attach<enter>\
+<shell-escape> /tmp/mutt-attach &^A\
+"
