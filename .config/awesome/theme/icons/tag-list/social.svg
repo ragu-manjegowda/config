@@ -75,18 +75,18 @@
        cy="289.59201"
        r="0.66100001"
        id="circle8"
-       style="opacity:0.35;fill:#ffffff;paint-order:markers stroke fill" />
+       style="opacity:0.35;fill:#000000;paint-order:markers stroke fill" />
     <circle
        r="0.66100001"
        cy="289.59201"
        cx="7.408"
        id="circle10"
-       style="opacity:0.35;fill:#ffffff;paint-order:markers stroke fill" />
+       style="opacity:0.35;fill:#000000;paint-order:markers stroke fill" />
     <circle
        cx="10.054"
        cy="289.59201"
        r="0.66100001"
        id="circle12"
-       style="opacity:0.35;fill:#ffffff;paint-order:markers stroke fill" />
+       style="opacity:0.35;fill:#000000;paint-order:markers stroke fill" />
   </g>
 </svg>

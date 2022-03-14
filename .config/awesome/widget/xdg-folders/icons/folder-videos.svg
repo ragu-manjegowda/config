@@ -83,7 +83,7 @@
          id="path11"
          d="m 3.44,282.448 c -0.294,0 -0.395,0.269 -0.53,0.53 H 2.117 a 0.528,0.528 0 0 0 -0.53,0.528 v 5.292 c 0,0.293 0.237,0.53 0.53,0.53 h 12.7 c 0.293,0 0.529,-0.237 0.529,-0.53 v -5.292 a 0.528,0.528 0 0 0 -0.53,-0.529 H 7.674 c -0.155,-0.249 -0.236,-0.53 -0.53,-0.53 z" />
       <rect
-         style="fill:#ffffff;paint-order:markers stroke fill"
+         style="fill:#000000;paint-order:markers stroke fill"
          id="rect13"
          ry="0.26499999"
          height="5.027"
@@ -112,7 +112,7 @@
          y="282.70999"
          x="3.704" />
       <path
-         style="fill:#ffffff;paint-order:stroke markers fill"
+         style="fill:#000000;paint-order:stroke markers fill"
          inkscape:connector-curvature="0"
          id="path21"
          d="m 8.467,288 a 2.117,2.117 0 1 0 0,4.233 2.117,2.117 0 0 0 0,-4.233 z m -0.53,1.058 1.588,1.059 -1.588,1.058 z" />

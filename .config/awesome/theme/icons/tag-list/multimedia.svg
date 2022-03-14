@@ -67,11 +67,11 @@
        d="M 15.346,5.292 1.588,14.022 H 15.346 Z"
        id="path6"
        inkscape:connector-curvature="0"
-       style="opacity:0.15;fill:#ffffff" />
+       style="opacity:0.15;fill:#000000" />
     <path
        d="M 10.319,8.467 6.085,11.112 V 5.821 Z"
        id="path8"
        inkscape:connector-curvature="0"
-       style="fill:#ffffff" />
+       style="fill:#000000" />
   </g>
 </svg>

@@ -119,13 +119,13 @@
     </g>
     <circle
        id="circle28"
-       style="opacity:0.35;fill:#ffffff;paint-order:fill markers stroke"
+       style="opacity:0.35;fill:#000000;paint-order:fill markers stroke"
        r="5.2916002"
        cy="55.032249"
        cx="8.4665003" />
     <g
        transform="translate(0,46.56575)"
-       style="fill:#ffffff"
+       style="fill:#000000"
        id="g36">
       <path
          inkscape:connector-curvature="0"
