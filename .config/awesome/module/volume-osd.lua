@@ -29,8 +29,8 @@ local slider_osd = wibox.widget {
 		id 					= 'vol_osd_slider',
 		bar_shape           = gears.shape.rounded_rect,
 		bar_height          = dpi(24),
-		bar_color           = '#ffffff20',
-		bar_active_color	= '#f2f2f2EE',
+		bar_color           = beautiful.background,
+		bar_active_color	= beautiful.fg_focus,
 		handle_color        = '#ffffff',
 		handle_shape        = gears.shape.circle,
 		handle_width        = dpi(24),
@@ -162,7 +162,7 @@ screen.connect_signal(
 				right = dpi(24),
 				widget = wibox.container.margin
 			},
-			bg = beautiful.background,
+			bg = beautiful.groups_bg,
 			shape = gears.shape.rounded_rect,
 			widget = wibox.container.background()
 		}
