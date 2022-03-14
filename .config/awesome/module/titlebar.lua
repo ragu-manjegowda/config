@@ -190,6 +190,7 @@ client.connect_signal(
 	'request::titlebars',
 	function(c)
 
+        --[[
 		-- Customize here
 		if c.type == 'normal' then
 
@@ -274,5 +275,6 @@ client.connect_signal(
 		else
 			create_vertical_bar(c, 'left', beautiful.background, beautiful.titlebar_size)
 		end
+        ]]
 	end
 )
