@@ -80,7 +80,7 @@
             <path
                d="M 200,40 H 40 C 28.95,40 20.1,48.95 20.1,60 L 20,180 c 0,11.05 8.95,20 20,20 h 160 c 11.05,0 20,-8.95 20,-20 V 60 c 0,-11.05 -8.95,-20 -20,-20 z m 0,40 -80,50 L 40,80 V 60 l 80,50 80,-50 z"
                id="path2"
-               style="opacity:0.8;fill:#ffffff;fill-opacity:1;stroke-width:5" />
+               style="opacity:0.8;fill:#000000;fill-opacity:1;stroke-width:5" />
           </g>
           <g
              id="g843">
@@ -98,7 +98,7 @@
                style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:64px;line-height:1.25;font-family:'sf pro d';-inkscape-font-specification:'sf pro d';letter-spacing:0px;word-spacing:0px;white-space:pre;shape-inside:url(#rect887);fill:#000000;fill-opacity:1;stroke:none">
               <path
                  d="m 196.13672,199.49547 h 9.34375 v -45.09375 h -9.375 l -11.65625,8.09375 v 8.375 l 11.5,-7.8125 h 0.1875 z"
-                 style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:64px;font-family:'SF Pro Display';-inkscape-font-specification:'SF Pro Display Bold';text-align:center;text-anchor:middle;fill:#ffffff"
+                 style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:64px;font-family:'SF Pro Display';-inkscape-font-specification:'SF Pro Display Bold';text-align:center;text-anchor:middle;fill:#000000"
                  id="path933" />
             </g>
           </g>

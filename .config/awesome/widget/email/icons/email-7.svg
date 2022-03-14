@@ -70,7 +70,7 @@
       <path
          d="M 200,40 H 40 C 28.95,40 20.1,48.95 20.1,60 L 20,180 c 0,11.05 8.95,20 20,20 h 160 c 11.05,0 20,-8.95 20,-20 V 60 c 0,-11.05 -8.95,-20 -20,-20 z m 0,40 -80,50 L 40,80 V 60 l 80,50 80,-50 z"
          id="path2"
-         style="opacity:0.8;fill:#ffffff;fill-opacity:1;stroke-width:5" />
+         style="opacity:0.8;fill:#000000;fill-opacity:1;stroke-width:5" />
       <text
          xml:space="preserve"
          id="text879"
@@ -91,7 +91,7 @@
            aria-label="7">
           <path
              id="path840"
-             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'SF Pro Display';-inkscape-font-specification:'SF Pro Display Bold';text-align:center;text-anchor:middle;fill:#ffffff"
+             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'SF Pro Display';-inkscape-font-specification:'SF Pro Display Bold';text-align:center;text-anchor:middle;fill:#000000"
              d="m 184.24609,199.49547 h 9.90625 l 18.8125,-37.5 v -7.59375 h -32.25 v 7.5 h 22.9375 v 0.1875 z" />
         </g>
       </g>

@@ -62,7 +62,7 @@
        class="active-path"
        data-old_color="#000000"
        inkscape:connector-curvature="0"
-       style="fill:#ffffff" />
+       style="fill:#000000" />
     <path
        d="m 80.294,160.588 h 267.647 v 53.529 H 80.294 Z"
        data-original="#000000"
@@ -70,7 +70,7 @@
        data-old_color="#000000"
        id="path3"
        inkscape:connector-curvature="0"
-       style="fill:#ffffff" />
+       style="fill:#000000" />
     <path
        id="path-1_58_"
        d="m 80.294,267.647 h 294.412 v 53.529 H 80.294 Z"
@@ -79,7 +79,7 @@
        class="active-path"
        data-old_color="#000000"
        inkscape:connector-curvature="0"
-       style="fill:#ffffff" />
+       style="fill:#000000" />
     <path
        id="path-2_11_"
        d="m 0,53.529 h 53.529 v 53.529 H 0 Z"
@@ -88,7 +88,7 @@
        class="active-path"
        data-old_color="#000000"
        inkscape:connector-curvature="0"
-       style="fill:#ffffff" />
+       style="fill:#000000" />
     <path
        id="path-2_10_"
        d="m 0,160.588 h 53.529 v 53.529 H 0 Z"
@@ -97,7 +97,7 @@
        class="active-path"
        data-old_color="#000000"
        inkscape:connector-curvature="0"
-       style="fill:#ffffff" />
+       style="fill:#000000" />
     <path
        id="path-2_9_"
        d="m 0,267.647 h 53.529 v 53.529 H 0 Z"
@@ -106,6 +106,6 @@
        class="active-path"
        data-old_color="#000000"
        inkscape:connector-curvature="0"
-       style="fill:#ffffff" />
+       style="fill:#000000" />
   </g>
 </svg>

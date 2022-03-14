@@ -580,7 +580,7 @@
      id="g1109"
      transform="matrix(3.5990637,0,0,3.5990637,4.8299635,-629.05515)">
     <path
-       style="fill:#ffffff;stroke:#000000;stroke-opacity:0.03900003;paint-order:markers stroke fill;enable-background:new"
+       style="fill:#000000;stroke:#000000;stroke-opacity:0.03900003;paint-order:markers stroke fill;enable-background:new"
        inkscape:connector-curvature="0"
        id="path100"
        d="M 53.828,232.682 56.556,180.84 H 7.444 l 2.728,51.84 c 0.08,1.51 1.217,2.73 2.729,2.73 h 38.198 a 2.722,2.722 0 0 0 2.729,-2.73 z" />
@@ -616,7 +616,7 @@
            id="path108"
            overflow="visible"
            d="m 116.11,14.047 -5.225,1.771 -0.709,1.948 3.01,2.126 2.835,-2.745 z"
-           style="overflow:visible;fill:#ffffff;marker:none" />
+           style="overflow:visible;fill:#000000;marker:none" />
         <path
            inkscape:connector-curvature="0"
            id="path110"
@@ -629,7 +629,7 @@
            id="path112"
            overflow="visible"
            d="m 105.04,19.449 -0.443,4.428 0.974,-3.011 2.568,0.797 0.62,-1.328 3.1,0.442 0.708,-0.62 -4.516,-0.177 -0.443,1.24 -1.948,-0.974 z m 7.527,6.553 1.505,1.771 3.454,-2.302 2.125,1.151 3.454,3.277 -3.808,-2.923 -1.86,-0.531 -3.63,2.48 z"
-           style="overflow:visible;fill:#ffffff;marker:none" />
+           style="overflow:visible;fill:#000000;marker:none" />
       </g>
       <path
          inkscape:connector-curvature="0"
@@ -661,7 +661,7 @@
          id="path124"
          overflow="visible"
          d="m 131.758,36.477 -5.225,1.771 -0.709,1.948 3.011,2.126 2.834,-2.746 0.089,-3.1 z"
-         style="overflow:visible;fill:#ffffff;marker:none" />
+         style="overflow:visible;fill:#000000;marker:none" />
       <path
          inkscape:connector-curvature="0"
          id="path126"
@@ -673,7 +673,7 @@
          id="path128"
          overflow="visible"
          d="m 120.688,41.879 -0.442,4.428 0.974,-3.011 2.568,0.797 0.62,-1.329 3.099,0.443 0.708,-0.62 -4.516,-0.177 -0.443,1.24 -1.948,-0.974 z m 12.896,6.553 1.506,1.77 3.453,-2.301 2.125,1.15 3.454,3.277 -3.808,-2.922 -1.86,-0.531 -3.63,2.48 z"
-         style="overflow:visible;fill:#ffffff;marker:none" />
+         style="overflow:visible;fill:#000000;marker:none" />
       <path
          inkscape:connector-curvature="0"
          id="path130"
@@ -709,7 +709,7 @@
            id="path138"
            overflow="visible"
            d="m 115.842,22.277 -5.225,1.771 -0.708,1.949 3.01,2.125 2.835,-2.745 z"
-           style="overflow:visible;fill:#ffffff;marker:none" />
+           style="overflow:visible;fill:#000000;marker:none" />
         <path
            inkscape:connector-curvature="0"
            id="path140"
@@ -722,7 +722,7 @@
            id="path142"
            overflow="visible"
            d="m 104.773,27.68 -0.443,4.427 0.974,-3.011 2.568,0.797 0.62,-1.328 3.1,0.442 0.708,-0.62 -4.516,-0.177 -0.443,1.24 -1.948,-0.974 z m 7.527,6.552 1.505,1.771 3.454,-2.302 2.125,1.151 3.454,3.277 -3.808,-2.923 -1.86,-0.531 -3.63,2.48 z"
-           style="overflow:visible;fill:#ffffff;marker:none" />
+           style="overflow:visible;fill:#000000;marker:none" />
       </g>
       <path
          inkscape:connector-curvature="0"
@@ -754,7 +754,7 @@
          id="path154"
          overflow="visible"
          d="m 113.009,36.272 5.225,1.771 0.708,1.949 -3.01,2.125 -2.835,-2.745 z"
-         style="overflow:visible;fill:#ffffff;marker:none" />
+         style="overflow:visible;fill:#000000;marker:none" />
       <path
          inkscape:connector-curvature="0"
          id="path156"
@@ -766,7 +766,7 @@
          id="path158"
          overflow="visible"
          d="m 124.078,41.674 0.443,4.428 -0.974,-3.01 -2.568,0.796 -0.62,-1.328 -3.1,0.443 -0.708,-0.62 4.516,-0.177 0.443,1.24 1.948,-0.975 z m -7.527,6.553 -1.505,1.771 -3.454,-2.302 -2.125,1.151 -3.454,3.277 3.808,-2.923 1.86,-0.531 3.63,2.48 z"
-         style="overflow:visible;fill:#ffffff;marker:none" />
+         style="overflow:visible;fill:#000000;marker:none" />
       <g
          id="g172">
         <path
@@ -795,7 +795,7 @@
            id="path166"
            overflow="visible"
            d="m 138.348,11.363 5.224,1.771 0.709,1.948 -3.011,2.125 -2.834,-2.745 z"
-           style="overflow:visible;fill:#ffffff;marker:none" />
+           style="overflow:visible;fill:#000000;marker:none" />
         <path
            inkscape:connector-curvature="0"
            id="path168"
@@ -808,7 +808,7 @@
            id="path170"
            overflow="visible"
            d="m 149.417,16.765 0.443,4.427 -0.974,-3.01 -2.568,0.797 -0.62,-1.329 -3.1,0.443 -0.708,-0.62 4.516,-0.177 0.443,1.24 1.948,-0.974 z m -7.527,6.553 -1.506,1.77 -3.453,-2.302 -2.126,1.152 -3.453,3.276 3.808,-2.922 1.86,-0.531 3.63,2.48 z"
-           style="overflow:visible;fill:#ffffff;marker:none" />
+           style="overflow:visible;fill:#000000;marker:none" />
       </g>
       <g
          id="g186">
@@ -838,7 +838,7 @@
            id="path180"
            overflow="visible"
            d="m 135.738,26.495 -1.772,-5.224 -1.948,-0.709 -2.125,3.011 2.745,2.834 z"
-           style="overflow:visible;fill:#ffffff;marker:none" />
+           style="overflow:visible;fill:#000000;marker:none" />
         <path
            inkscape:connector-curvature="0"
            id="path182"
@@ -851,7 +851,7 @@
            id="path184"
            overflow="visible"
            d="m 130.336,15.426 -4.428,-0.443 3.01,0.974 -0.796,2.568 1.328,0.62 -0.443,3.1 0.62,0.708 0.177,-4.516 -1.24,-0.443 0.975,-1.948 z m -6.553,7.527 -1.771,1.506 2.302,3.453 -1.151,2.126 -3.277,3.453 2.923,-3.808 0.53,-1.86 -2.479,-3.63 z"
-           style="overflow:visible;fill:#ffffff;marker:none" />
+           style="overflow:visible;fill:#000000;marker:none" />
       </g>
       <g
          id="g200">
@@ -881,7 +881,7 @@
            id="path194"
            overflow="visible"
            d="m 134.321,24.784 5.225,1.772 0.708,1.948 -3.01,2.125 -2.834,-2.745 z"
-           style="overflow:visible;fill:#ffffff;marker:none" />
+           style="overflow:visible;fill:#000000;marker:none" />
         <path
            inkscape:connector-curvature="0"
            id="path196"
@@ -894,7 +894,7 @@
            id="path198"
            overflow="visible"
            d="m 145.39,30.186 0.443,4.428 -0.974,-3.01 -2.568,0.796 -0.62,-1.328 -3.1,0.443 -0.708,-0.62 4.517,-0.177 0.442,1.24 1.949,-0.975 z m -7.527,6.554 -1.505,1.77 -3.454,-2.302 -2.125,1.151 -3.454,3.277 3.808,-2.923 1.86,-0.53 3.63,2.479 z"
-           style="overflow:visible;fill:#ffffff;marker:none" />
+           style="overflow:visible;fill:#000000;marker:none" />
       </g>
       <g
          id="g214">
@@ -924,7 +924,7 @@
            id="path208"
            overflow="visible"
            d="m 113.447,45.804 1.77,5.225 1.95,0.708 2.124,-3.01 -2.745,-2.834 z"
-           style="overflow:visible;fill:#ffffff;marker:none" />
+           style="overflow:visible;fill:#000000;marker:none" />
         <path
            inkscape:connector-curvature="0"
            id="path210"
@@ -937,7 +937,7 @@
            id="path212"
            overflow="visible"
            d="m 118.849,56.873 4.427,0.443 -3.01,-0.974 0.797,-2.568 -1.329,-0.62 0.443,-3.1 -0.62,-0.708 -0.177,4.516 1.24,0.443 -0.974,1.948 z m 6.553,-7.527 1.77,-1.505 -2.302,-3.454 1.152,-2.125 3.276,-3.454 -2.922,3.808 -0.531,1.86 2.48,3.63 z"
-           style="overflow:visible;fill:#ffffff;marker:none" />
+           style="overflow:visible;fill:#000000;marker:none" />
       </g>
     </g>
     <path

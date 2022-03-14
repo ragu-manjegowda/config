@@ -70,7 +70,7 @@
       <path
          d="M 200,40 H 40 C 28.95,40 20.1,48.95 20.1,60 L 20,180 c 0,11.05 8.95,20 20,20 h 160 c 11.05,0 20,-8.95 20,-20 V 60 c 0,-11.05 -8.95,-20 -20,-20 z m 0,40 -80,50 L 40,80 V 60 l 80,50 80,-50 z"
          id="path2"
-         style="opacity:0.8;fill:#ffffff;fill-opacity:1;stroke-width:5" />
+         style="opacity:0.8;fill:#000000;fill-opacity:1;stroke-width:5" />
       <text
          xml:space="preserve"
          id="text879"
@@ -91,11 +91,11 @@
            aria-label="9+">
           <path
              id="path840"
-             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:56px;font-family:'SF Pro Display';-inkscape-font-specification:'SF Pro Display Bold';text-align:center;text-anchor:middle;fill:#ffffff"
+             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:56px;font-family:'SF Pro Display';-inkscape-font-specification:'SF Pro Display Bold';text-align:center;text-anchor:middle;fill:#000000"
              d="m 178.21484,197.90945 c 10.25391,0 16.46094,-7.875 16.46094,-20.94531 0,-14.41016 -7.76562,-20.28907 -16.46094,-20.28907 -8.80468,0 -15.20312,5.82422 -15.20312,14 0,7.6836 5.76953,12.87891 13.09765,12.87891 5.16797,0 9.07813,-2.57031 10.5,-6.39844 h 0.16407 c 0.0547,8.47656 -2.59766,14.21875 -8.53125,14.21875 -3.3086,0 -5.74219,-1.5039 -6.61719,-4.32031 h -8.14844 c 1.03906,6.39844 7,10.85547 14.73828,10.85547 z m 0.0273,-20.48047 c -4.12891,0 -7.19141,-2.95313 -7.19141,-7.08203 0,-3.99219 3.19922,-7.08203 7.27344,-7.08203 4.04687,0 7.24609,3.14453 7.24609,7.21875 0,4.04687 -3.17187,6.94531 -7.32812,6.94531 z" />
           <path
              id="path842"
-             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:56px;font-family:'SF Pro Display';-inkscape-font-specification:'SF Pro Display Bold';text-align:center;text-anchor:middle;fill:#ffffff"
+             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:56px;font-family:'SF Pro Display';-inkscape-font-specification:'SF Pro Display Bold';text-align:center;text-anchor:middle;fill:#000000"
              d="m 218.65625,184.70242 h 10.63672 v -6.97266 h -10.63672 v -11.18359 h -7.13672 v 11.18359 h -10.60937 v 6.97266 h 10.60937 v 11.15625 h 7.13672 z" />
         </g>
       </g>

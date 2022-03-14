@@ -52,6 +52,6 @@
   <path
      d="M 70,120 50,100 30,120 50,140 Z M 177.05,77.05 120,20 H 110 V 95.85 L 64.15,50 50,64.15 105.85,120 50,175.85 64.15,190 110,144.15 V 220 h 10 L 177.05,162.95 134.15,120 Z M 130,58.3 148.8,77.1 130,95.85 Z M 148.8,162.95 130,181.7 V 144.1 Z M 190,100 l -20,20 20,20 20,-20 z"
      id="path2"
-     style="fill:#ffffff;fill-opacity:1;stroke-width:5"
+     style="fill:#000000;fill-opacity:1;stroke-width:5"
      inkscape:connector-curvature="0" />
 </svg>
