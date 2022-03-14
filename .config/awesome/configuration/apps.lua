@@ -66,6 +66,8 @@ return {
 		-- Load X colors
 		'xrdb ~/.Xresources',
 		-- Audio equalizer
+        -- Enable blue light filter
+		'redshift -l 0:0 -t 4500:4500 -r &>/dev/null &',
 		-- Lockscreen timer
 		[[
 		xidlehook --not-when-fullscreen --not-when-audio --timer 300 \
