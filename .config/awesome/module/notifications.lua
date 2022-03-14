@@ -46,8 +46,8 @@ ruled.notification.connect_signal(
 			rule       = { urgency = 'critical' },
 			properties = {
 				font        		= 'Hack Nerd Bold 10',
-				bg 					= '#ff0000',
-				fg 					= '#ffffff',
+				bg 					= beautiful.colors.red,
+				fg 					= beautiful.colors.red,
 				margin 				= dpi(16),
 				position 			= 'top_left',
 				implicit_timeout	= 0
@@ -59,7 +59,7 @@ ruled.notification.connect_signal(
 			rule       = { urgency = 'normal' },
 			properties = {
 				font        		= 'Hack Nerd Regular 10',
-				bg      			= beautiful.transparent,
+				bg      			= beautiful.bg_focus,
 				fg 					= beautiful.fg_normal,
 				margin 				= dpi(16),
 				position 			= 'top_left',
@@ -144,7 +144,7 @@ naughty.connect_signal(
 						},
 						widget = clickable_container
 					},
-					bg                 = beautiful.groups_bg,
+					bg                 = beautiful.bg_focus,
 					shape              = gears.shape.rounded_rect,
 					forced_height      = dpi(30),
 					widget             = wibox.container.background
@@ -183,7 +183,7 @@ naughty.connect_signal(
 													margins = beautiful.notification_margin,
 													widget  = wibox.container.margin,
 												},
-												bg = beautiful.background,
+												bg = beautiful.bg_focus,
 												widget  = wibox.container.background,
 											},
 											{
@@ -227,7 +227,7 @@ naughty.connect_signal(
 										margins = dpi(0),
 										widget  = wibox.container.margin,
 									},
-									bg = beautiful.transparent,
+									bg = beautiful.background,
 									widget  = wibox.container.background,
 								},
 								-- Actions
