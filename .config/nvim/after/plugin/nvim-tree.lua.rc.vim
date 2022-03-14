@@ -2,7 +2,6 @@
 nnoremap <leader>tt :NvimTreeToggle<CR>
 nnoremap <leader>tr :NvimTreeRefresh<CR>
 
-let g:nvim_tree_follow = 1
 let g:nvim_tree_width = 30
 
 lua <<EOF

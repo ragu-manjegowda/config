@@ -27,7 +27,7 @@ set ssl_force_tls=yes
 set imap_keepalive = 900
 
 # Don't ask to confirm the recipient and the subject when reply to an e-mail
-set fast_reply=yes
+# set fast_reply=yes
 set include=yes
 
 # always show X number of mails in the index
@@ -40,7 +40,12 @@ set ts_enabled = yes
 
 # A customizable header
 set edit_headers = yes
-set editor = 'nvim +/^$ +nohlsearch' # Move past headers
+set editor = "nvim +/^$ +nohlsearch -c 'set spell spelllang=en_us fo+=aw' \
+              -c 'set noautoindent filetype=mail wm=0 tw=78 digraph nolist' \
+              -c 'set ft=mail enc=utf-8'"
+
+# Add this do not like to insert new line after 78 characters
+# -c 'set textwidth=0' -c 'set wrapmargin=0' \
 
 # Pager options
 set smart_wrap
@@ -101,6 +106,9 @@ set abort_noattach = ask-yes
 set history = 10000
 set history_file = "$XDG_CONFIG_HOME/neomutt/history"
 set save_history = 10000
+
+set pager_stop             # don't go to next message automatically
+set menu_scroll            # scroll in menus
 
 # }}}
 

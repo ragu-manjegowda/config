@@ -67,11 +67,15 @@ augroup END
 " Open toggle undo tree
 nnoremap <leader>ut :UndotreeToggle<CR>
 
-" Delete space at the end
-augroup StripTrailingSpace
-    autocmd!
-    autocmd BufWritePre * %s/\s\+$//e
-augroup END
+" Reference - https://stackoverflow.com/a/6496995
+function! StripTrailingWhitespace()
+    " Don't strip on these filetypes
+    if &ft =~ 'mail'
+        return
+    endif
+    %s/\s\+$//e
+endfun
+autocmd BufWritePre * call StripTrailingWhitespace()
 
 " Open man page
 function! s:RaguCppMan()
