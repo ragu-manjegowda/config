@@ -30,19 +30,25 @@
 
 ### [Nvim](.config/nvim)
 
-| <img src="man/figures/nvim.png" width="900" height="350" /> |
+| <img src="man/figures/nvim.jpg" width="900" height="350" /> |
 |:--:|
 | ***Neovim setup, customized for C++ developement*** |
 
+### [Neomutt](.config/neomutt)
+
+| <img src="man/figures/neomutt.jpg" width="900" height="350" /> |
+|:--:|
+| ***Neomutt setup, terminal based email utility*** |
+
 ### [AwesomeWM](.config/awesome)
 
-| <img src="man/figures/awesome.png" width="900" height="350" /> |
+| <img src="man/figures/awesome.jpg" width="900" height="350" /> |
 |:--:|
-| ***AweomeWM showing notifications and file browser*** |
+| ***AweomeWM - empty desktop and some notifications*** |
 
-| <img src="man/figures/awesome02.png" width="900" height="350" /> |
+| <img src="man/figures/firefox.jpg" width="900" height="350" /> |
 |:--:|
-| ***AweomeWM with multiple clients*** |
+| ***AweomeWM - firefox*** |
 
 ## Setup Instructions
 
