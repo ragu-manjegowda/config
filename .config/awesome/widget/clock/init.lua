@@ -113,7 +113,7 @@ local create_clock = function(s)
 		screen            = s,
 		style_month       = {
 			border_width    = dpi(0),
-			bg_color 		= beautiful.background,
+			bg_color 		= beautiful.background_light,
 			padding         = dpi(20),
 			shape           = function(cr, width, height)
 				gears.shape.partially_rounded_rect(

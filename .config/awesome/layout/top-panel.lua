@@ -72,7 +72,7 @@ local top_panel = function(s)
 	    		            layout = wibox.layout.fixed.horizontal,
                             tag_list.create(s),
                         },
-                        bg = beautiful.background,
+                        bg = beautiful.groups_bg,
                         shape = gears.shape.rounded_rect,
                         widget = wibox.container.background,
                     },
@@ -82,7 +82,7 @@ local top_panel = function(s)
 	    		            layout = wibox.layout.fixed.horizontal,
 	    		            task_list(s),
                         },
-                        bg = beautiful.background,
+                        bg = beautiful.groups_bg,
                         shape = gears.shape.rounded_rect,
                         widget = wibox.container.background,
                     },
@@ -99,7 +99,7 @@ local top_panel = function(s)
                     clock,
                 },
 
-                bg = beautiful.background,
+                bg = beautiful.groups_bg,
                 shape = gears.shape.rounded_rect,
                 widget = wibox.container.background,
             },
@@ -124,7 +124,7 @@ local top_panel = function(s)
 	    		    s.info_center_toggle
                 },
 
-                bg = beautiful.background,
+                bg = beautiful.groups_bg,
                 shape = gears.shape.rounded_rect,
                 widget = wibox.container.background,
 	    	},
