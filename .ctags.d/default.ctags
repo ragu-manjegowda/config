@@ -24,7 +24,7 @@
 --exclude=assets/tests/elm-stuff
 --exclude=test/elm/elm-stuff
 --exclude=priv/static
---extra=+f
+--extras=+f
 --extras=+q
 --fields=+ailmnSft
 --recurse=yes
