@@ -1,6 +1,7 @@
 local awful = require('awful')
 local beautiful = require('beautiful')
 local naughty = require("naughty")
+local gears = require('gears')
 
 require('awful.autofocus')
 
@@ -10,6 +11,18 @@ local hotkeys_popup = require('awful.hotkeys_popup').widget.new({
 local modkey = require('configuration.keys.mod').mod_key
 local altkey = require('configuration.keys.mod').alt_key
 local apps = require('configuration.apps')
+
+local function print_awesome_memory_stats(message)
+    print(os.date(), "\nLua memory usage:", collectgarbage("count"))
+    out_string = tostring(os.date()) .. "\nLua memory usage:"..tostring(collectgarbage("count")).."\n"
+    out_string = out_string .. "Objects alive:"
+    print("Objects alive:")
+    for name, obj in pairs{ button = button, client = client, drawable = drawable, drawin = drawin, key = key, screen = screen, tag = tag } do
+        out_string =out_string .. "\n" .. tostring(name) .. " = " ..tostring(obj.instances())
+        print(name, obj.instances())
+    end
+    naughty.notify({title = "Awesome WM memory statistics " .. message, text = out_string, timeout=20,hover_timeout=20})
+end
 
 -- Key bindings
 local global_keys = awful.util.table.join(
@@ -64,6 +77,21 @@ local global_keys = awful.util.table.join(
 		end,
 		{description = 'Destroy all notifications', group = 'launcher'}
 	),
+
+    awful.key(
+        {modkey, 'Control'},
+        'd',
+        function()
+            print_awesome_memory_stats("Precollect")
+            collectgarbage("collect")
+            collectgarbage("collect")
+            gears.timer.start_new(20, function()
+                print_awesome_memory_stats("Postcollect")
+                return false
+            end)
+        end,
+        {description = 'Print awesome wm memory statistics', group= 'awesome'}
+    ),
 
 	awful.key(
 		{modkey},
