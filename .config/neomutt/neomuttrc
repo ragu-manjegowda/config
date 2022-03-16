@@ -41,11 +41,11 @@ set ts_enabled = yes
 # A customizable header
 set edit_headers = yes
 set editor = "nvim +/^$ +nohlsearch -c 'set spell spelllang=en_us fo+=aw' \
-              -c 'set noautoindent filetype=mail wm=0 tw=78 digraph nolist' \
+              -c 'set noautoindent filetype=mail wm=0 tw=0 digraph nolist' \
               -c 'set ft=mail enc=utf-8'"
 
-# Add this do not like to insert new line after 78 characters
-# -c 'set textwidth=0' -c 'set wrapmargin=0' \
+# Add this to insert new line after 78 characters
+# -c 'set textwidth=78' -c 'set wrapmargin=0' \
 
 # Pager options
 set smart_wrap

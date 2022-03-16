@@ -77,6 +77,19 @@ function! StripTrailingWhitespace()
 endfun
 autocmd BufWritePre * call StripTrailingWhitespace()
 
+" Disable line breaks for file type mail
+function! DisableLineBreak()
+    if &ft =~ 'mail'
+        set wrap
+        set linebreak
+        set nolist  " list disables linebreak
+        set textwidth=0
+        set wrapmargin=0
+        set fo-=t
+    endif
+endfun
+autocmd VimEnter * call DisableLineBreak()
+
 " Open man page
 function! s:RaguCppMan()
     let old_isk = &iskeyword
