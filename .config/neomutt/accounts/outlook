@@ -65,7 +65,7 @@ index-format-hook attachment_info '~A' "   "
 # Do not group threads and search through messages for attachment_info
 set my_indexing = 'set sort=reverse-date-sent index_format=" %4C %zc %zs %zt  | %-35.35L   %?M10?~(%1M) ?%-30.50s %> %?Y?%Y ? %(!%a %d %h %H:%M)'
 
-folder-hook Inbox 'set sort=reverse-threads sort_aux=date-received index_format=" %4C  %Z  | %-35.35L   %@attachment_info@  %?M10?~(%1M) ?%-30.50s %> %?Y?%Y ? %(!%a %d %h %H:%M)'
+folder-hook Inbox 'set sort=threads sort_aux=reverse-last-date-received index_format=" %4C  %Z  | %-35.35L   %@attachment_info@  %?M10?~(%1M) ?%-30.50s %> %?Y?%Y ? %(!%a %d %h %H:%M)'
 
 folder-hook "Junk Email" "$my_indexing"
 folder-hook "Drafts" "$my_indexing"
