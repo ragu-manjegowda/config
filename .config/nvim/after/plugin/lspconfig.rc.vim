@@ -7,7 +7,7 @@ lua << EOF
 local nvim_lsp = require('lspconfig')
 local protocol = require'vim.lsp.protocol'
 
-local signs = { Error = "", Warning = "", Hint = " ", Information = " " }
+local signs = { Error = " ", Warn = " ", Hint = " ", Information = " " }
 for type, icon in pairs(signs) do
   local hl = "LspDiagnosticsSign" .. type
   vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
@@ -24,6 +24,10 @@ local on_attach = function(client, bufnr)
 
   -- Mappings.
   local opts = { noremap=true, silent=true }
+
+  -- See `:help vim.diagnostic.*` for documentation on any of the below functions
+  local opts = { noremap=true, silent=true }
+  buf_set_keymap('n', '<space>e', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
 
   -- See `:help vim.lsp.*` for documentation on any of the below functions
   buf_set_keymap('n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
@@ -88,14 +92,20 @@ local cache_dir = vim.fn.expand('~/.config/nvim/misc/ccls')
 nvim_lsp.ccls.setup {
   on_attach = on_attach,
   filetypes = { "c", "cpp", "h", "hpp" },
+  root_dir = nvim_lsp.util.root_pattern("compile_commands.json", ".git"),
   cmd = {
     'ccls',
     '--log-file='..log_path,
     '-v=1',
-    '--init={"cache": {"directory": cache_dir}}',
-    '--init={"index":{"blacklist":["dazel-out", "preFlightChecker", \
+    '--init={"index": {"blacklist":["dazel-out", "preFlightChecker", \
              "pilotnet", "apps/roadrunner", "tools/experimental/maps", \
              "tools/experimental/localization_metrics"]}}'
+  },
+  init_options = {
+    cache = { directory = cache_dir },
+    client = { snippetSupport = true },
+    clang = { extraArgs = { "-Wno-extra", "-Wno-empty-body" } },
+    completion = { detailedLabel = false, caseSensitivity = 1 },
   };
   capabilities = capabilities
 }

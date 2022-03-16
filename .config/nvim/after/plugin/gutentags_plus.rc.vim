@@ -9,7 +9,13 @@ let g:gutentags_plus_switch = 1
 let g:gutentags_generate_on_write = 1
 let g:gutentags_generate_on_empty_buffer = 0
 let g:gutentags_ctags_auto_set_tags = 0
-let g:gutentags_project_root = [ '.git', 'CONTRIBUTING.md' ]
+let g:gutentags_project_root = [ '.gitignore', 'CONTRIBUTING.md' ]
+let g:gutentags_ctags_exclude_wildignore = 1
+let g:gutentags_ctags_exclude = [
+  \ '.git', 'data/*', '*/bazel-*', 'bazel*', 'bazel-*', 'partners/', 'avddn/', 'apps/',
+  \ 'av/', 'benchmarks/', 'ci/', 'doc/', 'private/', 'resources/', 'scripts', 'share',
+  \ 'swig/', 'ux', '*/dazel*', 'dazel-out', '*/bazel*/', 'lib*.so', '*.log'
+  \ ]
 
 if executable('rg')
   let g:gutentags_file_list_command = 'rg --files'
