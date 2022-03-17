@@ -78,6 +78,8 @@ local control_center_row_one = wibox.widget {
 	}
 }
 
+local blue_light_module = require('widget.blue-light')
+
 local main_control_row_two = wibox.widget {
 	layout = wibox.layout.flex.horizontal,
 	spacing = dpi(10),
@@ -87,7 +89,7 @@ local main_control_row_two = wibox.widget {
 			spacing = dpi(5),
 			require('widget.airplane-mode'),
 			require('widget.bluetooth-toggle'),
-			require('widget.blue-light')
+			blue_light_module
 		}
 	),
 	{
