@@ -13,6 +13,8 @@ local vertical_separator =  wibox.widget {
 	widget = wibox.widget.separator
 }
 
+local weather_widget = require('widget.weather')
+
 local info_center = function(s)
 	-- Set the info center geometry
 	local panel_width = dpi(200)
@@ -28,7 +30,7 @@ local info_center = function(s)
                     require('widget.notif-center')(s),
                     require('widget.email'),
 	                require('widget.stocks'),
-                    require('widget.weather')
+                    weather_widget
                     -- require('widget.email')
 				},
 				margins = dpi(16),
