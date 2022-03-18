@@ -33,4 +33,5 @@ Plug 'junegunn/vim-peekaboo'
 Plug 'Yggdroot/indentLine'
 Plug 'numToStr/FTerm.nvim'
 Plug 'ggandor/lightspeed.nvim'
+Plug 'edluffy/specs.nvim'
 call plug#end()
