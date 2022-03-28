@@ -17,15 +17,17 @@ local action_name = wibox.widget {
 	widget = wibox.widget.textbox
 }
 
+local volume_icon = wibox.widget {
+    image = icons.volume_muted,
+    resize = true,
+    widget = wibox.widget.imagebox
+}
+
 local icon = wibox.widget {
 	layout = wibox.layout.align.vertical,
 	expand = 'none',
 	nil,
-	{
-		image = icons.volume,
-		resize = true,
-		widget = wibox.widget.imagebox
-	},
+	volume_icon,
 	nil
 }
 
@@ -95,6 +97,9 @@ local update_slider = function()
             if muted ~= 'off' then
                 local volume = string.match(stdout, '(%d?%d?%d)%%')
                 volume_slider:set_value(tonumber(volume))
+                volume_icon:set_image(icons.volume)
+            else
+                volume_icon:set_image(icons.volume_muted)
             end
 
 		    awesome.emit_signal(
