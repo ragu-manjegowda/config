@@ -89,12 +89,14 @@ awesome.connect_signal(
 	end
 )
 
+local vol_icon = wibox.widget {
+  image = icons.volume,
+  resize = true,
+  widget = wibox.widget.imagebox
+}
+
 local icon = wibox.widget {
-	{
-		image = icons.volume,
-		resize = true,
-		widget = wibox.widget.imagebox
-	},
+	vol_icon,
 	forced_height = dpi(150),
 	top = dpi(12),
 	bottom = dpi(12),
@@ -214,6 +216,17 @@ local placement_placer = function()
 		}
 	)
 end
+
+awesome.connect_signal(
+	'module::volume_osd:update_icon',
+	function(muted)
+		if muted then
+            vol_icon:set_image(icons.volume_muted)
+		else
+            vol_icon:set_image(icons.volume)
+		end
+	end
+)
 
 awesome.connect_signal(
 	'module::volume_osd:show',

@@ -1,10 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" version="1.1">
- <defs>
-  <style id="current-color-scheme" type="text/css">
-   .ColorScheme-Text { color:#f9f9f9; } .ColorScheme-Highlight { color:#4285f4; }
-  </style>
- </defs>
- <g transform="matrix(1,0,0,1,3,3)">
-  <path class="ColorScheme-Text" d="M 8,1 4,5 H 1 V 11 H 4 L 8,15 Z M 10,1 V 2.5 C 12.32,3.24 14,5.43 14,8 14,10.57 12.32,12.76 10,13.5 V 15 C 13.15,14.22 15.5,11.4 15.5,8 15.5,4.6 13.15,1.78 10,1 Z M 10,5 V 11 C 11.06,10.42 11.789,9.3 11.789,8 11.789,6.7 11.07,5.58 10,5 Z" style="opacity:0.3;fill:currentColor"/>
- </g>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="64pt" height="64pt" viewBox="0 0 64 64" version="1.1">
+<defs>
+<filter id="alpha" filterUnits="objectBoundingBox" x="0%" y="0%" width="100%" height="100%">
+  <feColorMatrix type="matrix" in="SourceGraphic" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+</filter>
+<mask id="mask0">
+  <g filter="url(#alpha)">
+<rect x="0" y="0" width="64" height="64" style="fill:#000000;fill-opacity:1;stroke:none;"/>
+  </g>
+</mask>
+<clipPath id="clip1">
+  <rect x="0" y="0" width="64" height="64"/>
+</clipPath>
+<g id="surface5" clip-path="url(#clip1)">
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(87.45098%,87.45098%,87.45098%);fill-opacity:1;" d="M 9.515625 4 L 4.078125 9.734375 L 15.15625 20 L 4 20 L 4 44 L 16 44 L 32 60 L 32 35.601562 L 40 43.007812 L 40 44 C 40.21875 43.878906 40.414062 43.71875 40.625 43.585938 L 47.4375 49.898438 C 45.257812 51.699219 42.757812 53.121094 40 54 L 40 60 C 44.421875 58.90625 48.421875 56.78125 51.765625 53.914062 L 58.484375 60 L 64 54.265625 L 57.078125 47.921875 L 52.664062 43.835938 L 45.9375 37.601562 L 40 32.109375 L 32 24.695312 L 31.757812 24.46875 L 21.257812 14.742188 Z M 32 4 L 26.914062 9.085938 L 32 13.789062 Z M 40 4 L 40 10 C 49.28125 12.960938 56 21.71875 56 32 C 56 33.273438 55.894531 34.523438 55.695312 35.742188 L 60.726562 40.40625 C 61.539062 37.746094 62 34.933594 62 32 C 62 18.398438 52.601562 7.121094 40 4 Z M 40 20 L 40 21.203125 L 46.15625 26.90625 C 44.96875 23.957031 42.792969 21.511719 40 20 Z M 40 20 "/>
+</g>
+</defs>
+<g id="surface1">
+<use xlink:href="#surface5" mask="url(#mask0)"/>
+</g>
 </svg>
