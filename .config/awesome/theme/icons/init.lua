@@ -27,6 +27,7 @@ return {
 	restart 			= dir .. 'restart.svg',
 	search 				= dir .. 'magnify.svg',
 	volume 				= dir .. 'volume-high.svg',
+	volume_muted 		= dir .. 'volume-muted.svg',
 	brightness 			= dir .. 'brightness-7.svg',
 	effects 			= dir .. 'effects.svg',
 	chart 				= dir .. 'chart-areaspline.svg',
