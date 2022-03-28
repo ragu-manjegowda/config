@@ -109,6 +109,8 @@ local toggle_action = function()
 	)
 end
 
+toggle_action()
+
 widget_button:buttons(
 	gears.table.join(
 		awful.button(
