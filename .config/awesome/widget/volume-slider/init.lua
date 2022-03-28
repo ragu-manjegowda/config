@@ -91,8 +91,16 @@ local update_slider = function()
 	awful.spawn.easy_async_with_shell(
 		[[bash -c "amixer -D pulse sget Master"]],
 		function(stdout)
-			local volume = string.match(stdout, '(%d?%d?%d)%%')
-			volume_slider:set_value(tonumber(volume))
+            local muted = string.match(stdout, 'off')
+            if muted ~= 'off' then
+                local volume = string.match(stdout, '(%d?%d?%d)%%')
+                volume_slider:set_value(tonumber(volume))
+            end
+
+		    awesome.emit_signal(
+		    	'module::volume_osd:update_icon',
+		    	muted == 'off'
+		    )
 		end
 	)
 end
@@ -132,26 +140,6 @@ awesome.connect_signal(
 	'widget::volume',
 	function()
 		update_slider()
-	end
-)
-
-awesome.connect_signal(
-	'widget::volume_mute',
-	function()
-		awesome.emit_signal(
-			'module::brightness_osd:show',
-			false
-		)
-		awesome.emit_signal(
-			'module::volume_osd:show',
-			false
-		)
-        naughty.notification ({
-            icon = widget_icon_dir .. 'volume-muted.png',
-            app_name = 'System notification',
-            title = 'Volume Muted',
-            urgency = 'normal'
-        })
 	end
 )
 

@@ -366,20 +366,8 @@ local global_keys = awful.util.table.join(
 		'XF86AudioMute',
 		function()
 			awful.spawn('amixer -D pulse set Master 1+ toggle', false)
-	        awful.spawn.easy_async_with_shell(
-		        [[bash -c "amixer -D pulse sget Master"]],
-		        function(stdout)
-                    local state  = string.match(stdout, '%[(o[nf]*)%]')
-                    state = state:lower()
-		        	local muted = state == "off"
-                    if muted == true then
-		        	    awesome.emit_signal('widget::volume_mute')
-                    else
-		        	    awesome.emit_signal('widget::volume')
-		        	    awesome.emit_signal('module::volume_osd:show', true)
-                    end
-		        end
-            )
+			awesome.emit_signal('widget::volume')
+			awesome.emit_signal('module::volume_osd:show', true)
 		end,
 		{description = 'toggle mute', group = 'hotkeys'}
 	),
