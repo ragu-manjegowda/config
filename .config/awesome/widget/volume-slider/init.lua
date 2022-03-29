@@ -119,10 +119,12 @@ local action_jump = function()
 
 	if sli_value >= 0 and sli_value < 50 then
 		new_value = 50
+        volume_icon:set_image(icons.volume)
 	elseif sli_value >= 50 and sli_value < 100 then
 		new_value = 100
 	else
 		new_value = 0
+        volume_icon:set_image(icons.volume_muted)
 	end
 	volume_slider:set_value(new_value)
 end

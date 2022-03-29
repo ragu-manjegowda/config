@@ -19,16 +19,11 @@ title_table = {
 }
 
 message_table = {
-	'Let me rate your face! Oops... It looks like I can\'t compute negative numbers. You\'re ugly af, sorry',
-	'Lookin\' good today, now fuck off!',
 	'The last thing I want to do is hurt you. But it’s still on the list.',
 	'If I agreed with you we’d both be wrong.',
 	'I intend to live forever. So far, so good.',
-	'Jesus loves you, but everyone else thinks you’re an asshole.',
-	'Your baby is so ugly, you should have thrown it away and kept the stork.',
 	'If your brain was dynamite, there wouldn’t be enough to blow your hat off.',
 	'You are more disappointing than an unsalted pretzel.',
-	'Your kid is so ugly, he makes his Happy Meal cry.',
 	'Your secrets are always safe with me. I never even listen when you tell me them.',
 	'I only take you everywhere I go just so I don’t have to kiss you goodbye.',
 	'You look so pretty. Not at all gross, today.',
@@ -37,8 +32,7 @@ message_table = {
 	'Keep rolling your eyes, you might eventually find a brain.',
 	'You bring everyone so much joy, when you leave the room.',
 	'I thought of you today. It reminded me to take out the trash.',
-	'You are the human version of period cramps.',
-	'You’re the reason God created the middle finger.'
+	'You are the human version of period cramps.'
 }
 
 local create_profile = function()
