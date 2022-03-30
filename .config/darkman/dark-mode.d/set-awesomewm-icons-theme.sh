@@ -7,8 +7,10 @@ for i in $(find $HOME/.config/awesome/ -name "*.svg"); do
 done
 
 # To change color of an image i.e. the awesomewm icons etc
-# excluding vpn icon
-for i in $(find $HOME/.config/awesome/ -name "*.png" -not -path "*/widget/vpn/icons/*"); do
+# excluding vpn icon and profile picture
+for i in $(find $HOME/.config/awesome/ -name "*.png" \
+            -not -path "*/widget/vpn/icons/*" \
+            -not -path "*/configuration/user-profile/*"); do
     convert $i -fill "#ffffff" -colorize 100% $i
 done
 
