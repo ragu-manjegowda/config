@@ -165,7 +165,7 @@ end
 
 local suspend_command = function()
 	awesome.emit_signal('module::exit_screen:hide')
-	awful.spawn.with_shell(apps.default.lock .. ' & systemctl hybrid-sleep')
+	awful.spawn.with_shell(apps.default.lock .. ' & systemctl hibernate')
 end
 
 local logout_command = function()
