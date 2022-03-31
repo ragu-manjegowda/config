@@ -34,4 +34,5 @@ Plug 'Yggdroot/indentLine'
 Plug 'numToStr/FTerm.nvim'
 Plug 'ggandor/lightspeed.nvim'
 Plug 'edluffy/specs.nvim'
+Plug 'Rasukarusan/nvim-select-multi-line'
 call plug#end()
