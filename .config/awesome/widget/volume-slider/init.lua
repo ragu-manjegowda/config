@@ -182,4 +182,16 @@ local volume_setting = wibox.widget {
 	}
 }
 
+local myvolumemeter_t = awful.tooltip
+{
+    fg = beautiful.background,
+    bg = beautiful.accent,
+}
+
+myvolumemeter_t:add_to_object(volume_setting)
+
+volume_setting:connect_signal('mouse::enter', function()
+    myvolumemeter_t.text = 'Volume = ' .. tostring(volume_slider:get_value()) .. '%'
+end)
+
 return volume_setting

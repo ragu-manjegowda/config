@@ -46,8 +46,8 @@ local slider = wibox.widget {
 		max_value     	 = 100,
 		value         	 = 29,
 		forced_height 	 = dpi(24),
-		color 			 = '#f2f2f2EE',
-		background_color = '#ffffff20',
+		color 			 = beautiful.fg_focus,
+		background_color = beautiful.background,
 		shape 			 = gears.shape.rounded_rect,
 		widget        	 = wibox.widget.progressbar
 	},
@@ -89,5 +89,17 @@ local harddrive_meter = wibox.widget {
 		slider
 	}
 }
+
+local myhdmeter_t = awful.tooltip
+    {
+        fg = beautiful.background,
+        bg = beautiful.accent,
+    }
+
+myhdmeter_t:add_to_object(harddrive_meter)
+
+harddrive_meter:connect_signal('mouse::enter', function()
+    myhdmeter_t.text = 'Space consumed = ' .. slider.hdd_usage.value .. '%'
+end)
 
 return harddrive_meter

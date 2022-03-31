@@ -46,8 +46,8 @@ local slider = wibox.widget {
 		max_value     	 = 100,
 		value         	 = 29,
 		forced_height 	 = dpi(24),
-		color 			 = '#f2f2f2EE',
-		background_color = '#ffffff20',
+		color 			 = beautiful.fg_focus,
+		background_color = beautiful.background,
 		shape 			 = gears.shape.rounded_rect,
 		widget        	 = wibox.widget.progressbar
 	},
@@ -105,5 +105,17 @@ local cpu_meter = wibox.widget {
 		slider
 	}
 }
+
+local mycpumeter_t = awful.tooltip
+    {
+        fg = beautiful.background,
+        bg = beautiful.accent,
+    }
+
+mycpumeter_t:add_to_object(cpu_meter)
+
+cpu_meter:connect_signal('mouse::enter', function()
+    mycpumeter_t.text = 'CPU usage = ' .. tostring(slider.cpu_usage.value) .. '%'
+end)
 
 return cpu_meter

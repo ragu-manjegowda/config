@@ -177,7 +177,7 @@ awesome.connect_signal(
 	end
 )
 
-local volume_setting = wibox.widget {
+local blur_setting = wibox.widget {
 	layout = wibox.layout.fixed.vertical,
 	forced_height = dpi(48),
 	spacing = dpi(5),
@@ -201,4 +201,16 @@ local volume_setting = wibox.widget {
 	}
 }
 
-return volume_setting
+local myblurmeter_t = awful.tooltip
+{
+    fg = beautiful.background,
+    bg = beautiful.accent,
+}
+
+myblurmeter_t:add_to_object(blur_setting)
+
+blur_setting:connect_signal('mouse::enter', function()
+    myblurmeter_t.text = 'Blur strength = ' .. tostring(blur_slider:get_value()) .. '%'
+end)
+
+return blur_setting
