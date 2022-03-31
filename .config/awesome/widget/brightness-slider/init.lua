@@ -193,4 +193,16 @@ local brightness_setting = wibox.widget {
 	}
 }
 
+local mybrightnessmeter_t = awful.tooltip
+{
+    fg = beautiful.background,
+    bg = beautiful.accent,
+}
+
+mybrightnessmeter_t:add_to_object(brightness_setting)
+
+brightness_setting:connect_signal('mouse::enter', function()
+    mybrightnessmeter_t.text = 'Brightness value = ' .. tostring(brightness_slider:get_value()) .. '%'
+end)
+
 return brightness_setting

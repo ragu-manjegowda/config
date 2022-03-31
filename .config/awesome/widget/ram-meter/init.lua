@@ -46,8 +46,8 @@ local slider = wibox.widget {
 		max_value     	 = 100,
 		value         	 = 29,
 		forced_height 	 = dpi(24),
-		color 			 = '#f2f2f2EE',
-		background_color = '#ffffff20',
+		color 			 = beautiful.fg_focus,
+		background_color = beautiful.background,
 		shape 			 = gears.shape.rounded_rect,
 		widget        	 = wibox.widget.progressbar
 	},
@@ -90,5 +90,17 @@ local ram_meter = wibox.widget {
 		slider
 	}
 }
+
+local myrammeter_t = awful.tooltip
+{
+    fg = beautiful.background,
+    bg = beautiful.accent,
+}
+
+myrammeter_t:add_to_object(ram_meter)
+
+ram_meter:connect_signal('mouse::enter', function()
+    myrammeter_t.text = 'RAM usage = ' .. tostring(slider.ram_usage.value) .. '%'
+end)
 
 return ram_meter

@@ -45,8 +45,8 @@ local slider = wibox.widget {
 		max_value     	 = 100,
 		value         	 = 29,
 		forced_height 	 = dpi(24),
-		color 			 = '#f2f2f2EE',
-		background_color = '#ffffff20',
+		color 			 = beautiful.fg_focus,
+		background_color = beautiful.background,
 		shape 			 = gears.shape.rounded_rect,
 		widget        	 = wibox.widget.progressbar
 	},
@@ -57,6 +57,8 @@ local slider = wibox.widget {
 }
 
 local max_temp = 80
+
+local temp_t = 0
 
 awful.spawn.easy_async_with_shell(
 	[[
@@ -89,6 +91,7 @@ awful.spawn.easy_async_with_shell(
 			function(_, stdout)
 				local temp = stdout:match('(%d+)')
 				slider.temp_status:set_value((temp / 1000) / max_temp * 100)
+                temp_t = temp / 1000
 				collectgarbage('collect')
 			end
 		)
@@ -117,5 +120,17 @@ local temp_meter = wibox.widget {
 		slider
 	}
 }
+
+local mytempmeter_t = awful.tooltip
+{
+    fg = beautiful.background,
+    bg = beautiful.accent,
+}
+
+mytempmeter_t:add_to_object(temp_meter)
+
+temp_meter:connect_signal('mouse::enter', function()
+    mytempmeter_t.text = 'CPU core temp = ' .. tostring(temp_t) .. '\'C'
+end)
 
 return temp_meter
