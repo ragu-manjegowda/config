@@ -22,3 +22,6 @@
 [submodule ".config/rEFInd/refind-theme-regular"]
 	path = .config/rEFInd/refind-theme-regular
 	url = https://github.com/munlik/refind-theme-regular.git
+[submodule ".config/awesome/revelation"]
+	path = .config/awesome/revelation
+	url = https://github.com/guotsuan/awesome-revelation
