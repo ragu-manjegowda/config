@@ -10,7 +10,8 @@ done
 # excluding vpn icon and profile picture
 for i in $(find $HOME/.config/awesome/ -name "*.png" \
             -not -path "*/widget/vpn/icons/*" \
-            -not -path "*/configuration/user-profile/*"); do
+            -not -path "*/configuration/user-profile/*" \
+            -not -path "*/revelation/*"); do
     convert $i -fill "#000000" -colorize 100% $i
 done
 

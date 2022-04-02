@@ -2,6 +2,7 @@ local awful = require('awful')
 local beautiful = require('beautiful')
 local naughty = require("naughty")
 local gears = require('gears')
+local revelation = require("revelation")
 
 require('awful.autofocus')
 
@@ -208,10 +209,8 @@ local global_keys = awful.util.table.join(
     awful.key(
 		{modkey},
 		'r',
-		function()
-			awful.spawn(apps.default.terminal .. " --class ranger -e /home/linuxbrew/.linuxbrew/bin/ranger")
-		end,
-		{description = 'open default file manager', group = 'launcher'}
+		revelation,
+		{description = 'Mac OSX like \'Expose\' view of all clients', group = 'launcher'}
 	),
 
 	awful.key(
