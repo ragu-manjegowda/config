@@ -68,13 +68,8 @@ return {
 		-- Audio equalizer
         -- Enable blue light filter
 		'redshift -l 0:0 -t 4500:4500 -r &>/dev/null &',
-		-- Lockscreen timer
-		[[
-		xidlehook --not-when-fullscreen --not-when-audio --timer 300 \
-        "awesome-client 'awesome.emit_signal(\"module::lockscreen_show\")'" \
-        "" --timer 600 "systemctl suspend" "" \
-        --timer 3600 "systemctl hibernate" ""
-		]],
+        -- Auto screen look
+        'systemctl --user reload-or-restart --now xidlehook.service',
         -- Darkman
         --'XDG_DATA_DIRS=~/.config/darkman darkman',
         'systemctl --user reload-or-restart --now darkman.service',
