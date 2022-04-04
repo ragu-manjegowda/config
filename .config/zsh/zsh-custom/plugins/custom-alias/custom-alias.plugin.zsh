@@ -219,28 +219,41 @@ function toggle-gtk-theme () {
     echo "switched away from $mode."
 }
 
+# Set BAT theme for FZF on linux (in Mac it is set below)
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    if ! test -f ~/.config/alacritty/colors.yml; then
+        echo "file $HOME/.config/alacritty/colors.yml doesn't exist"
+    else
+        config_path="$HOME/.config/alacritty/colors.yml"
+        if grep -Fxq "colors: *solarized-dark" "$config_path"; then
+            export BAT_THEME="Solarized (dark)"
+        else
+            export BAT_THEME="Solarized (light)"
+        fi
+    fi
+fi
+
 # Set Alacritty theme (dark/light) on Mac
 if [[ "$OSTYPE" == "darwin"* ]]; then
     if ! test -f ~/.config/alacritty/colors.yml; then
         echo "file $HOME/.config/alacritty/colors.yml doesn't exist"
-        return
+    else
+        config_path="$HOME/.config/alacritty/colors.yml"
+
+        # Get current mode
+        mode=$(defaults read -g AppleInterfaceStyle 2>/dev/null)
+
+        case $mode in
+            Dark)
+                sed -i -e "s#^colors: \*.*#colors: *solarized-dark#g" $config_path
+                export BAT_THEME="Solarized (dark)"
+                ;;
+            *)
+                sed -i -e "s#^colors: \*.*#colors: *solarized-light#g" $config_path
+                export BAT_THEME="Solarized (light)"
+                ;;
+        esac
     fi
-
-    config_path="$HOME/.config/alacritty/colors.yml"
-
-    # Get current mode
-    mode=$(defaults read -g AppleInterfaceStyle 2>/dev/null)
-
-    case $mode in
-        Dark)
-            sed -i -e "s#^colors: \*.*#colors: *solarized-dark#g" $config_path
-            export BAT_THEME="Solarized (dark)"
-            ;;
-        *)
-            sed -i -e "s#^colors: \*.*#colors: *solarized-light#g" $config_path
-            export BAT_THEME="Solarized (light)"
-            ;;
-    esac
 fi
 
 # function to encrypt and decrypt files
@@ -287,7 +300,8 @@ function gpg-encrypt-decrypt () {
             echo "Enter encrypted file name (default $encryptedFileName): "
             vared encryptedFileName
 
-            gpg --yes -v -r ${recipientName} --encrypt --sign --armor --output ${encryptedFileName} ${fileName}
+            gpg --yes -v -r ${recipientName} --encrypt --sign --armor \
+                --output ${encryptedFileName} ${fileName}
             ;;
 
         decrypt)
@@ -314,11 +328,14 @@ function cliclick()
 
 function compresspdf() {
     if [[ "$1" == "--help" ]]; then
-        echo 'Usage: compresspdf [input file] [output file] [screen|ebook|printer|prepress]'
+        echo 'Usage: compresspdf [input file] [output file] \
+            [screen|ebook|printer|prepress]'
         return
     fi
 
-    gs -sDEVICE=pdfwrite -dNOPAUSE -dQUIET -dBATCH -dPDFSETTINGS=/${3:-"screen"} -dCompatibilityLevel=1.4 -sOutputFile="$2" "$1"
+    gs -sDEVICE=pdfwrite -dNOPAUSE -dQUIET -dBATCH \
+        -dPDFSETTINGS=/${3:-"screen"} -dCompatibilityLevel=1.4 \
+        -sOutputFile="$2" "$1"
 }
 
 function listAlias() {
@@ -329,9 +346,13 @@ function start-http-web-server () {
     if ! type http-file-server > /dev/null; then
         echo "Download binary: "
         echo "For Linux: "
-        echo "curl -L https://github.com/sgreben/http-file-server/releases/download/1.6.1/http-file-server_1.6.1_linux_x86_64.tar.gz | tar xz"
+        echo "curl -L https://github.com/sgreben/http-file-server/releases/\
+                download/1.6.1/http-file-server_1.6.1_linux_x86_64.tar.gz | \
+                tar xz"
         echo "For Mac: "
-        echo "curl -L https://github.com/sgreben/http-file-server/releases/download/1.6.1/http-file-server_1.6.1_osx_x86_64.tar.gz | tar xz"
+        echo "curl -L https://github.com/sgreben/http-file-server/releases/\
+                download/1.6.1/http-file-server_1.6.1_osx_x86_64.tar.gz | \
+                tar xz"
         return
     fi
 
@@ -347,7 +368,7 @@ function start-http-web-server () {
             serverType=downloadOnly
             ;;
         1)
-            echo "Requested decryption"
+            echo "Requested upload server"
             serverType=allowUpload
             ;;
         *)
@@ -374,7 +395,8 @@ function start-http-web-server () {
 
         allowUpload)
             echo -e "\033[0;31mTo upload from command line use: "
-            echo -e "curl -LF 'file=@example.txt' ${serverAddress}:${port}/path_from_below\033[0m\n"
+            echo -e "curl -LF 'file=@example.txt' \
+                ${serverAddress}:${port}/path_from_below\033[0m\n"
             http-file-server -u -a $serverAddress:$port $serverPath
             ;;
     esac
@@ -424,7 +446,8 @@ join-lines() {
 bind-git-helper() {
   local char
   for c in $@; do
-    eval "fzf-g$c-widget() { local result=\$(${FZF_PREFIX}g$c | join-lines); zle reset-prompt; LBUFFER+=\$result }"
+    eval "fzf-g$c-widget() { local result=\$(${FZF_PREFIX}g$c | join-lines); \
+        zle reset-prompt; LBUFFER+=\$result }"
     eval "zle -N fzf-g$c-widget"
     eval "bindkey '^[$c' fzf-g$c-widget"
   done
