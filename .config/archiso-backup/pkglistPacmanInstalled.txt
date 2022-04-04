@@ -60,6 +60,7 @@ pavucontrol
 pkgconf
 pulseaudio-alsa
 pulseaudio-bluetooth
+python-pip
 python-vobject
 ranger
 redshift

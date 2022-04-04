@@ -46,6 +46,7 @@ linux-firmware
 linux-headers
 linux-lts
 linux-lts-headers
+lua-pam-git
 lxappearance
 lxqt-policykit
 ly
@@ -71,6 +72,7 @@ pkgconf
 pulseaudio-alsa
 pulseaudio-bluetooth
 python-gtkspellcheck
+python-pip
 python-vobject
 ranger
 redshift
