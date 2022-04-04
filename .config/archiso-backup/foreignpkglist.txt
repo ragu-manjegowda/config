@@ -5,6 +5,7 @@ darkman
 gtk-theme-numix-solarized
 informant
 light-git
+lua-pam-git
 ly
 pacman-cleanup-hook
 picom-git
