@@ -42,7 +42,7 @@ return {
 			-- Enable audio by default
 			audio = false,
 			-- Recordings directory
-			save_directory = '$(xdg-user-dir VIDEOS)/Recordings/',
+			save_directory = '$HOME/Videos/Recordings/',
 			-- Mic level
 			mic_level = '20',
 			-- FPS
@@ -97,7 +97,7 @@ return {
 			-- Capture intruder using webcam
 			capture_intruder = true,
 			-- Intruder image save location (Will create directory if it doesn't exist)
-			face_capture_dir = '$(xdg-user-dir PICTURES)/Intruders/',
+			face_capture_dir = '$HOME/Pictures/Intruders/',
 			-- Background directory - Defaults to 'awesome/config/theme/wallpapers/' if null
 			bg_dir = nil,
 			-- Will look for this image file under 'bg_dir'
