@@ -239,15 +239,6 @@ local global_keys = awful.util.table.join(
 	),
 
 	awful.key(
-		{modkey, 'Control'},
-		's',
-		function()
-			awful.spawn(apps.default.rofi_global, false)
-		end,
-		{description = 'open global search', group = 'launcher'}
-	),
-
-	awful.key(
 		{modkey},
 		'space',
 		function()

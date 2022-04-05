@@ -35,12 +35,6 @@ return {
 		lock = 'awesome-client "awesome.emit_signal(\'module::lockscreen_show\')"',
 		-- Default quake terminal
 		quake = '',
-		-- Default rofi global menu
-		rofi_global = 'rofi -dpi ' .. screen.primary.dpi ..
-							' -show "Global Search" -modi "Global Search":' .. config_dir ..
-							'/configuration/rofi/global/rofi-spotlight.sh' ..
-							' -theme ' .. config_dir ..
-							'/configuration/rofi/global/rofi.rasi',
 		-- Default app menu
 		rofi_appmenu = 'rofi -dpi ' .. screen.primary.dpi ..
 							' -show drun -theme ' .. config_dir ..
