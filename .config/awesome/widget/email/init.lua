@@ -342,6 +342,7 @@ email_report:connect_signal(
 	end
 )
 
+-- Emitted from Imapnotify
 awesome.connect_signal(
 	'module::email:show',
     function()

@@ -141,7 +141,7 @@ ruled.client.connect_signal(
 			id        = 'floating_windows',
 			rule_any  = {
 				instance    = {
-					'ranger',
+					'stocks',
                     'update-manager'
 				},
 			},
@@ -149,7 +149,10 @@ ruled.client.connect_signal(
 				titlebars_enabled = true,
 				skip_decoration = true,
 				floating = true,
-				placement = awful.placement.centered
+				placement = awful.placement.centered,
+                sticky = true,
+                width = 1200,
+                height = 550,
 			}
 		}
 

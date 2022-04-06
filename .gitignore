@@ -31,7 +31,6 @@
 .config/advanced-rest-client
 .config/alacritty/colors.yml-e
 .config/autostart
-.config/awesome/configuration/api_keys.lua
 .config/awesome/library/liblua_pam.so
 .config/awesome/widget/email/mails.txt
 .config/bash/.bash_history

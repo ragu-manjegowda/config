@@ -150,3 +150,5 @@ Installation process is pretty much covered in the wiki of this repo, following 
     `ln -s ~/.config/darkman/dark-mode.d ~/.local/share/dark-mode.d`
     `ln -s ~/.config/darkman/light-mode.d ~/.local/share/light-mode.d`
 
+21. Hardcoded floating window size of stocks widget in client rule.
+
