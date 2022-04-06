@@ -35,11 +35,15 @@ return {
 		lock = 'awesome-client "awesome.emit_signal(\'module::lockscreen_show\')"',
 		-- Default quake terminal
 		quake = '',
+		-- Run menu
+		rofi_runmenu = 'rofi -dpi ' .. screen.primary.dpi ..
+							' -show run -theme '.. config_dir ..
+							'/configuration/rofi/runmenu/rofi.rasi',
 		-- Emoji menu
 		rofi_emojimenu = 'rofi -dpi ' .. screen.primary.dpi ..
 							' -show emoji -modi emoji -theme '.. config_dir ..
 							'/configuration/rofi/emojimenu/rofi.rasi',
-		-- Default app menu
+		-- App menu
 		rofi_appmenu = 'rofi -dpi ' .. screen.primary.dpi ..
 							' -show drun -theme ' .. config_dir ..
 							'/configuration/rofi/appmenu/rofi.rasi'

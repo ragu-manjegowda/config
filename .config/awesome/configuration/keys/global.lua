@@ -76,7 +76,7 @@ local global_keys = awful.util.table.join(
 		function()
             naughty.destroy_all_notifications()
 		end,
-		{description = 'Destroy all notifications', group = 'launcher'}
+		{description = 'destroy all notifications', group = 'launcher'}
 	),
 
     awful.key(
@@ -91,16 +91,16 @@ local global_keys = awful.util.table.join(
                 return false
             end)
         end,
-        {description = 'Print awesome wm memory statistics', group= 'awesome'}
+        {description = 'print awesome wm memory statistics', group= 'awesome'}
     ),
 
 	awful.key(
 		{modkey},
 		'e',
 		function()
-			awful.spawn("rofi -show run")
+			awful.spawn(apps.default.rofi_runmenu, false)
 		end,
-		{description = 'Rofi run menu', group = 'launcher'}
+		{description = 'rofi run menu', group = 'launcher'}
 	),
 
 	awful.key(
@@ -109,7 +109,7 @@ local global_keys = awful.util.table.join(
 		function()
 			awful.spawn(apps.default.rofi_emojimenu, false)
 		end,
-		{description = 'open global search', group = 'launcher'}
+		{description = 'rofi emoji menu', group = 'launcher'}
 	),
 
 	awful.key(
