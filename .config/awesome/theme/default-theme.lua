@@ -16,6 +16,8 @@ local theme = {}
 -- Font
 theme.font = 'Hack Nerd Regular 10'
 theme.font_bold = 'Hack Nerd Bold 10'
+theme.notification_font = 'Hack Nerd Regular 10, Noto Color Emoji'
+theme.emojifont = 'Hack Nerd Regular 10, Noto Color Emoji'
 
 -- Menu icon theme
 theme.icon_theme = 'Tela-blue-dark'
@@ -30,6 +32,8 @@ local awesome_overrides = function(theme)
 
 	-- Default font
 	theme.font = 'Hack Nerd Regular 10'
+	theme.notification_font = 'Hack Nerd Regular 10, Noto Color Emoji'
+	theme.emojifont = 'Hack Nerd Regular 10, Noto Color Emoji'
 
 	-- System tray
 	theme.bg_systray = theme.background
