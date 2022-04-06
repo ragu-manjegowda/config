@@ -66,6 +66,7 @@ ranger
 redshift
 refind
 rofi
+rofi-emoji
 sudo
 system-config-printer
 testdisk

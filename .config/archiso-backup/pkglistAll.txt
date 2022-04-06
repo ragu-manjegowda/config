@@ -79,6 +79,7 @@ redshift
 refind
 reflector-pacman-hook-git
 rofi
+rofi-emoji
 slack-desktop
 sudo
 sync-pacman-hook-git
