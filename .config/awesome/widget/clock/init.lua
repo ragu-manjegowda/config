@@ -60,8 +60,6 @@ local create_clock = function(s)
 		preferred_alignments = {'middle', 'front', 'back'},
 		margin_leftright = dpi(8),
 		margin_topbottom = dpi(8),
-        fg = beautiful.background,
-        bg = beautiful.accent,
 		timer_function = function()
 			local ordinal = nil
 
