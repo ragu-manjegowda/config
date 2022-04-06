@@ -14,7 +14,7 @@ return {
 		-- Default file manager
 		file_manager = 'ranger',
 		-- Default media player
-		multimedia = 'vlc',
+		multimedia = 'mpv',
 		-- Default game, can be a launcher like steam
 		game = '',
 		-- Default graphics editor
@@ -24,11 +24,11 @@ return {
 		-- Default IDE
 		development = 'nvim',
 		-- Default network manager
-		network_manager = 'nm-applet',
+		network_manager = 'nm-connection-editor',
 		-- Default bluetooth manager
 		bluetooth_manager = 'blueman-manager',
 		-- Default power manager
-		power_manager = 'xfce4-power-manager',
+		power_manager = 'xfce4-power-manager-settings',
 		-- Default GUI package manager
 		package_manager = '',
 		-- Default locker
