@@ -5,10 +5,8 @@ local naughty = require('naughty')
 local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 
-local config = require('configuration.api_keys')
-local secrets = {
-    api_key = config.widget.stocks.api_key
-}
+local clickable_container = require('widget.clickable-container')
+local apps = require('configuration.apps')
 
 local stocks = wibox.widget {
     font = 'Hack Nerd Bold 16',
@@ -25,15 +23,15 @@ local symbol = wibox.widget {
 }
 
 local stock_price = wibox.widget {
+    markup = 'N/A',
     font   = 'Hack Nerd Regular 10',
     align  = 'left',
     valign = 'center',
     widget = wibox.widget.textbox
 }
 
-
 local stocks_to_fetch = {
-    'NVDA'
+    'nvda'
 }
 
 local update_stocks = function()
@@ -41,19 +39,13 @@ local update_stocks = function()
 
     for i, stock in ipairs(stocks_to_fetch) do
 
-        --naughty.notify({text = stock})
-
         fetch_stock_price_command = [[
-            curl --silent \
-            https://www.alphavantage.co/query\?function\=GLOBAL_QUOTE\&symbol\=]] .. stock .. [[\&apikey\=]] .. secrets.api_key .. [[ | \
-            python3 -c 'import sys, json; print(json.load(sys.stdin)["Global Quote"]["05. price"])'
+            curl -L stonks.icu/]] .. stock .. [[ | grep -oP '.{0,7}USD'
         ]]
-
 
         awful.spawn.easy_async_with_shell(
             fetch_stock_price_command,
             function(stdout)
-                --naughty.notify({text = tostring(stdout)})
                 stock_price:set_text(tostring(stdout))
             end
         )
@@ -115,12 +107,42 @@ local stocksbox = wibox.widget {
     widget = wibox.container.background
 }
 
-awesome.connect_signal(
-    'widget::update_stocks',
-    function()
-        update_stocks()
-    end
+gears.timer {
+	timeout = 120,
+	autostart = true,
+	callback  = function()
+		update_stocks()
+	end
+}
+
+local stocks_button = wibox.widget {
+	{
+		stocksbox,
+		margins = dpi(7),
+		widget = wibox.container.margin
+	},
+	widget = clickable_container
+}
+
+stocks_button:buttons(
+	gears.table.join(
+		awful.button(
+			{},
+			1,
+			nil,
+			function()
+			    local focused = awful.screen.focused()
+			    if focused.info_center and focused.info_center.visible then
+			    	focused.info_center:toggle()
+			    end
+                awful.spawn(apps.default.terminal ..
+                    ' --class stocks --hold -o font.size=8 -e /bin/zsh \
+                    -c "curl -s -L stonks.icu/nvda | head -n -3"')
+			end
+		)
+	)
 )
 
 stock_price:emit_signal('widget::redraw_needed')
-return stocksbox
+
+return stocks_button

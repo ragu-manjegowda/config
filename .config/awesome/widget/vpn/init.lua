@@ -109,7 +109,7 @@ local return_button = function()
 		)
 	end
 
-	-- Watch status if charging, discharging, fully-charged
+	-- Watch status if connected, disconnected
 	watch(
 		[[
             /opt/cisco/anyconnect/bin/vpn state
