@@ -8,7 +8,7 @@ theme.font = 'Hack Nerd Regular 10'
 theme.font_bold = 'Hack Nerd Bold 10'
 
 theme.colors = {}
-theme.colors.base3   = "#002b36ff"
+theme.colors.base3   = "#002b3666"
 theme.colors.base2   = "#073642ff"
 theme.colors.base1   = "#586e75ff"
 theme.colors.base0   = "#657b83ff"

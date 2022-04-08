@@ -138,7 +138,7 @@ local awesome_overrides = function(theme)
 	-- Tooltips
 
 	theme.tooltip_bg = theme.accent
-	theme.tooltip_fg = theme.fg_normal
+	theme.tooltip_fg = theme.system_white
 	theme.tooltip_border_color = theme.background
 	theme.tooltip_border_width = 0
 	theme.tooltip_gaps = dpi(5)

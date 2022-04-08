@@ -227,7 +227,7 @@ naughty.connect_signal(
 										margins = dpi(0),
 										widget  = wibox.container.margin,
 									},
-									bg = beautiful.background,
+									bg = beautiful.background_light,
 									widget  = wibox.container.background,
 								},
 								-- Actions
