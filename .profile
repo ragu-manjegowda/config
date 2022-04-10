@@ -18,6 +18,7 @@ export LESSHISTFILE=/dev/null
 
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_CACHE_HOME="$HOME/.cache"
 
 export TMUX_TMPDIR="$XDG_RUNTIME_DIR"
 export ZDOTDIR="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
@@ -29,6 +30,7 @@ export RANGER_LOAD_DEFAULT_RC=FALSE
 
 # Not thoroughly tested for all side effectes
 export TERM=xterm-256color
+export COLORTERM="truecolor"
 
 # if running bash
 if [ -n "$BASH_VERSION" ]; then
