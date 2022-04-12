@@ -142,7 +142,7 @@ ruled.client.connect_signal(
 			rule_any  = {
 				instance    = {
 					'stocks',
-                    'update-manager'
+                    'Toolkit'
 				},
 			},
 			properties = {
@@ -153,6 +153,7 @@ ruled.client.connect_signal(
                 sticky = true,
                 width = 1200,
                 height = 550,
+                ontop = true,
 			}
 		}
 
