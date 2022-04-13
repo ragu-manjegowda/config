@@ -11,7 +11,7 @@ color message		green		    default
 color normal		blue		    default
 color prompt		brightblue      default
 color search		brightgreen		default
-color status 		white	        brightred
+color status 		white	        brightmagenta
 color tilde		    brightblue	    default
 color tree		    red	            default
 
