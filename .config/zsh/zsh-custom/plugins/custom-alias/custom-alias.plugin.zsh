@@ -509,7 +509,7 @@ function kill-process() {
     if [ "x$pid" != "x" ]
     then
       echo $pid | xargs kill -${1:-9}
-      ${kill-process}
+      $(kill-process)
     fi
 }
 
