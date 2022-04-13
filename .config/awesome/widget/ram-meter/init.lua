@@ -91,11 +91,7 @@ local ram_meter = wibox.widget {
 	}
 }
 
-local myrammeter_t = awful.tooltip
-{
-    fg = beautiful.background,
-    bg = beautiful.accent,
-}
+local myrammeter_t = awful.tooltip{}
 
 myrammeter_t:add_to_object(ram_meter)
 

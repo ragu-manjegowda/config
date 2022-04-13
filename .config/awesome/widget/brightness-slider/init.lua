@@ -193,11 +193,7 @@ local brightness_setting = wibox.widget {
 	}
 }
 
-local mybrightnessmeter_t = awful.tooltip
-{
-    fg = beautiful.background,
-    bg = beautiful.accent,
-}
+local mybrightnessmeter_t = awful.tooltip{}
 
 mybrightnessmeter_t:add_to_object(brightness_setting)
 

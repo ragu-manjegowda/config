@@ -60,7 +60,7 @@ local widget_button = wibox.widget {
 local update_widget = function()
 	if blur_status then
 		action_status:set_text('On')
-		widget_button.bg = beautiful.system_magenta_dark
+		widget_button.bg = beautiful.accent
 		button_widget.icon:set_image(icons.effects)
 	else
 		action_status:set_text('Off')

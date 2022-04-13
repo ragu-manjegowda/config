@@ -121,11 +121,7 @@ local temp_meter = wibox.widget {
 	}
 }
 
-local mytempmeter_t = awful.tooltip
-{
-    fg = beautiful.background,
-    bg = beautiful.accent,
-}
+local mytempmeter_t = awful.tooltip{}
 
 mytempmeter_t:add_to_object(temp_meter)
 

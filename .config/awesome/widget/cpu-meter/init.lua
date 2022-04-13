@@ -106,11 +106,7 @@ local cpu_meter = wibox.widget {
 	}
 }
 
-local mycpumeter_t = awful.tooltip
-    {
-        fg = beautiful.background,
-        bg = beautiful.accent,
-    }
+local mycpumeter_t = awful.tooltip{}
 
 mycpumeter_t:add_to_object(cpu_meter)
 

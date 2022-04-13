@@ -201,11 +201,7 @@ local blur_setting = wibox.widget {
 	}
 }
 
-local myblurmeter_t = awful.tooltip
-{
-    fg = beautiful.background,
-    bg = beautiful.accent,
-}
+local myblurmeter_t = awful.tooltip{}
 
 myblurmeter_t:add_to_object(blur_setting)
 
