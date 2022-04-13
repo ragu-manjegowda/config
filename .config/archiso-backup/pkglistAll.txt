@@ -65,6 +65,7 @@ ntfs-3g
 openssh
 os-prober
 pacman-cleanup-hook
+paru
 patch
 pavucontrol
 picom-git
@@ -152,7 +153,6 @@ xorg-xwd
 xorg-xwininfo
 xorg-xwud
 xsettingsd
-yay
 zathura
 zathura-pdf-mupdf
 zim
