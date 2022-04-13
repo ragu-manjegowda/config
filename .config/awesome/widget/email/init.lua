@@ -230,10 +230,10 @@ local notify_new_email = function(count, from, subject)
 
 end
 
-local set_email_data_tooltip = function(email_data)
-	local email_data = email_data:match('(From:.*)')
-	local counter = "<span font='Hack Nerd Regular 10'>Unread Count: </span>" .. unread_email_count
-	email_details_tooltip:set_markup(counter .. '\n\n' .. email_data)
+local set_email_data_tooltip = function(email_data_arg)
+	local email_data = email_data_arg:match('(From:.*)')
+	local counter = "Unread Count: " .. unread_email_count
+	email_details_tooltip.text = counter .. '\n\n' .. email_data
 end
 
 local set_widget_markup = function(from, subject, date, tooltip)

@@ -182,11 +182,7 @@ local volume_setting = wibox.widget {
 	}
 }
 
-local myvolumemeter_t = awful.tooltip
-{
-    fg = beautiful.background,
-    bg = beautiful.accent,
-}
+local myvolumemeter_t = awful.tooltip{}
 
 myvolumemeter_t:add_to_object(volume_setting)
 

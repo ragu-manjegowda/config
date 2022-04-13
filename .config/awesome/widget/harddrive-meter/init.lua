@@ -90,11 +90,7 @@ local harddrive_meter = wibox.widget {
 	}
 }
 
-local myhdmeter_t = awful.tooltip
-    {
-        fg = beautiful.background,
-        bg = beautiful.accent,
-    }
+local myhdmeter_t = awful.tooltip{}
 
 myhdmeter_t:add_to_object(harddrive_meter)
 
