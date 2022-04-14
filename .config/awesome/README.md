@@ -152,3 +152,7 @@ Installation process is pretty much covered in the wiki of this repo, following 
 
 21. Hardcoded floating window size of stocks widget in client rule.
 
+22. Updated icons with Kannada font and forced the size of
+    * `theme.taglist_spacing = dpi(2)` in theme/default-theme.lua:159 and
+    * `local icondpi = 5` in widget/tag-list/init.lua:70
+    to fit them appropriately
