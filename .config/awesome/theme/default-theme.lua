@@ -156,7 +156,7 @@ local awesome_overrides = function(theme)
 	theme.layout_floating = theme.icons .. 'layouts/floating.png'
 
 	-- Taglist
-	theme.taglist_spacing = dpi(0)
+	theme.taglist_spacing = dpi(2)
 
 	-- Tasklist
 	theme.tasklist_font = 'Hack Nerd Regular 10'
