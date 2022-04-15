@@ -86,6 +86,7 @@ local check_device_state = function()
 end
 
 check_device_state()
+
 local power_on_cmd = [[
 	rfkill unblock bluetooth
 
@@ -149,7 +150,7 @@ widget_button:buttons(
 			1,
 			nil,
 			function()
-				toggle_action()
+				-- toggle_action()
 			end
 		)
 	)
@@ -162,7 +163,7 @@ action_info:buttons(
 			1,
 			nil,
 			function()
-				toggle_action()
+				-- toggle_action()
 			end
 		)
 	)

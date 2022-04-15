@@ -164,7 +164,7 @@ screen.connect_signal(
 				right = dpi(24),
 				widget = wibox.container.margin
 			},
-			bg = beautiful.groups_bg,
+			bg = beautiful.groups_bg .. "44",
 			shape = gears.shape.rounded_rect,
 			widget = wibox.container.background()
 		}
