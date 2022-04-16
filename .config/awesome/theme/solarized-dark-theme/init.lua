@@ -85,12 +85,12 @@ theme.mouse_finder_color = theme.system_blue_dark
 
 -- Taglist
 theme.taglist_bg_empty = theme.bg_normal
-theme.taglist_bg_occupied = theme.bg_normal
+theme.taglist_bg_occupied = theme.background_light
 theme.taglist_bg_urgent = theme.bg_urgent
 theme.taglist_bg_focus = theme.bg_focus
 
 -- Tasklist
-theme.tasklist_bg_normal = theme.bg_normal
+theme.tasklist_bg_normal = theme.background_light
 theme.tasklist_bg_focus = theme.bg_focus
 theme.tasklist_bg_urgent = theme.bg_urgent
 theme.tasklist_fg_focus = theme.fg_focus
