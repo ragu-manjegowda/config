@@ -194,39 +194,19 @@ local tasklist_buttons = awful.util.table.join(
 				c:raise()
 			end
 		end
-	)--,
-	--awful.button(
-	--	{},
-	--	2,
-	--	function(c)
-	--		c:kill()
-	--	end
-	--),
-	--awful.button(
-	--	{},
-	--	4,
-	--	function()
-	--		awful.client.focus.byidx(1)
-	--	end
-	--),
-	--awful.button(
-	--	{},
-	--	5,
-	--	function()
-	--		awful.client.focus.byidx(-1)
-	--	end
-	--)
+	)
 )
 
 local task_list = function(s)
-	return awful.widget.tasklist(
-		s,
-		awful.widget.tasklist.filter.currenttags,
-		tasklist_buttons,
-		{},
-		list_update,
-		wibox.layout.fixed.horizontal()
-	)
+	return awful.widget.tasklist{
+		screen = s,
+		filter = awful.widget.tasklist.filter.currenttags,
+		buttons = tasklist_buttons,
+		update_function = list_update,
+        layout   = {
+            layout = wibox.layout.flex.horizontal,
+        }
+    }
 end
 
 return task_list
