@@ -120,7 +120,6 @@ local awesome_overrides = function(theme)
 	theme.client_shape_rounded = function(cr, width, height)
 		gears.shape.rounded_rect(cr, width, height, dpi(12))
 	end
-    theme.tasklist_spacing = dpi(4)
 
 	-- Menu
 	theme.menu_font = 'Hack Nerd Regular 11'
@@ -160,6 +159,7 @@ local awesome_overrides = function(theme)
 	theme.taglist_spacing = dpi(2)
 
 	-- Tasklist
+    theme.tasklist_spacing = dpi(2)
 	theme.tasklist_font = 'Hack Nerd Regular 10'
 
 	-- Notification

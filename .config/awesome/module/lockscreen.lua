@@ -445,6 +445,7 @@ local locker = function(s)
 				end
 			end
 		)
+        naughty.resume()
 	end
 	-- A backdoor.
 	-- Sometimes I'm too lazy to type so I decided to create this.
@@ -694,6 +695,9 @@ local locker = function(s)
 
 			-- Dont lock again
 			lock_again = false
+
+			-- naughty.destroy_all_notifications(nil, 1)
+            naughty.suspend()
 		end
 	end
 
@@ -784,7 +788,8 @@ naughty.connect_signal(
             update_date_text()
             date_today:emit_signal('widget::redraw_needed')
 
-			naughty.destroy_all_notifications(nil, 1)
+			-- naughty.destroy_all_notifications(nil, 1)
+            naughty.suspend()
 		end
 	end
 )
