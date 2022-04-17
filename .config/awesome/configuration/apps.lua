@@ -24,7 +24,7 @@ return {
 		-- Default IDE
 		development = 'nvim',
 		-- Default network manager
-		network_manager = 'nm-connection-editor',
+		network_manager = '',
 		-- Default bluetooth manager
 		bluetooth_manager = 'blueman-manager',
 		-- Default power manager
