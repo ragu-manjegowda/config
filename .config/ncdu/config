@@ -1,0 +1,13 @@
+# Always enable extended mode
+-e
+
+# Disable file deletion
+--disable-delete
+
+# Color scheme
+--color dark
+
+# Graph style
+--show-graph
+--show-percent
+--graph-style hash

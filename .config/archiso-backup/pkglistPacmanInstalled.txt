@@ -21,7 +21,6 @@ firefox
 flex
 garcon
 gcc
-gimp
 git
 gnu-free-fonts
 goimapnotify
