@@ -68,6 +68,7 @@ paru
 patch
 pavucontrol
 picom-git
+pinta
 pkgconf
 pulseaudio-alsa
 pulseaudio-bluetooth

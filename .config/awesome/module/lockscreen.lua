@@ -432,6 +432,8 @@ local locker = function(s)
 				lock_again = true
 				type_again = true
 
+                naughty.resume()
+
 				-- Select old tag
 				-- And restore minimized focused client if there's any
 				if locked_tag then
@@ -445,7 +447,6 @@ local locker = function(s)
 				end
 			end
 		)
-        naughty.resume()
 	end
 	-- A backdoor.
 	-- Sometimes I'm too lazy to type so I decided to create this.

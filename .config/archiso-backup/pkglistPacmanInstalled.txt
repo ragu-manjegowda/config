@@ -56,6 +56,7 @@ openssh
 os-prober
 patch
 pavucontrol
+pinta
 pkgconf
 pulseaudio-alsa
 pulseaudio-bluetooth
