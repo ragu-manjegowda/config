@@ -94,6 +94,7 @@
 .config/nvim/autoload
 .config/nvim/misc
 .config/nvim/plugged
+.config/nvim/plugin/packer_compiled.lua
 .config/nvim/undodir
 .config/oauth2ms/config.json
 .config/oauth2ms/oauth2ms
