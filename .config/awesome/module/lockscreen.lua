@@ -208,8 +208,8 @@ local locker = function(s)
 		type = 'splash',
 		width = s.geometry.width,
 		height = s.geometry.height,
-		bg = beautiful.background,
-		fg = beautiful.fg_normal
+		bg = beautiful.fg_normal,
+		fg = beautiful.background_light
 	}
 
 	-- Update username textbox
@@ -748,8 +748,8 @@ local locker_ext = function(s)
 		y = s.geometry.y,
 		width = s.geometry.width,
 		height = s.geometry.height,
-		bg = beautiful.background,
-		fg = beautiful.fg_normal
+		bg = beautiful.fg_normal,
+		fg = beautiful.background_light
 	}
 	return extended_lockscreen
 end

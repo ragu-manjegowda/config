@@ -66,7 +66,7 @@
   <g
      id="g877">
     <text
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;white-space:pre;shape-inside:url(#rect881);fill:#000000;fill-opacity:1;stroke:none;"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;white-space:pre;shape-inside:url(#rect881);fill:#073642;fill-opacity:1;stroke:none;"
        id="text879"
        xml:space="preserve" />
     <g
@@ -74,7 +74,7 @@
       <path
          d="M 200,40 H 40 C 28.95,40 20.1,48.95 20.1,60 L 20,180 c 0,11.05 8.95,20 20,20 h 160 c 11.05,0 20,-8.95 20,-20 V 60 c 0,-11.05 -8.95,-20 -20,-20 z m 0,40 -80,50 L 40,80 V 60 l 80,50 80,-50 z"
          id="path2"
-         style="opacity:0.8;fill:#000000;fill-opacity:1;stroke-width:5" />
+         style="opacity:0.8;fill:#073642;fill-opacity:1;stroke-width:5" />
       <g
          id="g846">
         <ellipse
@@ -85,13 +85,13 @@
            cx="196.3432"
            style="fill:#e04f5f;stroke-width:0.427111" />
         <g
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:64px;line-height:1.25;font-family:'sf pro d';-inkscape-font-specification:'sf pro d';letter-spacing:0px;word-spacing:0px;white-space:pre;shape-inside:url(#rect887);fill:#000000;fill-opacity:1;stroke:none"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:64px;line-height:1.25;font-family:'sf pro d';-inkscape-font-specification:'sf pro d';letter-spacing:0px;word-spacing:0px;white-space:pre;shape-inside:url(#rect887);fill:#073642;fill-opacity:1;stroke:none"
            id="text885"
            transform="translate(0,-0.98869551)"
            aria-label="3">
           <path
              id="path840"
-             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'SF Pro Display';-inkscape-font-specification:'SF Pro Display Bold';text-align:center;text-anchor:middle;fill:#000000"
+             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'SF Pro Display';-inkscape-font-specification:'SF Pro Display Bold';text-align:center;text-anchor:middle;fill:#073642"
              d="m 190.96484,179.65172 h 5.15625 c 5.46875,0 8.6875,2.4375 8.65625,6.8125 0,3.8125 -3.25,6.4375 -7.96875,6.4375 -4.96875,0 -8.21875,-2.5 -8.53125,-6.1875 h -9 c 0.40625,8.28125 7.34375,13.78125 17.53125,13.78125 10.46875,0 17.5625,-5.4375 17.5625,-13.625 0,-6.1875 -4.375,-10.15625 -11.0625,-10.78125 v -0.1875 c 5.3125,-1.09375 9.40625,-4.8125 9.40625,-10.5625 0,-7.21875 -6.4375,-11.9375 -15.96875,-11.9375 -9.4375,0 -16,5.28125 -16.46875,13.53125 h 8.65625 c 0.28125,-3.90625 3.375,-6.28125 7.8125,-6.28125 4.5,0 7.03125,2.34375 7.03125,6.03125 0,3.6875 -3.0625,6.25 -7.78125,6.25 h -5.03125 z" />
         </g>
       </g>

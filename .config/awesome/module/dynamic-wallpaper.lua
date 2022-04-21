@@ -365,7 +365,6 @@ local wall_updater = gears.timer {
     	awesome.emit_signal('module::change_wallpaper')
     	awesome.emit_signal('module::change_background_wallpaper')
         awesome.emit_signal('module::spawn_apps')
-        naughty.resume()
   	end
 }
 

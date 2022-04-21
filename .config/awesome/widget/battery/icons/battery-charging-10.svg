@@ -59,15 +59,15 @@
          inkscape:connector-curvature="0"
          d="m 22,40 v -6 h -8 v 7.33 C 14,42.8 15.19,44 16.67,44 h 14.67 c 1.47,0 2.67,-1.19 2.67,-2.67 V 34 h -8.8 z"
          id="path2"
-         style="fill:#000000;fill-opacity:0.4" />
+         style="fill:#073642;fill-opacity:0.4" />
       <path
          inkscape:connector-curvature="0"
          d="M 31.33,8 H 28 V 4 H 20 V 8 H 16.67 C 15.19,8 14,9.19 14,10.67 V 34 h 8 v -5 h -4 l 8,-15 v 11 h 4 l -4.8,9 H 34 V 10.67 C 34,9.19 32.81,8 31.33,8 Z"
          id="path4"
-         style="fill:#000000;fill-opacity:0.4" />
+         style="fill:#073642;fill-opacity:0.4" />
     </g>
     <path
-       style="fill:#000000;fill-opacity:1"
+       style="fill:#073642;fill-opacity:1"
        id="path2-3"
        d="m 22,232 v -6 h -8 v 7.33 c 0,1.47 1.19,2.67 2.67,2.67 h 14.67 c 1.47,0 2.67,-1.19 2.67,-2.67 V 226 h -8.8 z"
        inkscape:connector-curvature="0" />

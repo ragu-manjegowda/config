@@ -59,7 +59,7 @@
      id="g21"
      transform="matrix(5.2631579,0,0,5.2631579,-27.368421,-993.58974)">
     <path
-       style="fill:#000000"
+       style="fill:#073642"
        inkscape:connector-curvature="0"
        id="path4"
        d="M 47,227 H 9 v 2 h 38 z" />
@@ -69,7 +69,7 @@
        id="path6"
        d="m 29,211 h -2 v 6 h 2 z m -8.9301,16 c 0.49,-3.94 3.8501,-7 7.9301,-7 4.08,0 7.4401,3.06 7.9301,7 z M 15.8,216.197 l 1.41,-1.414 3.52,3.513 -1.4199,1.414 z m 19.2699,3.318 3.5601,-3.505 1.41,1.405 -3.55,3.515 z" />
     <path
-       style="clip-rule:evenodd;fill:#000000;fill-rule:evenodd"
+       style="clip-rule:evenodd;fill:#073642;fill-rule:evenodd"
        inkscape:connector-curvature="0"
        id="path8"
        d="m 33.63,199.8281 -5.67,-5.664 -5.61,5.615 1.41,1.414 3.24,-3.237 v 8.1129 h 2 v -8.0409 l 3.21,3.214 z" />
