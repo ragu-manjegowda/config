@@ -61,7 +61,7 @@
        class="active-path"
        data-old_color="#000000"
        id="path2"
-       style="fill:#000000"
+       style="fill:#073642"
        inkscape:connector-curvature="0" />
     <path
        d="M 257.778,161.111 V 292.14 l 96.195,57.711 33.166,-55.256 -64.917,-38.956 v -94.527 z"
@@ -69,7 +69,7 @@
        class="active-path"
        data-old_color="#000000"
        id="path4"
-       style="fill:#000000"
+       style="fill:#073642"
        inkscape:connector-curvature="0" />
   </g>
 </svg>

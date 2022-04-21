@@ -2,8 +2,8 @@
 
 # To change color of an image i.e. the awesomewm icons etc
 for i in $(find $HOME/.config/awesome/ -name "*.svg"); do
-    sed -i -e "s/fill:#ffffff/fill:#000000/" $i
-    sed -i -e 's/fill="#ffffff"/fill="#000000"/' $i
+    sed -i -e "s/fill:#eee8d5/fill:#073642/" $i
+    sed -i -e 's/fill="#eee8d5"/fill="#073642"/' $i
 done
 
 # To change color of an image i.e. the awesomewm icons etc
@@ -12,7 +12,7 @@ for i in $(find $HOME/.config/awesome/ -name "*.png" \
             -not -path "*/widget/vpn/icons/*" \
             -not -path "*/configuration/user-profile/*" \
             -not -path "*/revelation/*"); do
-    convert $i -fill "#000000" -colorize 100% $i
+    convert $i -fill "#073642" -colorize 100% $i
 done
 
 config_path="$HOME/.config/awesome/theme/init.lua"
