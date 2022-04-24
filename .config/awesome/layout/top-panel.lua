@@ -123,6 +123,7 @@ local top_panel = function(s)
                 },
 
                 bg = beautiful.groups_bg,
+                fg = beautiful.fg_normal,
                 shape = gears.shape.rounded_rect,
                 widget = wibox.container.background,
 	    	},

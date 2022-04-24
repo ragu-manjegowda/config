@@ -432,7 +432,11 @@ local locker = function(s)
 				lock_again = true
 				type_again = true
 
-                naughty.resume()
+                -- Needed when we come back from sleep
+                awesome.emit_signal('module::spawn_apps')
+                awesome.emit_signal('module::change_wallpaper')
+                awesome.emit_signal('module::change_background_wallpaper')
+                naughty.suspended = false
 
 				-- Select old tag
 				-- And restore minimized focused client if there's any
@@ -697,8 +701,13 @@ local locker = function(s)
 			-- Dont lock again
 			lock_again = false
 
+            -- Needed when we come back from sleep
+            awesome.emit_signal('module::spawn_apps')
+            awesome.emit_signal('module::change_wallpaper')
+            awesome.emit_signal('module::change_background_wallpaper')
+
 			-- naughty.destroy_all_notifications(nil, 1)
-            naughty.suspend()
+            naughty.suspended = true
 		end
 	end
 
@@ -776,8 +785,9 @@ local check_lockscreen_visibility = function()
 end
 
 -- Notifications signal
+-- Check for added since we are doing suspended instead of destroy_all_notifications
 naughty.connect_signal(
-	'request::display',
+	'added',
 	function(_)
 		if check_lockscreen_visibility() then
             -- Needed when we come back from sleep
@@ -790,7 +800,7 @@ naughty.connect_signal(
             date_today:emit_signal('widget::redraw_needed')
 
 			-- naughty.destroy_all_notifications(nil, 1)
-            naughty.suspend()
+            naughty.suspended = true
 		end
 	end
 )

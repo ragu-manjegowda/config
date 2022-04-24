@@ -19,7 +19,6 @@ local gears = require('gears')
 local beautiful = require('beautiful')
 local filesystem = gears.filesystem
 local config = require('configuration.config')
-local naughty = require('naughty')
 
 
 --  ========================================
