@@ -112,6 +112,13 @@ local core_plugins = {
         config = [[require("user.lsp-colors").config()]],
     },
 
+    {
+        "Mofiqul/trld.nvim",
+        config = function()
+            require("trld").setup()
+        end
+    },
+
     -- Packer
     { "wbthomason/packer.nvim" },
 
