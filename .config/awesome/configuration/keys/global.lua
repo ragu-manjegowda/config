@@ -18,11 +18,17 @@ local function print_awesome_memory_stats(message)
     out_string = tostring(os.date()) .. "\nLua memory usage:"..tostring(collectgarbage("count")).."\n"
     out_string = out_string .. "Objects alive:"
     print("Objects alive:")
-    for name, obj in pairs{ button = button, client = client, drawable = drawable, drawin = drawin, key = key, screen = screen, tag = tag } do
-        out_string =out_string .. "\n" .. tostring(name) .. " = " ..tostring(obj.instances())
-        print(name, obj.instances())
+    for name, obj in pairs {
+        button = button, client = client, drawable = drawable,
+        drawin = drawin, key = key, screen = screen, tag = tag } do
+            out_string = out_string .. "\n" .. tostring(name) .. " = " ..tostring(obj.instances())
+            print(name, obj.instances())
     end
-    naughty.notify({title = "Awesome WM memory statistics " .. message, text = out_string, timeout=20,hover_timeout=20})
+    naughty.notification(
+    {
+        title = "Awesome WM memory statistics " .. message,
+        text = out_string, timeout=20, hover_timeout=20
+    })
 end
 
 -- Key bindings

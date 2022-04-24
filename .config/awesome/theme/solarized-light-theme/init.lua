@@ -61,7 +61,7 @@ theme.background_light = theme.system_white_light
 theme.transparent = '#00000000'
 
 -- Foreground
-theme.fg_normal = theme.colors.base2
+theme.fg_normal = theme.system_black_light
 theme.fg_focus = theme.colors.base3
 theme.fg_urgent = theme.colors.base03
 
