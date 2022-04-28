@@ -139,7 +139,7 @@ function M.config()
         completion = { autocomplete = false },
         sources = {
             -- { name = 'buffer' }
-            { name = 'buffer', opts = { keyword_pattern = [=[[^[:blank:]].*]=] } }
+            { name = 'buffer', option = { keyword_pattern = [=[[^[:blank:]].*]=] } }
         }
     })
 
