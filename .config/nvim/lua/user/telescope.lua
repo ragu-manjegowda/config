@@ -60,7 +60,9 @@ function M.config()
                     ["<leader>v"] = actions.select_vertical,
                 },
                 n = {
-                    ["q"] = actions.close
+                    ["q"] = actions.close,
+                    ["<leader><Tab>"] = actions.select_tab,
+                    ["<leader>v"] = actions.select_vertical,
                 },
             },
 

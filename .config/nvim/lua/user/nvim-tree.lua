@@ -45,7 +45,6 @@ function M.config()
         view = {
             width = 30,
             side = 'left',
-            auto_resize = false,
             mappings = {
               custom_only = false,
               list = list
