@@ -52,12 +52,14 @@ ly
 m4
 maim
 make
+mosh-git
 msmtp
 mtools
 neomutt
 neovim
 network-manager-applet
 networkmanager
+nomachine
 noto-fonts
 noto-fonts-emoji
 ntfs-3g

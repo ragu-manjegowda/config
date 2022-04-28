@@ -7,6 +7,8 @@ informant
 light-git
 lua-pam-git
 ly
+mosh-git
+nomachine
 pacman-cleanup-hook
 paru
 picom-git
