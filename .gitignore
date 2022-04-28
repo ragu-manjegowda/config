@@ -2,6 +2,7 @@
 !.config/zim/style.conf
 .CFUserTextEncoding
 .DS_Store
+.ICEauthority
 .Trash
 .Xauthority
 .android
@@ -195,6 +196,7 @@
 .w3m
 .xsession-errors
 .yarnrc
+.yarnrc.yml
 Applications
 Bklt2_Backup
 CoreBrightness-backup
@@ -223,4 +225,3 @@ rig.json
 sessions.csv
 snap
 syncWiki.sh
-xdg
