@@ -109,7 +109,19 @@ local toggle_action = function()
 	)
 end
 
-toggle_action()
+local enable_filter = function()
+	awful.spawn.easy_async_with_shell(
+        [[
+            redshift -l 0:0 -t 4500:4500 -r &>/dev/null &
+        ]],
+        function()
+            blue_light_state = true
+            update_widget()
+        end
+    )
+end
+
+enable_filter()
 
 widget_button:buttons(
 	gears.table.join(

@@ -137,11 +137,17 @@ local create_clock = function(s)
 			bg_color        = beautiful.accent,
 			shape           = function(cr, width, height)
 				gears.shape.partially_rounded_rect(
-					cr, width, height, true, true, true, true, dpi(4)
+					cr, width, height, true, true, true, true, beautiful.groups_radius
 				)
 			end,
 		},
 	})
+
+    s.month_calendar.shape = function(cr, width, height)
+        gears.shape.partially_rounded_rect(
+            cr, width, height, true, true, true, true, beautiful.groups_radius
+        )
+    end
 
 	s.month_calendar:attach(
 		s.clock_widget,

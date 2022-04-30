@@ -52,7 +52,9 @@ local info_center = function(s)
 		maximum_height = dpi(s.geometry.height - 38),
 		bg = beautiful.transparent,
 		fg = beautiful.fg_normal,
-		shape = gears.shape.rectangle
+        shape = function(cr, w, h)
+            gears.shape.rounded_rect(cr, w, h, beautiful.groups_radius)
+        end,
 	}
 
 	awful.placement.top_right(
