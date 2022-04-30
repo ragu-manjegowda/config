@@ -221,7 +221,9 @@ local control_center = function(s)
 		maximum_height = dpi(s.geometry.height - 38),
 		bg = beautiful.transparent,
 		fg = beautiful.fg_normal,
-		shape = gears.shape.rectangle
+		shape = function(cr, width, height)
+			gears.shape.rounded_rect(cr, width, height, beautiful.groups_radius)
+		end,
 	}
 
 	awful.placement.top_right(

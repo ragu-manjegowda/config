@@ -128,7 +128,7 @@ local top_panel = function(s)
                 widget = wibox.container.background,
 	    	},
         },
-        left = dpi(25),
+        left = dpi(5),
         right = dpi(5),
         top = dpi(5),
         widget = wibox.container.margin,
