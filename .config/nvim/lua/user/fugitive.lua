@@ -5,7 +5,7 @@ local M = {}
 function M.config()
     vim.cmd [[
         augroup GitStatus
-            au filetype fugitive nmap <buffer> <leader>gdv :Gtabedit <Plug><cfile><Bar>Gvdiffsplit<CR>
+            au filetype fugitive nmap <buffer> <leader>gdv :Gtabedit <Plug><cfile><Bar>Gvdiffsplit!<CR>
         augroup END
 
         " Git status in new tab
