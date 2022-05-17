@@ -21,6 +21,9 @@ function M.config()
 
             ['n <leader>hn'] = { expr = true, "&diff ? ']c' : '<cmd>lua require\"gitsigns.actions\".next_hunk()<CR>'"},
             ['n <leader>hp'] = { expr = true, "&diff ? '[c' : '<cmd>lua require\"gitsigns.actions\".prev_hunk()<CR>'"},
+            ['n <leader>hr'] = { expr = true, "&diff ? '[c' : '<cmd>lua require\"gitsigns.actions\".reset_hunk()<CR>'"},
+            ['n <leader>hs'] = { expr = true, "&diff ? '[c' : '<cmd>lua require\"gitsigns.actions\".stage_hunk()<CR>'"},
+            ['n <leader>hu'] = { expr = true, "&diff ? '[c' : '<cmd>lua require\"gitsigns.actions\".undo_stage_hunk()<CR>'"},
 
             ['n <leader>hP'] = '<cmd>lua require"gitsigns".preview_hunk()<CR>',
             ['n <leader>hb'] = '<cmd>lua require"gitsigns".blame_line(true)<CR>',
