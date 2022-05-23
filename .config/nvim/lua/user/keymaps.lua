@@ -69,6 +69,7 @@ keymap("n", "<leader>w", ":w<CR>", { noremap = true })
 
 -- Quit
 keymap("n", "<leader>q", ":q<CR>", opts)
+keymap("n", "<leader>qa", ":LspStop<CR>:qa<CR>", opts)
 
 -- Map to navigate QuickFix list
 keymap("n", "<leader>qo", ":copen<CR><C-w>T", opts)

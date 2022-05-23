@@ -50,16 +50,16 @@ local tab_only = {
         label = function(tabid)
             return {
                 ' ' .. gen_tab_name(tabid) .. ' ',
-                hl = { fg = hl_normal.fg, bg = hl_normal.bg, style = 'bold' },
+                hl = { fg = hl_tabline.fg, bg = hl_tabline.bg, style = 'bold' },
             }
         end,
         left_sep = {
             '',
-            hl = { fg = hl_normal.bg, bg = hl_tabline_fill.bg },
+            hl = { fg = hl_tabline.bg, bg = hl_tabline_fill.bg },
         },
         right_sep = {
             '',
-            hl = { fg = hl_normal.bg, bg = hl_tabline_fill.bg },
+            hl = { fg = hl_tabline.bg, bg = hl_tabline_fill.bg },
         },
     },
     -- tail = {

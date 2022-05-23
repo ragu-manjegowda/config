@@ -29,7 +29,6 @@ export GNUPGHOME="${XDG_CONFIG_HOME:-$HOME/.config}/gnupg"
 export RANGER_LOAD_DEFAULT_RC=FALSE
 
 # Not thoroughly tested for all side effectes
-export TERM=xterm-256color
 export COLORTERM="truecolor"
 
 # if running bash
