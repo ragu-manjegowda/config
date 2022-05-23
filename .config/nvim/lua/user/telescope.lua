@@ -76,7 +76,7 @@ function M.config()
             file_ignore_patterns = ignore_these,
             prompt_prefix = " ",
             selection_caret = " ",
-            path_display = { "smart" },
+            path_display = { "shorten" },
 
 
             layout_config = {

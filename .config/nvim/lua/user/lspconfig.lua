@@ -90,20 +90,21 @@ vim.lsp.handlers["textDocument/publishDiagnostics"]  = vim.lsp.with(
 
 function M.config()
     local nvim_lsp = require('lspconfig')
-    nvim_lsp.flow.setup {
-        on_attach = on_attach
-    }
 
     nvim_lsp.ccls.setup {
         on_attach = on_attach,
         filetypes = { "c", "cpp", "h", "hpp" },
-        root_dir = nvim_lsp.util.root_pattern("compile_commands.json", ".git"),
+        root_dir = nvim_lsp.util.root_pattern("compile_commands.json", ".gitignore"),
         cmd = {
             'ccls',
             '--log-file='..log_path,
             '-v=1',
-            '--init={"index": {"blacklist":["dazel-out", "preFlightChecker", \
-                     "pilotnet", "apps/roadrunner", "tools/experimental/maps", \
+            '--init={"index": {"blacklist":[".git", "data/*", \
+                     "bazel-*", "partners/", "avddn/", "apps/", "av/", \
+                     "benchmarks/", "ci/", "doc/", "private/", "resources/", \
+                     "scripts", "share", "swig/", "ux", \
+                     "dazel-out", "lib*.so", \
+                     "preFlightChecker", "pilotnet", "tools/experimental/maps", \
                      "tools/experimental/localization_metrics"]}}'
         },
         init_options = {
