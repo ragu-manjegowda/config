@@ -24,7 +24,7 @@ function M.before()
     map('n', '<leader>pb', '<cmd>lua require("telescope.builtin").buffers()<CR>', opts)
     map('n', '<leader>pf', '<cmd>lua require("telescope.builtin").find_files({ find_command = {"rg", "--files", "--hidden", "-g", "!.git" }})<CR>', opts)
     map('n', '<leader>ph', '<cmd>lua require("telescope.builtin").help_tags()<CR>', opts)
-    map('n', '<leader>po', '<cmd>lua explorer()<CR>', opts)
+    map('n', '<leader>po', '<cmd>lua require("telescope.builtin").explorer()<CR>', opts)
     map('n', '<leader>pq', '<cmd>lua require("telescope.builtin").quickfix()<CR>', opts)
     map('n', '<leader>ps', '<cmd>lua grep()<CR>', opts)
     map('n', '<leader>pw', '<cmd>lua grep_word()<CR>', opts)
@@ -76,8 +76,7 @@ function M.config()
             file_ignore_patterns = ignore_these,
             prompt_prefix = " ",
             selection_caret = " ",
-            path_display = { "shorten" },
-
+            path_display = { "truncate" },
 
             layout_config = {
                 preview_cutoff = 1,
