@@ -65,7 +65,9 @@ return {
 		'/usr/bin/lxqt-policykit-agent &',
 		-- '/usr/bin/lxqt-policykit-agent &' ..
 		-- ' eval $(gnome-keyring-daemon -s --components=gpg)',
-		-- Load X colors
+        -- Set monitors dpi
+        config_dir .. '/utilities/setup-monitors.sh',
+		-- Set the dpi for GDK applications
 		'xrdb ~/.Xresources',
 		-- Audio equalizer
         -- Enable blue light filter

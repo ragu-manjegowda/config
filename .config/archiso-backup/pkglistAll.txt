@@ -83,6 +83,7 @@ refind
 reflector-pacman-hook-git
 rofi
 rofi-emoji
+rust
 slack-desktop
 sudo
 sync-pacman-hook-git
