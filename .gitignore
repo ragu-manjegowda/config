@@ -42,6 +42,7 @@
 .config/bash/bash_extras
 .config/buildauth
 .config/cairo-dock
+.config/cargo
 .config/catt
 .config/coc
 .config/compiz-1
