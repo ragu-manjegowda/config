@@ -96,7 +96,13 @@ unalias \l
 
 # Define custom aliases
 alias l='ls'
-alias ldot='ls -d .*'
+function ldot() {
+    if [[ $# -ne 1 ]]; then
+        ls -d .*
+    else
+        ls -d $1/.*
+    fi
+}
 
 # use nvim if installed, vi default
 case "$(command -v nvim)" in
