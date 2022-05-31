@@ -96,6 +96,11 @@ function M.config()
         filetypes = { "c", "cpp", "h", "hpp" },
         root_dir = nvim_lsp.util.root_pattern("compile_commands.json", ".gitignore"),
         cmd = {
+            -- 'clangd',
+            -- '--background-index',
+            -- '--clang-tidy',
+            -- '-j=16',
+            -- '--log=info'
             'ccls',
             '--log-file='..log_path,
             '-v=1',

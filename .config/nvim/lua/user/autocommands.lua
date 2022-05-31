@@ -57,12 +57,14 @@ command! ZoomToggle call s:ZoomToggle()
 nnoremap <silent> <leader>z :ZoomToggle<CR>
 
 
-" Switch between header and source file
-au BufEnter *.h  let b:fswitchdst = "c,cpp,cc,m"
-au BufEnter *.cc let b:fswitchdst = "h,hpp"
+" Disable creating new file if doesn't exist
+let g:fsnonewfiles = 1
 " Switch between header and source file not in same directory
-au BufEnter *.h let b:fswitchdst = 'c,cpp,m,cc' | let b:fswitchlocs = 'reg:|include.*|src/**|'
-nnoremap <silent> <leader>oh :FSSplitRight<CR>
+au BufEnter *.h let b:fswitchdst = 'c,_interface.cpp,cpp' | let b:fswitchlocs = 'reg:|include.*|src/**|' | let b:fswitchfnames = '/$/_interface/'
+au BufEnter *.hpp let b:fswitchdst = 'cpp' | let b:fswitchlocs = 'reg:|include.*|src/**|,./impl'
+au BufEnter *.cpp let b:fswitchdst = 'hpp' | let b:fswitchlocs = 'reg:|include.*|src/**|,../'
+au BufEnter *_interface.cpp let b:fswitchdst = 'h' | let b:fswitchfnames = '/_interface$//'
+nnoremap <silent> <leader>oh :FSTab<CR>
 
 " Delete all other lines except ones containing args
 function! GrepQuickFix(pat)
