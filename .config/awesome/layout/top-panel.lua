@@ -16,7 +16,7 @@ local top_panel = function(s)
 		ontop = true,
 		screen = s,
 		type = 'desktop',
-		height = dpi(33),
+		height = s.geometry.height / 22,
 		width = s.geometry.width,
 		x = s.geometry.x,
 		y = s.geometry.y,
@@ -27,7 +27,7 @@ local top_panel = function(s)
 
 	panel:struts
 	{
-		top = dpi(33)
+		top = s.geometry.height / 22
 	}
 
 	panel:connect_signal(
@@ -42,7 +42,7 @@ local top_panel = function(s)
 
 	s.systray = wibox.widget {
 		visible = false,
-		base_size = dpi(20),
+		base_size = s.geometry.width / 65,
 		horizontal = true,
 		screen = 'primary',
 		widget = wibox.widget.systray
@@ -128,9 +128,9 @@ local top_panel = function(s)
                 widget = wibox.container.background,
 	    	},
         },
-        left = dpi(5),
-        right = dpi(5),
-        top = dpi(5),
+        left = dpi(10),
+        right = dpi(10),
+        top = dpi(10),
         widget = wibox.container.margin,
 	}
 

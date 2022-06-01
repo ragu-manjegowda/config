@@ -14,10 +14,10 @@ local tip = titlebar_icon_path
 local theme = {}
 
 -- Font
-theme.font = 'Hack Nerd Regular 10'
-theme.font_bold = 'Hack Nerd Bold 10'
-theme.notification_font = 'Hack Nerd Regular 10, Noto Color Emoji'
-theme.emojifont = 'Hack Nerd Regular 10, Noto Color Emoji'
+theme.font = 'Hack Nerd Regular 12'
+theme.font_bold = 'Hack Nerd Bold 12'
+theme.notification_font = 'Hack Nerd Regular 12, Noto Color Emoji'
+theme.emojifont = 'Hack Nerd Regular 12, Noto Color Emoji'
 
 -- Menu icon theme
 theme.icon_theme = 'Tela-blue-dark'
@@ -31,9 +31,9 @@ local awesome_overrides = function(theme)
 	theme.wallpaper = theme.dir .. '/wallpapers/morning-wallpaper.jpg'
 
 	-- Default font
-	theme.font = 'Hack Nerd Regular 10'
-	theme.notification_font = 'Hack Nerd Regular 10, Noto Color Emoji'
-	theme.emojifont = 'Hack Nerd Regular 10, Noto Color Emoji'
+	theme.font = 'Hack Nerd Regular 12'
+	theme.notification_font = 'Hack Nerd Regular 12, Noto Color Emoji'
+	theme.emojifont = 'Hack Nerd Regular 12, Noto Color Emoji'
 
 	-- System tray
 	theme.bg_systray = theme.background
@@ -116,13 +116,13 @@ local awesome_overrides = function(theme)
 	theme.border_radius = dpi(12)
 
 	-- Decorations
-	theme.useless_gap = dpi(4)
+	theme.useless_gap = dpi(5)
 	theme.client_shape_rounded = function(cr, width, height)
 		gears.shape.rounded_rect(cr, width, height, dpi(12))
 	end
 
 	-- Menu
-	theme.menu_font = 'Hack Nerd Regular 11'
+	theme.menu_font = 'Hack Nerd Regular 13'
 	theme.menu_submenu = '' -- ➤
 
 	theme.menu_height = dpi(34)
@@ -160,7 +160,7 @@ local awesome_overrides = function(theme)
 
 	-- Tasklist
     theme.tasklist_spacing = dpi(2)
-	theme.tasklist_font = 'Hack Nerd Regular 10'
+	theme.tasklist_font = 'Hack Nerd Regular 12'
 
 	-- Notification
 	theme.notification_position = 'top_left'
@@ -178,8 +178,8 @@ local awesome_overrides = function(theme)
 	theme.snap_border_width = dpi(15)
 
 	-- Hotkey popup
-	theme.hotkeys_font = 'Hack Nerd Bold 14'
-	theme.hotkeys_description_font   = 'Hack Nerd Regular Regular 12'
+	theme.hotkeys_font = 'Hack Nerd Bold 16'
+	theme.hotkeys_description_font   = 'Hack Nerd Regular Regular 14'
 	theme.hotkeys_bg = theme.background
 	theme.hotkeys_group_margin = dpi(20)
 end

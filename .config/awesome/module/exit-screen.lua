@@ -53,7 +53,7 @@ local greeter_message = wibox.widget {
 
 local profile_name = wibox.widget {
 	markup = 'user@hostname',
-	font = 'Hack Nerd Bold 12',
+	font = 'Hack Nerd Bold 14',
 	align = 'center',
 	valign = 'center',
 	widget = wibox.widget.textbox
@@ -117,7 +117,7 @@ update_greeter_msg()
 local build_power_button = function(name, icon, callback)
 	local power_button_label= wibox.widget {
 		text = name,
-		font = 'Hack Nerd Regular 10',
+		font = 'Hack Nerd Regular 12',
 		align = 'center',
 		valign = 'center',
 		widget = wibox.widget.textbox
