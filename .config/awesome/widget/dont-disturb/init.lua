@@ -14,14 +14,14 @@ _G.dont_disturb_state = false
 
 local action_name = wibox.widget {
 	text = 'Don\'t Disturb' ,
-	font = 'Hack Nerd Bold 10',
+	font = 'Hack Nerd Bold 12',
 	align = 'left',
 	widget = wibox.widget.textbox
 }
 
 local action_status = wibox.widget {
 	text = 'Off',
-	font = 'Hack Nerd Regular 10',
+	font = 'Hack Nerd Regular 12',
 	align = 'left',
 	widget = wibox.widget.textbox
 }

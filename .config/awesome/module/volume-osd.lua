@@ -9,7 +9,7 @@ local spawn = require('awful.spawn')
 
 local osd_header = wibox.widget {
 	text = 'Volume',
-	font = 'Hack Nerd Bold 12',
+	font = 'Hack Nerd Bold 14',
 	align = 'left',
 	valign = 'center',
 	widget = wibox.widget.textbox
@@ -17,7 +17,7 @@ local osd_header = wibox.widget {
 
 local osd_value = wibox.widget {
 	text = '0%',
-	font = 'Hack Nerd Bold 12',
+	font = 'Hack Nerd Bold 14',
 	align = 'center',
 	valign = 'center',
 	widget = wibox.widget.textbox
@@ -103,8 +103,6 @@ local icon = wibox.widget {
 	widget = wibox.container.margin
 }
 
-local osd_height = dpi(250)
-local osd_width = dpi(250)
 local osd_margin = dpi(10)
 
 screen.connect_signal(
@@ -121,10 +119,10 @@ screen.connect_signal(
 			visible = false,
 			type = 'notification',
 			screen = s,
-			height = osd_height,
-			width = osd_width,
-			maximum_height = osd_height,
-			maximum_width = osd_width,
+			height = s.geometry.height / 4,
+			width = s.geometry.width / 6,
+			maximum_height = s.geometry.height / 4,
+			maximum_width = s.geometry.width / 6,
 			offset = dpi(5),
 			shape = gears.shape.rectangle,
 			bg = beautiful.transparent,
@@ -219,11 +217,11 @@ end
 
 awesome.connect_signal(
 	'module::volume_osd:update_icon',
-	function(muted)
-		if muted then
-            vol_icon:set_image(icons.volume_muted)
-		else
+	function(not_muted)
+		if not_muted then
             vol_icon:set_image(icons.volume)
+		else
+            vol_icon:set_image(icons.volume_muted)
 		end
 	end
 )

@@ -45,7 +45,7 @@ ruled.notification.connect_signal(
 		ruled.notification.append_rule {
 			rule       = { urgency = 'critical' },
 			properties = {
-				font        		= 'Hack Nerd Bold 10',
+				font        		= 'Hack Nerd Bold 12',
 				bg 					= beautiful.colors.red,
 				fg 					= beautiful.colors.red,
 				margin 				= dpi(16),
@@ -58,7 +58,7 @@ ruled.notification.connect_signal(
 		ruled.notification.append_rule {
 			rule       = { urgency = 'normal' },
 			properties = {
-				font        		= 'Hack Nerd Regular 10',
+				font        		= 'Hack Nerd Regular 12',
 				bg      			= beautiful.bg_focus,
 				fg 					= beautiful.fg_normal,
 				margin 				= dpi(16),
@@ -71,7 +71,7 @@ ruled.notification.connect_signal(
 		ruled.notification.append_rule {
 			rule       = { urgency = 'low' },
 			properties = {
-				font        		= 'Hack Nerd Regular 10',
+				font        		= 'Hack Nerd Regular 12',
 				bg     				= beautiful.transparent,
 				fg 					= beautiful.fg_normal,
 				margin 				= dpi(16),
@@ -137,7 +137,7 @@ naughty.connect_signal(
 						{
 							{
 								id     = 'text_role',
-								font   = 'Hack Nerd Regular 10',
+								font   = 'Hack Nerd Regular 12',
 								widget = wibox.widget.textbox
 							},
 							widget = wibox.container.place
@@ -174,7 +174,7 @@ naughty.connect_signal(
 												{
 													{
 														markup = n.app_name or 'System Notification',
-														font = 'Hack Nerd Bold 10',
+														font = 'Hack Nerd Bold 12',
 														align = 'center',
 														valign = 'center',
 														widget = wibox.widget.textbox
@@ -240,12 +240,12 @@ naughty.connect_signal(
 							widget = naughty.container.background,
 						},
 						strategy = 'min',
-						width    = dpi(250),
+					    width    = awful.screen.preferred().geometry.width / 6,
 						widget   = wibox.container.constraint,
 					},
 					strategy = 'max',
-					height    = dpi(250),
-					width    = dpi(250),
+					height   = awful.screen.preferred().geometry.height / 4,
+					width    = awful.screen.preferred().geometry.width / 6,
 					widget   = wibox.container.constraint
 				},
 				bg = beautiful.background,

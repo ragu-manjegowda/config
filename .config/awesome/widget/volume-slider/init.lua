@@ -12,7 +12,7 @@ local widget_icon_dir = config_dir .. 'widget/volume-slider/icons/'
 
 local action_name = wibox.widget {
 	text = 'Volume',
-	font = 'Hack Nerd Bold 10',
+	font = 'Hack Nerd Bold 12',
 	align = 'left',
 	widget = wibox.widget.textbox
 }

@@ -4,8 +4,8 @@ local theme_dir = filesystem.get_configuration_dir() .. '/theme'
 local theme = {}
 
 theme.icons = theme_dir .. '/icons/'
-theme.font = 'Hack Nerd Regular 10'
-theme.font_bold = 'Hack Nerd Bold 10'
+theme.font = 'Hack Nerd Regular 12'
+theme.font_bold = 'Hack Nerd Bold 12'
 
 theme.colors = {}
 theme.colors.base3   = "#002b36"
