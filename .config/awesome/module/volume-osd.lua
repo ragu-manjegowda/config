@@ -217,11 +217,11 @@ end
 
 awesome.connect_signal(
 	'module::volume_osd:update_icon',
-	function(not_muted)
-		if not_muted then
-            vol_icon:set_image(icons.volume)
-		else
+	function(muted)
+		if muted then
             vol_icon:set_image(icons.volume_muted)
+		else
+            vol_icon:set_image(icons.volume)
 		end
 	end
 )
