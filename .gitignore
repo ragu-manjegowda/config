@@ -41,6 +41,7 @@
 .config/bash/bash_custom_homebrew_first
 .config/bash/bash_extras
 .config/bash/bash_maglev
+.config/broot
 .config/buildauth
 .config/cairo-dock
 .config/cargo

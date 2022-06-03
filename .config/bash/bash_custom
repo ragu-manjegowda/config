@@ -39,6 +39,11 @@ export RUSTUP_HOME="$HOME/.config/rustup"
 export CARGO_NAME="Ragu Manjegowda"
 export CARGO_EMAIL="raghavendrahm0410@gmail.com"
 
+# Broot
+if [ -f "$HOME/.config/broot/launcher/bash/br" ]; then
+    source $HOME/.config/broot/launcher/bash/br
+fi
+
 if [ -f "$BASH_DIR/bash_extras" ]; then
     source "$BASH_DIR/bash_extras"
 fi
