@@ -140,9 +140,13 @@ local core_plugins = {
 
     -- Treesitter
     {
-        "nvim-treesitter/nvim-treesitter",
-        run = ":TSUpdate",
-        config = [[require("user.treesitter").config()]],
+        "nvim-treesitter/nvim-treesitter-textobjects",
+        requires = {
+            "nvim-treesitter/nvim-treesitter",
+            run = ":TSUpdate",
+            config = [[require("user.treesitter").config()]],
+        },
+        config = [[require("user.treesitter-textobjects").config()]],
     },
 
     -- Vim Session

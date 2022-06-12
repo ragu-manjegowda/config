@@ -96,9 +96,7 @@
 .config/neomutt/maildir/
 .config/neomutt/msmtp.log
 .config/neomutt/pass.gpg_decrypted
-.config/nvim/autoload
 .config/nvim/misc
-.config/nvim/plugged
 .config/nvim/plugin/packer_compiled.lua
 .config/nvim/undodir
 .config/oauth2ms/config.json
