@@ -260,6 +260,26 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
                 ;;
         esac
     fi
+
+    if ! test -f ~/.config/broot/conf-dark.hjson; then
+        echo "file $HOME/.config/broot/conf-dark.hjson doesn't exist"
+    else
+        config_path="$HOME/.config/broot/conf.hjson"
+
+        # Get current mode
+        mode=$(defaults read -g AppleInterfaceStyle 2>/dev/null)
+
+        case $mode in
+            Dark)
+                config_dark_path="$HOME/.config/broot/conf-dark.hjson"
+                cp $config_dark_path $config_path
+                ;;
+            *)
+                config_light_path="$HOME/.config/broot/conf-light.hjson"
+                cp $config_light_path $config_path
+                ;;
+        esac
+    fi
 fi
 
 # function to encrypt and decrypt files

@@ -42,3 +42,8 @@ $ ssh USER@IP "cat gpg_secret.key" | gpg --import
         $ gpg-connect-agent reloadagent /bye
         ```
 
+3. Commit failed on Mac
+    ```sh
+        $ echo "pinentry-program /usr/local/bin/pinentry-curses" >> ~/.config/gnupg/gpg-agent.conf
+        $ gpg-connect-agent reloadagent /bye
+    ```
