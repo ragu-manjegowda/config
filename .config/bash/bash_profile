@@ -32,6 +32,11 @@ export XML_CATALOG_FILES="$HOMEBREW_PATH/etc/xml/catalog:$XML_CATALOG_FILES"
 export PATH="$HOMEBREW_PATH/opt/bison/bin:$PATH"
 export LDFLAGS="-L$HOMEBREW_PATH/opt/bison/lib:$LDFLAGS"
 
+# Broot
+if [ -f "$HOME/.config/broot/launcher/bash/br" ]; then
+    source $HOME/.config/broot/launcher/bash/br
+fi
+
 # Conda
 # !! Contents within this block are managed by 'conda init' !!
 if [ -n "$BASH_VERSION" ]; then
