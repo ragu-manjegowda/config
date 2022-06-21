@@ -36,6 +36,11 @@ local core_plugins = {
         setup = [[require("user.tagbar").before()]],
     },
 
+    --compile
+    {
+        "tpope/vim-dispatch"
+    },
+
     -- Extra
     { "mbbill/undotree" },
 
