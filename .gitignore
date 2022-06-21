@@ -70,12 +70,13 @@
 .config/gnupg/pubring.kbx*
 .config/gnupg/random_seed
 .config/gnupg/sshcontrol
+.config/gnupg/tofu.db
 .config/gnupg/trustdb.gpg
 .config/google-chrome
 .config/gtk-2.0
 .config/gtk-3.0
 .config/ibus
-.config/imapnotify/
+.config/imapnotify
 .config/indicator-stickynotes
 .config/kazam
 .config/kde.org
@@ -94,7 +95,7 @@
 .config/neomutt/account.*.outlook
 .config/neomutt/aliases
 .config/neomutt/history
-.config/neomutt/maildir/
+.config/neomutt/maildir
 .config/neomutt/msmtp.log
 .config/neomutt/pass.gpg_decrypted
 .config/nvim/misc
