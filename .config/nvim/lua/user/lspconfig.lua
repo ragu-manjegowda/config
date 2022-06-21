@@ -113,11 +113,12 @@ function M.config()
                      "tools/experimental/localization_metrics"]}}'
         },
         init_options = {
-            cache = { directory = cache_dir },
-            client = { snippetSupport = true },
-            clang = { extraArgs = { "-Wno-extra", "-Wno-empty-body" } },
-            completion = { detailedLabel = false, caseSensitivity = 1 },
-        };
+            cache = { directory = cache_dir; };
+            index = { threads = 3; };
+            client = { snippetSupport = true; };
+            clang = { extraArgs = { "-Wno-extra", "-Wno-empty-body" }; };
+            completion = { detailedLabel = false; caseSensitivity = 1; };
+        },
         capabilities = capabilities
     }
 
