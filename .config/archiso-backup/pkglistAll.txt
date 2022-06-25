@@ -63,6 +63,7 @@ nomachine
 noto-fonts
 noto-fonts-emoji
 ntfs-3g
+openrazer-meta
 openssh
 os-prober
 pacman-cleanup-hook

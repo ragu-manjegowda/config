@@ -9,6 +9,7 @@ lua-pam-git
 ly
 mosh-git
 nomachine
+openrazer-meta
 pacman-cleanup-hook
 paru
 picom-git
