@@ -23,10 +23,14 @@ vim.g.maplocalleader = " "
 -------------------------------------------------------------------------------
 
 -- Disable arrow keys in normal mode
-keymap("n", "Up", "Nop", opts)
-keymap("n", "Down", "Nop", opts)
-keymap("n", "Left", "Nop", opts)
-keymap("n", "Right", "Nop", opts)
+keymap("n", "<Up>", "<Nop>", opts)
+keymap("n", "<Down>", "<Nop>", opts)
+keymap("n", "<Left>", "<Nop>", opts)
+keymap("n", "<Right>", "<Nop>", opts)
+
+-- Disable q: since it comes in way most of the time, command history is
+-- mapped via telescope plugin
+keymap("n", "q:", "<Nop>", opts)
 
 -- Scroll horizontally
 keymap("n", "<C-h>", "5zh", opts)
