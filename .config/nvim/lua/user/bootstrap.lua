@@ -2,12 +2,12 @@ local M = {}
 
 local path_sep = "/"
 
-function _G.join_paths(...)
+function join_paths(...)
   local result = table.concat({ ... }, path_sep)
   return result
 end
 
-function _G.get_config_dir()
+function get_config_dir()
     return vim.fn.stdpath "config"
 end
 
@@ -21,7 +21,8 @@ function M.init()
     opts = {}
 
     local install_path =
-    join_paths(vim.fn.stdpath "data", "site", "pack", "packer", "start", "packer.nvim")
+        join_paths(vim.fn.stdpath "data", "site", "pack", "packer",
+                   "start", "packer.nvim")
 
     local init_opts = {
         package_root = join_paths(vim.fn.stdpath "data", "site", "pack"),

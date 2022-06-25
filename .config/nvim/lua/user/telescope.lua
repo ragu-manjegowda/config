@@ -2,19 +2,19 @@ local vim = vim
 
 local M = {}
 
+function M.grep()
+    require('telescope.builtin').grep_string({ search = vim.fn.input("Grep For > ")})
+end
+
+function M.grep_word()
+    require('telescope.builtin').grep_string({ search = vim.fn.expand("<cword>")})
+end
+
+function M.grep_word_exact()
+    require('telescope.builtin').grep_string({ search = "'" .. vim.fn.expand("<cword>")})
+end
+
 function M.before()
-    function _G.grep()
-        require('telescope.builtin').grep_string({ search = vim.fn.input("Grep For > ")})
-    end
-
-    function _G.grep_word()
-        require('telescope.builtin').grep_string({ search = vim.fn.expand("<cword>")})
-    end
-
-    function _G.grep_word_exact()
-        require('telescope.builtin').grep_string({ search = "'" .. vim.fn.expand("<cword>")})
-    end
-
     vim.cmd "autocmd User TelescopePreviewerLoaded setlocal number"
 
     local map = vim.api.nvim_set_keymap
@@ -22,13 +22,17 @@ function M.before()
 
     -- Telescope fuzzy finder shortcuts
     map('n', '<leader>pb', '<cmd>lua require("telescope.builtin").buffers()<CR>', opts)
+    map('n', '<leader>pc', '<cmd>lua require("telescope.builtin").command_history()<CR>', opts)
     map('n', '<leader>pf', '<cmd>lua require("telescope.builtin").find_files({ find_command = {"rg", "--files", "--hidden", "-g", "!.git" }})<CR>', opts)
     map('n', '<leader>ph', '<cmd>lua require("telescope.builtin").help_tags()<CR>', opts)
+    map('n', '<leader>pj', '<cmd>lua require("telescope.builtin").jumplist()<CR>', opts)
+    map('n', '<leader>pm', '<cmd>lua require("telescope.builtin").man_pages()<CR>', opts)
     map('n', '<leader>po', '<cmd>lua require("telescope.builtin").explorer()<CR>', opts)
     map('n', '<leader>pq', '<cmd>lua require("telescope.builtin").quickfix()<CR>', opts)
-    map('n', '<leader>ps', '<cmd>lua grep()<CR>', opts)
-    map('n', '<leader>pw', '<cmd>lua grep_word()<CR>', opts)
-    map('n', '<leader>pW', '<cmd>lua grep_word_exact()<CR>', opts)
+    map('n', '<leader>ps', '<cmd>lua require("user.telescope").grep()<CR>', opts)
+    map('n', '<leader>pt', '<cmd>lua require("telescope.builtin").treesitter()<CR>', opts)
+    map('n', '<leader>pw', '<cmd>lua require("user.telescope").grep_word()<CR>', opts)
+    map('n', '<leader>pW', '<cmd>lua require("user.telescope").grep_word_exact()<CR>', opts)
 
     -- Git shortcuts
     map('n', '<leader>gco',    '<cmd>lua require("telescope.builtin").git_commits()<CR>', opts)

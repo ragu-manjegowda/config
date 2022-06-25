@@ -65,7 +65,7 @@ keymap("n", "<leader>zsh", ":tabnew term://zsh<CR>", opts)
 keymap("n", "<leader>bash", ":tabnew term://bash<CR>", opts)
 
 -- Open file under cursor in new tab
-keymap("n", "<leader>fo", "<C-w>gF", opts)
+keymap("n", "<leader>of", "<C-w>gF", opts)
 
 -- Write
 keymap("n", "<leader>w", ":w<CR>", { noremap = true })
@@ -75,12 +75,12 @@ keymap("n", "<leader>q", ":q<CR>", opts)
 keymap("n", "<leader>qa", ":LspStop<CR>:qa<CR>", opts)
 
 -- Map to navigate QuickFix list
-keymap("n", "<leader>qo", ":copen<CR><C-w>T", opts)
+keymap("n", "<leader>oq", ":copen<CR><C-w>T", opts)
 
 -- Map to navigate QuickFix list after error from Dispatch
-keymap("n", "<leader>do", ":Copen<CR><C-w>T", opts)
+keymap("n", "<leader>od", ":Copen<CR><C-w>T", opts)
 
--- Open toggle undo tree
+-- Toggle undo tree
 keymap("n", "<leader>ut", ":UndotreeToggle<CR>", opts)
 
 -- Get full path of the current buffer
