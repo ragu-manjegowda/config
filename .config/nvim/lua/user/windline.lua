@@ -156,7 +156,7 @@ M.config = function()
             if width > width_breakpoint then
                 return {
                     { sep.left_filled, state.mode[2] .. 'Sep' },
-                    { '', state.mode[2] },
+                    { ' ', state.mode[2] },
                     { b_components.progress_lua},
                     { ' '},
                     { b_components.line_col_lua},
