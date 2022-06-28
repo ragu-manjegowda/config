@@ -8,6 +8,7 @@ local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 local clickable_container = require('widget.clickable-container')
 local animation = require("widget.animation")
+local cst = require("naughty.constants");
 
 -- Defaults
 naughty.config.defaults.ontop = true
@@ -50,8 +51,7 @@ ruled.notification.connect_signal(
                 fg                  = beautiful.colors.red,
                 margin              = dpi(16),
                 position            = 'top_left',
-                --- Absurdly big number because setting it to 0 doesn't work
-                implicit_timeout    = 4294967
+                implicit_timeout    = 0
             }
         }
 
@@ -84,8 +84,7 @@ ruled.notification.connect_signal(
         ruled.notification.append_rule {
             rule       = { app_name = 'Slack' },
             properties = {
-                --- Absurdly big number because setting it to 0 doesn't work
-                implicit_timeout    = 4294967
+                implicit_timeout    = 0
             }
         }
 
@@ -124,6 +123,16 @@ naughty.connect_signal(
 --- Use XDG icon
 naughty.connect_signal("request::action_icon", function(a, context, hints)
     a.icon = menubar.utils.lookup_icon(hints.id)
+end)
+
+naughty.connect_signal('destroyed', function(n, reason)
+    if not n.clients then return end
+    if reason == cst.notification_closed_reason.dismissed_by_user then
+        for _, cli in ipairs(n.clients) do
+            cli.urgent = true
+            cli:emit_signal("request::activate", {raise=true})
+        end
+    end
 end)
 
 -- Connect to naughty on display signal
@@ -299,6 +308,7 @@ naughty.connect_signal(
             target = 100,
             easing = animation.easing.linear,
             reset_on_stop = false,
+            loop = n.timeout == 0,
             update = function(self, pos)
                 timeout_arc.value = pos
             end,

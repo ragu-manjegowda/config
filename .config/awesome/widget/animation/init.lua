@@ -148,6 +148,13 @@ function animation_manager:new(args)
 	args.update = args.update or nil
 	args.reset_on_stop = args.reset_on_stop == nil and true or args.reset_on_stop
 
+    -- Duration 0 is coming from awesome notification timeout
+    -- during which awesome set loop as true
+    if args.loop == true and args.duration == 0 then
+        args.duration = 5
+        args.easing = animation_manager.easing.inOutBounce
+    end
+
 	-- Awestoer/Rubbto compatibility
 	args.subscribed = args.subscribed or nil
 	local ret = subscribable()
