@@ -15,7 +15,7 @@
     show = diff-so-fancy | less --tabs=1,5 -RFX
 
 [status]
-    submodulesummary = true
+    submodulesummary = false
 
 [github]
     user = ragu-manjegowda

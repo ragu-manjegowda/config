@@ -73,7 +73,7 @@ alias gpulla='git pull --rebase --autostash'
 
 alias gst='git status'
 alias gstv='vim +Git +only'
-alias gsu='git submodule update --remote --rebase'
+alias gsu='git submodule update --init --recursive'
 
 function grename() {
   if [[ -z "$1" || -z "$2" ]]; then
