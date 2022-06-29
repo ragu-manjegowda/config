@@ -3,32 +3,24 @@
 # Based on https://stackoverflow.com/a/21756612
 # following files are ignored for local changes
 config update-index --assume-unchanged \
-    .config/awesome/theme/icons/layouts/dwindle.png \
-    .config/awesome/theme/icons/layouts/floating.png \
-    .config/awesome/theme/icons/layouts/fullscreen.png \
-    .config/awesome/theme/icons/layouts/max.png \
-    .config/awesome/theme/icons/layouts/tile.png \
-    .config/awesome/theme/icons/tags/1.png \
-    .config/awesome/theme/icons/tags/2.png \
-    .config/awesome/theme/icons/tags/3.png \
-    .config/awesome/theme/icons/tags/4.png \
-    .config/awesome/theme/icons/tags/5.png \
-    .config/awesome/theme/icons/tags/6.png \
-    .config/awesome/theme/icons/tags/7.png \
-    .config/awesome/theme/icons/tags/8.png \
-    .config/awesome/theme/icons/tags/9.png \
-    .config/awesome/theme/icons/volume-muted.svg \
-    .config/awesome/widget/notif-center/icons/clear_all.png \
-    .config/awesome/widget/volume-slider/icons/volume-muted.png \
+    .config/alacritty/colors.yml \
+    .config/awesome/configuration/rofi/appmenu/rofi.rasi \
+    .config/awesome/configuration/rofi/emojimenu/rofi.rasi \
     .config/awesome/configuration/rofi/global/icons/history.svg \
     .config/awesome/configuration/rofi/global/icons/result.svg \
     .config/awesome/configuration/rofi/global/icons/suggestion.svg \
+    .config/awesome/configuration/rofi/runmenu/rofi.rasi \
     .config/awesome/theme/icons/battery-charge.svg \
     .config/awesome/theme/icons/brightness-7.svg \
     .config/awesome/theme/icons/chart-areaspline.svg \
     .config/awesome/theme/icons/close.svg \
     .config/awesome/theme/icons/effects.svg \
     .config/awesome/theme/icons/harddisk.svg \
+    .config/awesome/theme/icons/layouts/dwindle.png \
+    .config/awesome/theme/icons/layouts/floating.png \
+    .config/awesome/theme/icons/layouts/fullscreen.png \
+    .config/awesome/theme/icons/layouts/max.png \
+    .config/awesome/theme/icons/layouts/tile.png \
     .config/awesome/theme/icons/lock.svg \
     .config/awesome/theme/icons/logout.svg \
     .config/awesome/theme/icons/magnify.svg \
@@ -42,17 +34,28 @@ config update-index --assume-unchanged \
     .config/awesome/theme/icons/tag-list/file-manager.svg \
     .config/awesome/theme/icons/tag-list/games.svg \
     .config/awesome/theme/icons/tag-list/graphics.svg \
-    .config/awesome/theme/icons/tag-list/menu.svg \
     .config/awesome/theme/icons/tag-list/menu2.svg \
+    .config/awesome/theme/icons/tag-list/menu.svg \
     .config/awesome/theme/icons/tag-list/multimedia.svg \
     .config/awesome/theme/icons/tag-list/sandbox.svg \
     .config/awesome/theme/icons/tag-list/social.svg \
     .config/awesome/theme/icons/tag-list/terminal.svg \
     .config/awesome/theme/icons/tag-list/text-editor.svg \
+    .config/awesome/theme/icons/tags/1.png \
+    .config/awesome/theme/icons/tags/2.png \
+    .config/awesome/theme/icons/tags/3.png \
+    .config/awesome/theme/icons/tags/4.png \
+    .config/awesome/theme/icons/tags/5.png \
+    .config/awesome/theme/icons/tags/6.png \
+    .config/awesome/theme/icons/tags/7.png \
+    .config/awesome/theme/icons/tags/8.png \
+    .config/awesome/theme/icons/tags/9.png \
     .config/awesome/theme/icons/thermometer.svg \
     .config/awesome/theme/icons/toggled-off.svg \
     .config/awesome/theme/icons/toggled-on.svg \
     .config/awesome/theme/icons/volume-high.svg \
+    .config/awesome/theme/icons/volume-muted.svg \
+    .config/awesome/theme/init.lua \
     .config/awesome/widget/airplane-mode/icons/airplane-mode-off.svg \
     .config/awesome/widget/airplane-mode/icons/airplane-mode.svg \
     .config/awesome/widget/battery/icons/battery-alert.svg \
@@ -71,18 +74,18 @@ config update-index --assume-unchanged \
     .config/awesome/widget/battery/icons/battery-discharging-80.svg \
     .config/awesome/widget/battery/icons/battery-discharging-90.svg \
     .config/awesome/widget/battery/icons/battery-fully-charged.svg \
-    .config/awesome/widget/battery/icons/battery-unknown.svg \
     .config/awesome/widget/battery/icons/battery.svg \
+    .config/awesome/widget/battery/icons/battery-unknown.svg \
     .config/awesome/widget/blue-light/icons/blue-light-off.svg \
     .config/awesome/widget/blue-light/icons/blue-light.svg \
-    .config/awesome/widget/bluetooth-toggle/icons/bluetooth-off.svg \
-    .config/awesome/widget/bluetooth-toggle/icons/bluetooth.svg \
-    .config/awesome/widget/bluetooth-toggle/icons/loading.svg \
     .config/awesome/widget/bluetooth/icons/bluetooth-connected.svg \
     .config/awesome/widget/bluetooth/icons/bluetooth-off.svg \
     .config/awesome/widget/bluetooth/icons/bluetooth-scanning.svg \
     .config/awesome/widget/bluetooth/icons/bluetooth.svg \
     .config/awesome/widget/bluetooth/icons/loading.svg \
+    .config/awesome/widget/bluetooth-toggle/icons/bluetooth-off.svg \
+    .config/awesome/widget/bluetooth-toggle/icons/bluetooth.svg \
+    .config/awesome/widget/bluetooth-toggle/icons/loading.svg \
     .config/awesome/widget/blur-toggle/icons/effects-off.svg \
     .config/awesome/widget/control-center-switch/icons/control-center.svg \
     .config/awesome/widget/control-center-toggle/icons/control-center.svg \
@@ -96,10 +99,10 @@ config update-index --assume-unchanged \
     .config/awesome/widget/email/icons/email-6.svg \
     .config/awesome/widget/email/icons/email-7.svg \
     .config/awesome/widget/email/icons/email-8.svg \
-    .config/awesome/widget/email/icons/email-9+.svg \
     .config/awesome/widget/email/icons/email-9.svg \
-    .config/awesome/widget/email/icons/email-unread.svg \
+    .config/awesome/widget/email/icons/email-9+.svg \
     .config/awesome/widget/email/icons/email.svg \
+    .config/awesome/widget/email/icons/email-unread.svg \
     .config/awesome/widget/info-center-toggle/icons/info-center.svg \
     .config/awesome/widget/mpd/icons/next.svg \
     .config/awesome/widget/mpd/icons/pause.svg \
@@ -132,6 +135,7 @@ config update-index --assume-unchanged \
     .config/awesome/widget/network/icons/wired-alert.svg \
     .config/awesome/widget/network/icons/wired-off.svg \
     .config/awesome/widget/network/icons/wired.svg \
+    .config/awesome/widget/notif-center/icons/clear_all.png \
     .config/awesome/widget/notif-center/icons/delete.svg \
     .config/awesome/widget/package-updater/icons/package.svg \
     .config/awesome/widget/screen-recorder/icons/audio.svg \
@@ -145,18 +149,19 @@ config update-index --assume-unchanged \
     .config/awesome/widget/screen-recorder/icons/start-recording-button.svg \
     .config/awesome/widget/tray-toggle/icons/left-arrow.svg \
     .config/awesome/widget/tray-toggle/icons/right-arrow.svg \
-    .config/awesome/widget/weather/icons/d_rain.svg \
+    .config/awesome/widget/volume-slider/icons/volume-muted.png \
     .config/awesome/widget/weather/icons/dbroken_clouds.svg \
     .config/awesome/widget/weather/icons/dfew_clouds.svg \
     .config/awesome/widget/weather/icons/dmist.svg \
+    .config/awesome/widget/weather/icons/d_rain.svg \
     .config/awesome/widget/weather/icons/dscattered_clouds.svg \
     .config/awesome/widget/weather/icons/dshower_rain.svg \
     .config/awesome/widget/weather/icons/dthunderstorm.svg \
     .config/awesome/widget/weather/icons/moon_icon.svg \
-    .config/awesome/widget/weather/icons/n_rain.svg \
     .config/awesome/widget/weather/icons/nbroken_clouds.svg \
     .config/awesome/widget/weather/icons/nfew_clouds.svg \
     .config/awesome/widget/weather/icons/nmist.svg \
+    .config/awesome/widget/weather/icons/n_rain.svg \
     .config/awesome/widget/weather/icons/nscattered_clouds.svg \
     .config/awesome/widget/weather/icons/nshower_rain.svg \
     .config/awesome/widget/weather/icons/nthunderstorm.svg \
@@ -174,9 +179,6 @@ config update-index --assume-unchanged \
     .config/awesome/widget/xdg-folders/icons/user-trash-empty.svg \
     .config/awesome/widget/xdg-folders/icons/user-trash-full.svg \
     .config/awesome/widget/xdg-folders/icons/yes.svg \
-    .config/alacritty/colors.yml \
-    .config/awesome/configuration/rofi/appmenu/rofi.rasi \
-    .config/awesome/theme/init.lua \
     .config/rofi/config.rasi \
     .config/xsettingsd/xsettingsd.conf
 
