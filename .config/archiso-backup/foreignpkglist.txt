@@ -9,6 +9,7 @@ lua-pam-git
 ly
 mosh-git
 nomachine
+numix-cursor-theme
 openrazer-meta
 pacman-cleanup-hook
 paru

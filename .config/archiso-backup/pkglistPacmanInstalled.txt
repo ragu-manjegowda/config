@@ -30,7 +30,7 @@ intel-ucode
 inter-font
 isync
 iw
-libreoffice-fresh
+libreoffice-still
 libtool
 libxcrypt-compat
 linux

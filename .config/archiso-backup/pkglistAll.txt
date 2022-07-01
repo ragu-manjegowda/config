@@ -36,7 +36,7 @@ intel-ucode
 inter-font
 isync
 iw
-libreoffice-fresh
+libreoffice-still
 libtool
 libxcrypt-compat
 light-git
@@ -63,6 +63,7 @@ nomachine
 noto-fonts
 noto-fonts-emoji
 ntfs-3g
+numix-cursor-theme
 openrazer-meta
 openssh
 os-prober
