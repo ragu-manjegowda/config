@@ -68,7 +68,7 @@ return {
         -- Set monitors dpi
         config_dir .. '/utilities/setup-monitors.sh',
 		-- Set the dpi for GDK applications
-		'xrdb ~/.Xresources',
+		'xrdb -merge ~/.Xresources',
 		-- Audio equalizer
         -- Enable blue light filter
 		'redshift -l 0:0 -t 4500:4500 -r &>/dev/null &',
