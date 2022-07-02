@@ -1,4 +1,3 @@
-!.config/systemd/user/goimapnotify.service
 !.config/zim/style.conf
 .CFUserTextEncoding
 .DS_Store
@@ -110,7 +109,8 @@
 .config/redshift.conf
 .config/remmina
 .config/rustup
-.config/systemd/user/*
+.config/systemd/user/default.target.wants
+.config/systemd/user/graphical-session.target.wants
 .config/teams
 .config/tmux/.tmux_history
 .config/tmux/session-restore

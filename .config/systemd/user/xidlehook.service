@@ -1,0 +1,14 @@
+[Unit]
+Description=AwesomeWM Idle behavior controller and Screen Locker
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=simple
+Environment=DISPLAY=:0
+ExecStart=%h/.config/scripts/start_xidlehook.sh
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=graphical-session.target
