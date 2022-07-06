@@ -76,7 +76,9 @@ return {
         'systemctl --user reload-or-restart --now xidlehook.service',
         -- Darkman
         --'XDG_DATA_DIRS=~/.config/darkman darkman',
+        '/usr/lib/geoclue-2.0/demos/agent &',
         'systemctl --user reload-or-restart --now darkman.service',
+        'darkman run &',
         -- Use `xinput list` command to get touchpad device name
         -- `SynPS/2 Synaptics TouchPad` in this case
         'xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Tapping Enabled" 1',
