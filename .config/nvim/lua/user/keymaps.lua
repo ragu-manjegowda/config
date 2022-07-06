@@ -66,7 +66,7 @@ keymap("n", "<leader>co", ":tabonly<CR>", opts)
 
 -- Open terminal in new tab
 keymap("n", "<leader>zsh", ":tabnew term://zsh<CR>", opts)
-keymap("n", "<leader>bash", ":tabnew term://bash<CR>", opts)
+keymap("n", "<leader>bash", ":tabnew term://bash -l<CR>", opts)
 
 -- Open file under cursor in new tab
 keymap("n", "<leader>of", "<C-w>gF", opts)
@@ -130,5 +130,5 @@ keymap("x", "<A-k>", ":move '<-2<CR>gv-gv", opts)
 -------------------------------------------------------------------------------
 
 -- Terminal exit insert mode
-keymap("t", "<ESC><ESC>", "<C-\\><C-n>", opts)
+keymap("t", "<leader><C-c>", "<C-\\><C-n>", opts)
 
