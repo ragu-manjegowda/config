@@ -128,12 +128,14 @@ ruled.client.connect_signal(
 		ruled.client.append_rule {
 			id = 'cisco',
 			rule_any = {
-				class = {
-                    'Cisco AnyConnect Secure Mobility Client'
-				}
+                class = {
+                    'com.cisco.anyconnect.gui',
+                    'Com.cisco.anyconnect.gui'
+                },
 			},
 			properties = {
-                skip_taskbar = true
+                skip_taskbar = true,
+                titlebars_enabled = false,
 			}
 		}
 

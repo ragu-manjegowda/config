@@ -103,6 +103,7 @@ vala
 vi
 w3m
 w3m-imgcat
+webkit2gtk
 wget
 which
 wireless_tools

@@ -41,8 +41,8 @@ local top_panel = function(s)
 	)
 
 	s.systray = wibox.widget {
-		visible = false,
 		base_size = s.geometry.width / 65,
+		visible = true,
 		horizontal = true,
 		screen = 'primary',
 		widget = wibox.widget.systray
@@ -53,8 +53,6 @@ local top_panel = function(s)
 	s.tray_toggler  		= require('widget.tray-toggle')
 	s.screen_rec 			= require('widget.screen-recorder')()
 	s.battery     			= require('widget.battery')()
-	s.vpn     			    = require('widget.vpn')()
-	s.network       		= require('widget.network')()
 	s.control_center_toggle = require('widget.control-center-toggle')()
 	s.info_center_toggle 	= require('widget.info-center-toggle')()
 
@@ -114,9 +112,7 @@ local top_panel = function(s)
 	    		    },
 	    		    s.tray_toggler,
 	    		    s.screen_rec,
-	    		    s.network,
 	    		    s.battery,
-                    s.vpn,
 	    		    s.control_center_toggle,
 	    		    layout_box,
 	    		    s.info_center_toggle
