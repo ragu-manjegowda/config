@@ -20,14 +20,17 @@ end
 client.connect_signal(
 	'manage',
 	function(c)
-		-- Focus, raise and activate
-		c:emit_signal(
-			'request::activate',
-			'mouse_enter',
-			{
-				raise = true
-			}
-		)
+        -- Do not unminimize all clients upon reload
+		if not awesome.startup then
+		    -- Focus, raise and activate
+		    c:emit_signal(
+		    	'request::activate',
+		    	'mouse_enter',
+		    	{
+		    		raise = true
+		    	}
+		    )
+        end
 
 		-- Set the windows at the slave,
 		-- i.e. put it at the end of others instead of setting it master.

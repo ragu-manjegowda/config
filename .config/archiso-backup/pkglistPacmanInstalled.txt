@@ -80,6 +80,7 @@ urlscan
 vala
 vi
 w3m
+webkit2gtk
 wget
 which
 wireless_tools

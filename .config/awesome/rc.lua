@@ -104,3 +104,46 @@ gears.timer.start_new(10, function()
   collectgarbage("step", 20000)
   return true
 end)
+
+
+-- ______          _                   _____
+-- | ___ \        | |                 |_   _|
+-- | |_/ /___  ___| |_ ___  _ __ ___    | | __ _  __ _
+-- |    // _ \/ __| __/ _ \| '__/ _ \   | |/ _` |/ _` |
+-- | |\ \  __/\__ \ || (_) | | |  __/   | | (_| | (_| |
+-- \_| \_\___||___/\__\___/|_|  \___|   \_/\__,_|\__, |
+--                                                __/ |
+--                                               |___/
+
+local filesystem = require('gears.filesystem')
+local config_dir = filesystem.get_configuration_dir()
+local utils_dir = config_dir .. 'utilities/'
+
+ws_fname = utils_dir .. "/awesome-last-ws"
+
+function save_current_tag()
+  local f = assert(io.open(ws_fname, "w"))
+  local t = client.focus and client.focus.first_tag or nil
+  f:write(t.name, "\n")
+  f:close()
+end
+
+function load_last_active_tag()
+local f = assert(io.open(ws_fname, "r"))
+tag_name = f:read("*line")
+f:close()
+local t = awful.tag.find_by_name(nil, tag_name)
+  if t ~= nil then
+    awful.tag.viewnone()
+    awful.tag.viewtoggle(t)
+  end
+end
+
+awesome.connect_signal("exit", function (c)
+    if c == true then
+        -- We are about to restart awesome, save our last used tag
+        save_current_tag()
+    end
+end)
+
+load_last_active_tag()

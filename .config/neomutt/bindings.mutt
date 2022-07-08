@@ -69,7 +69,7 @@ bind index V noop # Normally bound to "show-version".
 #bind pager <space> next-page
 
 # Misc
-macro index,pager \cl '<pipe-message>urlscan -d -w 80<enter>' "call urlscan to open links"
+macro index,pager \cl "<pipe-message>urlscan -d -w 80<Enter>" "call urlscan to open links"
 macro attach,compose \cl "<pipe-entry> urlscan -d -w 80<Enter>" "call urlscan to extract URLs out of a message"
 macro index,pager,generic <F1> "!w3m /usr/share/doc/neomutt/manual.html\n" "Show Mutt documentation"
 macro attach s '<save-entry><kill-line>~/Downloads/<enter>a' "Save file to ~/Downloads"
