@@ -73,7 +73,6 @@
 .config/gnupg/trustdb.gpg
 .config/google-chrome
 .config/gtk-2.0
-.config/gtk-3.0
 .config/ibus
 .config/imapnotify
 .config/indicator-stickynotes
@@ -148,7 +147,6 @@
 .gem
 .globalrc
 .gnome
-.gtkrc-2.0
 .httpie
 .icons
 .ignition
