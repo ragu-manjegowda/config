@@ -8,7 +8,7 @@ return {
 		-- Default terminal emulator
 		terminal = 'alacritty',
 		-- Default web browser
-		web_browser = 'firefox',
+		web_browser = 'google-chrome-stable',
 		-- Default text editor
 		text_editor = 'nvim',
 		-- Default file manager
@@ -28,7 +28,7 @@ return {
 		-- Default bluetooth manager
 		bluetooth_manager = 'blueman-manager',
 		-- Default power manager
-		power_manager = 'xfce4-power-manager-settings',
+		power_manager = '',
 		-- Default GUI package manager
 		package_manager = '',
 		-- Default locker
@@ -81,7 +81,7 @@ return {
         -- 'darkman run &',
         -- Use `xinput list` command to get touchpad device name
         -- `SynPS/2 Synaptics TouchPad` in this case
-        'xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Tapping Enabled" 1',
+        -- 'xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Tapping Enabled" 1',
         -- Start imapnotify
         'systemctl --user reload-or-restart goimapnotify.service'
 	},

@@ -120,7 +120,7 @@ local return_button = function()
 			upower -i $(upower -e | grep BAT) | grep percentage | awk '{print \$2}' | tr -d '\n%'
 			"]],
 			function(stdout)
-				local battery_percentage = tonumber(stdout)
+				local battery_percentage = math.floor(tonumber(stdout))
 
 				-- Stop if null
 				if not battery_percentage then
