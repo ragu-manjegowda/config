@@ -41,3 +41,5 @@
     gpgsign = true
     template = ~/.config/git/gitmessage.txt
 
+[push]
+    autoSetupRemote = true
