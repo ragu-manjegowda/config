@@ -12,6 +12,7 @@ local hotkeys_popup = require('awful.hotkeys_popup').widget.new({
 local modkey = require('configuration.keys.mod').mod_key
 local altkey = require('configuration.keys.mod').alt_key
 local apps = require('configuration.apps')
+local config = require('configuration.config')
 
 local function print_awesome_memory_stats(message)
     print(os.date(), "\nLua memory usage:", collectgarbage("count"))
@@ -124,7 +125,7 @@ local global_keys = awful.util.table.join(
 		function()
 			awful.spawn(apps.default.web_browser)
 		end,
-		{description = 'open Firefox web browser', group = 'launcher'}
+		{description = 'open default web browser', group = 'launcher'}
 	),
 
 	awful.key(
@@ -329,6 +330,24 @@ local global_keys = awful.util.table.join(
 			awesome.emit_signal('module::brightness_osd:show', true)
 		end,
 		{description = 'decrease brightness by 10%', group = 'hotkeys'}
+	),
+
+	awful.key(
+		{},
+		'XF86KbdBrightnessUp',
+		function()
+			awful.spawn(config.keyboard.script .. '-inc 10')
+		end,
+		{description = 'increase keyboard brightness by 10%', group = 'hotkeys'}
+	),
+
+	awful.key(
+		{},
+		'XF86KbdBrightnessDown',
+		function()
+			awful.spawn(config.keyboard.script .. '-dec 10')
+		end,
+		{description = 'decrease keyboard brightness by 10%', group = 'hotkeys'}
 	),
 
 	-- ALSA volume control

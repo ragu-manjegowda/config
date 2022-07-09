@@ -1,4 +1,12 @@
+local filesystem = require('gears.filesystem')
+local config_dir = filesystem.get_configuration_dir()
+local utils_dir = config_dir .. 'utilities/'
+
 return {
+    keyboard = {
+        script = utils_dir .. 'mbp-keyboard-backlight.sh '
+    },
+
 	widget = {
 		email  = {
 			-- Email address
@@ -26,7 +34,7 @@ return {
 			-- Wired interface
 			wired_interface = 'enp0s31f6',
 			-- Wireless interface
-			wireless_interface = 'wlp2s0'
+			wireless_interface = 'wlan0'
 		},
 
 		clock = {
