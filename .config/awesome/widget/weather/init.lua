@@ -223,7 +223,7 @@ local weather_report =  wibox.widget {
 		margins = dpi(10),
 		widget = wibox.container.margin
 	},
-	forced_height = dpi(110),
+	forced_height = dpi(150),
 	bg = beautiful.groups_bg,
 	shape = function(cr, width, height)
 		gears.shape.partially_rounded_rect(cr, width, height, true, true, true, true, beautiful.groups_radius)

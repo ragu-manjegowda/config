@@ -172,7 +172,7 @@ local monitor_control_row_progressbars = wibox.widget {
 
 local control_center = function(s)
 	-- Set the control center geometry
-	local panel_width = s.geometry.width / 5
+	local panel_width = s.geometry.width / 4
 	local panel_margins = dpi(5)
 
 	local panel = awful.popup {
@@ -232,7 +232,7 @@ local control_center = function(s)
 			honor_workarea = true,
 			parent = s,
 			margins = {
-				top = (s.geometry.height / 22) + 10,
+				top = (s.geometry.height / 26) + 10,
 				right = dpi(10)
 			}
 		}
