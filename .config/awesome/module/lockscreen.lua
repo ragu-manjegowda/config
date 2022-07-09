@@ -44,6 +44,7 @@ local lock_again = nil
 local type_again = true
 local capture_now = locker_config.capture_intruder
 local locked_tag = nil
+local client_focused = nil
 
 local uname_text = wibox.widget {
 	id = 'uname_text',
@@ -444,8 +445,9 @@ local locker = function(s)
 					locked_tag.selected = true
 					locked_tag = nil
 				end
-				local c = awful.client.restore()
-				if c then
+
+				if client_focused then
+                    client_focused.minimized = false
 					c:emit_signal('request::activate')
 					c:raise()
 				end
@@ -726,6 +728,7 @@ local locker = function(s)
 		-- These will fix the problem with virtualbox or
 		-- any other program that has keygrabbing enabled
 		if client.focus then
+            client_focused = client.focus
 			client.focus.minimized = true
 		end
 		for _, t in ipairs(mouse.screen.selected_tags) do
