@@ -5,10 +5,10 @@ local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 local clickable_container = require('widget.clickable-container')
 local icons = require('theme.icons')
-local spawn = require('awful.spawn')
+local config = require('configuration.config')
 
 local osd_header = wibox.widget {
-	text = 'Brightness',
+	text = 'KBD-Brightness',
 	font = 'Hack Nerd Bold 14',
 	align = 'left',
 	valign = 'center',
@@ -26,7 +26,7 @@ local osd_value = wibox.widget {
 local slider_osd = wibox.widget {
 	nil,
 	{
-		id 					= 'bri_osd_slider',
+		id 					= 'kbd_bri_osd_slider',
 		bar_shape           = gears.shape.rounded_rect,
 		bar_height          = dpi(24),
 		bar_color           = beautiful.background,
@@ -44,54 +44,69 @@ local slider_osd = wibox.widget {
 	layout = wibox.layout.align.vertical
 }
 
-local bri_osd_slider = slider_osd.bri_osd_slider
+local kbd_bri_osd_slider = slider_osd.kbd_bri_osd_slider
 
-bri_osd_slider:connect_signal(
+kbd_bri_osd_slider:connect_signal(
 	'property::value',
 	function()
-		local brightness_level = bri_osd_slider:get_value()
-		spawn('light -S ' .. math.max(brightness_level, 5), false)
+        local kbd_brightness_path = config.keyboard.file
+		local kbd_brightness_level = kbd_bri_osd_slider:get_value()
+
+        local kbd_brightness_level_absolute = 0
+
+        if string.find(kbd_brightness_path, "smc") then
+            kbd_brightness_level_absolute = math.floor(kbd_brightness_level * (255/100))
+        elseif string.find(kbd_brightness_path, "tpacpi") then
+            kbd_brightness_level_absolute = math.floor(kbd_brightness_level * (2/100))
+        end
+
+        bkl_set_command =
+            "echo " ..
+            tostring(kbd_brightness_level_absolute) ..
+            " > " .. kbd_brightness_path
+
+        awful.spawn.easy_async_with_shell(bkl_set_command, false)
 
 		-- Update textbox widget text
-		osd_value.text = brightness_level .. '%'
+		osd_value.text = tostring(math.floor(kbd_brightness_level)) .. '%'
 
 		-- Update the brightness slider if values here change
-		awesome.emit_signal('widget::brightness:update', brightness_level)
+		awesome.emit_signal('widget::kbd_brightness:update', kbd_brightness_level)
 
-		if awful.screen.focused().show_bri_osd then
+		if awful.screen.focused().show_kbd_bri_osd then
 			awesome.emit_signal(
-				'module::brightness_osd:show',
+				'module::kbd_brightness_osd:show',
 				true
 			)
 		end
 	end
 )
 
-bri_osd_slider:connect_signal(
+kbd_bri_osd_slider:connect_signal(
 	'button::press',
 	function()
-		awful.screen.focused().show_bri_osd = true
+		awful.screen.focused().show_kbd_bri_osd = true
 	end
 )
 
-bri_osd_slider:connect_signal(
+kbd_bri_osd_slider:connect_signal(
 	'mouse::enter',
 	function()
-		awful.screen.focused().show_bri_osd = true
+		awful.screen.focused().show_kbd_bri_osd = true
 	end
 )
 
 -- The emit will come from brightness slider
 awesome.connect_signal(
-	'module::brightness_osd',
-	function(brightness)
-		bri_osd_slider:set_value(brightness)
+	'module::kbd_brightness_osd',
+	function(kbd_brightness)
+		kbd_bri_osd_slider:set_value(kbd_brightness)
 	end
 )
 
 local icon = wibox.widget {
 	{
-		image = icons.brightness,
+		image = icons.kbd_brightness,
 		resize = true,
 		widget = wibox.widget.imagebox
 	},
@@ -107,9 +122,9 @@ screen.connect_signal(
 	'request::desktop_decoration',
 	function(s)
 		local s = s or {}
-		s.show_bri_osd = false
+		s.show_kbd_bri_osd = false
 
-		s.brightness_osd_overlay = awful.popup {
+		s.kbd_brightness_osd_overlay = awful.popup {
 			widget = {
 			  -- Removing this block will cause an error...
 			},
@@ -128,7 +143,7 @@ screen.connect_signal(
 			preferred_positions = {'left', 'right', 'top', 'bottom'}
 		}
 
-		s.brightness_osd_overlay : setup {
+		s.kbd_brightness_osd_overlay : setup {
 			{
 				{
 					layout = wibox.layout.fixed.vertical,
@@ -166,11 +181,11 @@ screen.connect_signal(
 		}
 
 		-- Reset timer on mouse hover
-		s.brightness_osd_overlay:connect_signal(
+		s.kbd_brightness_osd_overlay:connect_signal(
 			'mouse::enter',
 			function()
-				s.show_bri_osd = true
-				awesome.emit_signal('module::brightness_osd:rerun')
+				s.show_kbd_bri_osd = true
+				awesome.emit_signal('module::kbd_brightness_osd:rerun')
 			end
 		)
 	end
@@ -181,13 +196,13 @@ local hide_osd = gears.timer {
 	autostart = true,
 	callback  = function()
 		local focused = awful.screen.focused()
-		focused.brightness_osd_overlay.visible = false
-		focused.show_bri_osd = false
+		focused.kbd_brightness_osd_overlay.visible = false
+		focused.show_kbd_bri_osd = false
 	end
 }
 
 awesome.connect_signal(
-	'module::brightness_osd:rerun',
+	'module::kbd_brightness_osd:rerun',
 	function()
 		if hide_osd.started then
 			hide_osd:again()
@@ -199,9 +214,9 @@ awesome.connect_signal(
 
 local placement_placer = function()
 	local focused = awful.screen.focused()
-	local brightness_osd = focused.brightness_osd_overlay
+	local kbd_brightness_osd = focused.kbd_brightness_osd_overlay
 	awful.placement.bottom(
-		brightness_osd,
+		kbd_brightness_osd,
 		{
             margins = {
 				left = 0,
@@ -214,14 +229,14 @@ local placement_placer = function()
 end
 
 awesome.connect_signal(
-	'module::brightness_osd:show',
+	'module::kbd_brightness_osd:show',
 	function(bool)
 		placement_placer()
-		awful.screen.focused().brightness_osd_overlay.visible = bool
+		awful.screen.focused().kbd_brightness_osd_overlay.visible = bool
 		if bool then
-			awesome.emit_signal('module::brightness_osd:rerun')
+			awesome.emit_signal('module::kbd_brightness_osd:rerun')
 			awesome.emit_signal(
-				'module::kbd_brightness_osd:show',
+				'module::brightness_osd:show',
 				false
 			)
 			awesome.emit_signal(

@@ -2,13 +2,14 @@ local wibox = require('wibox')
 local gears = require('gears')
 local awful = require('awful')
 local beautiful = require('beautiful')
-local spawn = awful.spawn
 local dpi = beautiful.xresources.apply_dpi
 local icons = require('theme.icons')
 local clickable_container = require('widget.clickable-container')
+local config = require('configuration.config')
+local apps = require('configuration.apps')
 
 local action_name = wibox.widget {
-	text = 'Brightness',
+	text = 'KBD-Brightness',
 	font = 'Hack Nerd Bold 12',
 	align = 'left',
 	widget = wibox.widget.textbox
@@ -19,7 +20,7 @@ local icon = wibox.widget {
 	expand = 'none',
 	nil,
 	{
-		image = icons.brightness,
+		image = icons.kbd_brightness,
 		resize = true,
 		widget = wibox.widget.imagebox
 	},
@@ -45,7 +46,7 @@ local action_level = wibox.widget {
 local slider = wibox.widget {
 	nil,
 	{
-		id 					= 'brightness_slider',
+		id 					= 'kbd_brightness_slider',
 		bar_shape           = gears.shape.rounded_rect,
 		bar_height          = dpi(24),
 		bar_color           = beautiful.background,
@@ -64,32 +65,52 @@ local slider = wibox.widget {
 	layout = wibox.layout.align.vertical
 }
 
-local brightness_slider = slider.brightness_slider
+local kbd_brightness_slider = slider.kbd_brightness_slider
 
-brightness_slider:connect_signal(
+kbd_brightness_slider:connect_signal(
 	'property::value',
 	function()
-		local brightness_level = brightness_slider:get_value()
+        local kbd_brightness_path = config.keyboard.file
+		local kbd_brightness_level = kbd_brightness_slider:get_value()
 
-		spawn('light -S ' ..
-			math.max(brightness_level, 5),
-			false
-		)
+        local kbd_brightness_level_absolute = 0
+
+        if string.find(kbd_brightness_path, "smc") then
+            kbd_brightness_level_absolute = math.floor(kbd_brightness_level * (255/100))
+        elseif string.find(kbd_brightness_path, "tpacpi") then
+            kbd_brightness_level_absolute = math.floor(kbd_brightness_level * (2/100))
+        end
+
+        bkl_set_command =
+            "echo " ..
+            tostring(kbd_brightness_level_absolute) ..
+            " > " .. kbd_brightness_path
+
+        awful.spawn.easy_async_with_shell(bkl_set_command, false)
 
 		-- Update brightness osd
 		awesome.emit_signal(
-			'module::brightness_osd',
-			brightness_level
+			'module::kbd_brightness_osd',
+			kbd_brightness_level
 		)
 	end
 )
 
 local update_slider = function()
+    local kbd_brightness_path = config.keyboard.file
+
+    local bkl_get_command = "cat " .. kbd_brightness_path
+
 	awful.spawn.easy_async_with_shell(
-		'light -G',
+		bkl_get_command,
 		function(stdout)
-			local brightness = string.match(stdout, '(%d+)')
-			brightness_slider:set_value(tonumber(brightness))
+			local kbd_brightness = string.match(stdout, '(%d+)')
+
+            if string.find(kbd_brightness_path, "smc") then
+                kbd_brightness_slider:set_value((tonumber(kbd_brightness) / 255) * 100)
+            elseif string.find(kbd_brightness_path, "tpacpi") then
+                kbd_brightness_slider:set_value((tonumber(kbd_brightness) / 2) * 100)
+            end
 		end
 	)
 end
@@ -98,7 +119,7 @@ end
 update_slider()
 
 local action_jump = function()
-	local sli_value = brightness_slider:get_value()
+	local sli_value = kbd_brightness_slider:get_value()
 	local new_value = 0
 
 	if sli_value >= 0 and sli_value < 50 then
@@ -108,7 +129,7 @@ local action_jump = function()
 	else
 		new_value = 0
 	end
-	brightness_slider:set_value(new_value)
+	kbd_brightness_slider:set_value(new_value)
 end
 
 action_level:buttons(
@@ -126,7 +147,7 @@ action_level:buttons(
 
 -- The emit will come from the global keybind
 awesome.connect_signal(
-	'widget::brightness',
+	'widget::kbd_brightness',
 	function()
 		update_slider()
 	end
@@ -134,13 +155,13 @@ awesome.connect_signal(
 
 -- The emit will come from the OSD
 awesome.connect_signal(
-	'widget::brightness:update',
+	'widget::kbd_brightness:update',
 	function(value)
-		brightness_slider:set_value(tonumber(value))
+		kbd_brightness_slider:set_value(tonumber(value))
 	end
 )
 
-local brightness_setting = wibox.widget {
+local kbd_brightness_setting = wibox.widget {
 	layout = wibox.layout.fixed.vertical,
 	spacing = dpi(5),
 	action_name,
@@ -163,12 +184,12 @@ local brightness_setting = wibox.widget {
 	}
 }
 
-local mybrightnessmeter_t = awful.tooltip{}
+local mykbdbrightnessmeter_t = awful.tooltip{}
 
-mybrightnessmeter_t:add_to_object(brightness_setting)
+mykbdbrightnessmeter_t:add_to_object(kbd_brightness_setting)
 
-brightness_setting:connect_signal('mouse::enter', function()
-    mybrightnessmeter_t.text = 'Brightness value = ' .. tostring(brightness_slider:get_value()) .. '%'
+kbd_brightness_setting:connect_signal('mouse::enter', function()
+    mykbdbrightnessmeter_t.text = 'KBD-Brightness value = ' .. tostring(math.floor(kbd_brightness_slider:get_value())) .. '%'
 end)
 
-return brightness_setting
+return kbd_brightness_setting

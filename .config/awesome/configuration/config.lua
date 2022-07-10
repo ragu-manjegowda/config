@@ -4,7 +4,9 @@ local utils_dir = config_dir .. 'utilities/'
 
 return {
     keyboard = {
-        script = utils_dir .. 'mbp-keyboard-backlight.sh '
+        script = utils_dir .. 'mbp-keyboard-backlight.sh ',
+        file = '/sys/class/leds/smc::kbd_backlight/brightness'
+        -- file = '/sys/class/leds/tpacpi::kbd_backlight/brightness'
     },
 
 	widget = {
