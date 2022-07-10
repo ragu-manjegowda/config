@@ -16,6 +16,7 @@ config update-index --assume-unchanged \
     .config/awesome/theme/icons/close.svg \
     .config/awesome/theme/icons/effects.svg \
     .config/awesome/theme/icons/harddisk.svg \
+    .config/awesome/theme/icons/keyboard-brightness.svg \
     .config/awesome/theme/icons/layouts/dwindle.png \
     .config/awesome/theme/icons/layouts/floating.png \
     .config/awesome/theme/icons/layouts/fullscreen.png \

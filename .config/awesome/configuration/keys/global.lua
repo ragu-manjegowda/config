@@ -184,6 +184,24 @@ local global_keys = awful.util.table.join(
 	),
 
 	awful.key(
+		{modkey, 'Control'},
+		'p',
+		function ()
+			awful.spawn.easy_async_with_shell(apps.utils.full_screenshot,function() end)
+		end,
+		{description = 'fullscreen screenshot', group = 'Utility'}
+	),
+
+	awful.key(
+		{modkey, 'Shift'},
+		'p',
+		function ()
+			awful.spawn.easy_async_with_shell(apps.utils.area_screenshot,function() end)
+		end,
+		{description = 'area/selected screenshot', group = 'Utility'}
+	),
+
+	awful.key(
 		{ },
 		'Print',
 		function ()
@@ -337,6 +355,8 @@ local global_keys = awful.util.table.join(
 		'XF86KbdBrightnessUp',
 		function()
 			awful.spawn(config.keyboard.script .. '-inc 10')
+			awesome.emit_signal('widget::kbd_brightness')
+			awesome.emit_signal('module::kbd_brightness_osd:show', true)
 		end,
 		{description = 'increase keyboard brightness by 10%', group = 'hotkeys'}
 	),
@@ -346,6 +366,8 @@ local global_keys = awful.util.table.join(
 		'XF86KbdBrightnessDown',
 		function()
 			awful.spawn(config.keyboard.script .. '-dec 10')
+			awesome.emit_signal('widget::kbd_brightness')
+			awesome.emit_signal('module::kbd_brightness_osd:show', true)
 		end,
 		{description = 'decrease keyboard brightness by 10%', group = 'hotkeys'}
 	),

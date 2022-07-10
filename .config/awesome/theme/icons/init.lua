@@ -29,6 +29,7 @@ return {
 	volume 				= dir .. 'volume-high.svg',
 	volume_muted 		= dir .. 'volume-muted.svg',
 	brightness 			= dir .. 'brightness-7.svg',
+	kbd_brightness 		= dir .. 'keyboard-brightness.svg',
 	effects 			= dir .. 'effects.svg',
 	chart 				= dir .. 'chart-areaspline.svg',
 	memory 				= dir .. 'memory.svg',

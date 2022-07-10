@@ -139,14 +139,10 @@ local main_control_row_sliders = wibox.widget {
 			margins = dpi(10),
 			widget = wibox.container.margin
 		}
-	)
-}
-
-local main_control_music_box = wibox.widget {
-	layout = wibox.layout.fixed.vertical,
+	),
 	format_item(
 		{
-			require('widget.mpd'),
+			require('widget.kbd-brightness-slider'),
 			margins = dpi(10),
 			widget = wibox.container.margin
 		}
@@ -191,7 +187,6 @@ local control_center = function(s)
 							spacing = dpi(10),
 							main_control_row_two,
 							main_control_row_sliders,
-							--main_control_music_box
 						},
 						{
 							id = 'monitor_control',
