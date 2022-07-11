@@ -10,13 +10,23 @@ local hl_tabline_fill = util.extract_nvim_hl('TabLineFill')
 local function gen_tab_name(tabid)
     local number = vim.api.nvim_tabpage_get_number(tabid)
     local focus = vim.api.nvim_tabpage_get_win(tabid)
+
+    -- check if tab has more than one windows
     local length = #(util.tabpage_list_wins(tabid))
     length = length - 1
     local append = ''
     if length > 0 then
-        append = ' [' .. length .. '+]'
+        append = ' [' .. length .. '+] '
     end
+
+    -- check if buffer is modified
+    local buid = vim.api.nvim_win_get_buf(focus)
+    local is_modified = vim.api.nvim_buf_get_option(buid, 'modified')
+    local modifiedIcon = is_modified and ' ' or ''
+
+    -- return final output
     return  ' ' .. number .. ' ' .. append .. filename.unique(focus)
+        .. modifiedIcon
 end
 
 local tab_only = {
