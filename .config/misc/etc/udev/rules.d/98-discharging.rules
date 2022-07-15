@@ -1,0 +1,1 @@
+SUBSYSTEM=="power_supply", ATTR{status}=="Discharging", RUN+="systemctl hibernate"
