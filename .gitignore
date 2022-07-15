@@ -1,4 +1,7 @@
 !.config/zim/style.conf
+!.local
+!.local/share
+!.local/share/applications
 .CFUserTextEncoding
 .DS_Store
 .ICEauthority
@@ -154,7 +157,8 @@
 .jfrog
 .lesshst
 .lldb
-.local
+.local/*
+.local/share/*
 .lyxauth
 .minirc.dfl
 .mozilla
