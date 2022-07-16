@@ -22,6 +22,7 @@ return {
 	close 				= dir .. 'close.svg',
 	logout				= dir .. 'logout.svg',
 	sleep 				= dir .. 'power-sleep.svg',
+	hibernate 			= dir .. 'power-hibernate.svg',
 	power 				= dir .. 'power.svg',
 	lock 				= dir .. 'lock.svg',
 	restart 			= dir .. 'restart.svg',
