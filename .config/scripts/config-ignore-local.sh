@@ -27,6 +27,7 @@ config update-index --assume-unchanged \
     .config/awesome/theme/icons/magnify.svg \
     .config/awesome/theme/icons/memory.svg \
     .config/awesome/theme/icons/plus.svg \
+    .config/awesome/theme/icons/power-hibernate.svg \
     .config/awesome/theme/icons/power-sleep.svg \
     .config/awesome/theme/icons/power.svg \
     .config/awesome/theme/icons/restart.svg \
@@ -35,8 +36,8 @@ config update-index --assume-unchanged \
     .config/awesome/theme/icons/tag-list/file-manager.svg \
     .config/awesome/theme/icons/tag-list/games.svg \
     .config/awesome/theme/icons/tag-list/graphics.svg \
-    .config/awesome/theme/icons/tag-list/menu2.svg \
     .config/awesome/theme/icons/tag-list/menu.svg \
+    .config/awesome/theme/icons/tag-list/menu2.svg \
     .config/awesome/theme/icons/tag-list/multimedia.svg \
     .config/awesome/theme/icons/tag-list/sandbox.svg \
     .config/awesome/theme/icons/tag-list/social.svg \
@@ -76,18 +77,18 @@ config update-index --assume-unchanged \
     .config/awesome/widget/battery/icons/battery-discharging-80.svg \
     .config/awesome/widget/battery/icons/battery-discharging-90.svg \
     .config/awesome/widget/battery/icons/battery-fully-charged.svg \
-    .config/awesome/widget/battery/icons/battery.svg \
     .config/awesome/widget/battery/icons/battery-unknown.svg \
+    .config/awesome/widget/battery/icons/battery.svg \
     .config/awesome/widget/blue-light/icons/blue-light-off.svg \
     .config/awesome/widget/blue-light/icons/blue-light.svg \
+    .config/awesome/widget/bluetooth-toggle/icons/bluetooth-off.svg \
+    .config/awesome/widget/bluetooth-toggle/icons/bluetooth.svg \
+    .config/awesome/widget/bluetooth-toggle/icons/loading.svg \
     .config/awesome/widget/bluetooth/icons/bluetooth-connected.svg \
     .config/awesome/widget/bluetooth/icons/bluetooth-off.svg \
     .config/awesome/widget/bluetooth/icons/bluetooth-scanning.svg \
     .config/awesome/widget/bluetooth/icons/bluetooth.svg \
     .config/awesome/widget/bluetooth/icons/loading.svg \
-    .config/awesome/widget/bluetooth-toggle/icons/bluetooth-off.svg \
-    .config/awesome/widget/bluetooth-toggle/icons/bluetooth.svg \
-    .config/awesome/widget/bluetooth-toggle/icons/loading.svg \
     .config/awesome/widget/blur-toggle/icons/effects-off.svg \
     .config/awesome/widget/control-center-switch/icons/control-center.svg \
     .config/awesome/widget/control-center-toggle/icons/control-center.svg \
@@ -101,10 +102,10 @@ config update-index --assume-unchanged \
     .config/awesome/widget/email/icons/email-6.svg \
     .config/awesome/widget/email/icons/email-7.svg \
     .config/awesome/widget/email/icons/email-8.svg \
-    .config/awesome/widget/email/icons/email-9.svg \
     .config/awesome/widget/email/icons/email-9+.svg \
-    .config/awesome/widget/email/icons/email.svg \
+    .config/awesome/widget/email/icons/email-9.svg \
     .config/awesome/widget/email/icons/email-unread.svg \
+    .config/awesome/widget/email/icons/email.svg \
     .config/awesome/widget/info-center-toggle/icons/info-center.svg \
     .config/awesome/widget/mpd/icons/next.svg \
     .config/awesome/widget/mpd/icons/pause.svg \
@@ -152,18 +153,18 @@ config update-index --assume-unchanged \
     .config/awesome/widget/tray-toggle/icons/left-arrow.svg \
     .config/awesome/widget/tray-toggle/icons/right-arrow.svg \
     .config/awesome/widget/volume-slider/icons/volume-muted.png \
+    .config/awesome/widget/weather/icons/d_rain.svg \
     .config/awesome/widget/weather/icons/dbroken_clouds.svg \
     .config/awesome/widget/weather/icons/dfew_clouds.svg \
     .config/awesome/widget/weather/icons/dmist.svg \
-    .config/awesome/widget/weather/icons/d_rain.svg \
     .config/awesome/widget/weather/icons/dscattered_clouds.svg \
     .config/awesome/widget/weather/icons/dshower_rain.svg \
     .config/awesome/widget/weather/icons/dthunderstorm.svg \
     .config/awesome/widget/weather/icons/moon_icon.svg \
+    .config/awesome/widget/weather/icons/n_rain.svg \
     .config/awesome/widget/weather/icons/nbroken_clouds.svg \
     .config/awesome/widget/weather/icons/nfew_clouds.svg \
     .config/awesome/widget/weather/icons/nmist.svg \
-    .config/awesome/widget/weather/icons/n_rain.svg \
     .config/awesome/widget/weather/icons/nscattered_clouds.svg \
     .config/awesome/widget/weather/icons/nshower_rain.svg \
     .config/awesome/widget/weather/icons/nthunderstorm.svg \
