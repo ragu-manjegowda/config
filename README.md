@@ -4,49 +4,49 @@
 
 ### [rEFInd](.config/rEFInd)
 
-| <img src="man/figures/rEFInd.png" width="900" height="450" /> |
+| ![image](man/figures/rEFInd.png) |
 |:--:|
 | ***EFI boot picker screen*** |
 
-| <img src="man/figures/rEFInd-menu-options.png" width="900" height="450" /> |
+| ![image](man/figures/rEFInd-menu-options.png) |
 |:--:|
 | ***EFI menu screen*** |
 
 ### [ZSH](.config/zsh)
 
-| <img src="man/figures/zsh.png" width="900" height="60" /> |
+| ![image](man/figures/zsh.png) |
 |:--:|
 | ***ZSH command prompt with powerlevel9k theme*** |
 
-| <img src="man/figures/zsh02.png" width="900" height="120" /> |
+| ![image](man/figures/zsh02.png) |
 |:--:|
 | ***ZSH command prompt with auto-suggestions*** |
 
 ### [Tmux](.config/tmux)
 
-| <img src="man/figures/tmux.png" width="900" height="20" /> |
+| ![image](man/figures/tmux.png) |
 |:--:|
 | ***TMUX status line showing host OS, session name and other things*** |
 
 ### [Nvim](.config/nvim)
 
-| <img src="man/figures/nvim.jpg" width="900" height="350" /> |
+| ![image](man/figures/nvim.jpg) |
 |:--:|
 | ***Neovim setup, customized for C++ developement*** |
 
 ### [Neomutt](.config/neomutt)
 
-| <img src="man/figures/neomutt.jpg" width="900" height="350" /> |
+| ![image](man/figures/neomutt.jpg) |
 |:--:|
 | ***Neomutt setup, terminal based email utility*** |
 
 ### [AwesomeWM](.config/awesome)
 
-| <img src="man/figures/awesome.jpg" width="900" height="350" /> |
+| ![image](man/figures/awesome.jpg) |
 |:--:|
 | ***AweomeWM - empty desktop and some notifications*** |
 
-| <img src="man/figures/firefox.jpg" width="900" height="350" /> |
+| ![image](man/figures/firefox.jpg) |
 |:--:|
 | ***AweomeWM - firefox*** |
 
