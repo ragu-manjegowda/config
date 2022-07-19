@@ -5,6 +5,11 @@ polkit.addRule(function(action, subject) {
         return polkit.Result.YES;
     }
 
+    if (action.id == "org.freedesktop.login1.hibernate" &&
+        subject.isInGroup("wheel")) {
+        return polkit.Result.YES;
+    }
+
     if (action.id == "org.freedesktop.login1.hybrid-sleep" &&
         subject.isInGroup("wheel")) {
         return polkit.Result.YES;
