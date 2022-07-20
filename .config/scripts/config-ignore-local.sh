@@ -10,6 +10,7 @@ config update-index --assume-unchanged \
     .config/awesome/configuration/rofi/global/icons/result.svg \
     .config/awesome/configuration/rofi/global/icons/suggestion.svg \
     .config/awesome/configuration/rofi/runmenu/rofi.rasi \
+    .config/awesome/configuration/rofi/time/rofi.rasi \
     .config/awesome/theme/icons/battery-charge.svg \
     .config/awesome/theme/icons/brightness-7.svg \
     .config/awesome/theme/icons/chart-areaspline.svg \

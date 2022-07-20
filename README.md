@@ -107,7 +107,7 @@ $ echo -e '[branch "master"]\n  remote = origin\n  merge = refs/heads/master' >>
     `$ rmdir config.git`
 9.  Logout and log back in
 10. ***Note: Sub-modules needs to be updated***
-    `$ git submodule update --init --recursive`
+    `$ git submodule update --remote --rebase`
 
 ### Git tracking using vim plugins
 1.  Set `core.worktree` like the following

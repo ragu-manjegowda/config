@@ -1,0 +1,128 @@
+/*
+ *
+ * Author       : Aditya Shakya
+ * Github       : @adi1090x
+ * Modified by  : Ragu Manjegowda
+ * Github       : @ragu-manjegowda
+ *
+ */
+
+configuration {
+    show-icons:                     true;
+    font:                           "Hack Nerd Font 12";
+    disable-history:                false;
+    sidebar-mode:                   false;
+}
+
+@import "colors-light.rasi"
+
+* {
+    background-color:               @bg;
+    text-color:                     @fg;
+}
+
+window {
+    transparency:                   "real";
+    border-radius:                  0px;
+    location:                       center;
+    width:                          450px;
+    x-offset:                       -15px;
+    y-offset:                       -45px;
+}
+
+prompt {
+    enabled:                        true;
+    padding:                        10px;
+    background-color:               @bg-l;
+    text-color:                     @ac;
+    border:                         2px 2px 3px 2px;
+    border-radius:                  0px;
+    border-color:                   @ac;
+}
+
+textbox-prompt-colon {
+    expand:                         false;
+    str:                            " Time ";
+    background-color:               @ac;
+    text-color:                     @bg;
+    padding:                        12px 10px 0px 10px;
+}
+
+inputbar {
+    children:                       [ textbox-prompt-colon, prompt ];
+    spacing:                        0px;
+    background-color:               @bg;
+    text-color:                     @fg;
+    expand:                         false;
+    border:                         0px;
+    border-radius:                  0px;
+    border-color:                   @ac;
+    margin:                         0px 0px 0px 0px;
+    padding:                        0px;
+    position:                       center;
+}
+
+listview {
+    columns:                        3;
+    lines:                          1;
+    spacing:                        12px;
+    cycle:                          true;
+    dynamic:                        true;
+    layout:                         vertical;
+}
+
+mainbox {
+    background-color:               @bg;
+    children:                       [ inputbar, listview ];
+    spacing:                        12px;
+    margin:                         12px;
+}
+
+element {
+    background-color:               @bg-l;
+    text-color:                     @fg;
+    orientation:                    vertical;
+    border-radius:                  0px;
+}
+
+element-text {
+    background-color:               inherit;
+    text-color:                     inherit;
+    font:                           "Hack Nerd Font 12";
+    expand:                         true;
+    horizontal-align:               0.5;
+    vertical-align:                 0.5;
+    margin:                         30px 10px 30px 10px;
+}
+
+element normal.urgent,
+element alternate.urgent {
+    background-color:               @off;
+    text-color:                     @bg;
+    border-radius:                  0px;
+}
+
+element normal.active,
+element alternate.active {
+    background-color:               @on;
+    text-color:                     @bg;
+}
+
+element selected {
+    background-color:               @ac;
+    text-color:                     @bg;
+    border:                         0px;
+    border-radius:                  0px;
+    border-color:                   @border;
+}
+
+element selected.urgent {
+    background-color:               @on;
+    text-color:                     @bg;
+}
+
+element selected.active {
+    background-color:               @off;
+    color:                          @bg;
+}
+

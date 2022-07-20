@@ -105,6 +105,16 @@ local global_keys = awful.util.table.join(
 		{modkey},
 		'e',
 		function()
+			local focused = awful.screen.focused()
+
+			if focused.control_center then
+				focused.control_center:hide_dashboard()
+				focused.control_center.opened = false
+			end
+			if focused.info_center then
+				focused.info_center:hide_dashboard()
+				focused.info_center.opened = false
+			end
 			awful.spawn(apps.default.rofi_runmenu, false)
 		end,
 		{description = 'rofi run menu', group = 'launcher'}
@@ -114,6 +124,16 @@ local global_keys = awful.util.table.join(
 		{modkey, 'Control'},
 		'e',
 		function()
+			local focused = awful.screen.focused()
+
+			if focused.control_center then
+				focused.control_center:hide_dashboard()
+				focused.control_center.opened = false
+			end
+			if focused.info_center then
+				focused.info_center:hide_dashboard()
+				focused.info_center.opened = false
+			end
 			awful.spawn(apps.default.rofi_emojimenu, false)
 		end,
 		{description = 'rofi emoji menu', group = 'launcher'}
@@ -280,6 +300,25 @@ local global_keys = awful.util.table.join(
 
 	awful.key(
 		{modkey},
+		't',
+		function()
+			local focused = awful.screen.focused()
+
+			if focused.control_center then
+				focused.control_center:hide_dashboard()
+				focused.control_center.opened = false
+			end
+			if focused.info_center then
+				focused.info_center:hide_dashboard()
+				focused.info_center.opened = false
+			end
+			awful.spawn(apps.utils.show_time .. ' ' .. apps.default.rofi_time, false)
+		end,
+		{description = 'Show time in rofi', group = 'Utility'}
+	),
+
+	awful.key(
+		{modkey, 'Control'},
 		't',
 		function()
 			awesome.emit_signal('widget::blur:toggle')
