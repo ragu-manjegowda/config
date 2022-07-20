@@ -183,6 +183,7 @@ config update-index --assume-unchanged \
     .config/awesome/widget/xdg-folders/icons/user-trash-empty.svg \
     .config/awesome/widget/xdg-folders/icons/user-trash-full.svg \
     .config/awesome/widget/xdg-folders/icons/yes.svg \
+    .config/chrome-flags.conf \
     .config/rofi/config.rasi \
     .config/xsettingsd/xsettingsd.conf
 
