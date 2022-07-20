@@ -46,7 +46,12 @@ return {
 		-- App menu
 		rofi_appmenu = 'rofi -dpi ' .. screen.primary.dpi ..
 							' -show drun -theme ' .. config_dir ..
-							'/configuration/rofi/appmenu/rofi.rasi'
+							'/configuration/rofi/appmenu/rofi.rasi',
+
+		-- Show time
+		rofi_time = 'rofi -dpi ' .. screen.primary.dpi ..
+							' -theme ' .. config_dir ..
+							'/configuration/rofi/time/rofi.rasi'
 
 		-- You can add more default applications here
 	},
@@ -93,6 +98,8 @@ return {
 		-- Area screenshot
 		area_screenshot = utils_dir .. 'snap area',
 		-- Update profile picture
-		update_profile  = utils_dir .. 'profile-image'
+		update_profile  = utils_dir .. 'profile-image',
+		-- Show time with rofi
+		show_time  = utils_dir .. 'time'
 	}
 }
