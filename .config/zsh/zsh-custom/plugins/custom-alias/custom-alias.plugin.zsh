@@ -529,8 +529,11 @@ function kill-process() {
     # or press [escape] to go back to the process list.
     # Press [escape] twice to exit completely.
 
-    local pid=$(ps -ef | sed 1d | eval "fzf ${FZF_DEFAULT_OPTS} \
-                -m --header='[kill:process]'" | awk '{print $2}')
+    local pid=$( (date; ps -ef) |
+        fzf --bind='ctrl-r:reload(date; ps -ef)' \
+        --header=$'Press CTRL-R to reload\n\n' --header-lines=2 \
+        --preview='echo {}' --preview-window=down,3,wrap \
+        --layout=reverse --height=80% | awk '{print $2}' )
 
     if [ "x$pid" != "x" ]
     then
@@ -539,6 +542,16 @@ function kill-process() {
     fi
 }
 
+
+###############################################################################
+############################### grep-word  ####################################
+###############################################################################
+
+function grep-word() {
+    eval "${ZDOTDIR}/rgfzf $@"
+}
+
+alias grep-word='nocorrect grep-word'
 
 ###############################################################################
 ######################### merge-images-diagonally #############################
