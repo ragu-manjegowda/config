@@ -76,6 +76,7 @@ macro attach s '<save-entry><kill-line>~/Downloads/<enter>a' "Save file to ~/Dow
 bind index,pager $ sync-mailbox # more like a refresh than a sync
 macro index \cr "<tag-pattern>.<enter><tag-prefix><clear-flag>N<untag-pattern>.<enter>"
 macro pager \cr "<tag-pattern>.<enter><tag-prefix><clear-flag>N<untag-pattern>.<enter>"
+macro index,pager,generic <F5> "<redraw-screen>"
 
 macro index,pager Mi ";<save-message>=INBOX<enter>" "move mail to inbox"
 
