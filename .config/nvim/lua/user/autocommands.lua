@@ -10,7 +10,7 @@ augroup END
 " Reference - https://stackoverflow.com/a/6496995
 function! StripTrailingWhitespace()
     " Don't strip on these filetypes
-    if &ft =~ 'mail'
+    if &ft =~ 'mail' || &ft =~ 'markdown'
         return
     endif
     %s/\s\+$//e
