@@ -118,5 +118,8 @@ C_OPTS_BIND_OPTS4="',ctrl-h:reload($FZF_HOME_D_SEARCH_COMMAND),ctrl-r:reload($FZ
 FZF_ALT_C_OPTS="$C_OPTS_PREVIEW $C_OPTS_BIND_OPTS1$C_OPTS_BIND_OPTS2$C_OPTS_BIND_OPTS3"
 export FZF_ALT_C_OPTS="${FZF_ALT_C_OPTS}$C_OPTS_BIND_OPTS4"
 
-export FZF_TMUX_OPTS="-d 70%"
+R_OPTS_PREVIEW="--preview 'echo {}' --preview-window down:3:hidden:wrap"
+R_OPTS_BIND="--bind 'ctrl-/:toggle-preview,ctrl-f:jump'"
+export FZF_CTRL_R_OPTS="${R_OPTS_PREVIEW} ${R_OPTS_BIND}"
 
+export FZF_TMUX_OPTS="-d 70%"
