@@ -2,35 +2,44 @@
 	path = .config/zsh/oh-my-zsh
 	url = https://github.com/ohmyzsh/ohmyzsh.git
 	update = rebase
+	branch = master
 [submodule ".config/zsh/zsh-custom/plugins/zsh-autosuggestions"]
 	path = .config/zsh/zsh-custom/plugins/zsh-autosuggestions
 	url = https://github.com/zsh-users/zsh-autosuggestions.git
 	update = rebase
+	branch = master
 [submodule ".config/zsh/zsh-custom/plugins/zsh-autocomplete"]
 	path = .config/zsh/zsh-custom/plugins/zsh-autocomplete
 	url = https://github.com/marlonrichert/zsh-autocomplete.git
 	update = rebase
+	branch = main
 [submodule ".config/zsh/zsh-custom/plugins/zsh-hist"]
 	path = .config/zsh/zsh-custom/plugins/zsh-hist
 	url = https://github.com/marlonrichert/zsh-hist.git
 	update = rebase
+	branch = main
 [submodule ".config/zsh/zsh-custom/themes/powerlevel10k"]
 	path = .config/zsh/zsh-custom/themes/powerlevel10k
 	url = https://github.com/romkatv/powerlevel10k.git
 	update = rebase
+	branch = master
 [submodule ".config/tmux/plugins/tmux-continuum"]
 	path = .config/tmux/plugins/tmux-continuum
 	url = https://github.com/tmux-plugins/tmux-continuum.git
 	update = rebase
+	branch = master
 [submodule ".config/tmux/plugins/tmux-resurrect"]
 	path = .config/tmux/plugins/tmux-resurrect
 	url = https://github.com/tmux-plugins/tmux-resurrect.git
 	update = rebase
+	branch = master
 [submodule ".config/rEFInd/refind-theme-regular"]
 	path = .config/rEFInd/refind-theme-regular
 	url = https://github.com/munlik/refind-theme-regular.git
 	update = rebase
+	branch = master
 [submodule ".config/awesome/revelation"]
 	path = .config/awesome/revelation
 	url = https://github.com/guotsuan/awesome-revelation
 	update = rebase
+	branch = master
