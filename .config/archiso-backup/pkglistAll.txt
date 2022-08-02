@@ -45,10 +45,13 @@ neomutt
 neovim
 network-manager-applet
 networkmanager
+nfs-utils
 nomachine
 noto-fonts
 noto-fonts-emoji
+ntp
 numix-cursor-theme
+openrazer-meta
 pacman-cleanup-hook
 paru
 patch

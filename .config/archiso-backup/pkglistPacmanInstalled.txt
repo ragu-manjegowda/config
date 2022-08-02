@@ -36,8 +36,10 @@ neomutt
 neovim
 network-manager-applet
 networkmanager
+nfs-utils
 noto-fonts
 noto-fonts-emoji
+ntp
 patch
 pavucontrol
 pkgconf
