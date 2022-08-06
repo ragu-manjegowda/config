@@ -10,7 +10,7 @@ augroup END
 " Reference - https://stackoverflow.com/a/6496995
 function! StripTrailingWhitespace()
     " Don't strip on these filetypes
-    if &ft =~ 'mail' || &ft =~ 'markdown'
+    if &ft =~ 'mail' || &ft =~ 'markdown' || &ft =~ 'rmd' || &ft =~ 'text'
         return
     endif
     %s/\s\+$//e
@@ -125,7 +125,7 @@ vim.api.nvim_create_augroup("bufcheck", {clear = true})
     vim.api.nvim_create_autocmd(
         { "BufRead", "BufNewFile" },
         {
-            pattern = { "*.txt", "*.md", "*.tex", },
+            pattern = { "*.md", "*.Rmd", "*.txt", "*.tex", },
             command = "setlocal spell spelllang=en_us"
         }
     )
