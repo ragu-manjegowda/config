@@ -330,14 +330,14 @@ local locker = function(s)
 	-- Check webcam
 	local check_webcam = function()
 		awful.spawn.easy_async_with_shell(
-			'ls -l /dev/video* | grep /dev/video0',
+			'ls -l /dev/video* | grep ' .. config.module.lockscreen.camera_device,
 			function(stdout)
 				if not locker_config.capture_intruder then
 					capture_now = false
 					return
 				end
 
-				if not stdout:match('/dev/video0') then
+				if not stdout:match(config.module.lockscreen.camera_device) then
 					capture_now = false
 				else
 					capture_now = true
@@ -359,7 +359,7 @@ local locker = function(s)
 			mkdir -p "$save_dir";
 		fi
 
-		ffmpeg -f video4linux2 -s 800x600 -i /dev/video0 -ss 0:0:2 -frames 1 "${file_loc}"
+		ffmpeg -f video4linux2 -s 800x600 -i ]] .. config.module.lockscreen.camera_device .. [[ -ss 0:0:2 -frames 1 "${file_loc}"
 
 		canberra-gtk-play -i camera-shutter &
 		echo "${file_loc}"

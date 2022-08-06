@@ -25,8 +25,6 @@ function M.config()
     local tree_cb = require "nvim-tree.config".nvim_tree_callback
 
     local list = {
-        { key = {"<leader>l"}, cb = "<CMD>exec ':NvimTreeResize ' . v:lua require('nvim-tree').inc_width_ind()<CR>"},
-        { key = {"<leader>h"}, cb = "<CMD>exec ':NvimTreeResize ' . v:lua require('nvim-tree').dec_width_ind()<CR>"},
         { key = { "<leader>v"},     cb = tree_cb("vsplit"), mode = "n" },
         { key = { "<leader><Tab>"}, cb = tree_cb("tabnew"), mode = "n" }
     }
