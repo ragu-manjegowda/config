@@ -161,12 +161,16 @@ zstyle ':autocomplete:history-search:*' list-lines 5  # int
 
 # no:  Tab inserts the top completion.
 # yes: Tab first inserts a substring common to all listed completions, if any.
-zstyle ':autocomplete:*' insert-unambiguous no
+zstyle ':autocomplete:*' insert-unambiguous yes
 
 # complete-word: (Shift-)Tab inserts the top (bottom) completion.
 # menu-complete: Press again to cycle to next (previous) completion.
 # menu-select:   Same as `menu-complete`, but updates selection in menu.
 zstyle ':autocomplete:*' widget-style complete-word
+
+# no:  Tab uses Zsh's completion system only.
+# yes: Tab first tries Fzf's completion, then falls back to Zsh's.
+zstyle ':autocomplete:*' fzf-completion yes
 
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=6'
 
