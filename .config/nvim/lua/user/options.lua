@@ -9,6 +9,7 @@ local options = {
     cursorline = true,                       -- highlight the current line
     expandtab = true,                        -- convert tabs to spaces
     fileencoding = "utf-8",                  -- the encoding written to a file
+    guicursor = "",                          -- keep block cursor in insert mode
     hlsearch = false,                        -- don't highlight all matches on previous search pattern
     ignorecase = true,                       -- ignore case in search patterns
     laststatus = 3,

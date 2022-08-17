@@ -162,6 +162,15 @@ local core_plugins = {
         },
         setup = [[require("user.vim-session").before()]],
     },
+
+    -- Vim in browser
+    {
+        "glacambre/firenvim",
+        run = function()
+            vim.fn["firenvim#install"](0)
+        end,
+        config = [[require("user.firenvim").config()]],
+    }
 }
 
 return core_plugins
