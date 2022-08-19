@@ -17,7 +17,7 @@ function M.config()
             -- Default keymap options
             noremap = true,
 
-            ['n <leader>ph'] = '<cmd>lua require"gitsigns".preview_hunk()<CR>',
+            ['n <leader>hp'] = '<cmd>lua require"gitsigns".preview_hunk()<CR>',
             ['n [h'] = { expr = true, "&diff ? '[c' : '<cmd>lua require\"gitsigns.actions\".prev_hunk()<CR>'"},
             ['n ]h'] = { expr = true, "&diff ? ']c' : '<cmd>lua require\"gitsigns.actions\".next_hunk()<CR>'"},
 
