@@ -23,7 +23,7 @@ local function on_attach(client, bufnr)
 
     -- See `:help vim.diagnostic.*` for documentation on any of the below functions
     local opts = { noremap=true, silent=true }
-    buf_set_keymap('n', '<leader>pe', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
+    buf_set_keymap('n', '<leader>ep', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
     buf_set_keymap('n', '[e', '<cmd> lua vim.diagnostic.goto_prev()<CR>', opts)
     buf_set_keymap('n', ']e', '<cmd> lua vim.diagnostic.goto_next()<CR>', opts)
 
@@ -125,6 +125,17 @@ function M.config()
     }
 
     nvim_lsp.rust_analyzer.setup {
+        on_attach = on_attach,
+        capabilities = capabilities
+    }
+
+    nvim_lsp.gopls.setup {
+        on_attach = on_attach,
+        root_dir = nvim_lsp.util.root_pattern("compile_commands.json", ".gitignore"),
+        capabilities = capabilities
+    }
+
+    nvim_lsp.pyright.setup{
         on_attach = on_attach,
         capabilities = capabilities
     }
