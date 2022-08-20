@@ -33,6 +33,7 @@ naughty.config.icon_dirs = {
     '/usr/share/icons/hicolor/',
     '/usr/share/pixmaps/'
 }
+
 naughty.config.icon_formats = { 'svg', 'png', 'jpg', 'gif' }
 
 -- Presets / rules
@@ -86,6 +87,13 @@ ruled.notification.connect_signal(
                 implicit_timeout    = 0
             }
         }
+
+        -- ruled.notification.append_rule {
+        --     rule       = { app_name = 'Email' },
+        --     properties = {
+        --         ignore    = true
+        --     }
+        -- }
 
     end
 )

@@ -93,6 +93,7 @@ config update-index --assume-unchanged \
     .config/awesome/widget/blur-toggle/icons/effects-off.svg \
     .config/awesome/widget/control-center-switch/icons/control-center.svg \
     .config/awesome/widget/control-center-toggle/icons/control-center.svg \
+    .config/awesome/widget/dont-disturb/disturb_status \
     .config/awesome/widget/dont-disturb/icons/dont-disturb.svg \
     .config/awesome/widget/dont-disturb/icons/notify.svg \
     .config/awesome/widget/email/icons/email-1.svg \
