@@ -90,7 +90,7 @@ local update_user_name = function()
 		fullname="$(getent passwd `whoami` | cut -d ':' -f 5 | cut -d ',' -f 1 | tr -d "\n")"
 		if [ -z "$fullname" ];
 		then
-				printf "$(whoami)@$(hostname)"
+				printf "$(whoami)@$(uname -n)"
 		else
 			printf "$fullname"
 		fi
@@ -170,7 +170,7 @@ end
 
 local suspend_command = function()
 	awesome.emit_signal('module::exit_screen:hide')
-	awful.spawn.with_shell(apps.default.lock .. ' & systemctl suspend')
+	awful.spawn.with_shell(apps.default.lock .. ' & sleep 1 & systemctl suspend')
 end
 
 local logout_command = function()
