@@ -43,6 +43,8 @@ function M.config()
         view = {
             width = 30,
             side = 'left',
+            number = true,
+            relativenumber = true,
             mappings = {
               custom_only = false,
               list = list
