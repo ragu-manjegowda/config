@@ -12,6 +12,7 @@ local config = require('configuration.config')
 
 require('module.dynamic-wallpaper')
 require('module.auto-start')
+require('module.exit-screen')
 
 -- Add paths to package.cpath
 package.cpath = package.cpath .. ';' .. config_dir .. '/library/?.so;' .. '/usr/lib/lua-pam/?.so;'
@@ -437,7 +438,9 @@ local locker = function(s)
                 awesome.emit_signal('module::spawn_apps')
                 awesome.emit_signal('module::change_wallpaper')
                 awesome.emit_signal('module::change_background_wallpaper')
+                awesome.emit_signal('module::unlocked')
                 naughty.suspended = false
+
 
 				-- Select old tag
 				-- And restore minimized focused client if there's any
@@ -689,6 +692,9 @@ local locker = function(s)
 					s.lockscreen_extended.visible = true
 				end
 			end
+
+			-- send signal to exit screen (needed during suspend)
+			awesome.emit_signal('module::locked')
 
 			-- Start keygrabbing, but with a little delay to
 			-- give some extra time for the free_keygrab function

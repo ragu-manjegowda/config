@@ -168,9 +168,39 @@ local hibernate_command = function()
 	awful.spawn.with_shell(apps.default.lock .. ' & systemctl hibernate')
 end
 
+-------------------------------------------------------------------------------
+-- Wait till lock screen is displayed, otherwise clients are visible for
+-- brief time when we come back from sleep.
+-------------------------------------------------------------------------------
+
+local sleep_requested = 0;
+
+awesome.connect_signal(
+	'module::locked',
+	function(s)
+        if sleep_requested == 1 then
+            sleep_requested = 0;
+            awful.spawn.with_shell('systemctl suspend')
+        end
+	end
+)
+
+awesome.connect_signal(
+	'module::unlocked',
+	function(s)
+        sleep_requested = 0;
+	end
+)
+
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+
 local suspend_command = function()
 	awesome.emit_signal('module::exit_screen:hide')
-	awful.spawn.with_shell(apps.default.lock .. ' & sleep 1 & systemctl suspend')
+	awful.spawn.with_shell(apps.default.lock)
+
+    -- set the variable which will be used to suspend after screen is locked
+    sleep_requested = 1;
 end
 
 local logout_command = function()
