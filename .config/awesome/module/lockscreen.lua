@@ -693,9 +693,6 @@ local locker = function(s)
 				end
 			end
 
-			-- send signal to exit screen (needed during suspend)
-			awesome.emit_signal('module::locked')
-
 			-- Start keygrabbing, but with a little delay to
 			-- give some extra time for the free_keygrab function
 			gears.timer.start_new(
@@ -716,6 +713,9 @@ local locker = function(s)
 
 			-- naughty.destroy_all_notifications(nil, 1)
             naughty.suspended = true
+
+			-- send signal to exit screen (needed during suspend)
+			awesome.emit_signal('module::locked')
 		end
 	end
 
