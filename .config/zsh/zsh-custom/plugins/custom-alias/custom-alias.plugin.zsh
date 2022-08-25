@@ -442,17 +442,18 @@ is_in_git_repo() {
 
 FZF_PREFIX="fzf-git"
 
-PREFIX_BIND_OPTS1="ctrl-j:preview-down,ctrl-k:preview-up"
-PREFIX_BIND_OPTS2=",ctrl-w:toggle-preview-wrap,ctrl-f:jump"
-PREFIX_BIND_OPTS3=",ctrl-u:preview-top,ctrl-d:preview-bottom"
-PREFIX_BIND_OPTS="$PREFIX_BIND_OPTS1$PREFIX_BIND_OPTS2$PREFIX_BIND_OPTS3"
+PREFIX_BIND_OPTS1="alt-j:preview-page-down,alt-k:preview-page-up"
+PREFIX_BIND_OPTS2=",ctrl-j:down,ctrl-k:up"
+PREFIX_BIND_OPTS3=",ctrl-w:toggle-preview-wrap,ctrl-f:jump"
+PREFIX_BIND_OPTS4=",ctrl-u:preview-top,ctrl-d:preview-bottom"
+PREFIX_BIND_OPTS="$PREFIX_BIND_OPTS1$PREFIX_BIND_OPTS2$PREFIX_BIND_OPTS3$PREFIX_BIND_OPTS4"
 
 function "${FZF_PREFIX}gg" () {
   config -c color.status=always status --short |
   fzf -m --ansi --nth 2..,.. \
     --preview '(git --git-dir=$HOME/.config.git/ --work-tree=$HOME diff \
     --color=always -- {-1} | sed 1,4d; cat {-1}) | head -500' \
-    --bind "${PREFIX_BIND_OPTS}" |
+    --bind "${PREFIX_BIND_OPTS}" --layout=reverse |
   cut -c4- | sed 's/.* -> //'
 }
 
@@ -462,7 +463,7 @@ function "${FZF_PREFIX}gh" () {
   fzf -m --ansi --nth 2..,.. \
     --preview '(git diff --color=always -- {-1} | sed 1,4d; cat {-1}) | \
     head -500' \
-    --bind "${PREFIX_BIND_OPTS}" |
+    --bind "${PREFIX_BIND_OPTS}" --layout=reverse |
   cut -c4- | sed 's/.* -> //'
 }
 

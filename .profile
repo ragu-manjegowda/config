@@ -80,7 +80,8 @@ alias ccd='config diff'
 alias ccm='config commit -s'
 alias cco='config checkout'
 alias cfa='config fetch --all --prune'
-alias clog='config log'
+alias clog='config log --graph --oneline'
+alias clogp='config log --pretty=full -p'
 alias cpulla='config pull --rebase --autostash'
 alias cpush='config push'
 alias cst='config status'
@@ -100,24 +101,26 @@ export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS1$FZF_DEFAULT_OPTS2"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 T_OPTS_PREVIEW="--preview 'bat --color=always {}'"
-T_OPTS_BIND_OPTS1="--bind 'ctrl-j:preview-down,ctrl-k:preview-up'"
-T_OPTS_BIND_OPTS2="',ctrl-w:toggle-preview-wrap,ctrl-f:jump'"
-T_OPTS_BIND_OPTS3="',ctrl-u:preview-top,ctrl-d:preview-bottom'"
-T_OPTS_BIND_OPTS4="',ctrl-h:reload($FZF_HOME_SEARCH_COMMAND),ctrl-r:reload($FZF_ROOT_SEARCH_COMMAND)'"
+T_OPTS_BIND_OPTS1="--bind 'alt-j:preview-page-down,alt-k:preview-page-up'"
+T_OPTS_BIND_OPTS2="',ctrl-j:down,ctrl-k:up'"
+T_OPTS_BIND_OPTS3="',ctrl-w:toggle-preview-wrap,ctrl-f:jump'"
+T_OPTS_BIND_OPTS4="',ctrl-u:preview-top,ctrl-d:preview-bottom'"
+T_OPTS_BIND_OPTS5="',ctrl-h:reload($FZF_HOME_SEARCH_COMMAND),ctrl-r:reload($FZF_ROOT_SEARCH_COMMAND)'"
 FZF_CTRL_T_OPTS="$T_OPTS_PREVIEW $T_OPTS_BIND_OPTS1$T_OPTS_BIND_OPTS2$T_OPTS_BIND_OPTS3"
-export FZF_CTRL_T_OPTS="${FZF_CTRL_T_OPTS}$T_OPTS_BIND_OPTS4"
+export FZF_CTRL_T_OPTS="${FZF_CTRL_T_OPTS}$T_OPTS_BIND_OPTS4$T_OPTS_BIND_OPTS5"
 
 export FZF_ALT_C_COMMAND='fd --type d . --color=never --hidden'
 FZF_ROOT_D_SEARCH_COMMAND='fd --type d . / --color=never'
 FZF_HOME_D_SEARCH_COMMAND='fd --type d . $HOME --color=never --hidden'
 
 C_OPTS_PREVIEW="--preview 'tree -C {}'"
-C_OPTS_BIND_OPTS1="--bind 'ctrl-j:preview-down,ctrl-k:preview-up'"
-C_OPTS_BIND_OPTS2="',ctrl-w:toggle-preview-wrap,ctrl-f:jump'"
-C_OPTS_BIND_OPTS3="',ctrl-u:preview-top,ctrl-d:preview-bottom'"
-C_OPTS_BIND_OPTS4="',ctrl-h:reload($FZF_HOME_D_SEARCH_COMMAND),ctrl-r:reload($FZF_ROOT_D_SEARCH_COMMAND)'"
+C_OPTS_BIND_OPTS1="--bind 'alt-:preview-page-down,alt-k:preview-page-up'"
+T_OPTS_BIND_OPTS2="',ctrl-j:down,ctrl-k:up'"
+C_OPTS_BIND_OPTS3="',ctrl-w:toggle-preview-wrap,ctrl-f:jump'"
+C_OPTS_BIND_OPTS4="',ctrl-u:preview-top,ctrl-d:preview-bottom'"
+C_OPTS_BIND_OPTS5="',ctrl-h:reload($FZF_HOME_D_SEARCH_COMMAND),ctrl-r:reload($FZF_ROOT_D_SEARCH_COMMAND)'"
 FZF_ALT_C_OPTS="$C_OPTS_PREVIEW $C_OPTS_BIND_OPTS1$C_OPTS_BIND_OPTS2$C_OPTS_BIND_OPTS3"
-export FZF_ALT_C_OPTS="${FZF_ALT_C_OPTS}$C_OPTS_BIND_OPTS4"
+export FZF_ALT_C_OPTS="${FZF_ALT_C_OPTS}$C_OPTS_BIND_OPTS4$C_OPTS_BIND_OPTS5"
 
 R_OPTS_PREVIEW="--preview 'echo {}' --preview-window down:3:hidden:wrap"
 R_OPTS_BIND="--bind 'ctrl-/:toggle-preview,ctrl-f:jump'"
