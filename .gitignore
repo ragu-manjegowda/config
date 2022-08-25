@@ -193,6 +193,12 @@
 .ssh/authorized_keys
 .ssh/id_ed25519
 .ssh/id_ed25519.pub
+.ssh/id_ed25519_gerrit
+.ssh/id_ed25519_gerrit.pub
+.ssh/id_ed25519_github
+.ssh/id_ed25519_github.pub
+.ssh/id_ed25519_nvidia
+.ssh/id_ed25519_nvidia.pub
 .ssh/id_rsa
 .ssh/id_rsa.pub
 .ssh/known_hosts
