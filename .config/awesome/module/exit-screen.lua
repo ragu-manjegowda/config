@@ -178,7 +178,7 @@ local sleep_requested = 0;
 awesome.connect_signal(
 	'module::locked',
 	function(s)
-        if sleep_requested == 1 then
+        if tostring(sleep_requested) == tostring(1) then
             sleep_requested = 0;
             awful.spawn.with_shell('systemctl suspend')
         end
