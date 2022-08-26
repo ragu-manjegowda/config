@@ -61,7 +61,7 @@ local widget_button = wibox.widget {
 local update_widget = function()
 	if dont_disturb_state then
 		action_status:set_text('On')
-		widget_button.bg = beautiful.system_cyan_dark
+		widget_button.bg = beautiful.accent
 		button_widget.icon:set_image(widget_icon_dir .. 'dont-disturb.svg')
 	else
 		action_status:set_text('Off')

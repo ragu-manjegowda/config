@@ -439,8 +439,14 @@ local locker = function(s)
                 awesome.emit_signal('module::change_wallpaper')
                 awesome.emit_signal('module::change_background_wallpaper')
                 awesome.emit_signal('module::unlocked')
-                naughty.suspended = false
 
+                -- Do not resume notifications if dont_disturb_state mode is on
+                -- Or if the info_center is visible
+                local focused = awful.screen.focused()
+                if not (_G.dont_disturb_state or (focused.info_center and focused.info_center.visible)) then
+                    -- naughty.destroy_all_notifications(nil, 1)
+                    naughty.suspended = false
+                end
 
 				-- Select old tag
 				-- And restore minimized focused client if there's any
@@ -711,8 +717,13 @@ local locker = function(s)
             awesome.emit_signal('module::change_wallpaper')
             awesome.emit_signal('module::change_background_wallpaper')
 
-			-- naughty.destroy_all_notifications(nil, 1)
-            naughty.suspended = true
+            -- Do not suspend notifications if dont_disturb_state mode is on
+            -- Or if the info_center is visible
+            local focused = awful.screen.focused()
+            if not (_G.dont_disturb_state or (focused.info_center and focused.info_center.visible)) then
+                -- naughty.destroy_all_notifications(nil, 1)
+                naughty.suspended = true
+            end
 
 			-- send signal to exit screen (needed during suspend)
 			awesome.emit_signal('module::locked')
@@ -808,8 +819,13 @@ naughty.connect_signal(
             update_date_text()
             date_today:emit_signal('widget::redraw_needed')
 
-			-- naughty.destroy_all_notifications(nil, 1)
-            naughty.suspended = true
+            -- Do not suspend notifications if dont_disturb_state mode is on
+            -- Or if the info_center is visible
+            local focused = awful.screen.focused()
+            if not (_G.dont_disturb_state or (focused.info_center and focused.info_center.visible)) then
+                -- naughty.destroy_all_notifications(nil, 1)
+                naughty.suspended = true
+            end
 		end
 	end
 )
