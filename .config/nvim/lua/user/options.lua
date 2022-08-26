@@ -1,7 +1,6 @@
 local options = {
     autoindent = true,
     backup = false,                          -- creates a backup file
-    clipboard = "unnamedplus",               -- allows neovim to access the system clipboard
     cmdheight = 2,                           -- more space in the neovim command line for displaying messages
     colorcolumn = "80",
     completeopt = { "menuone", "noselect" }, -- mostly just for cmp
@@ -50,3 +49,14 @@ end
 
 vim.cmd "set whichwrap+=<,>,[,],h,l"
 vim.cmd [[set iskeyword+=-]]
+
+------------------------------------------------------------------------------
+-- Use system clipboard for yanks
+------------------------------------------------------------------------------
+if vim.fn.has('clipboard') == 1 then
+  if vim.fn.has('unnamedplus') == 1 then
+    vim.o.clipboard = 'unnamedplus'
+  else
+    vim.o.clipboard = 'unnamed'
+  end
+end
