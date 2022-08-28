@@ -92,7 +92,7 @@ local toggle_blur = function(togglemode)
 	local toggle_blur_script = [[bash -c "
 	# Check picom if it's not running then start it
 	if [ -z $(pgrep picom) ]; then
-		picom -b --experimental-backends --dbus --config ]] .. config_dir .. [[configuration/picom.conf
+		picom -b --dbus --config ]] .. config_dir .. [[configuration/picom.conf
 	fi
 
 	case ]] .. togglemode .. [[ in
