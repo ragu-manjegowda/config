@@ -7,6 +7,11 @@ xrandr --dpi 144
 xrandr --output eDP-1 --mode 2560x1440 --pos 0x0
 
 # Following fixes low res monitor cursor and resolution issue
+
+# Treated as different window space
+# xrandr --output HDMI-1 --mode 1920x1080 --right-of eDP-1 --scale 1.5x1.5
+
+# Treated as same window space
 # xrandr --output DP-2 --mode 1920x1080 --pos 2048x0 --scale 2x2
 
 # Following turns off TV output, change the output ID as needed
