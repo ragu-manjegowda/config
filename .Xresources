@@ -3,3 +3,4 @@ Xft.hinting:   true
 Xft.rgba:      rgb
 Xft.hintstyle: hintfull
 Xft.dpi:       144
+Xcursor.size:  48
