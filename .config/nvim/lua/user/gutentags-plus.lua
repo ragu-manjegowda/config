@@ -10,8 +10,9 @@ function M.config()
         let g:gutentags_generate_on_new = 1
         let g:gutentags_generate_on_missing = 1
         let g:gutentags_trace = 0
-        " change focus to quickfix window after search
-        let g:gutentags_plus_switch = 1
+        let g:gutentags_define_advanced_commands = 1
+        " do not change focus to quickfix window after search
+        let g:gutentags_plus_switch = 0
         let g:gutentags_generate_on_write = 1
         let g:gutentags_generate_on_empty_buffer = 0
         let g:gutentags_ctags_auto_set_tags = 0
