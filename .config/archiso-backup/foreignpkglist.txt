@@ -1,6 +1,7 @@
 awesome-git
 check-broken-packages-pacman-hook-git
 darkman
+find-cursor
 google-chrome
 gtk-theme-numix-solarized
 light-git

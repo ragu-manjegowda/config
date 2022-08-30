@@ -78,6 +78,18 @@ local global_keys = awful.util.table.join(
 	),
 
 	awful.key(
+		{modkey, 'Control'},
+		'c',
+		function()
+            awful.spawn.with_shell(
+                'find-cursor --size 1000 --distance 20 --wait 400 ' ..
+                '--line-width 6 --color "' .. beautiful.accent .. '"'
+            )
+		end,
+		{description = 'find cursor location', group = 'launcher'}
+	),
+
+	awful.key(
 		{modkey},
 		'd',
 		function()
