@@ -434,10 +434,6 @@ local locker = function(s)
 				lock_again = true
 				type_again = true
 
-                -- Needed when we come back from sleep
-                awesome.emit_signal('module::spawn_apps')
-                awesome.emit_signal('module::change_wallpaper')
-                awesome.emit_signal('module::change_background_wallpaper')
                 awesome.emit_signal('module::unlocked')
 
                 -- Do not resume notifications if dont_disturb_state mode is on
@@ -672,6 +668,20 @@ local locker = function(s)
 		nil
 	}
 
+    -- Exit screen sends this signal when sleep is requested
+    awesome.connect_signal(
+    	'module::sleep_resumed',
+    	function()
+            -- Force update date widget
+            update_date_text()
+            date_today:emit_signal('widget::redraw_needed')
+
+            awesome.emit_signal('module::spawn_apps')
+            awesome.emit_signal('module::change_wallpaper')
+            awesome.emit_signal('module::change_background_wallpaper')
+    	end
+    )
+
 	local show_lockscreen = function()
 		-- Why is there a lock_again variable?
 		-- It prevents the user to spam locking while in a process of authentication
@@ -679,10 +689,6 @@ local locker = function(s)
 		if lock_again == true or lock_again == nil then
 			-- Force update clock widget
 			time:emit_signal('widget::redraw_needed')
-
-            -- Force update date widget
-            update_date_text()
-            date_today:emit_signal('widget::redraw_needed')
 
 			-- Check capslock status
 			check_caps()
@@ -711,11 +717,6 @@ local locker = function(s)
 
 			-- Dont lock again
 			lock_again = false
-
-            -- Needed when we come back from sleep
-            awesome.emit_signal('module::spawn_apps')
-            awesome.emit_signal('module::change_wallpaper')
-            awesome.emit_signal('module::change_background_wallpaper')
 
             -- Do not suspend notifications if dont_disturb_state mode is on
             -- Or if the info_center is visible
@@ -810,15 +811,6 @@ naughty.connect_signal(
 	'added',
 	function(_)
 		if check_lockscreen_visibility() then
-            -- Needed when we come back from sleep
-            awesome.emit_signal('module::spawn_apps')
-            awesome.emit_signal('module::change_wallpaper')
-            awesome.emit_signal('module::change_background_wallpaper')
-
-            -- Force update date widget
-            update_date_text()
-            date_today:emit_signal('widget::redraw_needed')
-
             -- Do not suspend notifications if dont_disturb_state mode is on
             -- Or if the info_center is visible
             local focused = awful.screen.focused()

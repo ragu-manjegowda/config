@@ -335,12 +335,12 @@ function fetch_email_data()
 	end
 end
 
-email_report:connect_signal(
-	'mouse::press',
-	function()
-		awesome.emit_signal('module::spawn_apps')
-	end
-)
+-- email_report:connect_signal(
+-- 	'mouse::press',
+-- 	function()
+-- 		awesome.emit_signal('module::spawn_apps')
+-- 	end
+-- )
 
 -- Emitted from Imapnotify
 awesome.connect_signal(

@@ -88,7 +88,10 @@ return {
         -- `SynPS/2 Synaptics TouchPad` in this case
         -- 'xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Tapping Enabled" 1',
         -- Start imapnotify
-        'systemctl --user reload-or-restart goimapnotify.service'
+        'systemctl --user reload-or-restart goimapnotify.service',
+        '~/.config/imapnotify/notify.sh',
+        -- Sleep hook to update wallpaper when coming back from sleep
+        config_dir .. '/utilities/suspend-hook.py &'
 	},
 
 	-- List of binaries/shell scripts that will execute for a certain task

@@ -130,6 +130,7 @@
 .config/xfce4
 .config/xpad
 .config/yelp
+.config/zathura/zathurarc
 .config/zim/*
 .config/zoomus.conf
 .config/zsh/.zcompdump*
