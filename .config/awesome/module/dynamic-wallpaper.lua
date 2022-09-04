@@ -363,7 +363,6 @@ local wall_updater = gears.timer {
 		-- Emit signal to update wallpaper
     	awesome.emit_signal('module::change_wallpaper')
     	awesome.emit_signal('module::change_background_wallpaper')
-        awesome.emit_signal('module::spawn_apps')
   	end
 }
 
