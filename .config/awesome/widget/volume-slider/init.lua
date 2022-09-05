@@ -1,6 +1,5 @@
 local wibox = require('wibox')
 local gears = require('gears')
-local naughty = require('naughty')
 local awful = require('awful')
 local beautiful = require('beautiful')
 local spawn = awful.spawn
