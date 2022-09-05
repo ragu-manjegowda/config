@@ -1,0 +1,74 @@
+# zathurarc-light
+# Reference -
+# https://github.com/lennonwoo/zathura-solarized/blob/master/zathura-solarized-light
+set notification-error-bg       "#eee8d5"
+set notification-error-fg       "#dc322f"
+set notification-warning-bg     "#eee8d5"
+set notification-warning-fg     "#dc322f"
+set notification-bg             "#eee8d5"
+set notification-fg             "#268bd2"
+
+set completion-bg               "#fdf6e3"
+set completion-fg               "#073642"
+set completion-group-bg         "#eee8d5"
+set completion-group-fg         "#586e75"
+set completion-highlight-bg     "#93a1a1"
+set completion-highlight-fg     "#073642"
+
+# Define the color in index mode
+set index-bg                   "#fdf6e3"
+set index-fg                   "#073642"
+set index-active-bg             "#eee8d5"
+set index-active-fg             "#586e75"
+
+set inputbar-bg                 "#93a1a1"
+set inputbar-fg                 "#073642"
+
+set statusbar-bg                "#fdf6e3"
+set statusbar-fg                "#073642"
+
+set highlight-color             "#839496"
+set highlight-active-color      "#cb4616"
+
+set default-bg                  "#fdf6e3"
+set default-fg                  "#073642"
+set render-loading              true
+# set render-loading-fg           "#fdf6e3"
+# set render-loading-bg           "#fdf6e3"
+
+# Recolor book content's color
+# verbose
+# verbose
+set recolor-lightcolor          "#fdf6e3"
+set recolor-darkcolor           "#073642"
+set recolor                     "true"
+# set recolor-keephue             true      # keep original color
+
+# GUI & Window
+set adjust-open                 "width"
+set page-padding                10
+set recolor                     "true"
+set recolor-reverse-video       "true"
+set scroll-step                 60
+set show-directories            "false"
+set show-hidden                 "true"
+set statusbar-basename          "true"
+set statusbar-home-tilde        "true"
+set statusbar-h-padding         0
+set statusbar-v-padding         0
+set window-title-basename       "true"
+set window-title-home-tilde     "true"
+set window-title-page           "true"
+set zoom-center                 "true"
+
+# copy selection to system clipboard
+set selection-clipboard         clipboard
+
+# enable incremental search
+set incremental-search          "true"
+set abort-clear-search          "true"
+
+# map R to reload
+map R reload
+
+# vim:fileencoding=utf-8:ft=conf
