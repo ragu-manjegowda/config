@@ -87,7 +87,7 @@ alias cpush='config push'
 alias cst='config status'
 alias cstv='cvim +Git +only'
 # alias csu='config submodule update --remote --rebase'
-alias csu='config submodule foreach git pull --rebase'
+alias csu='config submodule foreach git pull --recurse-submodules --rebase'
 
 # fzf
 export FZF_DEFAULT_COMMAND='fd --type f --color=never --hidden'
