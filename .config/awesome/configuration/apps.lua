@@ -38,20 +38,20 @@ return {
 		-- Run menu
 		rofi_runmenu = 'rofi -dpi ' .. screen.primary.dpi ..
 							' -show run -theme '.. config_dir ..
-							'/configuration/rofi/runmenu/rofi.rasi',
+							'configuration/rofi/runmenu/rofi.rasi',
 		-- Emoji menu
 		rofi_emojimenu = 'rofi -dpi ' .. screen.primary.dpi ..
 							' -show emoji -modi emoji -theme '.. config_dir ..
-							'/configuration/rofi/emojimenu/rofi.rasi',
+							'configuration/rofi/emojimenu/rofi.rasi',
 		-- App menu
 		rofi_appmenu = 'rofi -dpi ' .. screen.primary.dpi ..
 							' -show drun -theme ' .. config_dir ..
-							'/configuration/rofi/appmenu/rofi.rasi',
+							'configuration/rofi/appmenu/rofi.rasi',
 
 		-- Show time
 		rofi_time = 'rofi -dpi ' .. screen.primary.dpi ..
 							' -theme ' .. config_dir ..
-							'/configuration/rofi/time/rofi.rasi'
+							'configuration/rofi/time/rofi.rasi'
 
 		-- You can add more default applications here
 	},
@@ -60,7 +60,7 @@ return {
 	run_on_start_up = {
 		-- Compositor
 		'picom -b --dbus --config ' ..
-		config_dir .. '/configuration/picom.conf',
+		config_dir .. 'configuration/picom.conf',
         -- Network applet
         'nm-applet',
 		-- Blueman applet
@@ -71,7 +71,7 @@ return {
 		-- '/usr/bin/lxqt-policykit-agent &' ..
 		-- ' eval $(gnome-keyring-daemon -s --components=gpg)',
         -- Set monitors dpi
-        config_dir .. '/utilities/setup-monitors.sh',
+        config_dir .. 'utilities/setup-monitors.sh',
 		-- Set the dpi for GDK applications
 		'xrdb -merge ~/.Xresources',
 		-- Audio equalizer
@@ -91,7 +91,7 @@ return {
         'systemctl --user reload-or-restart goimapnotify.service',
         '~/.config/imapnotify/notify.sh',
         -- Sleep hook to update wallpaper when coming back from sleep
-        config_dir .. '/utilities/suspend-hook.py &'
+        config_dir .. 'utilities/suspend-hook.py &'
 	},
 
 	-- List of binaries/shell scripts that will execute for a certain task
