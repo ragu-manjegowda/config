@@ -265,18 +265,19 @@ record_tbl.screen_rec_offset_txtbox = wibox.widget {
 
 screen.connect_signal("request::desktop_decoration", function(s)
 
-	s.recorder_screen = wibox
-	({
-		ontop = true,
-		screen = s,
-		type = 'dock',
-		height = s.geometry.height,
-		width = s.geometry.width,
-		x = s.geometry.x,
-		y = s.geometry.y,
-		bg = beautiful.background,
-		fg = beautiful.fg_normal
-	})
+	s.recorder_screen = wibox(
+        {
+		    ontop = true,
+		    screen = s,
+		    type = 'dock',
+		    height = s.geometry.height,
+		    width = s.geometry.width,
+		    x = s.geometry.x,
+		    y = s.geometry.y,
+		    bg = beautiful.background,
+		    fg = beautiful.fg_normal
+	    }
+    )
 
 	s.recorder_screen : setup {
 		layout = wibox.layout.stack,
