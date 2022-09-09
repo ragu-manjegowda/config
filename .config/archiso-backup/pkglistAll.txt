@@ -4,7 +4,8 @@ alsa-utils
 aspell-en
 autoconf
 automake
-awesome-git
+awesome-luajit-git
+awmtt
 base
 bison
 blueman
