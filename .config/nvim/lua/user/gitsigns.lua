@@ -13,15 +13,6 @@ function M.config()
         numhl      = true, -- Toggle with `:Gitsigns toggle_numhl`
         linehl     = false, -- Toggle with `:Gitsigns toggle_linehl`
         word_diff  = true, -- Toggle with `:Gitsigns toggle_word_diff`
-        keymaps = {
-            -- Default keymap options
-            noremap = true,
-
-            ['n <leader>hp'] = '<cmd>lua require"gitsigns".preview_hunk()<CR>',
-            ['n [h'] = { expr = true, "&diff ? '[c' : '<cmd>lua require\"gitsigns.actions\".prev_hunk()<CR>'"},
-            ['n ]h'] = { expr = true, "&diff ? ']c' : '<cmd>lua require\"gitsigns.actions\".next_hunk()<CR>'"},
-
-        },
         watch_gitdir = {
             interval = 1000,
             follow_files = true
@@ -51,6 +42,35 @@ function M.config()
         yadm = {
             enable = false
         },
+        on_attach = function(bufnr)
+            local gs = package.loaded.gitsigns
+
+            local function map(mode, l, r, opts)
+              opts = opts or {}
+              opts.buffer = bufnr
+              vim.keymap.set(mode, l, r, opts)
+            end
+
+            -- Navigation
+            map('n', ']h', function()
+              if vim.wo.diff then return ']c' end
+              vim.schedule(function() gs.next_hunk() end)
+              return '<Ignore>'
+            end, {expr=true})
+
+            map('n', '[h', function()
+              if vim.wo.diff then return '[c' end
+              vim.schedule(function() gs.prev_hunk() end)
+              return '<Ignore>'
+            end, {expr=true})
+
+            -- Actions
+            map('n', '<leader>hp', gs.preview_hunk)
+            map('n', '<leader>gbl', gs.toggle_current_line_blame)
+
+            -- Text object
+            map({'o', 'x'}, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
+        end
     }
 end
 
