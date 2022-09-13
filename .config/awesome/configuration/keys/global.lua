@@ -2,7 +2,7 @@ local awful = require('awful')
 local beautiful = require('beautiful')
 local naughty = require("naughty")
 local gears = require('gears')
-local revelation = require("revelation")
+local revelation = require("library.revelation")
 
 require('awful.autofocus')
 
