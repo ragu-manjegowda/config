@@ -7,7 +7,7 @@ local menubar = require('menubar')
 local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 local clickable_container = require('widget.clickable-container')
-local animation = require("widget.animation")
+local animation = require("library.tween")
 
 -- Defaults
 naughty.config.defaults.ontop = true

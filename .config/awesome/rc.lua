@@ -7,7 +7,7 @@ local gears = require('gears')
 local beautiful = require('beautiful')
 local awful = require('awful')
 local naughty = require('naughty')
-local revelation = require("revelation")
+local revelation = require("library.revelation")
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to

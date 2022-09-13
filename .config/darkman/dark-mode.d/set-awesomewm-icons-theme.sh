@@ -11,7 +11,8 @@ done
 for i in $(find $HOME/.config/awesome/ -name "*.png" \
             -not -path "*/widget/vpn/icons/*" \
             -not -path "*/configuration/user-profile/*" \
-            -not -path "*/revelation/*"); do
+            -not -path "*/revelation/*" \
+            -not -path "*/rubato/*"); do
     convert $i -fill "#eee8d5" -colorize 100% $i
 done
 

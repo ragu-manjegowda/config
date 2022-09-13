@@ -38,8 +38,18 @@
 	url = https://github.com/munlik/refind-theme-regular.git
 	update = rebase
 	branch = master
-[submodule ".config/awesome/revelation"]
-	path = .config/awesome/revelation
+[submodule ".config/awesome/library/rubato"]
+	path = .config/awesome/library/rubato
+	url = https://github.com/andOrlando/rubato.git
+	update = rebase
+	branch = master
+[submodule ".config/awesome/library/revelation"]
+	path = .config/awesome/library/revelation
 	url = https://github.com/guotsuan/awesome-revelation
+	update = rebase
+	branch = master
+[submodule ".config/awesome/library/color"]
+	path = .config/awesome/library/color
+	url = https://github.com/andOrlando/color.git
 	update = rebase
 	branch = master
