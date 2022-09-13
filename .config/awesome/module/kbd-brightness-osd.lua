@@ -180,12 +180,14 @@ screen.connect_signal(
 			widget = wibox.container.background()
 		}
 
-		-- Reset timer on mouse hover
+		-- Remove overlay when mouse right clicked
 		s.kbd_brightness_osd_overlay:connect_signal(
-			'mouse::enter',
-			function()
-				s.show_kbd_bri_osd = true
-				awesome.emit_signal('module::kbd_brightness_osd:rerun')
+			'button::press',
+			function(_, _, _, button)
+                if button == 3 then
+                    s.kbd_brightness_osd_overlay.visible = false
+                    s.show_kbd_bri_osd = false
+                end
 			end
 		)
 	end

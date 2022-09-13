@@ -167,12 +167,14 @@ screen.connect_signal(
 			widget = wibox.container.background()
 		}
 
-		-- Reset timer on mouse hover
+		-- Remove overlay when mouse right clicked
 		s.volume_osd_overlay:connect_signal(
-			'mouse::enter',
-			function()
-				s.show_vol_osd = true
-				awesome.emit_signal('module::volume_osd:rerun')
+			'button::press',
+			function(_, _, _, button)
+                if button == 3 then
+                    s.volume_osd_overlay.visible = false
+                    s.show_vol_osd = false
+                end
 			end
 		)
 	end
@@ -220,8 +222,14 @@ awesome.connect_signal(
 	function(muted)
 		if muted then
             vol_icon:set_image(icons.volume_muted)
+            vol_osd_slider.bar_active_color = beautiful.background_light
+            vol_osd_slider.handle_color = beautiful.background_light
+            awful.screen.focused().volume_osd_overlay.fg = beautiful.background_light
 		else
             vol_icon:set_image(icons.volume)
+            vol_osd_slider.bar_active_color = beautiful.fg_focus
+            vol_osd_slider.handle_color = beautiful.fg_focus
+            awful.screen.focused().volume_osd_overlay.fg = beautiful.fg_focus
 		end
 	end
 )
