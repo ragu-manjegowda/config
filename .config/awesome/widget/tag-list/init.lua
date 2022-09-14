@@ -13,9 +13,7 @@
 local awful = require('awful')
 local wibox = require('wibox')
 local dpi = require('beautiful').xresources.apply_dpi
-local capi = {button = button}
 local clickable_container = require('widget.clickable-container')
-local modkey = require('configuration.keys.mod').modkey
 
 -- define module table
 local tag_list = {}
@@ -24,34 +22,6 @@ local tag_list = {}
 -- ===================================================================
 -- Widget Creation Functions
 -- ===================================================================
-
-
--- Create buttons
-local function create_buttons(buttons, object)
-     if buttons then
-      local btns = {}
-      for _, b in ipairs(buttons) do
-         -- Create a proxy button object: it will receive the real
-         -- press and release events, and will propagate them to the
-         -- button object the user provided, but with the object as
-         -- argument.
-         local btn = capi.button {modifiers = b.modifiers, button = b.button}
-         btn:connect_signal('press',
-            function()
-               b:emit_signal('press', object)
-            end
-         )
-         btn:connect_signal('release',
-            function()
-               b:emit_signal('release', object)
-            end
-         )
-         btns[#btns + 1] = btn
-      end
-
-      return btns
-   end
-end
 
 -- Update the taglist
 local function list_update(w, buttons, label, data, objects)
@@ -83,8 +53,6 @@ local function list_update(w, buttons, label, data, objects)
 
          -- And all of this gets a background
          bgb:set_widget(bg_clickable)
-
-         bgb:buttons(create_buttons(buttons, o))
 
          data[o] = {
             ib = ib,
