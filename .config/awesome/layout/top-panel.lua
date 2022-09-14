@@ -76,12 +76,16 @@ local top_panel = function(s)
                     vseparator,
                     {
                         {
-	    		            layout = wibox.layout.fixed.horizontal,
-	    		            task_list(s),
+                            {
+	    		                layout = wibox.layout.fixed.horizontal,
+	    		                task_list(s),
+                            },
+                            bg = beautiful.accent,
+                            shape = gears.shape.rounded_rect,
+                            widget = wibox.container.background,
                         },
-                        bg = beautiful.accent,
-                        shape = gears.shape.rounded_rect,
-                        widget = wibox.container.background,
+                        right = dpi(7),
+                        widget = wibox.container.margin,
                     },
                 },
 
