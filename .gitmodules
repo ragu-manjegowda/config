@@ -53,3 +53,8 @@
 	url = https://github.com/andOrlando/color.git
 	update = rebase
 	branch = master
+[submodule ".config/awesome/library/battery"]
+	path = .config/awesome/library/battery
+	url = https://github.com/Aire-One/awesome-battery_widget.git
+	update = rebase
+	branch = master
