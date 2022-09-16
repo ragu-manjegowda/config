@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+case "$1" in
+    -inc)
+	    var=$(cat $3)
+    if [ $(($var + $2)) -lt 255 ]
+    then
+        echo $(($var + $2)) > $3
+    else
+        echo 255 > $3
+    fi
+    ;;
+    -dec)
+    var=$(cat $3)
+    if [ $(($var - $2)) -gt 0 ]
+    then
+        echo $(($var - $2)) > $3
+    else
+        echo 0 > $3
+    fi
+   ;;
+esac
