@@ -37,6 +37,10 @@
 .config/autostart
 .config/awesome/configuration/api_keys.lua
 .config/awesome/library/liblua_pam.so
+.config/awesome/library/volctl/build
+.config/awesome/library/volctl/venv
+.config/awesome/library/volctl/volctl.egg-info
+.config/awesome/library/volctl/volctl/__pycache__
 .config/awesome/widget/email/mails.txt
 .config/bash/.bash_history
 .config/bash/.bash_maglev
@@ -125,6 +129,7 @@
 .config/update-notifier
 .config/user-dirs.dirs
 .config/user-dirs.locale
+.config/volumeicon
 .config/webbrowser-app
 .config/wireshark
 .config/xfce4

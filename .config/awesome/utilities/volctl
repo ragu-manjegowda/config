@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+# Depends: Volctl
+# Written by  : Ragu Manjegowda
+# Github      : @ragu-manjegowda
+
+# Check if this is already running, if so exit
+pCount=$(pgrep -f volctl | wc -l)
+
+# Check for length 2 as current instance of process creates a PID as well
+# and wc -l above counts extra '\n' from pgrep output.
+if [ $pCount -ne 2 ]; then
+    exit
+fi
+
+VOLCTL_PATH=$HOME/.config/awesome/library/volctl
+
+cd $VOLCTL_PATH
+
+export GSETTINGS_SCHEMA_DIR=$VOLCTL_PATH/venv/share/glib-2.0/schemas
+export XDG_DATA_DIRS=/usr/local/share:/usr/share
+
+python -m venv --system-site-packages venv
+source venv/bin/activate
+
+if [ ! -d "$VOLCTL_PATH/build" ]; then
+    pip3 install $VOLCTL_PATH --install-option=develop
+fi
+
+if [ ! -d "$VOLCTL_PATH/venv/share/glib-2.0/schemas" ]; then
+    mkdir $VOLCTL_PATH/venv/share/glib-2.0/schemas
+fi
+
+cp $VOLCTL_PATH/data/apps.volctl.gschema.xml $VOLCTL_PATH/venv/share/glib-2.0/schemas
+glib-compile-schemas $VOLCTL_PATH/venv/share/glib-2.0/schemas/
+
+$VOLCTL_PATH/venv/bin/volctl
