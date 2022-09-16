@@ -2,11 +2,10 @@
 # Any customization should be done in ~/.gtkrc-2.0.mine instead.
 
 include "/home/ragu/.gtkrc-2.0.mine"
-gtk-theme-name="NumixSolarizedDarkGreen"
-gtk-icon-theme-name="hicolor"
+gtk-theme-name="NumixSolarizedLightBlue"
+gtk-icon-theme-name="Solarized-FLAT-Blue"
 gtk-font-name="Hack Nerd Font 11"
-gtk-cursor-theme-size=48
-gtk-cursor-theme-name="Numix-Cursor"
+gtk-cursor-theme-name="Numix-Cursor-Light"
 gtk-cursor-theme-size=0
 gtk-toolbar-style=GTK_TOOLBAR_BOTH_HORIZ
 gtk-toolbar-icon-size=GTK_ICON_SIZE_DIALOG
@@ -16,5 +15,5 @@ gtk-enable-event-sounds=1
 gtk-enable-input-feedback-sounds=1
 gtk-xft-antialias=1
 gtk-xft-hinting=1
-gtk-xft-hintstyle="hintfull"
+gtk-xft-hintstyle="hintslight"
 gtk-xft-rgba="rgb"
