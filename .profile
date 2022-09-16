@@ -114,7 +114,7 @@ FZF_ROOT_D_SEARCH_COMMAND='fd --type d . / --color=never'
 FZF_HOME_D_SEARCH_COMMAND='fd --type d . $HOME --color=never --hidden'
 
 C_OPTS_PREVIEW="--preview 'tree -C {}'"
-C_OPTS_BIND_OPTS1="--bind 'alt-:preview-page-down,alt-k:preview-page-up'"
+C_OPTS_BIND_OPTS1="--bind 'alt-j:preview-page-down,alt-k:preview-page-up'"
 T_OPTS_BIND_OPTS2="',ctrl-j:down,ctrl-k:up'"
 C_OPTS_BIND_OPTS3="',ctrl-w:toggle-preview-wrap,ctrl-f:jump'"
 C_OPTS_BIND_OPTS4="',ctrl-u:preview-top,ctrl-d:preview-bottom'"
