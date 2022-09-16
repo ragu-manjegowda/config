@@ -3,6 +3,7 @@
 ## Author       : Aditya Shakya
 ## Github       : @adi1090x
 ## Modified by  : Ragu Manjegowda
+## Github       : @ragu-manjegowda
 
 ## Get time and date
 TIME="$(date +"%I:%M %p")"

@@ -405,7 +405,7 @@ local global_keys = awful.util.table.join(
 		{},
 		'XF86KbdBrightnessUp',
 		function()
-			awful.spawn(config.keyboard.script .. '-inc 10')
+			awful.spawn(config.keyboard.script .. ' -inc 10 ' .. config.keyboard.file)
 			awesome.emit_signal('widget::kbd_brightness')
 			awesome.emit_signal('module::kbd_brightness_osd:show', true)
 		end,
@@ -416,7 +416,7 @@ local global_keys = awful.util.table.join(
 		{},
 		'XF86KbdBrightnessDown',
 		function()
-			awful.spawn(config.keyboard.script .. '-dec 10')
+			awful.spawn(config.keyboard.script .. ' -dec 10 ' .. config.keyboard.file)
 			awesome.emit_signal('widget::kbd_brightness')
 			awesome.emit_signal('module::kbd_brightness_osd:show', true)
 		end,
