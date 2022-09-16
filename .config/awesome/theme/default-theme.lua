@@ -36,7 +36,7 @@ local awesome_overrides = function(theme)
 	theme.emojifont = 'Hack Nerd Regular 12, Noto Color Emoji'
 
 	-- System tray
-	theme.bg_systray = theme.background
+	theme.bg_systray = theme.accent
 	theme.systray_icon_spacing = dpi(16)
 
 	-- Titlebar
