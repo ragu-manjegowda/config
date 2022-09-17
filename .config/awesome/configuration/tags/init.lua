@@ -1,7 +1,6 @@
 local awful = require('awful')
 local gears = require('gears')
 local beautiful = require('beautiful')
-local apps = require('configuration.apps')
 
 local dir = os.getenv("HOME") .. "/.config/awesome/theme/icons/tags/"
 
