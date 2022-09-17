@@ -186,5 +186,5 @@ config update-index --assume-unchanged \
     .config/awesome/widget/xdg-folders/icons/yes.svg \
     .config/chrome-flags.conf \
     .config/rofi/config.rasi \
-    .config/xsettingsd/xsettingsd.conf
-
+    .config/xsettingsd/xsettingsd.conf \
+    .icons/default/index.theme
