@@ -56,6 +56,8 @@ local top_panel = function(s)
 	s.control_center_toggle = require('widget.control-center-toggle')()
 	s.info_center_toggle 	= require('widget.info-center-toggle')()
 
+    local taglist             = require('widget.tag-list-rubato')(s)
+
 	panel : setup {
         {
 	    	layout = wibox.layout.align.horizontal,
@@ -67,9 +69,10 @@ local top_panel = function(s)
                     {
                         {
 	    		            layout = wibox.layout.fixed.horizontal,
-                            tag_list.create(s),
+                            taglist,
+                            -- tag_list.create(s),
                         },
-                        bg = beautiful.accent,
+                        bg = beautiful.background_light,
                         shape = gears.shape.rounded_rect,
                         widget = wibox.container.background,
                     },
