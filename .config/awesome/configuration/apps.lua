@@ -80,15 +80,15 @@ return {
         -- Auto screen look
         'systemctl --user reload-or-restart --now xidlehook.service',
         -- Darkman
-        --'XDG_DATA_DIRS=~/.config/darkman darkman',
+        -- 'systemctl --user reload-or-restart --now darkman.service',
         '/usr/lib/geoclue-2.0/demos/agent &',
-        'systemctl --user reload-or-restart --now darkman.service',
-        -- 'darkman run &',
+        'XDG_DATA_DIRS=~/.config/darkman darkman run &',
         -- Use `xinput list` command to get touchpad device name
         -- `SynPS/2 Synaptics TouchPad` in this case
         -- 'xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Tapping Enabled" 1',
         -- Start imapnotify
-        'systemctl --user reload-or-restart goimapnotify.service',
+        --'systemctl --user reload-or-restart goimapnotify.service',
+        'goimapnotify -conf ~/.config/imapnotify/imapnotify.conf &',
         '~/.config/imapnotify/notify.sh',
         -- Sleep hook to update wallpaper when coming back from sleep
         config_dir .. 'utilities/suspend-hook.py &',

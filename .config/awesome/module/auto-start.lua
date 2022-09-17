@@ -33,9 +33,10 @@ end
 awesome.connect_signal(
 	'module::spawn_apps',
 	function()
+        -- No need for this since they are now part of start-up apps
         -- Just a fail safe mechanism in case user services fails
-        awful.spawn('systemctl --user reload-or-restart --now darkman.service')
-        awful.spawn('systemctl --user reload-or-restart --now goimapnotify.service')
+        -- awful.spawn('systemctl --user reload-or-restart --now darkman.service')
+        -- awful.spawn('systemctl --user reload-or-restart --now goimapnotify.service')
 
         -- run_once('XDG_DATA_DIRS=~/.config/darkman darkman')
 
