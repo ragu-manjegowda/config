@@ -142,7 +142,9 @@ ws_fname = utils_dir .. "/awesome-last-ws"
 function save_current_tag()
   local f = assert(io.open(ws_fname, "w"))
   local t = client.focus and client.focus.first_tag or nil
-  f:write(t.name, "\n")
+  if t ~= nil then
+    f:write(t.name, "\n")
+  end
   f:close()
 end
 
