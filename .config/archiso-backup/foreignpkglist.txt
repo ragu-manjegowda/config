@@ -17,6 +17,7 @@ paru
 picom-git
 reflector-pacman-hook-git
 slack-desktop
+solarized-colors-iconpack-git
 sync-pacman-hook-git
 teams
 timeshift

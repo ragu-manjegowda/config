@@ -69,6 +69,7 @@ rofi
 rofi-emoji
 rust
 slack-desktop
+solarized-colors-iconpack-git
 sudo
 sync-pacman-hook-git
 teams
