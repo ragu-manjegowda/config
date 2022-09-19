@@ -74,20 +74,25 @@ ragu_git_status() {
 }
 
 ragu_git_prompt () {
-  local _branch=$(ragu_git_branch)
-  local _status=$(ragu_git_status)
-  local _result=""
-  if [[ "${_branch}x" != "x" ]]; then
-    _result="$ZSH_THEME_GIT_PROMPT_PREFIX$_branch"
-    if [[ "${_status}x" != "x" ]]; then
-      _result="$_result $_status"
+  GIT_DISCOVER_ACROSS_FILESYSTEM=true \
+  git check-ignore -q 2>/dev/null; if [ "$?" -ne "1" ]; then
+  #if [[ $(git rev-parse --is-inside-work-tree) == "true" ]]; then
+    local _branch=$(ragu_git_branch)
+    local _status=$(ragu_git_status)
+    local _result=""
+    if [[ "${_branch}x" != "x" ]]; then
+      _result="$ZSH_THEME_GIT_PROMPT_PREFIX$_branch"
+      if [[ "${_status}x" != "x" ]]; then
+        _result="$_result $_status"
+      fi
+      _result="$_result%{$BLUE%}$ZSH_THEME_GIT_PROMPT_SUFFIX"
     fi
-    _result="$_result%{$BLUE%}$ZSH_THEME_GIT_PROMPT_SUFFIX"
+    echo $_result
   fi
-  echo $_result
 }
 
 PROMPT='%(?:%{$GREEN_BOLD%}%n %{$GREEN_BOLD%}➜ :%{$RED_BOLD%}➜ )'
 PROMPT+='%{$CYAN%}%1c ♔%{$RESET_COLOR%} '
+#PROMPT+='%{$CYAN%}%1c ♕%{$RESET_COLOR%} '
 RPROMPT+='%{$BLUE%}$(ragu_git_prompt)%{$RESET_COLOR%}'
 
