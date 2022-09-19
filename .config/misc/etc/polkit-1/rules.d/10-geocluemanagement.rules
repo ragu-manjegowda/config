@@ -1,0 +1,16 @@
+/* Allow users in admin group to run geoclue system service without authentication */
+polkit.addRule(function(action, subject) {
+    polkit.log("action =" + action);
+    polkit.log("subject =" + subject);
+    if (action.id == "org.freedesktop.systemd1.manage-units" &&
+        subject.isInGroup("wheel")) {
+        if (action.lookup("unit") == "geoclue.service") {
+            var verb = action.lookup("verb");
+            polkit.log("verb =" + verb);
+            if (verb == "start" || verb == "stop" || verb == "restart" ||
+                verb == "reload-or-restart") {
+                return polkit.Result.YES;
+            }
+        }
+    }
+});

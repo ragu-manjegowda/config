@@ -81,7 +81,7 @@ return {
         'systemctl --user reload-or-restart --now xidlehook.service',
         -- Darkman
         -- 'systemctl --user reload-or-restart --now darkman.service',
-        '/usr/lib/geoclue-2.0/demos/agent &',
+        'systemctl reload-or-restart --now geoclue.service',
         'XDG_DATA_DIRS=~/.config/darkman darkman run &',
         -- Use `xinput list` command to get touchpad device name
         -- `SynPS/2 Synaptics TouchPad` in this case
