@@ -6,23 +6,35 @@ local gears = require("gears")
 local wibox = require("wibox")
 local rubato = require("library.rubato")
 
--- Function to update the tags
-local update_tags = function(self, c3)
-    self:get_children_by_id("tag_id")[1].image = c3.icon
-    if c3.selected then
-        self:get_children_by_id("indicator_id")[1].bg = beautiful.taglist_bg_focus
-        self.anim.target = 34
-    elseif #c3:clients() == 0 then
-        self:get_children_by_id("indicator_id")[1].bg = beautiful.taglist_bg_empty
-        self.anim.target = 8
-    else
-        self:get_children_by_id("indicator_id")[1].bg = beautiful.taglist_bg_occupied
-        self.anim.target = 25
-    end
-end
-
 local function get_taglist(s)
     local screen_for_taglist = s or awful.screen.focused()
+
+    -- Function to update the tags
+    local update_tags = function(self, c3)
+        self:get_children_by_id("tag_id")[1].image = c3.icon
+        if c3.selected then
+            self:get_children_by_id("indicator_id")[1].bg = beautiful.taglist_bg_focus
+            self.anim.target = 34
+        else
+            -- this can also be s.clients if only visible client needs to be included
+            for _, c in ipairs(screen_for_taglist.all_clients) do
+              for _, t in ipairs(c:tags()) do
+                if c3 == t  and c.urgent then
+                    self:get_children_by_id("indicator_id")[1].bg = beautiful.taglist_bg_urgent
+                    self.anim.target = 34
+                    return
+                elseif c3 == t then
+                    self:get_children_by_id("indicator_id")[1].bg = beautiful.taglist_bg_occupied
+                    self.anim.target = 25
+                    return
+                end
+              end
+            end
+
+            self:get_children_by_id("indicator_id")[1].bg = beautiful.taglist_bg_empty
+            self.anim.target = 8
+        end
+    end
 
     local taglist = awful.widget.taglist({
         screen = screen_for_taglist,
