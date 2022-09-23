@@ -166,7 +166,7 @@ zstyle ':autocomplete:*' insert-unambiguous yes
 # complete-word: (Shift-)Tab inserts the top (bottom) completion.
 # menu-complete: Press again to cycle to next (previous) completion.
 # menu-select:   Same as `menu-complete`, but updates selection in menu.
-zstyle ':autocomplete:*' widget-style complete-word
+zstyle ':autocomplete:*' widget-style menu-select
 
 # no:  Tab uses Zsh's completion system only.
 # yes: Tab first tries Fzf's completion, then falls back to Zsh's.
