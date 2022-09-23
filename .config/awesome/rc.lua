@@ -19,23 +19,6 @@ if awesome.startup_errors then
         message = message
     }
 end
-
-do
-    local in_error = false
-    awesome.connect_signal(
-        "debug::error",
-        function (err)
-            if in_error then
-                return
-            end
-
-            in_error = true
-            naughty.notify({ preset = naughty.config.presets.critical,
-            title = "Oops, an error happened!",
-            text = tostring(err) })
-            in_error = false
-        end)
-end
 -- }}}
 
 -- ░█▀▀░█░█░█▀▀░█░░░█░░
@@ -73,8 +56,6 @@ root.keys(require('configuration.keys.global'))
 require('module.notifications')
 require('module.auto-start')
 require('module.exit-screen')
---require('module.quake-terminal')
---require('module.menu')
 require('module.titlebar')
 require('module.brightness-osd')
 require('module.kbd-brightness-osd')

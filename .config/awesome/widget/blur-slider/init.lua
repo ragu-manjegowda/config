@@ -67,11 +67,12 @@ local blur_slider = slider.blur_strength_slider
 
 local update_slider_value = function()
 
+    local cmd = "grep -F 'strength =' " ..
+                "$HOME/.config/awesome/configuration/picom.conf | " ..
+                "awk 'NR==1 {print $3}' | tr -d ';'"
+
 	awful.spawn.easy_async_with_shell(
-		[[bash -c "
-		grep -F 'strength =' $HOME/.config/awesome/configuration/picom.conf |
-		awk 'NR==1 {print $3}' | tr -d ';'
-		"]],
+		cmd,
 		function(stdout, stderr)
 			local strength = stdout:match('%d+')
 			blur_strength = tonumber(strength) / 20 * 100

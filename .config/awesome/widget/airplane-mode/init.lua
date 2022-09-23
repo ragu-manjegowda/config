@@ -71,29 +71,26 @@ end
 
 local check_airplane_mode_state = function()
 
-	local cmd = 'cat ' .. widget_dir .. 'airplane_mode'
+	local cmd = "cat " .. widget_dir .. "airplane_mode"
 
-	awful.spawn.easy_async_with_shell(
-		cmd,
-		function(stdout)
+	-- awful.spawn.easy_async_with_shell(
+	-- 	cmd,
+	-- 	function(stdout)
+	-- 		local status = stdout
 
-			local status = stdout
+	-- 		if status:match('true') then
+	-- 			ap_state = true
+	-- 		elseif status:match('false') then
+	-- 			ap_state = false
+	-- 		else
+	-- 			ap_state = false
+    --             local cmd = "echo false > " .. widget_dir .. "airplane_mode"
 
-			if status:match('true') then
-				ap_state = true
-			elseif status:match('false') then
-				ap_state = false
-			else
-				ap_state = false
-				awful.spawn.easy_async_with_shell(
-					'echo "false" > ' .. widget_dir .. 'airplane_mode',
-					function(stdout)
-					end
-				)
-			end
-			update_widget()
-		end
-	)
+	-- 			awful.spawn(cmd)
+	-- 		end
+	-- 		update_widget()
+	-- 	end
+	-- )
 end
 
 check_airplane_mode_state()

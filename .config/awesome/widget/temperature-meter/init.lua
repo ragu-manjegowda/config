@@ -60,13 +60,15 @@ local max_temp = 80
 
 local temp_t = 0
 
-awful.spawn.easy_async_with_shell(
+-- TODO: line 6 and 7 needs to be fixed, this still works as we default to
+-- zone0 in line 24
+local cmd =
 	[[
 	temp_path=null
 	for i in /sys/class/hwmon/hwmon*/temp*_input;
 	do
-		temp_path="$(echo "$(<$(dirname $i)/name): $(cat ${i%_*}_label 2>/dev/null ||
-			echo $(basename ${i%_*})) $(readlink -f $i)");"
+        #temp_path="$(echo "$(<$(dirname $i)/name): $(cat ${i%_*}_label 2>/dev/null ||
+        #	echo $(basename ${i%_*})) $(readlink -f $i)");"
 
 		label="$(echo $temp_path | awk '{print $2}')"
 
@@ -76,7 +78,10 @@ awful.spawn.easy_async_with_shell(
 			exit;
 		fi
 	done
-	]],
+	]]
+
+awful.spawn.easy_async_with_shell(
+    cmd,
 	function(stdout)
 		local temp_path = stdout:gsub('%\n', '')
 		if temp_path == '' or not temp_path then

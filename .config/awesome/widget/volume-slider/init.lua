@@ -89,8 +89,9 @@ volume_slider:connect_signal(
 )
 
 local update_slider = function()
+    local cmd = "amixer -D pulse sget Master"
 	awful.spawn.easy_async_with_shell(
-		[[bash -c "amixer -D pulse sget Master"]],
+        cmd,
 		function(stdout)
             local muted = string.match(stdout, 'off')
             if muted ~= 'off' then
