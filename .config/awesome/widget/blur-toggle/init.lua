@@ -70,10 +70,12 @@ local update_widget = function()
 end
 
 local check_blur_status = function()
+
+    local cmd = "grep -F 'method = \"none\";'" .. config_dir ..
+                "configuration/picom.conf | tr -d '[\";= ]'"
+
 	awful.spawn.easy_async_with_shell(
-		[[bash -c "
-		grep -F 'method = \"none\";' ]] .. config_dir .. [[/configuration/picom.conf | tr -d '[\"\;\=\ ]'
-		"]],
+		cmd,
 		function(stdout, stderr)
 			if stdout:match('methodnone') then
 				blur_status = false

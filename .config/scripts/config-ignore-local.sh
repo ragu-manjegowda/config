@@ -85,11 +85,6 @@ config update-index --assume-unchanged \
     .config/awesome/widget/bluetooth-toggle/icons/bluetooth-off.svg \
     .config/awesome/widget/bluetooth-toggle/icons/bluetooth.svg \
     .config/awesome/widget/bluetooth-toggle/icons/loading.svg \
-    .config/awesome/widget/bluetooth/icons/bluetooth-connected.svg \
-    .config/awesome/widget/bluetooth/icons/bluetooth-off.svg \
-    .config/awesome/widget/bluetooth/icons/bluetooth-scanning.svg \
-    .config/awesome/widget/bluetooth/icons/bluetooth.svg \
-    .config/awesome/widget/bluetooth/icons/loading.svg \
     .config/awesome/widget/blur-toggle/icons/effects-off.svg \
     .config/awesome/widget/control-center-switch/icons/control-center.svg \
     .config/awesome/widget/control-center-toggle/icons/control-center.svg \
@@ -109,40 +104,8 @@ config update-index --assume-unchanged \
     .config/awesome/widget/email/icons/email-unread.svg \
     .config/awesome/widget/email/icons/email.svg \
     .config/awesome/widget/info-center-toggle/icons/info-center.svg \
-    .config/awesome/widget/mpd/icons/next.svg \
-    .config/awesome/widget/mpd/icons/pause.svg \
-    .config/awesome/widget/mpd/icons/play.svg \
-    .config/awesome/widget/mpd/icons/prev.svg \
-    .config/awesome/widget/network/icons/airplane-mode-off.svg \
-    .config/awesome/widget/network/icons/airplane-mode.svg \
-    .config/awesome/widget/network/icons/loading.svg \
-    .config/awesome/widget/network/icons/wifi-off.svg \
-    .config/awesome/widget/network/icons/wifi-strength-1-alert.svg \
-    .config/awesome/widget/network/icons/wifi-strength-1-lock.svg \
-    .config/awesome/widget/network/icons/wifi-strength-1.svg \
-    .config/awesome/widget/network/icons/wifi-strength-2-alert.svg \
-    .config/awesome/widget/network/icons/wifi-strength-2-lock.svg \
-    .config/awesome/widget/network/icons/wifi-strength-2.svg \
-    .config/awesome/widget/network/icons/wifi-strength-3-alert.svg \
-    .config/awesome/widget/network/icons/wifi-strength-3-lock.svg \
-    .config/awesome/widget/network/icons/wifi-strength-3.svg \
-    .config/awesome/widget/network/icons/wifi-strength-4-alert.svg \
-    .config/awesome/widget/network/icons/wifi-strength-4-lock.svg \
-    .config/awesome/widget/network/icons/wifi-strength-4.svg \
-    .config/awesome/widget/network/icons/wifi-strength-alert-outline.svg \
-    .config/awesome/widget/network/icons/wifi-strength-alert.svg \
-    .config/awesome/widget/network/icons/wifi-strength-empty.svg \
-    .config/awesome/widget/network/icons/wifi-strength-lock-outline.svg \
-    .config/awesome/widget/network/icons/wifi-strength-off-outline.svg \
-    .config/awesome/widget/network/icons/wifi-strength-off.svg \
-    .config/awesome/widget/network/icons/wifi-strength-outline.svg \
-    .config/awesome/widget/network/icons/wifi.svg \
-    .config/awesome/widget/network/icons/wired-alert.svg \
-    .config/awesome/widget/network/icons/wired-off.svg \
-    .config/awesome/widget/network/icons/wired.svg \
     .config/awesome/widget/notif-center/icons/clear_all.png \
     .config/awesome/widget/notif-center/icons/delete.svg \
-    .config/awesome/widget/package-updater/icons/package.svg \
     .config/awesome/widget/screen-recorder/icons/audio.svg \
     .config/awesome/widget/screen-recorder/icons/back.svg \
     .config/awesome/widget/screen-recorder/icons/close-screen.svg \

@@ -98,10 +98,11 @@ kbd_brightness_slider:connect_signal(
 
 local update_slider = function()
     local kbd_brightness_path = config.keyboard.file
-
     local bkl_get_command = "cat " .. kbd_brightness_path
 
-	awful.spawn.easy_async_with_shell(
+    -- spawn.easy_async_with_shell or easy_async gives error in awmtt
+    -- `attempt to call a boolean value`
+	awful.spawn(
 		bkl_get_command,
 		function(stdout)
 			local kbd_brightness = string.match(stdout, '(%d+)')

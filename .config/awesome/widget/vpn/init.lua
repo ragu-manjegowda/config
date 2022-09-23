@@ -91,22 +91,22 @@ local return_button = function()
 
 	local update_vpn = function()
 
-		awful.spawn.easy_async_with_shell(
-			[[
-		    /opt/cisco/anyconnect/bin/vpn state | grep "state:" | awk 'NR==1{print $4}'
-			]],
-			function(stdout)
-			local vpn_percentage = stdout
-            --naughty.notify({text = tostring(stdout)})
-            show_vpn_warning(vpn_percentage)
+		-- awful.spawn.easy_async_with_shell(
+		-- 	[[
+		--     /opt/cisco/anyconnect/bin/vpn state | grep "state:" | awk 'NR==1{print $4}'
+		-- 	]],
+		-- 	function(stdout)
+		-- 	local vpn_percentage = stdout
+        --     --naughty.notify({text = tostring(stdout)})
+        --     show_vpn_warning(vpn_percentage)
 
-            vpn_imagebox.icon.visible = true
-			vpn_widget.spacing = dpi(5)
-			vpn_percentage_text.visible = true
-			vpn_percentage_text:set_text(vpn_percentage)
+        --     vpn_imagebox.icon.visible = true
+		-- 	vpn_widget.spacing = dpi(5)
+		-- 	vpn_percentage_text.visible = true
+		-- 	vpn_percentage_text:set_text(vpn_percentage)
 
-        end
-		)
+        -- end
+		-- )
 	end
 
 	-- Watch status if connected, disconnected

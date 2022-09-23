@@ -36,7 +36,7 @@ local create_save_directory = function()
 	]]
 
 	awful.spawn.easy_async_with_shell(
-		create_dir_cmd, 
+		create_dir_cmd,
 		function(stdout) end
 	)
 end
@@ -48,7 +48,7 @@ local kill_existing_recording_ffmpeg = function()
 	awful.spawn.easy_async_with_shell(
 		[[
 		ps x | grep 'ffmpeg -video_size' | grep -v grep | awk '{print $1}' | xargs kill
-		]], 
+		]],
 		function(stdout) end
 	)
 end
@@ -60,7 +60,7 @@ local turn_on_the_mic = function()
 		[[
 		amixer set Capture cap
 		amixer set Capture ]].. scripts_tbl.user_mic_lvl ..[[%
-		]], 
+		]],
 		function() end
 	)
 end
@@ -70,7 +70,7 @@ local ffmpeg_stop_recording = function()
 	awful.spawn.easy_async_with_shell(
 		[[
 		ps x | grep 'ffmpeg -video_size' | grep -v grep | awk '{print $1}' | xargs kill -2
-		]], 
+		]],
 		function(stdout) end
 	)
 end
@@ -110,20 +110,20 @@ local create_notification = function(file_dir)
 end
 
 local ffmpeg_start_recording = function(audio, filename)
-	local add_audio_str = ' ' 
+	local add_audio_str = ' '
 
 	if audio then
 		turn_on_the_mic()
-		add_audio_str = '-f pulse -ac 2 -i default' 
+		add_audio_str = '-f pulse -ac 2 -i default'
 	end
 
 	ffmpeg_pid = awful.spawn.easy_async_with_shell(
-		[[		
+		[[
 		file_name=]] .. filename .. [[
 
 		ffmpeg -video_size ]] .. scripts_tbl.user_resolution .. [[ -framerate ]] .. scripts_tbl.user_fps .. [[ -f x11grab \
 		-i :0.0+]] .. scripts_tbl.user_offset .. ' ' .. add_audio_str .. [[ -c:v libx264 -crf 20 -profile:v baseline -level 3.0 -pix_fmt yuv420p $file_name
-		]], 
+		]],
 		function(stdout, stderr)
 			if stderr and stderr:match('Invalid argument') then
 				naughty.notification({
@@ -150,7 +150,7 @@ local create_unique_filename = function(audio)
 
 		echo "${dir}${date}${format}" | tr -d '\n'
 		]],
-		function(stdout) 
+		function(stdout)
 			local filename = stdout
 			ffmpeg_start_recording(audio, filename)
 		end

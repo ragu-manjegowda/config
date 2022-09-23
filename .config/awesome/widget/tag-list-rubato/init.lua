@@ -44,7 +44,7 @@ local function get_taglist(s)
                     widget  = wibox.container.margin,
                 },
 	            shape = gears.shape.rounded_rect,
-	            widget = wibox.widget.background,
+	            widget = wibox.container.background,
             },
             id = "place_id",
             widget = wibox.container.place,

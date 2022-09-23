@@ -217,7 +217,6 @@ local locker = function(s)
 	-- Update username textbox
 	awful.spawn.easy_async_with_shell(
 		[[
-		sh -c '
 		fullname="$(getent passwd `whoami` | cut -d ':' -f 5 | cut -d ',' -f 1 | tr -d "\n")"
 		if [ -z "$fullname" ];
 		then
@@ -225,7 +224,6 @@ local locker = function(s)
 		else
 			printf "$fullname"
 		fi
-		'
 		]],
 		function(stdout)
 			stdout = stdout:gsub('%\n','')
@@ -560,36 +558,6 @@ local locker = function(s)
 						-- Library doesn't exist or returns an error due to some reasons (read the manual)
 						-- Use fallback password data
 						authenticated = input_password == locker_config.fallback_password()
-
-						local rtfm = naughty.action {
-							name = 'Read Wiki',
-						   	icon_only = false
-						}
-
-						local dismiss = naughty.action {
-							name = 'Dismiss',
-						   	icon_only = false
-						}
-
-						rtfm:connect_signal(
-							'invoked',
-							function()
-								awful.spawn(
-									[[sh -c "
-									xdg-open 'https://github.com/manilarome/the-glorious-dotfiles/wiki'
-									"]],
-									false
-								)
-							end
-						)
-
-						naughty.notification({
-							app_name = 'Security',
-							title = 'WARNING',
-							message = 'You\'re using the fallback password! It\'s recommended to use the PAM Integration!',
-							urgency = 'critical',
-							actions = { rtfm, dismiss }
-						})
 					end
 				end
 
