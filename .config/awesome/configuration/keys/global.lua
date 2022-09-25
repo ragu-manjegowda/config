@@ -162,6 +162,16 @@ local global_keys = awful.util.table.join(
 	),
 
 	awful.key(
+		{modkey, 'Control'},
+		'h',
+		function()
+			local focused = awful.screen.focused()
+            awful.tag.viewprev(focused)
+		end,
+		{description = 'view next tag', group = 'launcher'}
+	),
+
+	awful.key(
 		{modkey},
 		'i',
 		function()
@@ -174,8 +184,18 @@ local global_keys = awful.util.table.join(
 		{description = 'open info center', group = 'launcher'}
 	),
 
-    awful.key(
+	awful.key(
 		{modkey, 'Control'},
+		'l',
+		function()
+			local focused = awful.screen.focused()
+            awful.tag.viewnext(focused)
+		end,
+		{description = 'view next tag', group = 'launcher'}
+	),
+
+    awful.key(
+		{modkey, 'Shift'},
 		'l',
 		function()
 			awful.spawn(apps.default.lock, false)
