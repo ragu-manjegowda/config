@@ -84,8 +84,8 @@ theme.titlebar_fg_normal = theme.fg_normal
 theme.mouse_finder_color = theme.system_green_dark
 
 -- Taglist
-theme.taglist_bg_empty = theme.accent .. '33'
-theme.taglist_bg_occupied = theme.background
+theme.taglist_bg_empty = theme.groups_bg
+theme.taglist_bg_occupied = theme.background_light
 theme.taglist_bg_urgent = theme.bg_urgent
 theme.taglist_bg_focus = theme.bg_focus
 
