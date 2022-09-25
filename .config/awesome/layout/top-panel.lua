@@ -48,7 +48,7 @@ local top_panel = function(s)
 		widget = wibox.widget.systray
 	}
 
-	local clock 			= require('widget.clock')(s)
+	s.clock 			    = require('widget.clock')()
 	local layout_box 		= require('widget.layoutbox')(s)
 	s.tray_toggler  		= require('widget.tray-toggle')
 	s.screen_rec 			= require('widget.screen-recorder')()
@@ -100,7 +100,7 @@ local top_panel = function(s)
                 {
 	    	        type = 'dock',
                     layout = wibox.layout.fixed.horizontal,
-                    clock,
+                    s.clock,
                 },
 
                 bg = beautiful.groups_bg,
