@@ -106,6 +106,7 @@ config update-index --assume-unchanged \
     .config/awesome/widget/info-center-toggle/icons/info-center.svg \
     .config/awesome/widget/notif-center/icons/clear_all.png \
     .config/awesome/widget/notif-center/icons/delete.svg \
+    .config/awesome/widget/playerctl-center-toggle/icons/playerctl-center.png \
     .config/awesome/widget/screen-recorder/icons/audio.svg \
     .config/awesome/widget/screen-recorder/icons/back.svg \
     .config/awesome/widget/screen-recorder/icons/close-screen.svg \

@@ -3,6 +3,7 @@ local top_panel = require('layout.top-panel')
 local control_center = require('layout.control-center')
 local info_center = require('layout.info-center')
 local calendar_center = require('layout.calendar-center')
+local playerctl_center = require('layout.playerctl-center')
 
 -- Create a wibox panel for each screen and add it
 screen.connect_signal(
@@ -12,9 +13,11 @@ screen.connect_signal(
 		s.control_center = control_center(s)
 		s.info_center = info_center(s)
 		s.calendar_center = calendar_center(s)
+		s.playerctl_center = playerctl_center(s)
 		s.control_center_show_again = false
 		s.info_center_show_again = false
 		s.calendar_center_show_again = false
+		s.playerctl_center_show_again = false
 	end
 )
 
@@ -50,6 +53,15 @@ function update_bars_visibility()
 				elseif not fullscreen and not s.calendar_center.visible and s.calendar_center_show_again then
 					s.calendar_center:toggle()
 					s.calendar_center_show_again = false
+				end
+			end
+			if s.playerctl_center then
+				if fullscreen and s.playerctl_center.visible then
+					s.playerctl_center:toggle()
+					s.playerctl_center_show_again = true
+				elseif not fullscreen and not s.playerctl_center.visible and s.playerctl_center_show_again then
+					s.playerctl_center:toggle()
+					s.playerctl_center_show_again = false
 				end
 			end
 		end

@@ -48,3 +48,6 @@
 	url = https://github.com/Aire-One/awesome-battery_widget.git
 	update = rebase
 	branch = main
+[submodule ".config/awesome/library/bling"]
+	path = .config/awesome/library/bling
+	url = https://github.com/BlingCorp/bling.git
