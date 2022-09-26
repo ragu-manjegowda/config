@@ -3,6 +3,7 @@ local beautiful = require('beautiful')
 local naughty = require("naughty")
 local gears = require('gears')
 local revelation = require("library.revelation")
+local playerctl_daemon = require("library.bling").signal.playerctl.cli()
 
 require('awful.autofocus')
 
@@ -482,7 +483,7 @@ local global_keys = awful.util.table.join(
 		{},
 		'XF86AudioNext',
 		function()
-			awful.spawn('mpc next', false)
+            playerctl_daemon:next()
 		end,
 		{description = 'next music', group = 'hotkeys'}
 	),
@@ -491,7 +492,7 @@ local global_keys = awful.util.table.join(
 		{},
 		'XF86AudioPrev',
 		function()
-			awful.spawn('mpc prev', false)
+            playerctl_daemon:previous()
 		end,
 		{description = 'previous music', group = 'hotkeys'}
 	),
@@ -500,7 +501,7 @@ local global_keys = awful.util.table.join(
 		{},
 		'XF86AudioPlay',
 		function()
-			awful.spawn('mpc toggle', false)
+            playerctl_daemon:play_pause()
 		end,
 		{description = 'play/pause music', group = 'hotkeys'}
 
