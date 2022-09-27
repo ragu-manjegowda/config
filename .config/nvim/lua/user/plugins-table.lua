@@ -137,6 +137,9 @@ local core_plugins = {
                 "nvim-telescope/telescope-fzf-native.nvim",
                 run = "make",
             },
+            {
+                "nvim-telescope/telescope-live-grep-args.nvim"
+            },
         },
         setup = [[require("user.telescope").before()]],
         config = [[require("user.telescope").config()]],
