@@ -22,6 +22,7 @@ function M.before()
 
     -- Telescope fuzzy finder shortcuts
     map('n', '<leader>bs', '<cmd>lua require("telescope.builtin").current_buffer_fuzzy_find()<CR>', opts)
+    map('n', '<leader>fg', '<cmd>lua require("telescope").extensions.live_grep_args.live_grep_args()<CR>', opts)
     map('n', '<leader>pb', '<cmd>lua require("telescope.builtin").buffers()<CR>', opts)
     map('n', '<leader>pc', '<cmd>lua require("telescope.builtin").command_history()<CR>', opts)
     map('n', '<leader>pf', '<cmd>lua require("telescope.builtin").find_files({ find_command = {"rg", "--files", "--hidden", "-g", "!.git" }})<CR>', opts)
@@ -53,6 +54,7 @@ function M.config()
     }
 
     local actions = require("telescope.actions")
+    local lga_actions = require("telescope-live-grep-args.actions")
     require("telescope").setup({
         defaults = {
 
@@ -106,10 +108,22 @@ function M.config()
                 override_generic_sorter = false,
                 override_file_sorter = true,
             },
+            live_grep_args = {
+                auto_quoting = true, -- enable/disable auto-quoting
+                -- override default mappings
+                -- default_mappings = {},
+                mappings = { -- extend mappings
+                    i = {
+                        ["<C-k>"] = lga_actions.quote_prompt(),
+                    }
+                }
+            },
         },
     })
 
     require("telescope").load_extension("fzf")
+
+    require("telescope").load_extension("live_grep_args")
 end
 
 return M
