@@ -1,7 +1,25 @@
+################################################################################
+########### Custom ignores with exception for specific files and subfolders ###
+################################################################################
+
+.config/pulse/*
+!.config/pulse/daemon.conf
+
+.config/zim/*
 !.config/zim/style.conf
+
 !.local
+
+.local/*
 !.local/share
+
+.local/share/*
 !.local/share/applications
+
+################################################################################
+################## Regular ignores #############################################
+################################################################################
+
 .CFUserTextEncoding
 .DS_Store
 .ICEauthority
@@ -109,9 +127,10 @@
 .config/nvim/undodir
 .config/oauth2ms/config.json
 .config/oauth2ms/oauth2ms
+.config/okularpartrc
+.config/okularrc
 .config/pavucontrol.ini
 .config/pip
-.config/pulse
 .config/rclone/rclone.conf
 .config/redshift.conf
 .config/remmina
@@ -136,7 +155,6 @@
 .config/xpad
 .config/yelp
 .config/zathura/zathurarc
-.config/zim/*
 .config/zoomus.conf
 .config/zsh/.zcompdump*
 .config/zsh/.zsh_history
@@ -165,8 +183,6 @@
 .jfrog
 .lesshst
 .lldb
-.local/*
-.local/share/*
 .lyxauth
 .minirc.dfl
 .mozilla
