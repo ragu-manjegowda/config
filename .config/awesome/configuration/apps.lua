@@ -93,7 +93,9 @@ return {
         -- Sleep hook to update wallpaper when coming back from sleep
         config_dir .. 'utilities/suspend-hook.py &',
         -- Start volctl
-        config_dir .. 'utilities/volctl &'
+        config_dir .. 'utilities/volctl &',
+        -- Start playerctl daemon
+        'playerctld daemon'
 	},
 
 	-- List of binaries/shell scripts that will execute for a certain task
