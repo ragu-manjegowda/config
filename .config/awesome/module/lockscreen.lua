@@ -66,6 +66,12 @@ local caps_text = wibox.widget {
 	widget = wibox.widget.textbox
 }
 
+local caps_text_widget = wibox.widget {
+    -- bg = beautiful.accent,
+    widget = wibox.container.background,
+    caps_text
+}
+
 local profile_imagebox = wibox.widget {
 	id = 'user_icon',
 	image = widget_icon_dir .. 'default.svg',
@@ -210,8 +216,8 @@ local locker = function(s)
 		type = 'splash',
 		width = s.geometry.width,
 		height = s.geometry.height,
-		bg = beautiful.fg_normal,
-		fg = beautiful.background_light
+		bg = beautiful.bg_focus,
+		fg = beautiful.fg_normal
 	}
 
 	-- Update username textbox
@@ -304,8 +310,10 @@ local locker = function(s)
 			function(stdout)
 				if stdout:match('on') then
 					caps_text.opacity = 1.0
+                    caps_text_widget.bg = beautiful.accent
 				else
 					caps_text.opacity = 0.0
+                    caps_text_widget.bg = beautiful.transparent
 				end
 				caps_text:emit_signal('widget::redraw_needed')
 			end
@@ -408,7 +416,7 @@ local locker = function(s)
 
 	-- Login successful
 	local generalkenobi_ohhellothere = function()
-		circle_container.bg = green
+		circle_container.bg = beautiful.accent
 
 		-- Add a little delay before unlocking completely
 		gears.timer.start_new(
@@ -594,20 +602,30 @@ local locker = function(s)
 						layout = wibox.layout.align.horizontal,
 						expand = 'none',
 						nil,
-						time,
+                        {
+                            bg     = beautiful.bg_normal,
+                            widget = wibox.container.background,
+                            time
+                        },
 						nil
 					},
 					{
 						layout = wibox.layout.align.horizontal,
 						expand = 'none',
 						nil,
-						date_today,
+                        {
+                            bg     = beautiful.bg_normal,
+                            widget = wibox.container.background,
+                            date_today,
+                        },
 						nil
 					},
+                    spacing = dpi(10),
 					expand = 'none',
 					layout = wibox.layout.fixed.vertical
 				},
 				{
+                    spacing = dpi(10),
 					layout = wibox.layout.fixed.vertical,
 					{
 						circle_container,
@@ -627,8 +645,12 @@ local locker = function(s)
 						},
 						layout = wibox.layout.stack
 					},
-					uname_text,
-					caps_text
+                    {
+                        bg     = beautiful.bg_normal,
+                        widget = wibox.container.background,
+                        uname_text
+                    },
+                    caps_text_widget
 				},
 			},
 			nil
@@ -746,8 +768,8 @@ local locker_ext = function(s)
 		y = s.geometry.y,
 		width = s.geometry.width,
 		height = s.geometry.height,
-		bg = beautiful.fg_normal,
-		fg = beautiful.background_light
+		bg = beautiful.bg_focus,
+		fg = beautiful.fg_normal
 	}
 	return extended_lockscreen
 end
