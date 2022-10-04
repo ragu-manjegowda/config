@@ -16,20 +16,16 @@ local beautiful = require("beautiful")
 local wibox = require("wibox")
 local gears = require("gears")
 local clickable_container = require('widget.clickable-container')
+local config_dir = gears.filesystem.get_configuration_dir()
+local widget_icon_dir = config_dir .. 'widget/calendar/icons/'
+local dpi = beautiful.xresources.apply_dpi
 
 local bg             = beautiful.transparent
 local fg             = beautiful.fg_normal
 local focus_date_bg  = beautiful.accent
 local focus_date_fg  = beautiful.fg_focus
 local weekend_day_bg = beautiful.bg_focus
-local weekday_fg     = fg
-local header_fg      = fg
-local border         = beautiful.border_normal
 
-local placement = 'top'
-local radius = 8
-local next_month_button = 2
-local previous_month_button = 1
 local start_sunday = false
 
 local styles = {}
@@ -58,13 +54,13 @@ styles.focus = {
 }
 
 styles.header = {
-    fg_color = header_fg,
+    fg_color = fg,
     bg_color = bg,
     markup = function(t) return '<b>' .. t .. '</b>' end
 }
 
 styles.weekday = {
-    fg_color = weekday_fg,
+    fg_color = fg,
     bg_color = bg,
     markup = function(t) return '<b>' .. t .. '</b>' end,
 }
@@ -115,33 +111,113 @@ end
 
 local cal = wibox.widget {
     date = os.date('*t'),
-    font = beautiful.font,
+    font = 'Hack Nerd Regular 10',
     fn_embed = decorate_cell,
     long_weekdays = true,
     start_sunday = start_sunday,
     widget = wibox.widget.calendar.month
 }
 
-local cal_button = clickable_container(cal)
-cal_button:buttons(
-    gears.table.join(
-        awful.button({}, next_month_button, function()
-            local a = cal:get_date()
-            a.month = a.month + 1
-            cal:set_date(nil)
-            cal:set_date(a)
-        end),
-        awful.button({}, previous_month_button, function()
-            local a = cal:get_date()
-            a.month = a.month - 1
-            cal:set_date(nil)
-            cal:set_date(a)
-        end)
-    )
+local icon_left = wibox.widget {
+	layout = wibox.layout.align.vertical,
+	expand = 'none',
+	nil,
+	{
+		image = widget_icon_dir .. 'left-arrow' .. '.svg',
+		resize = true,
+		widget = wibox.widget.imagebox
+	},
+	nil
+}
+
+local icon_right = wibox.widget {
+	layout = wibox.layout.align.vertical,
+	expand = 'none',
+	nil,
+	{
+		image = widget_icon_dir .. 'right-arrow' .. '.svg',
+		resize = true,
+		widget = wibox.widget.imagebox
+	},
+	nil
+}
+
+local action_level_left = wibox.widget {
+	{
+		{
+			icon_left,
+			widget = wibox.container.margin
+		},
+		widget = clickable_container,
+	},
+	bg = beautiful.groups_bg,
+	shape = function(cr, width, height)
+		gears.shape.rounded_rect(cr, width, height, beautiful.groups_radius)
+	end,
+	widget = wibox.container.background
+}
+
+action_level_left:buttons(
+	awful.util.table.join(
+		awful.button(
+			{},
+			1,
+			nil,
+			function()
+                local a = cal:get_date()
+                a.month = a.month - 1
+                cal:set_date(nil)
+                cal:set_date(a)
+			end
+		)
+	)
 )
 
+local action_level_right = wibox.widget {
+	{
+		{
+			icon_right,
+			widget = wibox.container.margin
+		},
+		widget = clickable_container,
+	},
+	bg = beautiful.groups_bg,
+	shape = function(cr, width, height)
+		gears.shape.rounded_rect(cr, width, height, beautiful.groups_radius)
+	end,
+	widget = wibox.container.background
+}
+
+action_level_right:buttons(
+	awful.util.table.join(
+		awful.button(
+			{},
+			1,
+			nil,
+			function()
+                local a = cal:get_date()
+                a.month = a.month + 1
+                cal:set_date(nil)
+                cal:set_date(a)
+			end
+		)
+	)
+)
+
+local w = wibox.widget {
+    action_level_left,
+    cal,
+    action_level_right,
+    layout  = wibox.layout.ratio.horizontal
+}
+w:ajust_ratio(2, 0.10, 0.80, 0.10)
+
 local cal_widget = wibox.widget {
-	cal_button,
+    {
+        w,
+        expand = "none",
+        layout = wibox.layout.align.horizontal
+    },
 	bg = beautiful.transparent,
 	widget = wibox.container.background
 }
