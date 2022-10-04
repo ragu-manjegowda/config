@@ -44,23 +44,23 @@ awesome.connect_signal(
 	function()
 		if screen.primary.systray then
 
-			if not screen.primary.systray.visible then
+			screen.primary.systray.visible = not screen.primary.systray.visible
 
+			if not screen.primary.systray.visible then
 				widget.icon:set_image(gears.surface.load_uncached(widget_icon_dir .. 'left-arrow.svg'))
 			else
-
 				widget.icon:set_image(gears.surface.load_uncached(widget_icon_dir .. 'right-arrow.svg'))
 			end
-
-			screen.primary.systray.visible = not screen.primary.systray.visible
 		end
 	end
 )
 
 -- Update icon on start-up
 if screen.primary.systray then
-	if screen.primary.systray.visible then
-		widget.icon:set_image(widget_icon_dir .. 'right-arrow' .. '.svg')
+	if not screen.primary.systray.visible then
+		widget.icon:set_image(gears.surface.load_uncached(widget_icon_dir .. 'left-arrow.svg'))
+	else
+		widget.icon:set_image(gears.surface.load_uncached(widget_icon_dir .. 'right-arrow.svg'))
 	end
 end
 
