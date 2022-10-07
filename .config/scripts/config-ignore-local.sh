@@ -86,6 +86,8 @@ config update-index --assume-unchanged \
     .config/awesome/widget/bluetooth-toggle/icons/bluetooth.svg \
     .config/awesome/widget/bluetooth-toggle/icons/loading.svg \
     .config/awesome/widget/blur-toggle/icons/effects-off.svg \
+    .config/awesome/widget/calendar/icons/left-arrow.svg \
+    .config/awesome/widget/calendar/icons/right-arrow.svg \
     .config/awesome/widget/control-center-switch/icons/control-center.svg \
     .config/awesome/widget/control-center-toggle/icons/control-center.svg \
     .config/awesome/widget/dont-disturb/disturb_status \
