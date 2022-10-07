@@ -60,6 +60,7 @@ function M.config()
 
             mappings = {
                 i = {
+                    ["<C-f>"] = actions.to_fuzzy_refine,
                     ["<C-j>"] = actions.move_selection_next,
                     ["<C-k>"] = actions.move_selection_previous,
                     ["<C-x>"] = false,
@@ -114,7 +115,7 @@ function M.config()
                 -- default_mappings = {},
                 mappings = { -- extend mappings
                     i = {
-                        ["<C-k>"] = lga_actions.quote_prompt(),
+                        ["<C-i>"] = lga_actions.quote_prompt(),
                     }
                 }
             },
