@@ -95,7 +95,7 @@ local function decorate_cell(widget, flag, date)
                 halign = 'center',
                 widget = wibox.container.place
             },
-            margins = (props.padding or 2) + (props.border_width or 0),
+            margins = dpi(0),
             widget = wibox.container.margin
         },
         shape = props.shape,
@@ -111,7 +111,7 @@ end
 
 local cal = wibox.widget {
     date = os.date('*t'),
-    font = 'Hack Nerd Regular 10',
+    font = 'Hack Nerd Regular 14',
     fn_embed = decorate_cell,
     long_weekdays = true,
     start_sunday = start_sunday,
@@ -210,13 +210,14 @@ local w = wibox.widget {
     action_level_right,
     layout  = wibox.layout.ratio.horizontal
 }
-w:ajust_ratio(2, 0.10, 0.80, 0.10)
+
+w:inc_ratio(2, 0.5)
 
 local cal_widget = wibox.widget {
     {
         w,
-        expand = "none",
-        layout = wibox.layout.align.horizontal
+        forced_height = dpi(200),
+        widget        = wibox.container.background,
     },
 	bg = beautiful.transparent,
 	widget = wibox.container.background
