@@ -1,7 +1,7 @@
 local options = {
     autoindent = true,
     backup = false,                          -- creates a backup file
-    cmdheight = 2,                           -- more space in the neovim command line for displaying messages
+    cmdheight = 2,                           -- more space in the neovim command line
     colorcolumn = "80",
     completeopt = { "menuone", "noselect" }, -- mostly just for cmp
     conceallevel = 0,                        -- so that `` is visible in markdown files
@@ -11,7 +11,7 @@ local options = {
     guicursor = "",                          -- keep block cursor in insert mode
     hlsearch = false,                        -- don't highlight all matches on previous search pattern
     ignorecase = true,                       -- ignore case in search patterns
-    laststatus = 3,
+    laststatus = 3,                          -- enable global status line
     number = true,                           -- set numbered lines
     numberwidth = 4,                         -- set number column width to 4 {default 4}
     pumheight = 10,                          -- pop up menu height
