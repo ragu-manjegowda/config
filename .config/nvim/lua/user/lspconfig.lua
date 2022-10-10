@@ -6,20 +6,17 @@ local protocol = require'vim.lsp.protocol'
 
 local signs = { Error = " ", Warn = " ", Hint = " ", Information = " " }
 for type, icon in pairs(signs) do
-    local hl = "LspDiagnosticsSign" .. type
-    vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
+    local hl = "DiagnosticSign" .. type
+    vim.fn.sign_define(hl, { text = icon, texthl = "", numhl = "" })
 end
 
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
-local function on_attach(client, bufnr)
+local function on_attach(_, bufnr)
     local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
     local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
     --Enable completion triggered by <c-x><c-o>
     buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
-
-    -- Mappings.
-    local opts = { noremap=true, silent=true }
 
     -- See `:help vim.diagnostic.*` for documentation on any of the below functions
     local opts = { noremap=true, silent=true }
@@ -84,10 +81,14 @@ local log_path = vim.fn.expand('~/.config/nvim/misc/ccls/ccls.log')
 local cache_dir = vim.fn.expand('~/.config/nvim/misc/ccls')
 
 vim.lsp.handlers["textDocument/publishDiagnostics"]  = vim.lsp.with(
-    vim.lsp.diagnostic.on_publish_diagnostics, {
+    vim.lsp.diagnostic.on_publish_diagnostics,
+    {
         underline = false,
-        virtual_text = false
-  }
+        virtual_text = false,
+        signs = {
+            active = signs,
+        },
+    }
 )
 
 function M.config()
@@ -131,7 +132,17 @@ function M.config()
 
     nvim_lsp.gopls.setup {
         on_attach = on_attach,
-        root_dir = nvim_lsp.util.root_pattern("compile_commands.json", ".gitignore"),
+        cmd = {"gopls", "serve"},
+        filetypes = {"go", "gomod"},
+        root_dir = nvim_lsp.util.root_pattern("go.mod", ".gitignore"),
+        settings = {
+            gopls = {
+                analyses = {
+                    unusedparams = true,
+                },
+                staticcheck = true,
+            },
+        },
         capabilities = capabilities
     }
 
@@ -139,6 +150,72 @@ function M.config()
         on_attach = on_attach,
         capabilities = capabilities
     }
+
+    -- Lua settings
+    local runtime_path = vim.split(package.path, ";")
+    table.insert(runtime_path, "lua/?.lua")
+    table.insert(runtime_path, "lua/?/init.lua")
+
+    nvim_lsp.sumneko_lua.setup {
+        on_attach = on_attach,
+        -- root_dir is .luacheckrc which is added for both awesome and nvim
+        cmd = { "lua-language-server", "--preview" },
+        settings = {
+            Lua = {
+                telemetry = { enable = false },
+                runtime = {
+                    -- LuaJIT in the case of Neovim
+                    version = "LuaJIT",
+                    path = runtime_path,
+                },
+                diagnostics = {
+                    -- Get the language server to recognize the `vim` global
+                    globals = {
+                        "vim",
+                        "capabilities",  -- lspconfig
+                        "root",          -- awesomeWM
+                        "awesome",       -- awesomeWM
+                        "screen",        -- awesomeWM
+                        "client",        -- awesomeWM
+                        "clientkeys",    -- awesomeWM
+                        "clientbuttons", -- awesomeWM
+                        "startup",       -- awesomeWM
+                        "message",       -- awesomeWM
+                    },
+                    disable = {
+                        -- -- Need check nil
+                        -- "need-check-nil",
+                        -- -- This function requires 2 argument(s) but instead it is receiving 1
+                        -- "missing-parameter",
+                        -- -- Cannot assign `unknown` to `string`.
+                        -- "assign-type-mismatch",
+                        -- -- Cannot assign `unknown` to parameter `string`.
+                        -- "param-type-mismatch",
+                        -- -- This variable is defined as type `string`. Cannot convert its type to `unknown`.
+                        -- "cast-local-type",
+                    }
+                },
+                workspace = {
+                    -- Make the server aware of Neovim runtime files
+                    library = {
+                        [vim.fn.expand("$VIMRUNTIME/lua")] = true,
+                        [vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true,
+                    }
+                },
+                -- disable certain warnings that don't concern us
+                -- https://github.com/sumneko/lua-language-server/blob/master/doc/en-us/config.md
+                type = {
+                    -- Cannot assign `string|nil` to parameter `string`.
+                    weakNilCheck = true,
+                    weakUnionCheck = true,
+                    -- Cannot assign `number` to parameter `integer`.
+                    castNumberToInteger = true,
+                },
+            }
+        },
+        capabilities = capabilities
+    }
+
 end
 
 return M

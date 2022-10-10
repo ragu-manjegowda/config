@@ -17,12 +17,13 @@ M.config = function()
         },
         ensure_installed = {
             "c",
-            "cpp"
+            "cpp",
+            "go",
+            "lua",
+            "python",
+            "rust"
         },
     }
-
-    local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
-    parser_config.tsx.filetype_to_parsername = { "c", "cpp" }
 end
 
 return M

@@ -98,8 +98,6 @@ keymap("n", "gs", ":%s/ / /gic<Left><Left><Left><Left><Left><Left><Left>", { nor
 -- Insert Mode
 -------------------------------------------------------------------------------
 
--- Press jj fast to enter
-keymap("i", "jj", "<ESC>", opts)
 keymap("i", "<A-j>", "<ESC>:m .+1<CR>==i", opts)
 keymap("i", "<A-k>", "<ESC>:m .-2<CR>==i", opts)
 

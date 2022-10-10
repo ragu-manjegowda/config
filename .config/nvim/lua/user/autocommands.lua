@@ -60,8 +60,10 @@ nnoremap <silent> <leader>z :ZoomToggle<CR>
 
 " Disable creating new file if doesn't exist
 let g:fsnonewfiles = 1
+
 " Switch between header and source file not in same directory
-au BufEnter *.h let b:fswitchdst = 'c,_interface.cpp,cpp' | let b:fswitchlocs = 'reg:|include.*|src/**|' | let b:fswitchfnames = '/$/_interface/'
+au BufEnter *.h let b:fswitchdst = 'c,_interface.cpp,cpp' |
+    \ let b:fswitchlocs = 'reg:|include.*|src/**|' | let b:fswitchfnames = '/$/_interface/'
 au BufEnter *.hpp let b:fswitchdst = 'cpp' | let b:fswitchlocs = 'reg:|include.*|src/**|,./impl'
 au BufEnter *.cpp let b:fswitchdst = 'hpp' | let b:fswitchlocs = 'reg:|include.*|src/**|,../'
 au BufEnter *_interface.cpp let b:fswitchdst = 'h' | let b:fswitchfnames = '/_interface$//'
@@ -122,56 +124,95 @@ command! QFSort call s:SortUniqQFList()
 
 vim.api.nvim_create_augroup("bufcheck", {clear = true})
 
-    -- Enable spell checking for certain file types
-    vim.api.nvim_create_autocmd(
-        { "BufRead", "BufNewFile" },
-        {
-            pattern = { "*.md", "*.Rmd", "*.txt", "*.tex", },
-            command = "setlocal spell spelllang=en_us"
-        }
-    )
+-- Enable spell checking for certain file types
+vim.api.nvim_create_autocmd(
+    { "BufRead", "BufNewFile" },
+    {
+        pattern = { "*.md", "*.Rmd", "*.txt", "*.tex", },
+        command = "setlocal spell spelllang=en_us"
+    }
+)
 
-    -- reload config file on change
-    vim.api.nvim_create_autocmd("BufWritePost", {
+-- reload config file on change
+vim.api.nvim_create_autocmd(
+    { "BufWritePost" },
+    {
         group    = "bufcheck",
         pattern  = vim.env.MYVIMRC,
         command  = "silent source %"
-    })
+    }
+)
 
-    -- highlight yanks
-    vim.api.nvim_create_autocmd("TextYankPost", {
+-- highlight yanks
+vim.api.nvim_create_autocmd(
+    { "TextYankPost" },
+    {
         group    = "bufcheck",
         pattern  = "*",
         callback = function()
             vim.highlight.on_yank{timeout=500}
         end
-    })
+    }
+)
 
-    -- start terminal in insert mode
-    vim.api.nvim_create_autocmd("TermOpen", {
+-- start terminal in insert mode
+vim.api.nvim_create_autocmd(
+    { "TermOpen" },
+    {
         group    = "bufcheck",
         pattern  = "*",
         command  = "startinsert | set winfixheight"
-    })
+    }
+)
 
-   -- pager mappings for Manual
-   vim.api.nvim_create_autocmd("FileType", {
+-- pager mappings for Manual
+vim.api.nvim_create_autocmd(
+    { "FileType" },
+    {
         group    = "bufcheck",
         pattern  = "man",
         callback = function()
             vim.keymap.set("n", "<enter>"    , "K"    , {buffer=true})
             vim.keymap.set("n", "<backspace>", "<c-o>", {buffer=true})
         end
-    })
+    }
+)
 
-    -- Return to last edit position when opening files
-    -- vim.api.nvim_create_autocmd("BufReadPost",  {
-    --     group    = "bufcheck",
-    --     pattern  = "*",
-    --     callback = function()
-    --       if vim.fn.line("'\"") > 0 and vim.fn.line("'\"") <= vim.fn.line("$") then
-    --             vim.fn.setpos(".", vim.fn.getpos("'\""))
-    --             vim.api.nvim_feedkeys('zz', 'n', true)
-    --         end
-    --     end
-    -- })
+-- Return to last edit position when opening files
+-- vim.api.nvim_create_autocmd("BufReadPost",  {
+--     group    = "bufcheck",
+--     pattern  = "*",
+--     callback = function()
+--       if vim.fn.line("'\"") > 0 and vim.fn.line("'\"") <= vim.fn.line("$") then
+--             vim.fn.setpos(".", vim.fn.getpos("'\""))
+--             vim.api.nvim_feedkeys('zz', 'n', true)
+--         end
+--     end
+-- })
+
+-- Go imports and formatting_sync on save
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = { "*.go" },
+  callback = function()
+	  vim.lsp.buf.formatting_sync(nil, 3000)
+  end,
+})
+
+vim.api.nvim_create_autocmd("BufWritePre", {
+	pattern = { "*.go" },
+	callback = function()
+		local params = vim.lsp.util.make_range_params(nil, vim.lsp.util._get_offset_encoding())
+		params.context = {only = {"source.organizeImports"}}
+
+		local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, 3000)
+		for _, res in pairs(result or {}) do
+			for _, r in pairs(res.result or {}) do
+				if r.edit then
+					vim.lsp.util.apply_workspace_edit(r.edit, vim.lsp.util._get_offset_encoding())
+				else
+					vim.lsp.buf.execute_command(r.command)
+				end
+			end
+		end
+	end,
+})
