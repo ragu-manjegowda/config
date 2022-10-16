@@ -51,6 +51,10 @@ local global_keys = awful.util.table.join(
 				focused.info_center:hide_dashboard()
 				focused.info_center.opened = false
 			end
+			if focused.calendar_center then
+				focused.calendar_center:hide_dashboard()
+				focused.calendar_center.opened = false
+			end
 			awful.spawn(apps.default.rofi_appmenu, false)
 		end,
 		{description = 'open application drawer', group = 'launcher'}
@@ -73,6 +77,9 @@ local global_keys = awful.util.table.join(
 			if focused.info_center and focused.info_center.visible then
 				focused.info_center:toggle()
 			end
+			if focused.calendar_center and focused.calendar_center.visible then
+				focused.calendar_center:toggle()
+			end
 			focused.control_center:toggle()
 		end,
 		{description = 'open control center', group = 'launcher'}
@@ -89,6 +96,22 @@ local global_keys = awful.util.table.join(
             )
 		end,
 		{description = 'find cursor location', group = 'launcher'}
+	),
+
+	awful.key(
+		{modkey, 'Shift'},
+		'c',
+		function()
+			local focused = awful.screen.focused()
+			if focused.control_center and focused.control_center.visible then
+				focused.control_center:toggle()
+			end
+			if focused.info_center and focused.info_center.visible then
+				focused.info_center:toggle()
+			end
+			focused.calendar_center:toggle()
+		end,
+		{description = 'open calendar center', group = 'launcher'}
 	),
 
 	awful.key(
@@ -129,6 +152,10 @@ local global_keys = awful.util.table.join(
 				focused.info_center:hide_dashboard()
 				focused.info_center.opened = false
 			end
+			if focused.calendar_center then
+				focused.calendar_center:hide_dashboard()
+				focused.calendar_center.opened = false
+			end
 			awful.spawn(apps.default.rofi_runmenu, false)
 		end,
 		{description = 'rofi run menu', group = 'launcher'}
@@ -147,6 +174,10 @@ local global_keys = awful.util.table.join(
 			if focused.info_center then
 				focused.info_center:hide_dashboard()
 				focused.info_center.opened = false
+			end
+			if focused.calendar_center then
+				focused.calendar_center:hide_dashboard()
+				focused.calendar_center.opened = false
 			end
 			awful.spawn(apps.default.rofi_emojimenu, false)
 		end,
@@ -179,6 +210,9 @@ local global_keys = awful.util.table.join(
 			local focused = awful.screen.focused()
 			if focused.control_center and focused.control_center.visible then
 				focused.control_center:toggle()
+			end
+			if focused.calendar_center and focused.calendar_center.visible then
+				focused.calendar_center:toggle()
 			end
 			focused.info_center:toggle()
 		end,
@@ -345,6 +379,10 @@ local global_keys = awful.util.table.join(
 			if focused.info_center then
 				focused.info_center:hide_dashboard()
 				focused.info_center.opened = false
+			end
+			if focused.calendar_center then
+				focused.calendar_center:hide_dashboard()
+				focused.calendar_center.opened = false
 			end
 			awful.spawn(apps.utils.show_time .. ' ' .. apps.default.rofi_time, false)
 		end,
