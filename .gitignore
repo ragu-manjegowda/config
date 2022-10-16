@@ -78,6 +78,7 @@
 .config/cppman
 .config/dconf
 .config/ddb-frontend Dev
+.config/dlv
 .config/enchant
 .config/eog
 .config/evolution

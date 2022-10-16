@@ -36,9 +36,22 @@ local core_plugins = {
         setup = [[require("user.tagbar").before()]],
     },
 
-    --compile
+    -- Compile
     {
         "tpope/vim-dispatch"
+    },
+
+    -- Debugging
+    {
+        "rcarriga/nvim-dap-ui",
+        requires = {
+            {
+                "mfussenegger/nvim-dap",
+                config = [[require("user.dap").config()]],
+            },
+            "theHamsta/nvim-dap-virtual-text",
+        },
+        config = [[require("user.dapui").config()]],
     },
 
     -- Extra
