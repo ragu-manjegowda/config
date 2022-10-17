@@ -14,6 +14,11 @@ function M.config()
       return
     end
 
+    -- Change debugging icons
+    vim.fn.sign_define('DapBreakpointCondition', { text = 'Ω', texthl = 'Red', linehl = '', numhl = 'Red' })
+    vim.fn.sign_define('DapBreakpoint', { text = '⬢', texthl = 'Red', linehl = '', numhl = 'Red' })
+    vim.fn.sign_define('DapStopped', { text = '▶', texthl = 'Green', linehl = 'ColorColumn', numhl = 'Green' })
+
     dapui.setup({
       layouts = {
         {
@@ -38,13 +43,19 @@ function M.config()
     })
 
     dap.listeners.after.event_initialized["dapui_config"] = function()
-      dapui.open()
+        dapui.open()
     end
     dap.listeners.before.event_terminated["dapui_config"] = function()
-      dapui.close()
+        dap.repl.close()
+        dapui.close()
     end
-    dap.listeners.before.event_exited["dapui_config"] = function()
-      dapui.close()
+    dap.listeners.before.event_exited["dapui_config"]     = function()
+        dap.repl.close()
+        dapui.close()
+    end
+    dap.listeners.before.disconnect["dapui_config"]       = function()
+        dap.repl.close()
+        dapui.close()
     end
 end
 
