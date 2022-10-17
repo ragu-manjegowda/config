@@ -3,29 +3,51 @@ local vim = vim
 local M = {}
 
 function M.config()
-    local map = vim.keymap.set
+    local map = vim.api.nvim_set_keymap
 
-    map({ 'n', 'v' }, '<F5>', "<cmd>lua require'dap'.continue()<CR>",
-      { silent = true, desc = "DAP launch or continue" })
-    map({ 'n', 'v' }, '<F8>', "<cmd>lua require'dapui'.toggle()<CR>",
-      { silent = true, desc = "DAP toggle UI" })
-    map({ 'n', 'v' }, '<F9>', "<cmd>lua require'dap'.toggle_breakpoint()<CR>",
-      { silent = true, desc = "DAP toggle breakpoint" })
-    map({ 'n', 'v' }, '<F10>', "<cmd>lua require'dap'.step_over()<CR>",
-      { silent = true, desc = "DAP step over" })
-    map({ 'n', 'v' }, '<F11>', "<cmd>lua require'dap'.step_into()<CR>",
-      { silent = true, desc = "DAP step into" })
-    map({ 'n', 'v' }, '<F12>', "<cmd>lua require'dap'.step_out()<CR>",
-      { silent = true, desc = "DAP step out" })
-    map({ 'n', 'v' }, '<leader>dc', "<cmd>lua require'dap'.set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>", { silent = true, desc = "set breakpoint with condition" })
-    map({ 'n', 'v' }, '<leader>dp', "<cmd>lua require'dap'.set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<CR>", { silent = true, desc ="set breakpoint with log point message" })
-    map({ 'n', 'v' }, '<leader>dr', "<cmd>lua require'dap'.repl.toggle()<CR>",
-      { silent = true, desc = "toggle debugger REPL" })
+    map('n', '<leader>dce', '<cmd>lua require("dap").continue()<CR>',
+        { silent = true, desc = 'DAP launch or continue'})
+
+    map('n', '<leader>dtui', '<cmd>lua require("dapui").toggle()<CR>',
+        { silent = true, desc = 'DAP toggle UI' })
+
+    map('n', '<leader>dtb', '<cmd>lua require("dap").toggle_breakpoint()<CR>',
+        { silent = true, desc = 'DAP toggle breakpoint' })
+
+    map('n', '<leader>sn', '<cmd>lua require("dap").step_over()<CR>',
+        { silent = true, desc = 'DAP step over' })
+
+    map('n', '<leader>si', '<cmd>lua require("dap").step_into()<CR>',
+        { silent = true, desc = 'DAP step into' })
+
+    map('n', '<leader>so', '<cmd>lua require("dap").step_out()<CR>',
+        { silent = true, desc = 'DAP step out' })
+
+    map('n', '<leader>dcb',
+        '<cmd>lua require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: "))<CR>',
+        { silent = true, desc = 'set breakpoint with condition' })
+
+    map('n', '<leader>deb', '<cmd>lua require("dap").set_exception_breakpoints({"all"})<CR>',
+        { silent = true, desc = 'set exception breakpoint' })
+
+    map('n', '<leader>dtr', '<cmd>lua require("dap").repl.toggle()<CR>',
+        { silent = true, desc = 'toggle debugger REPL' })
+
+    map('n', '<leader>drb', '<cmd>lua require("dap").clear_breakpoints()<CR>',
+        { silent = true, desc = 'DAP remove breakpoints' })
 
     local res, dap = pcall(require, "dap")
     if not res then
       return
     end
+
+    local dap_virtual_text
+    res, dap_virtual_text = pcall(require, "nvim-dap-virtual-text")
+    if not res then
+      return
+    end
+
+    dap_virtual_text.setup()
 
     -- nvim-dap-virtual-text. Show virtual text for current frame
     vim.g.dap_virtual_text = true
@@ -101,6 +123,44 @@ function M.config()
         mode = "test",
         program = "./${relativeFileDirname}",
       }
+    }
+
+    dap.adapters.cppdbg = {
+        id = 'cppdbg',
+        type = 'executable',
+        command = vim.fn.expand('~/.config/nvim/misc/cppdbg/extension/debugAdapters/bin/OpenDebugAD7'),
+    }
+
+    dap.configurations.cpp = {
+        {
+            name = "Launch file",
+            type = "cppdbg",
+            request = "launch",
+            program = function()
+                return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+            end,
+            cwd = '${workspaceFolder}',
+            stopAtEntry = true,
+        },
+        {
+            name = 'Attach to gdbserver :1234',
+            type = 'cppdbg',
+            request = 'launch',
+            MIMode = 'gdb',
+            miDebuggerServerAddress = 'localhost:1234',
+            miDebuggerPath = '/usr/bin/gdb',
+            cwd = '${workspaceFolder}',
+            program = function()
+                return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+            end,
+            setupCommands = {
+                {
+                    text = '-enable-pretty-printing',
+                    description =  'enable pretty printing',
+                    ignoreFailures = false
+                },
+            },
+        },
     }
 end
 

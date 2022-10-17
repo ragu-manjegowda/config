@@ -22,6 +22,8 @@ function M.before()
 
     -- Telescope fuzzy finder shortcuts
     map('n', '<leader>bs', '<cmd>lua require("telescope.builtin").current_buffer_fuzzy_find()<CR>', opts)
+    map('n', '<leader>dlb', '<cmd>lua require("telescope").extensions.dap.list_breakpoints{}<CR>', opts)
+    map('n', '<leader>dbt', '<cmd>lua require("telescope").extensions.dap.frames{}<CR>', opts)
     map('n', '<leader>fg', '<cmd>lua require("telescope").extensions.live_grep_args.live_grep_args()<CR>', opts)
     map('n', '<leader>pb', '<cmd>lua require("telescope.builtin").buffers()<CR>', opts)
     map('n', '<leader>pc', '<cmd>lua require("telescope.builtin").command_history()<CR>', opts)
@@ -127,6 +129,8 @@ function M.config()
     require("telescope").load_extension("fzf")
 
     require("telescope").load_extension("live_grep_args")
+
+    require("telescope").load_extension("dap")
 end
 
 return M
