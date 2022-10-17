@@ -5,36 +5,39 @@ local M = {}
 function M.config()
     local map = vim.api.nvim_set_keymap
 
+    map('n', '<leader>dcb',
+        '<cmd>lua require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: "))<CR>',
+        { silent = true, desc = 'Set breakpoint with condition' })
+
     map('n', '<leader>dce', '<cmd>lua require("dap").continue()<CR>',
         { silent = true, desc = 'DAP launch or continue'})
 
-    map('n', '<leader>dtui', '<cmd>lua require("dapui").toggle()<CR>',
-        { silent = true, desc = 'DAP toggle UI' })
+    map('n', '<leader>deb', '<cmd>lua require("dap").set_exception_breakpoints({"all"})<CR>',
+        { silent = true, desc = 'Set exception breakpoint' })
+
+    map('n', '<leader>drb', '<cmd>lua require("dap").clear_breakpoints()<CR>',
+        { silent = true, desc = 'DAP remove breakpoints' })
 
     map('n', '<leader>dtb', '<cmd>lua require("dap").toggle_breakpoint()<CR>',
         { silent = true, desc = 'DAP toggle breakpoint' })
 
-    map('n', '<leader>sn', '<cmd>lua require("dap").step_over()<CR>',
-        { silent = true, desc = 'DAP step over' })
+    map('n', '<leader>dte', '<cmd>lua require("dap").terminate()<CR>',
+        { silent = true, desc = 'DAP terminate'})
+
+    map('n', '<leader>dtr', '<cmd>lua require("dap").repl.toggle()<CR>',
+        { silent = true, desc = 'Toggle debugger REPL' })
+
+    map('n', '<leader>dtui', '<cmd>lua require("dapui").toggle()<CR>',
+        { silent = true, desc = 'DAP toggle UI' })
 
     map('n', '<leader>si', '<cmd>lua require("dap").step_into()<CR>',
         { silent = true, desc = 'DAP step into' })
 
+    map('n', '<leader>sn', '<cmd>lua require("dap").step_over()<CR>',
+        { silent = true, desc = 'DAP step over' })
+
     map('n', '<leader>so', '<cmd>lua require("dap").step_out()<CR>',
         { silent = true, desc = 'DAP step out' })
-
-    map('n', '<leader>dcb',
-        '<cmd>lua require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: "))<CR>',
-        { silent = true, desc = 'set breakpoint with condition' })
-
-    map('n', '<leader>deb', '<cmd>lua require("dap").set_exception_breakpoints({"all"})<CR>',
-        { silent = true, desc = 'set exception breakpoint' })
-
-    map('n', '<leader>dtr', '<cmd>lua require("dap").repl.toggle()<CR>',
-        { silent = true, desc = 'toggle debugger REPL' })
-
-    map('n', '<leader>drb', '<cmd>lua require("dap").clear_breakpoints()<CR>',
-        { silent = true, desc = 'DAP remove breakpoints' })
 
     local res, dap = pcall(require, "dap")
     if not res then
@@ -138,6 +141,10 @@ function M.config()
             request = "launch",
             program = function()
                 return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+            end,
+            args  = function()
+                local argument_string = vim.fn.input('Program arguments: ')
+                return vim.fn.split(argument_string, " ", true)
             end,
             cwd = '${workspaceFolder}',
             stopAtEntry = true,
