@@ -182,6 +182,7 @@ local calendar_center = function(s)
     function panel:toggle()
         self.opened = not self.opened
         if self.opened then
+            require("widget.calendar"):update()
             open_panel()
         else
             close_panel()
