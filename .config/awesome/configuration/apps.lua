@@ -82,13 +82,18 @@ return {
         -- Darkman
         -- 'systemctl --user reload-or-restart --now darkman.service',
         'systemctl reload-or-restart --now geoclue.service',
-        'XDG_DATA_DIRS=~/.config/darkman darkman run &',
+        'killall darkman; ' ..
+        'XDG_DATA_DIRS=~/.config/darkman ' ..
+        'darkman run > ~/.cache/awesome/darkman.log 2>&1 &',
+        'systemctl reload-or-restart geoclue.service',
         -- Use `xinput list` command to get touchpad device name
         -- `SynPS/2 Synaptics TouchPad` in this case
         -- 'xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Tapping Enabled" 1',
         -- Start imapnotify
         --'systemctl --user reload-or-restart goimapnotify.service',
-        'goimapnotify -conf ~/.config/imapnotify/imapnotify.conf &',
+        'killall goimapnotify; ' ..
+        'goimapnotify -conf ~/.config/imapnotify/imapnotify.conf ' ..
+        '> ~/.cache/awesome/imapnotify.log 2>&1 &',
         '~/.config/imapnotify/notify.sh',
         -- Sleep hook to update wallpaper when coming back from sleep
         config_dir .. 'utilities/suspend-hook.py &',

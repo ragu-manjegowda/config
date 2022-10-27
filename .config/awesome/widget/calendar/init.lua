@@ -223,4 +223,9 @@ local cal_widget = wibox.widget {
 	widget = wibox.container.background
 }
 
+function cal_widget:update()
+    date = os.date('*t')
+    cal:set_date(date)
+end
+
 return cal_widget
