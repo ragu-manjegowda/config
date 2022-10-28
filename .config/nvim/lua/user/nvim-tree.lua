@@ -20,6 +20,9 @@ function M.config()
     local map = vim.api.nvim_set_keymap
     local opts = {noremap = true, silent = true}
 
+    map("n", "<leader>tgr", '<cmd>lua require("nvim-tree.api").git.reload()<CR>', opts)
+    map("n", "<leader>tmn", '<cmd>lua require("nvim-tree.api").marks.navigate.next()<CR>', opts)
+    map("n", "<leader>tmp", '<cmd>lua require("nvim-tree.api").marks.navigate.prev()<CR>', opts)
     map('n', '<leader>tt', '<cmd>lua require("nvim-tree").toggle()<CR>', opts)
 
     local tree_cb = require "nvim-tree.config".nvim_tree_callback
