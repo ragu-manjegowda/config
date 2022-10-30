@@ -182,6 +182,7 @@ function toggle-alacritty-theme () {
     fi
 
     config_path="$HOME/.config/alacritty/colors.yml"
+    vim_config_path="$HOME/.config/nvim/lua/user/colorscheme.lua"
 
     # Get current mode
     mode=$(awk 'sub(/colors:'\ '\*solarized-/,""){print $1}' $config_path)
@@ -190,10 +191,12 @@ function toggle-alacritty-theme () {
         light)
             sed -i -e "s#^colors: \*.*#colors: *solarized-dark#g" $config_path
             export BAT_THEME="Solarized (dark)"
+            sed -i -e "s#background=dark#background=light#g" $vim_config_path
             ;;
         dark)
             sed -i -e "s#^colors: \*.*#colors: *solarized-light#g" $config_path
             export BAT_THEME="Solarized (light)"
+            sed -i -e "s#background=light#background=dark#g" $vim_config_path
             ;;
     esac
 
@@ -249,6 +252,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         echo "file $HOME/.config/alacritty/colors.yml doesn't exist"
     else
         config_path="$HOME/.config/alacritty/colors.yml"
+        vim_config_path="$HOME/.config/nvim/lua/user/colorscheme.lua"
 
         # Get current mode
         mode=$(defaults read -g AppleInterfaceStyle 2>/dev/null)
@@ -256,10 +260,12 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         case $mode in
             Dark)
                 sed -i -e "s#^colors: \*.*#colors: *solarized-dark#g" $config_path
+                sed -i -e "s#background=light#background=dark#g" $vim_config_path
                 export BAT_THEME="Solarized (dark)"
                 ;;
             *)
                 sed -i -e "s#^colors: \*.*#colors: *solarized-light#g" $config_path
+                sed -i -e "s#background=dark#background=light#g" $vim_config_path
                 export BAT_THEME="Solarized (light)"
                 ;;
         esac
