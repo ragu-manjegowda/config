@@ -123,6 +123,7 @@
 .config/neomutt/maildir
 .config/neomutt/msmtp.log
 .config/neomutt/pass.gpg_decrypted
+.config/nvim/lua/user/colorscheme.lua-e
 .config/nvim/misc
 .config/nvim/plugin/packer_compiled.lua
 .config/nvim/undodir
