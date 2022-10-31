@@ -35,6 +35,7 @@ linux-firmware
 linux-headers
 linux-lts
 linux-lts-headers
+lua-lgi
 lua-pam-git
 lxqt-policykit
 ly
@@ -43,6 +44,7 @@ maim
 make
 mosh-git
 msmtp
+myxer
 neomutt
 neovim
 network-manager-applet
@@ -53,6 +55,7 @@ noto-fonts
 noto-fonts-emoji
 ntp
 numix-cursor-theme
+okular
 openrazer-meta
 pacman-cleanup-hook
 paru
@@ -60,6 +63,7 @@ patch
 pavucontrol
 picom-git
 pkgconf
+playerctl
 pulseaudio
 pulseaudio-alsa
 ranger
