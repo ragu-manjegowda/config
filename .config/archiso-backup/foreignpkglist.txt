@@ -9,6 +9,7 @@ light-git
 lua-pam-git
 ly
 mosh-git
+myxer
 nomachine
 numix-cursor-theme
 openrazer-meta

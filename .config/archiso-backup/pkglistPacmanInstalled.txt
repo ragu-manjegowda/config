@@ -27,6 +27,7 @@ linux-firmware
 linux-headers
 linux-lts
 linux-lts-headers
+lua-lgi
 lxqt-policykit
 m4
 maim
@@ -40,9 +41,11 @@ nfs-utils
 noto-fonts
 noto-fonts-emoji
 ntp
+okular
 patch
 pavucontrol
 pkgconf
+playerctl
 pulseaudio
 pulseaudio-alsa
 ranger
