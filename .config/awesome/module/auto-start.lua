@@ -33,11 +33,20 @@ end
 awesome.connect_signal(
 	'module::spawn_apps',
 	function()
+        -- Need the following when we come back from sleep
+        run_once('systemctl reload-or-restart --now geoclue.service')
+        run_once('killall darkman; ' ..
+        'XDG_DATA_DIRS=~/.config/darkman ' ..
+        'darkman run > ~/.cache/awesome/darkman.log 2>&1 &')
+        run_once('systemctl reload-or-restart geoclue.service')
+        run_once('killall goimapnotify; ' ..
+        'goimapnotify -conf ~/.config/imapnotify/imapnotify.conf ' ..
+        '> ~/.cache/awesome/imapnotify.log 2>&1 &')
+
         -- No need for this since they are now part of start-up apps
         -- Just a fail safe mechanism in case user services fails
         -- awful.spawn('systemctl --user reload-or-restart --now darkman.service')
         -- awful.spawn('systemctl --user reload-or-restart --now goimapnotify.service')
-
         -- run_once('XDG_DATA_DIRS=~/.config/darkman darkman')
 
         -- Update email's list when we come back from sleep
