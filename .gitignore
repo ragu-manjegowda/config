@@ -61,11 +61,8 @@
 .config/awesome/library/volctl/volctl/__pycache__
 .config/awesome/widget/email/mails.txt
 .config/bash/.bash_history
-.config/bash/.bash_maglev
-.config/bash/.bash_ros
 .config/bash/bash_custom_homebrew_first
 .config/bash/bash_extras
-.config/bash/bash_maglev
 .config/broot/conf.hjson
 .config/broot/launcher
 .config/buildauth
@@ -220,6 +217,8 @@
 .ssh/id_ed25519_gerrit.pub
 .ssh/id_ed25519_github
 .ssh/id_ed25519_github.pub
+.ssh/id_ed25519_gitlab
+.ssh/id_ed25519_gitlab.pub
 .ssh/id_ed25519_nvidia
 .ssh/id_ed25519_nvidia.pub
 .ssh/id_rsa
