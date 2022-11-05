@@ -12,6 +12,7 @@ blueman
 broadcom-wl-dkms
 check-broken-packages-pacman-hook-git
 darkman
+docker
 efibootmgr
 fakeroot
 ffmpeg
@@ -57,6 +58,7 @@ ntp
 numix-cursor-theme
 okular
 openrazer-meta
+openssl-1.1
 pacman-cleanup-hook
 paru
 patch
