@@ -11,7 +11,7 @@ local clickable_container = require('widget.clickable-container')
 return function()
     local clock = wibox.widget({
         widget = wibox.widget.textclock,
-        format = "%a %b %e %l:%M %p",
+        format = "%a %b %d %l:%M %p",
         align = "center",
         valign = "center",
         font = beautiful.font_bold,
