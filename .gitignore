@@ -8,13 +8,13 @@
 .config/zim/*
 !.config/zim/style.conf
 
-!.local
-
-.local/*
-!.local/share
-
-.local/share/*
-!.local/share/applications
+# !.local
+#
+# .local/*
+# !.local/share
+#
+# .local/share/*
+# !.local/share/applications
 
 ################################################################################
 ################## Regular ignores #############################################
@@ -182,6 +182,7 @@
 .jfrog
 .lesshst
 .lldb
+.local
 .lyxauth
 .minirc.dfl
 .mozilla
