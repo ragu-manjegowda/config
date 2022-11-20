@@ -191,12 +191,12 @@ function toggle-alacritty-theme () {
         light)
             sed -i -e "s#^colors: \*.*#colors: *solarized-dark#g" $config_path
             export BAT_THEME="Solarized (dark)"
-            sed -i -e "s#background=dark#background=light#g" $vim_config_path
+            sed -i -e "s#background=light#background=dark#g" $vim_config_path
             ;;
         dark)
             sed -i -e "s#^colors: \*.*#colors: *solarized-light#g" $config_path
             export BAT_THEME="Solarized (light)"
-            sed -i -e "s#background=light#background=dark#g" $vim_config_path
+            sed -i -e "s#background=dark#background=light#g" $vim_config_path
             ;;
     esac
 
