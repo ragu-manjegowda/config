@@ -146,7 +146,17 @@ function M.config()
                 local argument_string = vim.fn.input('Program arguments: ')
                 return vim.fn.split(argument_string, " ", true)
             end,
-            cwd = '${workspaceFolder}',
+            cwd = function()
+                return vim.fn.input('Program working directory: ', vim.fn.getcwd() .. '/', 'file')
+            end,
+            setupCommands = {
+                {
+                    text = '-enable-pretty-printing',
+                    description =  'enable pretty printing',
+                    ignoreFailures = false
+                },
+            },
+
             stopAtEntry = true,
         },
         {
