@@ -12,6 +12,7 @@ local options = {
     hlsearch = false,                        -- don't highlight all matches on previous search pattern
     ignorecase = true,                       -- ignore case in search patterns
     laststatus = 3,                          -- enable global status line
+    mouse = "",                              -- disable mouse
     number = true,                           -- set numbered lines
     numberwidth = 4,                         -- set number column width to 4 {default 4}
     pumheight = 10,                          -- pop up menu height

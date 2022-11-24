@@ -12,6 +12,7 @@ docker
 efibootmgr
 fakeroot
 ffmpeg
+firefox
 flex
 gcc
 git

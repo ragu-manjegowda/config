@@ -17,6 +17,7 @@ efibootmgr
 fakeroot
 ffmpeg
 find-cursor
+firefox
 flex
 gcc
 git
