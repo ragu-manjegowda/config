@@ -191,6 +191,9 @@ selection:
 # Live config reload (changes require restart)
 live_config_reload: true
 
+# Send ESC (\x1b) before characters when alt is pressed.
+alt_send_esc: true
+
 mouse:
   # Click settings
   #
