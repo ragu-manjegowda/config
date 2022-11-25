@@ -30,6 +30,7 @@ function M.before()
     map('n', '<leader>pf', '<cmd>lua require("telescope.builtin").find_files({ find_command = {"rg", "--files", "--hidden", "-g", "!.git" }})<CR>', opts)
     map('n', '<leader>ph', '<cmd>lua require("telescope.builtin").help_tags()<CR>', opts)
     map('n', '<leader>pj', '<cmd>lua require("telescope.builtin").jumplist()<CR>', opts)
+    map('n', '<leader>pk', '<cmd>lua require("telescope.builtin").keymaps()<CR>', opts)
     map('n', '<leader>pm', '<cmd>lua require("telescope.builtin").man_pages()<CR>', opts)
     map('n', '<leader>po', '<cmd>lua require("telescope.builtin").explorer()<CR>', opts)
     map('n', '<leader>pq', '<cmd>lua require("telescope.builtin").quickfix()<CR>', opts)
@@ -56,7 +57,15 @@ function M.config()
     }
 
     local actions = require("telescope.actions")
+    local action_state = require("telescope.actions.state")
     local lga_actions = require("telescope-live-grep-args.actions")
+
+    local function yank_entry()
+        local entry = action_state.get_selected_entry()
+        vim.fn.setreg("*", entry.value)
+        print("Yanked:", entry.value)
+    end
+
     require("telescope").setup({
         defaults = {
 
@@ -65,14 +74,15 @@ function M.config()
                     ["<C-f>"] = actions.to_fuzzy_refine,
                     ["<C-j>"] = actions.move_selection_next,
                     ["<C-k>"] = actions.move_selection_previous,
-                    ["<C-x>"] = false,
-                    ["<C-q>"] = actions.send_to_qflist + actions.open_qflist,
+                    ["<C-q>"] = actions.send_to_qflist,
+                    ["<C-y>"] = yank_entry,
                     ["<leader><Tab>"] = actions.select_tab,
                     ["<leader>v"] = actions.select_vertical,
                 },
                 n = {
                     ["<C-f>"] = actions.to_fuzzy_refine,
-                    ["<C-q>"] = actions.send_to_qflist + actions.open_qflist,
+                    ["<C-q>"] = actions.send_to_qflist,
+                    ["<C-y>"] = yank_entry,
                     ["q"] = actions.close,
                     ["<leader><Tab>"] = actions.select_tab,
                     ["<leader>v"] = actions.select_vertical,
