@@ -183,6 +183,8 @@ function toggle-alacritty-theme () {
 
     config_path="$HOME/.config/alacritty/colors.yml"
     vim_config_path="$HOME/.config/nvim/lua/user/colorscheme.lua"
+    broot_config_path="$HOME/.config/broot/conf.hjson"
+    zathura_config_path="$HOME/.config/zathura/zathurarc"
 
     # Get current mode
     mode=$(awk 'sub(/colors:'\ '\*solarized-/,""){print $1}' $config_path)
@@ -191,12 +193,28 @@ function toggle-alacritty-theme () {
         light)
             sed -i -e "s#^colors: \*.*#colors: *solarized-dark#g" $config_path
             export BAT_THEME="Solarized (dark)"
+
             sed -i -e "s#background=light#background=dark#g" $vim_config_path
+
+            broot_config_dark_path="$HOME/.config/broot/conf-dark.hjson"
+            cp $broot_config_dark_path $broot_config_path
+
+            zathura_config_dark_path="$HOME/.config/zathura/zathurarc-dark"
+            cp $zathura_config_dark_path $zathura_config_path
+
             ;;
         dark)
             sed -i -e "s#^colors: \*.*#colors: *solarized-light#g" $config_path
             export BAT_THEME="Solarized (light)"
+
             sed -i -e "s#background=dark#background=light#g" $vim_config_path
+
+            broot_config_light_path="$HOME/.config/broot/conf-light.hjson"
+            cp $broot_config_light_path $broot_config_path
+
+            zathura_config_light_path="$HOME/.config/zathura/zathurarc-light"
+            cp $zathura_config_light_path $zathura_config_path
+
             ;;
     esac
 
@@ -238,10 +256,32 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
         echo "file $HOME/.config/alacritty/colors.yml doesn't exist"
     else
         config_path="$HOME/.config/alacritty/colors.yml"
+        vim_config_path="$HOME/.config/nvim/lua/user/colorscheme.lua"
+        broot_config_path="$HOME/.config/broot/conf.hjson"
+        zathura_config_path="$HOME/.config/zathura/zathurarc"
+
         if grep -Fxq "colors: *solarized-dark" "$config_path"; then
             export BAT_THEME="Solarized (dark)"
+
+            sed -i -e "s#background=light#background=dark#g" $vim_config_path
+
+            broot_config_dark_path="$HOME/.config/broot/conf-dark.hjson"
+            cp $broot_config_dark_path $broot_config_path
+
+            zathura_config_dark_path="$HOME/.config/zathura/zathurarc-dark"
+            cp $zathura_config_dark_path $zathura_config_path
+
         else
             export BAT_THEME="Solarized (light)"
+
+            sed -i -e "s#background=dark#background=light#g" $vim_config_path
+
+            broot_config_light_path="$HOME/.config/broot/conf-light.hjson"
+            cp $broot_config_light_path $broot_config_path
+
+            zathura_config_light_path="$HOME/.config/zathura/zathurarc-light"
+            cp $zathura_config_light_path $zathura_config_path
+
         fi
     fi
 fi
@@ -253,6 +293,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     else
         config_path="$HOME/.config/alacritty/colors.yml"
         vim_config_path="$HOME/.config/nvim/lua/user/colorscheme.lua"
+        broot_config_path="$HOME/.config/broot/conf.hjson"
+        zathura_config_path="$HOME/.config/zathura/zathurarc"
 
         # Get current mode
         mode=$(defaults read -g AppleInterfaceStyle 2>/dev/null)
@@ -260,33 +302,29 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         case $mode in
             Dark)
                 sed -i -e "s#^colors: \*.*#colors: *solarized-dark#g" $config_path
-                sed -i -e "s#background=light#background=dark#g" $vim_config_path
                 export BAT_THEME="Solarized (dark)"
+
+                sed -i -e "s#background=light#background=dark#g" $vim_config_path
+
+                broot_config_dark_path="$HOME/.config/broot/conf-dark.hjson"
+                cp $broot_config_dark_path $broot_config_path
+
+                zathura_config_dark_path="$HOME/.config/zathura/zathurarc-dark"
+                cp $zathura_config_dark_path $zathura_config_path
+
                 ;;
             *)
                 sed -i -e "s#^colors: \*.*#colors: *solarized-light#g" $config_path
-                sed -i -e "s#background=dark#background=light#g" $vim_config_path
                 export BAT_THEME="Solarized (light)"
-                ;;
-        esac
-    fi
 
-    if ! test -f ~/.config/broot/conf-dark.hjson; then
-        echo "file $HOME/.config/broot/conf-dark.hjson doesn't exist"
-    else
-        config_path="$HOME/.config/broot/conf.hjson"
+                sed -i -e "s#background=dark#background=light#g" $vim_config_path
 
-        # Get current mode
-        mode=$(defaults read -g AppleInterfaceStyle 2>/dev/null)
+                broot_config_light_path="$HOME/.config/broot/conf-light.hjson"
+                cp $broot_config_light_path $broot_config_path
 
-        case $mode in
-            Dark)
-                config_dark_path="$HOME/.config/broot/conf-dark.hjson"
-                cp $config_dark_path $config_path
-                ;;
-            *)
-                config_light_path="$HOME/.config/broot/conf-light.hjson"
-                cp $config_light_path $config_path
+                zathura_config_light_path="$HOME/.config/zathura/zathurarc-light"
+                cp $zathura_config_light_path $zathura_config_path
+
                 ;;
         esac
     fi

@@ -1,0 +1,7 @@
+#!/bin/bash
+#Script written for a Zim Mac app by Ragu Manjegowda
+#
+##########################################
+export LANG=en_CA.UTF-8
+. ~/.profile
+/usr/local/bin/zim;
