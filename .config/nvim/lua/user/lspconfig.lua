@@ -77,8 +77,8 @@ local function on_attach(_, bufnr)
     }
 end
 
-local log_path = vim.fn.expand('~/.config/nvim/misc/ccls/ccls.log')
-local cache_dir = vim.fn.expand('~/.config/nvim/misc/ccls')
+local log_path = vim.fn.expand('~/.cache/nvim/ccls.log')
+local cache_dir = vim.fn.expand('~/.cache/nvim/ccls')
 
 vim.lsp.handlers["textDocument/publishDiagnostics"]  = vim.lsp.with(
     vim.lsp.diagnostic.on_publish_diagnostics,
