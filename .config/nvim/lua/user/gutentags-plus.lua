@@ -5,8 +5,8 @@ local M = {}
 function M.config()
     vim.cmd [[
         let g:gutentags_enabled = 0
-        let g:gutentags_cache_dir = expand('~/.config/nvim/misc/gutentags')
-        let g:gutentags_gtags_dbpath = expand('~/.config/nvim/misc/gutentags')
+        let g:gutentags_cache_dir = expand('~/.cache/nvim/gutentags')
+        let g:gutentags_gtags_dbpath = expand('~/.cache/nvim/gutentags')
         let g:gutentags_modules = ['ctags', 'gtags_cscope']
         let g:gutentags_generate_on_new = 1
         let g:gutentags_generate_on_missing = 1

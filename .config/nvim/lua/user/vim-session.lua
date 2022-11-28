@@ -9,7 +9,7 @@ function M.before()
 
         set sessionoptions=buffers,curdir,tabpages,winsize
 
-        let g:session_directory = expand('~/.config/nvim/misc/sessions')
+        let g:session_directory = expand('~/.cache/nvim/sessions')
         " Don't autoload sessions on startup
         let g:session_autoload = 'no'
         " Don't prompt to save on exit
