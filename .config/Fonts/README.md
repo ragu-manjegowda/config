@@ -2,11 +2,20 @@
 # Installation manual of fonts used by configurations
 
 ## Mac
-    $ ln -s ~/.config/Fonts ~/Library/Fonts
+    $ brew tap homebrew/cask-fonts
+    $ brew install --cask font-hack-nerd-font
 
 ## Ubuntu
-    $ ln -s ~/.config/Fonts ~/.local/share/fonts
+    $ gcl https://github.com/ryanoasis/nerd-fonts
+    $ cd nerd-fonts && ./install Hack
     $ fc-list | grep "Nerd "
+
+## Arch
+    $ paru -S ttf-hack-nerd
+
+Note:
+
+Might have to log out and in for fonts to work / get picked up by the system.
 
 On Ubuntu some of the default applications like imagemagick have very little
 font size in the menu. Refer - https://legacy.imagemagick.org/discourse-server~/viewtopiccfcd.html?p=149548
