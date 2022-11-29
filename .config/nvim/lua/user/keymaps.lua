@@ -1,7 +1,5 @@
 local opts = { silent = true }
 
-local term_opts = { silent = true }
-
 -- Shorten function name
 local keymap = vim.keymap.set
 

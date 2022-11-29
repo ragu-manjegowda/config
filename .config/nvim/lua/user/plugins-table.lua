@@ -48,6 +48,9 @@ local core_plugins = {
             {
                 "mfussenegger/nvim-dap",
                 config = [[require("user.dap").config()]],
+                requires = {
+                    "WhoIsSethDaniel/mason-tool-installer.nvim",
+                },
             },
             "theHamsta/nvim-dap-virtual-text",
         },
@@ -122,6 +125,10 @@ local core_plugins = {
     -- LSP
     {
         "neovim/nvim-lspconfig",
+        requires = {
+            "p00f/clangd_extensions.nvim",
+            "WhoIsSethDaniel/mason-tool-installer.nvim",
+        },
         config = [[require("user.lspconfig").config()]],
     },
 
@@ -135,6 +142,16 @@ local core_plugins = {
         config = function()
             require("trld").setup()
         end
+    },
+
+    -- Package management
+    {
+        "WhoIsSethDaniel/mason-tool-installer.nvim",
+        requires = {
+            "williamboman/mason.nvim",
+            config = [[require("user.mason").config()]],
+        },
+        config = [[require("user.mason-tool-installer").config()]],
     },
 
     -- Packer

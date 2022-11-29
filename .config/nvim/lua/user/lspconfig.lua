@@ -25,6 +25,7 @@ local function on_attach(_, bufnr)
     buf_set_keymap('n', ']e', '<cmd> lua vim.diagnostic.goto_next()<CR>', opts)
 
     -- See `:help vim.lsp.*` for documentation on any of the below functions
+    buf_set_keymap('n', 'gA', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
     buf_set_keymap('n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
     buf_set_keymap('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
     buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
@@ -77,8 +78,8 @@ local function on_attach(_, bufnr)
     }
 end
 
-local log_path = vim.fn.expand('~/.cache/nvim/ccls.log')
-local cache_dir = vim.fn.expand('~/.cache/nvim/ccls')
+-- local log_path = vim.fn.expand('~/.cache/nvim/ccls.log')
+-- local cache_dir = vim.fn.expand('~/.cache/nvim/ccls')
 
 vim.lsp.handlers["textDocument/publishDiagnostics"]  = vim.lsp.with(
     vim.lsp.diagnostic.on_publish_diagnostics,
@@ -94,42 +95,90 @@ vim.lsp.handlers["textDocument/publishDiagnostics"]  = vim.lsp.with(
 function M.config()
     local nvim_lsp = require('lspconfig')
 
-    nvim_lsp.ccls.setup {
+    ---------------------------------------------------------------------------
+    -- Switch to clangd to benefit from the advantages, keeping this for a
+    -- while till clangd setup becomes stable
+    ---------------------------------------------------------------------------
+
+    -- nvim_lsp.ccls.setup {
+    --     on_attach = on_attach,
+    --     filetypes = { "c", "cpp", "h", "hpp" },
+    --     root_dir = nvim_lsp.util.root_pattern("compile_commands.json", ".gitignore"),
+    --     cmd = {
+    --         -- 'clangd',
+    --         -- '--background-index',
+    --         -- '--clang-tidy',
+    --         -- '-j=16',
+    --         -- '--log=info'
+    --         'ccls',
+    --         '--log-file='..log_path,
+    --         '-v=1',
+    --         '--init={"index": {"blacklist":[".git", "data/*", \
+    --                  "bazel-*", "partners/", "avddn/", "apps/", "av/", \
+    --                  "benchmarks/", "ci/", "doc/", "private/", "resources/", \
+    --                  "scripts", "share", "swig/", "ux", \
+    --                  "dazel-out", "lib*.so", \
+    --                  "preFlightChecker", "pilotnet", "tools/experimental/maps", \
+    --                  "tools/experimental/localization_metrics"]}}'
+    --     },
+    --     init_options = {
+    --         cache = { directory = cache_dir; };
+    --         index = { threads = 3; };
+    --         client = { snippetSupport = true; };
+    --         clang = { extraArgs = { "-Wno-extra", "-Wno-empty-body" }; };
+    --         completion = { detailedLabel = false; caseSensitivity = 1; };
+    --     },
+    --     capabilities = capabilities
+    -- }
+
+    ---------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
+    -- Bash
+    nvim_lsp.bashls.setup {
         on_attach = on_attach,
-        filetypes = { "c", "cpp", "h", "hpp" },
-        root_dir = nvim_lsp.util.root_pattern("compile_commands.json", ".gitignore"),
-        cmd = {
-            -- 'clangd',
-            -- '--background-index',
-            -- '--clang-tidy',
-            -- '-j=16',
-            -- '--log=info'
-            'ccls',
-            '--log-file='..log_path,
-            '-v=1',
-            '--init={"index": {"blacklist":[".git", "data/*", \
-                     "bazel-*", "partners/", "avddn/", "apps/", "av/", \
-                     "benchmarks/", "ci/", "doc/", "private/", "resources/", \
-                     "scripts", "share", "swig/", "ux", \
-                     "dazel-out", "lib*.so", \
-                     "preFlightChecker", "pilotnet", "tools/experimental/maps", \
-                     "tools/experimental/localization_metrics"]}}'
-        },
-        init_options = {
-            cache = { directory = cache_dir; };
-            index = { threads = 3; };
-            client = { snippetSupport = true; };
-            clang = { extraArgs = { "-Wno-extra", "-Wno-empty-body" }; };
-            completion = { detailedLabel = false; caseSensitivity = 1; };
-        },
         capabilities = capabilities
     }
 
-    nvim_lsp.rust_analyzer.setup {
+    ---------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
+    -- C, C++
+    require("clangd_extensions").setup {
+        server = {
+            on_attach = on_attach,
+            capabilities = capabilities,
+            root_dir = nvim_lsp.util.root_pattern("compile_commands.json", ".gitignore"),
+            cmd = {
+                "clangd",
+                "--all-scopes-completion",
+                "--background-index",
+                "--clang-tidy",
+                "--completion-style=detailed",
+                "--header-insertion-decorators",
+                "--header-insertion=iwyu",
+                "-j=4",
+                "--pch-storage=memory",
+                -- You MUST set this arg ↓ to your clangd executable location (if not included)!
+                -- "--query-driver=/usr/bin/clang++,/usr/bin/**/clang-*,/bin/clang,/bin/clang++,/usr/bin/gcc,/usr/bin/g++",
+            },
+        },
+        extensions = {
+            symbol_info = {
+                border = "rounded",
+            },
+        },
+    }
+
+    ---------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
+    -- Cmake
+    nvim_lsp.cmake.setup {
         on_attach = on_attach,
         capabilities = capabilities
     }
 
+    ---------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
+    -- Golang
     nvim_lsp.gopls.setup {
         on_attach = on_attach,
         cmd = {"gopls", "serve"},
@@ -146,12 +195,9 @@ function M.config()
         capabilities = capabilities
     }
 
-    nvim_lsp.pyright.setup{
-        on_attach = on_attach,
-        capabilities = capabilities
-    }
-
-    -- Lua settings
+    ---------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
+    -- Lua
     local runtime_path = vim.split(package.path, ";")
     table.insert(runtime_path, "lua/?.lua")
     table.insert(runtime_path, "lua/?/init.lua")
@@ -213,6 +259,30 @@ function M.config()
                 },
             }
         },
+        capabilities = capabilities
+    }
+
+    ---------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
+    -- Python
+    nvim_lsp.pyright.setup{
+        on_attach = on_attach,
+        capabilities = capabilities
+    }
+
+    ---------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
+    -- Rust
+    nvim_lsp.rust_analyzer.setup {
+        on_attach = on_attach,
+        capabilities = capabilities
+    }
+
+    ---------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
+    -- Vim
+    nvim_lsp.vimls.setup {
+        on_attach = on_attach,
         capabilities = capabilities
     }
 

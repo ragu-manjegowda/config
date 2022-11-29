@@ -1,0 +1,32 @@
+If:
+  PathMatch: [
+    .git,
+    external/*,
+    data/*,
+    bazel-*/,
+    partners/*,
+    avddn/*,
+    apps/*,
+    av/*,
+    benchmarks/*,
+    ci/*,
+    doc/*,
+    private/*,
+    resources/*,
+    scripts/*,
+    share/*,
+    swig/*,
+    ux/*,
+    dazel-out/*,
+    lib*.so,
+    preFlightChecker/*,
+    pilotnet/*,
+    tools/experimental/maps/*,
+    tools/experimental/localization_metrics/*
+  ]
+
+Index:
+  Background: Skip     # Disable slow background indexing of these files.
+
+Diagnostics:
+  Suppress: '*'
