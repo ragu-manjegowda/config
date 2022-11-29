@@ -60,6 +60,7 @@ sudo
 texinfo
 thunar
 ttf-dejavu
+ttf-hack-nerd
 upower
 urlscan
 w3m
