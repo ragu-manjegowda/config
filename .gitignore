@@ -95,6 +95,7 @@
 .config/gnupg/sshcontrol
 .config/gnupg/tofu.db
 .config/gnupg/trustdb.gpg
+.config/go
 .config/google-chrome
 .config/gtk-2.0
 .config/ibus
@@ -121,9 +122,7 @@
 .config/neomutt/msmtp.log
 .config/neomutt/pass.gpg_decrypted
 .config/nvim/lua/user/colorscheme.lua-e
-.config/nvim/misc
 .config/nvim/plugin/packer_compiled.lua
-.config/nvim/undodir
 .config/oauth2ms/config.json
 .config/oauth2ms/oauth2ms
 .config/okularpartrc

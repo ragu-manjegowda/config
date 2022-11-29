@@ -81,6 +81,9 @@ export PATH="$HOMEBREW_PATH/opt/gnu-getopt/bin:$PATH"
 # Gnutls
 export GUILE_TLS_CERTIFICATE_DIRECTORY="$HOMEBREW_PATH/etc/gnutls"
 
+# Go
+export GOPATH="$HOME/.config/go"
+
 # Guile
 export GUILE_LOAD_PATH="$HOMEBREW_PATH/share/guile/site/3.0"
 export GUILE_LOAD_COMPILED_PATH="$HOMEBREW_PATH/lib/guile/3.0/site-ccache"

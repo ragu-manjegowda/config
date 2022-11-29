@@ -128,10 +128,13 @@ function M.config()
       }
     }
 
+    local path = require "mason-core.path"
+
     dap.adapters.cppdbg = {
         id = 'cppdbg',
         type = 'executable',
-        command = vim.fn.expand('~/.config/nvim/misc/cppdbg/extension/debugAdapters/bin/OpenDebugAD7'),
+        command = path.concat { vim.fn.stdpath "data", "mason", "bin", "OpenDebugAD7" },
+        -- command = vim.fn.expand('~/.config/nvim/misc/cppdbg/extension/debugAdapters/bin/OpenDebugAD7'),
     }
 
     dap.configurations.cpp = {
@@ -179,6 +182,10 @@ function M.config()
             },
         },
     }
+
+    -- Re-use this for C and Rust
+    dap.configurations.c = dap.configurations.cpp
+    dap.configurations.rust = dap.configurations.cpp
 end
 
 return M

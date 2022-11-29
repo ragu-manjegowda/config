@@ -216,3 +216,13 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 		end
 	end,
 })
+
+-- Mason update
+vim.api.nvim_create_autocmd('User', {
+    pattern = 'MasonToolsUpdateCompleted',
+    callback = function()
+        vim.schedule(function()
+            print "Mason-tool-installer has finished"
+        end)
+    end,
+})

@@ -7,6 +7,11 @@ export HOMEBREW_PATH="/home/linuxbrew/.linuxbrew"
 export PATH="$PATH:$HOMEBREW_PATH/bin"
 export PATH="$PATH:$HOMEBREW_PATH/sbin"
 
+# Broot
+if [ -f "$HOME/.config/broot/launcher/bash/br" ]; then
+    source $HOME/.config/broot/launcher/bash/br
+fi
+
 # Completion
 if [ -n "$BASH_VERSION" ]; then
   if [ -r "$HOMEBREW_PATH/etc/profile.d/bash_completion.sh" ]; then
@@ -17,6 +22,9 @@ elif [ -n "$ZSH_VERSION" ]; then
     fpath=($HOMEBREW_PATH/share/zsh/site-functions $fpath)
   fi
 fi
+
+# Go
+export GOPATH="$HOME/.config/go"
 
 # Java
 export PATH="$HOMEBREW_PATH/opt/openjdk@11/bin:$PATH"
@@ -38,11 +46,6 @@ export CARGO_HOME="$HOME/.config/cargo"
 export RUSTUP_HOME="$HOME/.config/rustup"
 export CARGO_NAME="Ragu Manjegowda"
 export CARGO_EMAIL="raghavendrahm0410@gmail.com"
-
-# Broot
-if [ -f "$HOME/.config/broot/launcher/bash/br" ]; then
-    source $HOME/.config/broot/launcher/bash/br
-fi
 
 if [ -f "$BASH_DIR/bash_extras" ]; then
     source "$BASH_DIR/bash_extras"
