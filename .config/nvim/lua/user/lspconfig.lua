@@ -92,6 +92,16 @@ vim.lsp.handlers["textDocument/publishDiagnostics"]  = vim.lsp.with(
     }
 )
 
+vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(
+  vim.lsp.handlers.hover,
+  {border = 'rounded'}
+)
+
+vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
+  vim.lsp.handlers.signature_help,
+  {border = 'rounded'}
+)
+
 function M.config()
     local nvim_lsp = require('lspconfig')
 
@@ -149,14 +159,18 @@ function M.config()
             root_dir = nvim_lsp.util.root_pattern("compile_commands.json", ".gitignore"),
             cmd = {
                 "clangd",
-                "--all-scopes-completion",
+                "--all-scopes-completion=true",
                 "--background-index",
+                "--background-index-priority=low",
                 "--clang-tidy",
                 "--completion-style=detailed",
-                "--header-insertion-decorators",
-                "--header-insertion=iwyu",
+                "--enable-config",
+                "--function-arg-placeholders",
+                "--header-insertion=never",
                 "-j=4",
+                "--malloc-trim",
                 "--pch-storage=memory",
+                "--use-dirty-headers",
                 -- You MUST set this arg ↓ to your clangd executable location (if not included)!
                 -- "--query-driver=/usr/bin/clang++,/usr/bin/**/clang-*,/bin/clang,/bin/clang++,/usr/bin/gcc,/usr/bin/g++",
             },
