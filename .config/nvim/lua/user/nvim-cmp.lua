@@ -10,6 +10,10 @@ function M.config()
     local cmp = require('cmp')
     local lspkind = require('lspkind')
 
+    local ELLIPSIS_CHAR = '…'
+    local MAX_LABEL_WIDTH = 80
+    local MIN_LABEL_WIDTH = 20
+
     cmp.setup {
         -- You must set mapping if you want.
         mapping = {
@@ -87,7 +91,7 @@ function M.config()
                     end
                 end
             }),
-            ['<C-b>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), {'i', 'c'}),
+            ['<C-u>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), {'i', 'c'}),
             ['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), {'i', 'c'}),
             ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), {'i', 'c'}),
             ['<C-e>'] = cmp.mapping({
@@ -115,23 +119,36 @@ function M.config()
         },
 
         completion = {
-            completeopt = 'menu,menuone,noinsert',
+            completeopt = 'menu,menuone,preview,noinsert',
             documentation = {}
         },
 
         formatting = {
             format = function(entry, vim_item)
-            vim_item.kind = lspkind.presets.default[vim_item.kind] .. ' ' .. vim_item.kind
-            vim_item.menu = ({
-                nvim_lsp = '[LSP]',
-                path = '[Path]',
-                treesitter = '[Treesitter]',
-                buffer = '[Buffer]',
-            })[entry.source.name]
+                local label = vim_item.abbr
+                local truncated_label = vim.fn.strcharpart(label, 0, MAX_LABEL_WIDTH)
+                if truncated_label ~= label then
+                    vim_item.abbr = truncated_label .. ELLIPSIS_CHAR
+                elseif string.len(label) < MIN_LABEL_WIDTH then
+                    local padding = string.rep(' ', MIN_LABEL_WIDTH - string.len(label))
+                    vim_item.abbr = label .. padding
+                end
+                vim_item.kind = lspkind.presets.default[vim_item.kind] .. ' ' .. vim_item.kind
+                vim_item.menu = ({
+                    nvim_lsp = '[LSP]',
+                    path = '[Path]',
+                    treesitter = '[Treesitter]',
+                    buffer = '[Buffer]',
+                })[entry.source.name]
 
-            return vim_item
-            end
-        }
+                return vim_item
+            end,
+            fields = {'menu', 'abbr', 'kind'}
+        },
+
+        window = {
+            documentation = cmp.config.window.bordered()
+        },
     }
 
     -- Use buffer source for `/`.
