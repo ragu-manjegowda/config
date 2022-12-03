@@ -2,21 +2,22 @@ local M = {}
 
 function M.config()
 
-    require('mason-tool-installer').setup {
+    require("mason-tool-installer").setup {
 
         -- a list of all tools you want to ensure are installed upon
         -- start; they should be the names Mason uses for each tool
         ensure_installed = {
-            'bash-language-server',
-            'clangd',
-            'cpptools', -- c/cpp/rust dubugging
-            'cmake-language-server',
-            'delve', -- golang debugging
-            'gopls',
-            'lua-language-server',
-            'pyright',
-            'rust-analyzer',
-            'vim-language-server',
+            "bash-language-server",
+            "clangd",
+            "cpptools", -- c/cpp/rust debugging
+            "cmake-language-server",
+            "debugpy", -- python debugging
+            "delve", -- golang debugging
+            "gopls",
+            "lua-language-server",
+            "pyright",
+            "rust-analyzer",
+            "vim-language-server",
         },
 
         -- automatically install / update on startup. If set to false nothing

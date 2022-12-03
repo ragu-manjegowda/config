@@ -55,7 +55,76 @@ function M.config()
     -- nvim-dap-virtual-text. Show virtual text for current frame
     vim.g.dap_virtual_text = true
 
-    -- configure language adapaters
+    -- Configure language adapaters
+
+    -- C++ adapters
+    local path = require "mason-core.path"
+
+    dap.adapters.cppdbg = {
+        id = "cppdbg",
+        type = "executable",
+        command = path.concat {
+            vim.fn.stdpath "data",
+            "mason",
+            "bin",
+            "OpenDebugAD7"
+        },
+    }
+
+    dap.configurations.cpp = {
+        {
+            name = "Launch file",
+            type = "cppdbg",
+            request = "launch",
+            program = function()
+                return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+            end,
+            args  = function()
+                local argument_string = vim.fn.input("Program arguments: ")
+                return vim.fn.split(argument_string, " ", true)
+            end,
+            cwd = function()
+                return vim.fn.input("Program working directory: ", vim.fn.getcwd() .. "/", "file")
+            end,
+            setupCommands = {
+                {
+                    text = "-enable-pretty-printing",
+                    description =  "enable pretty printing",
+                    ignoreFailures = false
+                },
+            },
+
+            stopAtEntry = true,
+        },
+        {
+            name = "Attach to gdbserver :1234",
+            type = "cppdbg",
+            request = "launch",
+            MIMode = "gdb",
+            miDebuggerServerAddress = "localhost:1234",
+            miDebuggerPath = "/usr/bin/gdb",
+            cwd = function()
+                return vim.fn.input("Program working directory: ", vim.fn.getcwd() .. "/", "file")
+            end,
+            program = function()
+                return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+            end,
+            setupCommands = {
+                {
+                    text = "-enable-pretty-printing",
+                    description =  "enable pretty printing",
+                    ignoreFailures = false
+                },
+            },
+        },
+    }
+
+    -- Re-use this for C and Rust
+    dap.configurations.c = dap.configurations.cpp
+    dap.configurations.rust = dap.configurations.cpp
+
+
+    -- Go adapters
     dap.adapters.go = function(callback, config)
       local stdout = vim.loop.new_pipe(false)
       local handle
@@ -72,15 +141,15 @@ function M.config()
         stdout:close()
         handle:close()
         if code ~= 0 then
-          print('dlv exited with code', code)
+          print("dlv exited with code", code)
         end
       end)
-      assert(handle, 'Error running dlv: ' .. tostring(pid_or_err))
+      assert(handle, "Error running dlv: " .. tostring(pid_or_err))
       stdout:read_start(function(err, chunk)
         assert(not err, err)
         if chunk then
           vim.schedule(function()
-            require('dap.repl').append(chunk)
+            require("dap.repl").append(chunk)
           end)
         end
       end)
@@ -110,7 +179,7 @@ function M.config()
         name = "Attach",
         mode = "local",
         request = "attach",
-        processId = require('dap.utils').pick_process,
+        processId = require("dap.utils").pick_process,
       },
       {
         type = "go",
@@ -128,64 +197,43 @@ function M.config()
       }
     }
 
-    local path = require "mason-core.path"
-
-    dap.adapters.cppdbg = {
-        id = 'cppdbg',
-        type = 'executable',
-        command = path.concat { vim.fn.stdpath "data", "mason", "bin", "OpenDebugAD7" },
-        -- command = vim.fn.expand('~/.config/nvim/misc/cppdbg/extension/debugAdapters/bin/OpenDebugAD7'),
+    -- Python adapters
+    dap.adapters.python = {
+        type = "executable",
+        command = path.concat
+        {
+            vim.fn.stdpath "data",
+            "mason",
+            "packages",
+            "debugpy",
+            "venv",
+            "bin",
+            "python"
+        },
+        args = { "-m", "debugpy.adapter" };
     }
 
-    dap.configurations.cpp = {
+    dap.configurations.python = {
         {
-            name = "Launch file",
-            type = "cppdbg",
-            request = "launch",
+            type = "python";
+            request = "launch";
+            name = "Launch file";
+
             program = function()
-                return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+                return vim.fn.input("Path to file: ", vim.fn.expand("%"), "file")
             end,
             args  = function()
-                local argument_string = vim.fn.input('Program arguments: ')
+                local argument_string = vim.fn.input("Program arguments: ")
                 return vim.fn.split(argument_string, " ", true)
             end,
+
             cwd = function()
-                return vim.fn.input('Program working directory: ', vim.fn.getcwd() .. '/', 'file')
+                return vim.fn.input("Program working directory: ", vim.fn.getcwd() .. "/", "file")
             end,
-            setupCommands = {
-                {
-                    text = '-enable-pretty-printing',
-                    description =  'enable pretty printing',
-                    ignoreFailures = false
-                },
-            },
 
             stopAtEntry = true,
         },
-        {
-            name = 'Attach to gdbserver :1234',
-            type = 'cppdbg',
-            request = 'launch',
-            MIMode = 'gdb',
-            miDebuggerServerAddress = 'localhost:1234',
-            miDebuggerPath = '/usr/bin/gdb',
-            cwd = '${workspaceFolder}',
-            program = function()
-                return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
-            end,
-            setupCommands = {
-                {
-                    text = '-enable-pretty-printing',
-                    description =  'enable pretty printing',
-                    ignoreFailures = false
-                },
-            },
-        },
     }
-
-    -- Re-use this for C and Rust
-    dap.configurations.c = dap.configurations.cpp
-    dap.configurations.rust = dap.configurations.cpp
 end
 
 return M
