@@ -33,15 +33,11 @@ set highlight-active-color      "#cb4616"
 set default-bg                  "#fdf6e3"
 set default-fg                  "#073642"
 set render-loading              true
-# set render-loading-fg           "#fdf6e3"
-# set render-loading-bg           "#fdf6e3"
 
 # Recolor book content's color
-# verbose
-# verbose
+set recolor                     true
 set recolor-lightcolor          "#fdf6e3"
 set recolor-darkcolor           "#073642"
-set recolor                     "true"
 # set recolor-keephue             true      # keep original color
 
 # GUI & Window

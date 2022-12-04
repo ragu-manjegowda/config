@@ -1,4 +1,4 @@
 lat: 12.97
 lng: 77.59
-dbusserver: true
+usegeoclue: false
 

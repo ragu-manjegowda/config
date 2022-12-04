@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# Depends: Geoclue
+# Written by  : Ragu Manjegowda
+# Github      : @ragu-manjegowda
+
+# Check if this is already running, if so kill it
+pgrep -f geoclue | xargs kill -9 &> /dev/null
+
+/usr/lib/geoclue-2.0/demos/agent
