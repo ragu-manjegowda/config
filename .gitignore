@@ -188,6 +188,7 @@
 .mozilla
 .nano
 .netrc
+.ngc
 .nix-channels
 .nix-defexpr
 .nix-profile
