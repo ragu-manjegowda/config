@@ -7,13 +7,13 @@ function M.config()
 
     map('n', '<leader>dcb',
         '<cmd>lua require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: "))<CR>',
-        { silent = true, desc = 'Set breakpoint with condition' })
+        { silent = true, desc = 'DAP set breakpoint with condition' })
 
     map('n', '<leader>dce', '<cmd>lua require("dap").continue()<CR>',
         { silent = true, desc = 'DAP launch or continue'})
 
     map('n', '<leader>deb', '<cmd>lua require("dap").set_exception_breakpoints({"all"})<CR>',
-        { silent = true, desc = 'Set exception breakpoint' })
+        { silent = true, desc = 'DAP set exception breakpoint' })
 
     map('n', '<leader>drb', '<cmd>lua require("dap").clear_breakpoints()<CR>',
         { silent = true, desc = 'DAP remove breakpoints' })

@@ -55,17 +55,15 @@ function M.config()
     end
 
     -- Register mappings description with which-key
-    local wk = require("which-key")
-
-    wk.register({
+    whichkey.register({
         g = {
             name = "Gscope",
-            sy = "Find symbols",
-            d = "Find definitions",
-            c = "Called by this function",
-            C = "Calling this function",
-            i = "Files including this file",
-            a = "Where this symbol is assigned value"
+            sy = "Gscope find symbols",
+            d = "Gscope find definitions",
+            c = "Gscope called by this function",
+            C = "Gscope calling this function",
+            i = "Gscope files including this file",
+            a = "Gscope symbol assigned value"
         },
     }, { prefix = "<leader>" })
 end
