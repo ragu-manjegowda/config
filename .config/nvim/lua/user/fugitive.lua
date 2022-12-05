@@ -33,9 +33,7 @@ function M.config()
     end
 
     -- Register mappings description with which-key
-    local wk = require("which-key")
-
-    wk.register({
+    whichkey.register({
         g = {
             name = "Git",
             co = "Git commits in telescope float window",
