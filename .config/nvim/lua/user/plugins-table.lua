@@ -126,6 +126,7 @@ local core_plugins = {
     {
         "neovim/nvim-lspconfig",
         requires = {
+            "hrsh7th/nvim-cmp",
             "p00f/clangd_extensions.nvim",
             "WhoIsSethDaniel/mason-tool-installer.nvim",
         },
