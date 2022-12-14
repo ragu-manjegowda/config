@@ -2,7 +2,13 @@ local vim = vim
 
 local M = {}
 
-local ftzsh = require("FTerm"):new({
+local res, fterm = pcall(require, "FTerm")
+if not res then
+    vim.notify("FTerm not found", vim.log.levels.ERROR)
+    return
+end
+
+local ftzsh = fterm:new({
     ft = 'fterm_zsh',
     cmd = "zsh",
     dimensions = {
@@ -16,18 +22,8 @@ function M.__fterm_zsh()
     ftzsh:toggle()
 end
 
-function M.terminal_send(text)
-    first_terminal_chan = get_first_terminal()
-
-    if first_terminal_chan == "" or first_terminal_chan == nil then
-        vim.notify("[fterm] " .. "No open terminal available", vim.log.levels.WARN)
-    else
-        vim.api.nvim_chan_send(first_terminal_chan, text)
-    end
-end
-
-function get_first_terminal()
-    terminal_chans = {}
+local function get_first_terminal()
+    local terminal_chans = {}
 
     for _, chan in pairs(vim.api.nvim_list_chans()) do
         if chan["mode"] == "terminal" and chan["pty"] ~= "" then
@@ -46,8 +42,18 @@ function get_first_terminal()
     end
 end
 
+function M.terminal_send(text)
+    local first_terminal_chan = get_first_terminal()
+
+    if first_terminal_chan == "" or first_terminal_chan == nil then
+        vim.notify("[fterm] " .. "No open terminal available", vim.log.levels.WARN)
+    else
+        vim.api.nvim_chan_send(first_terminal_chan, text)
+    end
+end
+
 function M.config()
-    require'FTerm'.setup({
+    fterm.setup({
         border = 'double',
         dimensions  = {
             height = 0.9,

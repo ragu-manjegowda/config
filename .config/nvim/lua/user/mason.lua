@@ -2,7 +2,13 @@ local M = {}
 
 function M.config()
 
-    require("mason").setup({
+    local res, mason = pcall(require, "mason")
+    if not res then
+        vim.notify("mason not found", vim.log.levels.ERROR)
+        return
+    end
+
+    mason.setup({
         pip = {
             upgrade_pip = true,
         },

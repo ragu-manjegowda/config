@@ -41,13 +41,15 @@ function M.config()
 
     local res, dap = pcall(require, "dap")
     if not res then
+        vim.notify("dap not found", vim.log.levels.ERROR)
       return
     end
 
     local dap_virtual_text
     res, dap_virtual_text = pcall(require, "nvim-dap-virtual-text")
     if not res then
-      return
+        vim.notify("nvim-dap-virtual-text not found", vim.log.levels.ERROR)
+        return
     end
 
     dap_virtual_text.setup()
@@ -58,7 +60,13 @@ function M.config()
     -- Configure language adapaters
 
     -- C++ adapters
-    local path = require "mason-core.path"
+    local path
+    res, path = pcall(require, "mason-core.path")
+    if not res then
+        vim.notify("mason-core.path not found", vim.log.levels.ERROR)
+        return
+    end
+
 
     dap.adapters.cppdbg = {
         id = "cppdbg",
@@ -141,7 +149,7 @@ function M.config()
         stdout:close()
         handle:close()
         if code ~= 0 then
-          print("dlv exited with code", code)
+            vim.notify("dlv exited with code " .. code, vim.log.levels.ERROR)
         end
       end)
       assert(handle, "Error running dlv: " .. tostring(pid_or_err))

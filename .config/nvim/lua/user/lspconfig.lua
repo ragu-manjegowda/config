@@ -2,7 +2,11 @@ local vim = vim
 
 local M = {}
 
-local protocol = require'vim.lsp.protocol'
+local res, protocol = pcall(require, "vim.lsp.protocol")
+if not res then
+    vim.notify("lsp.protocol not found", vim.log.levels.ERROR)
+    return
+end
 
 local signs = { Error = " ", Warn = " ", Hint = " ", Information = " " }
 for type, icon in pairs(signs) do
@@ -82,7 +86,18 @@ vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
 )
 
 function M.config()
-    local nvim_lsp = require('lspconfig')
+    local nvim_lsp, cmp_nvim_lsp
+    res, nvim_lsp = pcall(require, "lspconfig")
+    if not res then
+        vim.notify("lspconfig not found", vim.log.levels.ERROR)
+        return
+    end
+
+    res, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
+    if not res then
+        vim.notify("cmp_nvim_lsp not found", vim.log.levels.ERROR)
+        return
+    end
 
     local lsp_defaults = nvim_lsp.util.default_config
 
@@ -90,7 +105,7 @@ function M.config()
         vim.tbl_deep_extend(
         'force',
         lsp_defaults.capabilities,
-        require('cmp_nvim_lsp').default_capabilities())
+        cmp_nvim_lsp.default_capabilities())
 
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
@@ -124,7 +139,14 @@ function M.config()
         table.insert(clangd_cmd, "--malloc-trim")
     end
 
-    require("clangd_extensions").setup {
+    local clangd_extensions
+    res, clangd_extensions = pcall(require, "clangd_extensions")
+    if not res then
+        vim.notify("clangd_extensions not found", vim.log.levels.ERROR)
+        return
+    end
+
+    clangd_extensions.setup {
         server = {
             on_attach = on_attach,
             root_dir = nvim_lsp.util.root_pattern("compile_commands.json", ".gitignore"),

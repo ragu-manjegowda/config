@@ -5,7 +5,12 @@ M.config = function()
         return vim.api.nvim_call_function( "tagbar#currenttag", {'%s', ''})
     end
 
-    local windline = require('windline')
+    local res, windline = pcall(require, "windline")
+    if not res then
+        vim.notify("windline not found", vim.log.levels.ERROR)
+        return
+    end
+
     local helper = require('windline.helpers')
     local sep = helper.separators
     local b_components = require('windline.components.basic')

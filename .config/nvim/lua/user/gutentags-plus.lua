@@ -51,6 +51,7 @@ function M.config()
 
     local status_ok, whichkey = pcall(require, "which-key")
     if not status_ok then
+        vim.notify("which-key not found", vim.log.levels.ERROR)
         return
     end
 

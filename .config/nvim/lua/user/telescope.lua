@@ -96,6 +96,12 @@ function M.config()
         'bazel-bin/*',
     }
 
+    local res, telescope = pcall(require, "telescope")
+    if not res then
+        vim.notify("telescope not found", vim.log.levels.ERROR)
+        return
+    end
+
     local actions = require("telescope.actions")
     local action_state = require("telescope.actions.state")
     local lga_actions = require("telescope-live-grep-args.actions")
@@ -106,7 +112,7 @@ function M.config()
         print("Yanked:", entry.value)
     end
 
-    require("telescope").setup({
+    telescope.setup({
         defaults = {
 
             mappings = {
@@ -176,11 +182,11 @@ function M.config()
         },
     })
 
-    require("telescope").load_extension("fzf")
+    telescope.load_extension("fzf")
 
-    require("telescope").load_extension("live_grep_args")
+    telescope.load_extension("live_grep_args")
 
-    require("telescope").load_extension("dap")
+    telescope.load_extension("dap")
 end
 
 return M

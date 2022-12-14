@@ -17,7 +17,9 @@ local core_plugins = {
             "hrsh7th/cmp-nvim-lua",
             "hrsh7th/cmp-cmdline",
             "hrsh7th/cmp-nvim-lsp-document-symbol",
+            "L3MON4D3/LuaSnip",
             "onsails/lspkind-nvim",
+            "rafamadriz/friendly-snippets"
         },
         config = [[require("user.nvim-cmp").config()]],
     },

@@ -5,13 +5,15 @@ local M = {}
 function M.config()
     local res, dapui = pcall(require, "dapui")
     if not res then
-      return
+        vim.notify("dapui not found", vim.log.levels.ERROR)
+        return
     end
 
     local dap
     res, dap = pcall(require, "dap")
     if not res then
-      return
+        vim.notify("dap not found", vim.log.levels.ERROR)
+        return
     end
 
     -- Change debugging icons
