@@ -7,15 +7,39 @@ function M.config()
         return vim.api.nvim_replace_termcodes(str, true, true, true)
     end
 
-    local cmp = require('cmp')
-    local lspkind = require('lspkind')
+    local res, cmp, lspkind, luasnip
+
+    res, cmp = pcall(require, "cmp")
+    if not res then
+        vim.notify("cmp not found", vim.log.levels.ERROR)
+        return
+    end
+
+    res, lspkind = pcall(require, "lspkind")
+    if not res then
+        vim.notify("lspkind not found", vim.log.levels.ERROR)
+        return
+    end
+
+    res, luasnip = pcall(require, "luasnip")
+    if not res then
+        vim.notify("luasnip not found", vim.log.levels.ERROR)
+        return
+    end
+
+    require('luasnip.loaders.from_vscode').lazy_load()
 
     local ELLIPSIS_CHAR = '…'
     local MAX_LABEL_WIDTH = 80
     local MIN_LABEL_WIDTH = 20
 
     cmp.setup {
-        -- You must set mapping if you want.
+        snippet = {
+            expand = function(args)
+                luasnip.lsp_expand(args.body)
+            end
+        },
+
         mapping = {
             ["<Tab>"] = cmp.mapping({
                 c = function()

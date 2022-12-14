@@ -1,7 +1,13 @@
 local M = {}
 
 function M.config()
-    require('gitsigns').setup {
+    local res, gitsigns = pcall(require, "gitsigns")
+    if not res then
+        vim.notify("gitsigns not found", vim.log.levels.ERROR)
+        return
+    end
+
+    gitsigns.setup {
         signs = {
             add          = {hl = 'GitSignsAdd'   , text = '│', numhl='GitSignsAddNr'   , linehl='GitSignsAddLn'},
             change       = {hl = 'GitSignsChange', text = '│', numhl='GitSignsChangeNr', linehl='GitSignsChangeLn'},

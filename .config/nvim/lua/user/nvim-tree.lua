@@ -25,6 +25,12 @@ function M.config()
     map("n", "<leader>tmp", '<cmd>lua require("nvim-tree.api").marks.navigate.prev()<CR>', opts)
     map('n', '<leader>tt', '<cmd>lua require("nvim-tree").toggle()<CR>', opts)
 
+    local res, nvim_tree = pcall(require, "nvim-tree")
+    if not res then
+        vim.notify("nvim-tree not found", vim.log.levels.ERROR)
+        return
+    end
+
     local tree_cb = require "nvim-tree.config".nvim_tree_callback
 
     local list = {
@@ -32,7 +38,7 @@ function M.config()
         { key = { "<leader><Tab>"}, cb = tree_cb("tabnew"), mode = "n" }
     }
 
-    require'nvim-tree'.setup {
+    nvim_tree.setup {
         update_focused_file = {
             -- enables the feature
             enable      = true,

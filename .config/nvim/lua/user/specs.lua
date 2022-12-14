@@ -19,7 +19,13 @@ function M.before()
 end
 
 function M.config()
-    require('specs').setup{
+    local res, specs = pcall(require, "specs")
+    if not res then
+        vim.notify("specs not found", vim.log.levels.ERROR)
+        return
+    end
+
+    specs.setup{
         show_jumps  = true,
         min_jump = 30,
         popup = {

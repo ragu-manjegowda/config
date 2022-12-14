@@ -2,7 +2,13 @@ local M = {}
 
 function M.config()
 
-    require("mason-tool-installer").setup {
+    local res, mason_tool_installer = pcall(require, "mason-tool-installer")
+    if not res then
+        vim.notify("mason-tool-installer not found", vim.log.levels.ERROR)
+        return
+    end
+
+    mason_tool_installer.setup {
 
         -- a list of all tools you want to ensure are installed upon
         -- start; they should be the names Mason uses for each tool

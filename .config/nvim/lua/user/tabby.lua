@@ -1,8 +1,14 @@
-local tabby = require('tabby')
+local res, tabby
+
+res, tabby = pcall(require, "tabby")
+if not res then
+    vim.notify("tabby not found", vim.log.levels.ERROR)
+    return
+end
+
 local util = require('tabby.util')
 local filename = require('tabby.module.filename')
 
-local hl_normal = util.extract_nvim_hl('Normal')
 local hl_tabline = util.extract_nvim_hl('TabLine')
 local hl_tabline_sel = util.extract_nvim_hl('TabLineSel')
 local hl_tabline_fill = util.extract_nvim_hl('TabLineFill')

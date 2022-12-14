@@ -1,6 +1,12 @@
 local M = {}
 
 M.config = function()
+    local res, _ = pcall(require, "nvim-treesitter")
+    if not res then
+        vim.notify("nvim-treesitter not found", vim.log.levels.ERROR)
+        return
+    end
+
     require'nvim-treesitter.configs'.setup {
         textobjects = {
             select = {
