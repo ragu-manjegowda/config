@@ -171,7 +171,12 @@ function M.config()
         },
 
         window = {
-            documentation = cmp.config.window.bordered()
+            completion = cmp.config.window.bordered {
+                winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:Visual,Search:None",
+            },
+            documentation = cmp.config.window.bordered {
+                winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:Visual,Search:None",
+            },
         },
     }
 
@@ -186,10 +191,10 @@ function M.config()
 
     -- Use cmdline & path source for ':'.
     cmp.setup.cmdline(':', {
-        completion = { autocomplete = false },
         sources = cmp.config.sources({
             { name = 'path' }
-            }, {
+        },
+        {
             { name = 'cmdline' }
         })
     })

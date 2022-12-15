@@ -173,6 +173,7 @@ zstyle ':autocomplete:*' widget-style menu-select
 zstyle ':autocomplete:*' fzf-completion yes
 
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=6'
+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 
 # function to toggle alacritty theme defined in colors.yml
 function toggle-alacritty-theme () {
