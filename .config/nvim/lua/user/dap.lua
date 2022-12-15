@@ -18,14 +18,14 @@ function M.config()
     map('n', '<leader>drb', '<cmd>lua require("dap").clear_breakpoints()<CR>',
         { silent = true, desc = 'DAP remove breakpoints' })
 
+    map('n', '<leader>drr', '<cmd>lua require("dap").run_last()<CR>',
+        { silent = true, desc = 'DAP re-run restart' })
+
     map('n', '<leader>dtb', '<cmd>lua require("dap").toggle_breakpoint()<CR>',
         { silent = true, desc = 'DAP toggle breakpoint' })
 
     map('n', '<leader>dte', '<cmd>lua require("dap").terminate()<CR>',
         { silent = true, desc = 'DAP terminate'})
-
-    map('n', '<leader>dtr', '<cmd>lua require("dap").repl.toggle()<CR>',
-        { silent = true, desc = 'Toggle debugger REPL' })
 
     map('n', '<leader>dtui', '<cmd>lua require("dapui").toggle()<CR>',
         { silent = true, desc = 'DAP toggle UI' })
@@ -56,6 +56,10 @@ function M.config()
 
     -- nvim-dap-virtual-text. Show virtual text for current frame
     vim.g.dap_virtual_text = true
+
+    -- Shift the focus to terminal, avoid focusing buffer in insert mode
+    -- because of TermOpen autocmd
+    dap.defaults.fallback.focus_terminal = true
 
     -- Configure language adapaters
 

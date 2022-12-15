@@ -10,6 +10,7 @@ local options = {
     fileencoding = "utf-8",                  -- the encoding written to a file
     guicursor = "",                          -- keep block cursor in insert mode
     hlsearch = false,                        -- don't highlight all matches on previous search pattern
+    inccommand = "split",
     ignorecase = true,                       -- ignore case in search patterns
     laststatus = 3,                          -- enable global status line
     mouse = "",                              -- disable mouse
@@ -18,6 +19,7 @@ local options = {
     pumheight = 10,                          -- pop up menu height
     relativenumber = true,                   -- set relative numbered lines
     scrolloff = 5,                           -- is one of my fav
+    shiftround = true,                       -- round indent to multiple of shiftwidth
     shiftwidth = 4,                          -- the number of spaces inserted for each indentation
     showmode = false,                        -- we don't need to see things like -- INSERT -- anymore
     showtabline = 4,                         -- always show tabs
@@ -43,6 +45,7 @@ local options = {
                                              -- while editing with another program), it is not allowed to be edited
 }
 
+vim.opt.path:append { '**' }                 -- Finding files - Search down into subfolders
 vim.opt.shortmess:append "c"
 
 for k, v in pairs(options) do
@@ -51,6 +54,9 @@ end
 
 vim.cmd "set whichwrap+=<,>,[,],h,l"
 vim.cmd [[set iskeyword+=-]]
+
+-- Set shell to bash since zsh has noglob issues with gtests in dap
+vim.env.SHELL = "bash"
 
 ------------------------------------------------------------------------------
 -- Use system clipboard for yanks
