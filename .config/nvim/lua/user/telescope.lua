@@ -18,7 +18,6 @@ function M.before()
     vim.cmd "autocmd User TelescopePreviewerLoaded setlocal number"
 
     local map = vim.api.nvim_set_keymap
-    local opts = {noremap = true, silent = true}
 
     -- Telescope fuzzy finder shortcuts
     map('n', '<leader>bs', '<cmd>lua require("telescope.builtin").current_buffer_fuzzy_find()<CR>',
@@ -35,8 +34,7 @@ function M.before()
     map('n', '<leader>pc', '<cmd>lua require("telescope.builtin").command_history()<CR>',
         { silent = true, desc = 'Telescope command_history' })
     map('n', '<leader>pf',
-        '<cmd>lua require("telescope.builtin").find_files( \
-            { find_command = {"rg", "--files", "--hidden", "-g", "!.git" }})<CR>',
+        '<cmd>lua require("telescope.builtin").find_files({ find_command = {"rg", "--files", "--hidden", "-g", "!.git" }})<CR>',
         { silent = true, desc = 'Telescope find_files' })
     map('n', '<leader>ph', '<cmd>lua require("telescope.builtin").help_tags()<CR>',
         { silent = true, desc = 'Telescope help_tags' })
@@ -86,6 +84,10 @@ function M.before()
     -- map('n', '<leader>gst',    '<cmd>lua require("telescope.builtin").git_status()<CR>', opts)
     map('n', '<leader>gstash', '<cmd>lua require("telescope.builtin").git_stash()<CR>',
         { silent = true, desc = 'Git list stash' })
+
+    -- Spell suggest
+    map('n', 'z=',    '<cmd>lua require("telescope.builtin").spell_suggest()<CR>',
+        { silent = true, desc = 'Spell suggest' })
 end
 
 function M.config()
@@ -100,6 +102,17 @@ function M.config()
     if not res then
         vim.notify("telescope not found", vim.log.levels.ERROR)
         return
+    end
+
+    res, _ = pcall(require, "plenary")
+    if not res then
+        vim.notify("plenary not found", vim.log.levels.ERROR)
+        return
+    end
+
+    R = function(name)
+        require("plenary.reload").reload_module(name)
+        return require(name)
     end
 
     local actions = require("telescope.actions")
@@ -121,6 +134,7 @@ function M.config()
                     ["<C-j>"] = actions.move_selection_next,
                     ["<C-k>"] = actions.move_selection_previous,
                     ["<C-q>"] = actions.send_to_qflist,
+                    ["<C-space>"] = R"telescope".extensions.hop.hop,
                     ["<C-y>"] = yank_entry,
                     ["<leader><Tab>"] = actions.select_tab,
                     ["<leader>v"] = actions.select_vertical,
@@ -128,6 +142,7 @@ function M.config()
                 n = {
                     ["<C-f>"] = actions.to_fuzzy_refine,
                     ["<C-q>"] = actions.send_to_qflist,
+                    ["<C-space>"] = R"telescope".extensions.hop.hop,
                     ["<C-y>"] = yank_entry,
                     ["q"] = actions.close,
                     ["<leader><Tab>"] = actions.select_tab,
@@ -135,10 +150,6 @@ function M.config()
                 },
             },
 
-            file_previewer = require("telescope.previewers").vim_buffer_cat.new,
-            grep_previewer = require("telescope.previewers").vim_buffer_vimgrep.new,
-            qflist_previewer = require("telescope.previewers").vim_buffer_qflist.new,
-            file_sorter = require("telescope.sorters").get_fzy_sorter,
             color_devicons = true,
             sorting_strategy = 'ascending',
             layout_strategy = 'vertical', --flex
@@ -165,10 +176,6 @@ function M.config()
             },
         },
         extensions = {
-            fzf = {
-                override_generic_sorter = false,
-                override_file_sorter = true,
-            },
             live_grep_args = {
                 auto_quoting = true, -- enable/disable auto-quoting
                 -- override default mappings
@@ -182,11 +189,12 @@ function M.config()
         },
     })
 
-    telescope.load_extension("fzf")
-
-    telescope.load_extension("live_grep_args")
-
     telescope.load_extension("dap")
+    telescope.load_extension("fzf")
+    telescope.load_extension("hop")
+    telescope.load_extension("live_grep_args")
+    telescope.load_extension("ui-select")
+
 end
 
 return M
