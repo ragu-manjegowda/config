@@ -253,8 +253,30 @@ function M.config()
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
     -- Python
+    local util = require("lspconfig/util")
     nvim_lsp.pyright.setup{
-        on_attach = on_attach
+        on_attach = on_attach,
+        flags = {
+            debounce_text_changes = 150,
+        },
+        single_file_support = true,
+        settings_scopes = { 'python', 'pyright' },
+        root_dir = function(fname)
+            return util.root_pattern(
+                ".gitignore", "setup.py",  "setup.cfg", "pyproject.toml",
+                "requirements.txt")(fname) or
+                util.path.dirname(fname)
+        end,
+        settings = {
+            python = {
+                analysis = {
+                    autoSearchPaths = true,
+                    useLibraryCodeForTypes = true,
+                    diagnosticMode = 'workspace',
+                    -- typeCheckingMode = 'strict';
+                },
+            },
+        },
     }
 
     ---------------------------------------------------------------------------

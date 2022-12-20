@@ -225,11 +225,19 @@ function M.config()
         args = { "-m", "debugpy.adapter" };
     }
 
+    dap.adapters.remote_python = function(callback)
+        callback({
+            type = "server",
+            host = "localhost",
+            port = 3000,
+        })
+    end
+
     dap.configurations.python = {
         {
-            type = "python";
-            request = "launch";
-            name = "Launch file";
+            type = "python",
+            request = "launch",
+            name = "Launch file",
 
             program = function()
                 return vim.fn.input("Path to file: ", vim.fn.expand("%"), "file")
@@ -242,6 +250,15 @@ function M.config()
             cwd = function()
                 return vim.fn.input("Program working directory: ", vim.fn.getcwd() .. "/", "file")
             end,
+
+            stopAtEntry = true,
+        },
+        {
+            type = "remote_python",
+            request = "attach",
+            name = "Remote attach",
+            port = 3000,
+            host = "localhost",
 
             stopAtEntry = true,
         },
