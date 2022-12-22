@@ -132,6 +132,9 @@ setopt HIST_SAVE_NO_DUPS         # Don't write duplicate entries in the history 
 setopt HIST_REDUCE_BLANKS        # Remove superfluous blanks before recording entry.
 setopt HIST_VERIFY               # Don't execute immediately upon history expansion.
 
+# Remove annoying % at the end of partial line
+export PROMPT_EOL_MARK=""
+
 # Save command to history only if it is successful
 zshaddhistory() { whence ${${(z)1}[1]} >| /dev/null || return 1 }
 zstyle ":completion:*:commands" rehash 1

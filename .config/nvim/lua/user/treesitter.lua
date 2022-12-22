@@ -23,7 +23,8 @@ M.config = function()
             "go",
             "lua",
             "python",
-            "rust"
+            "rust",
+            "yaml"
         },
     }
 end

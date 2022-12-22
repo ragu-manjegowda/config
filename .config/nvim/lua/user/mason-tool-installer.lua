@@ -24,6 +24,7 @@ function M.config()
             "pyright",
             "rust-analyzer",
             "vim-language-server",
+            "yaml-language-server"
         },
 
         -- automatically install / update on startup. If set to false nothing
