@@ -3,6 +3,7 @@ local vim = vim
 local M = {}
 
 function M.config()
+
     local t = function(str)
         return vim.api.nvim_replace_termcodes(str, true, true, true)
     end
@@ -42,13 +43,6 @@ function M.config()
 
         mapping = {
             ["<Tab>"] = cmp.mapping({
-                c = function()
-                    if cmp.visible() then
-                        cmp.select_next_item({ behavior = cmp.SelectBehavior.Insert })
-                    else
-                        cmp.complete()
-                    end
-                end,
                 i = function(fallback)
                     if cmp.visible() then
                         cmp.select_next_item({ behavior = cmp.SelectBehavior.Insert })
@@ -58,13 +52,6 @@ function M.config()
                 end
             }),
             ["<S-Tab>"] = cmp.mapping({
-                c = function()
-                    if cmp.visible() then
-                        cmp.select_prev_item({ behavior = cmp.SelectBehavior.Insert })
-                    else
-                        cmp.complete()
-                    end
-                end,
                 i = function(fallback)
                     if cmp.visible() then
                         cmp.select_prev_item({ behavior = cmp.SelectBehavior.Insert })
@@ -134,13 +121,18 @@ function M.config()
             }),
         },
 
-        -- You should specify your *installed* sources.
-        sources = {
+        sources = cmp.config.sources({
             { name = 'nvim_lsp' },
-            { name = 'path' },
-            { name = 'treesitter' },
-            { name = 'buffer' },
         },
+        {
+            { name = 'path' },
+        },
+        {
+            { name = 'treesitter' },
+        },
+        {
+            { name = 'buffer' },
+        }),
 
         completion = {
             completeopt = 'menu,menuone,preview,noinsert',
@@ -193,9 +185,6 @@ function M.config()
     cmp.setup.cmdline(':', {
         sources = cmp.config.sources({
             { name = 'path' }
-        },
-        {
-            { name = 'cmdline' }
         })
     })
 
