@@ -130,6 +130,7 @@
 .config/openrazer
 .config/pavucontrol.ini
 .config/pip
+.config/qalculate
 .config/rclone/rclone.conf
 .config/redshift.conf
 .config/remmina

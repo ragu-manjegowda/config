@@ -89,13 +89,23 @@ local global_keys = awful.util.table.join(
 		{modkey, 'Control'},
 		'c',
 		function()
-            awful.spawn(
-                'find-cursor --size 1000 --distance 20 --wait 400 ' ..
-                '--line-width 6 --color "' .. beautiful.accent .. '"',
-                false
-            )
+			local focused = awful.screen.focused()
+
+			if focused.control_center then
+				focused.control_center:hide_dashboard()
+				focused.control_center.opened = false
+			end
+			if focused.info_center then
+				focused.info_center:hide_dashboard()
+				focused.info_center.opened = false
+			end
+			if focused.calendar_center then
+				focused.calendar_center:hide_dashboard()
+				focused.calendar_center.opened = false
+			end
+			awful.spawn(apps.default.rofi_calc, false)
 		end,
-		{description = 'find cursor location', group = 'launcher'}
+		{description = 'rofi calculator', group = 'launcher'}
 	),
 
 	awful.key(
@@ -236,6 +246,31 @@ local global_keys = awful.util.table.join(
 			awful.spawn(apps.default.lock, false)
 		end,
 		{description = 'lock the screen', group = 'launcher'}
+	),
+
+    awful.key(
+		{modkey, 'Control'},
+		'm',
+		function()
+			local focused = awful.screen.focused()
+			if focused.info_center and focused.info_center.visible then
+			    awesome.emit_signal('widget::update_stocks')
+			end
+		end,
+		{description = 'update stocks price', group = 'launcher'}
+	),
+
+	awful.key(
+		{modkey, 'Shift'},
+		'm',
+		function()
+            awful.spawn(
+                'find-cursor --size 1000 --distance 20 --wait 400 ' ..
+                '--line-width 6 --color "' .. beautiful.accent .. '"',
+                false
+            )
+		end,
+		{description = 'find cursor location', group = 'launcher'}
 	),
 
     awful.key(

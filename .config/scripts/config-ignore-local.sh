@@ -5,6 +5,7 @@
 config update-index --assume-unchanged \
     .config/alacritty/colors.yml \
     .config/awesome/configuration/rofi/appmenu/rofi.rasi \
+    .config/awesome/configuration/rofi/calc/rofi.rasi \
     .config/awesome/configuration/rofi/emojimenu/rofi.rasi \
     .config/awesome/configuration/rofi/global/icons/history.svg \
     .config/awesome/configuration/rofi/global/icons/result.svg \
