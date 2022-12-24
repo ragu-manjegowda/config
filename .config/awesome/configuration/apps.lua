@@ -51,8 +51,14 @@ return {
 		-- Show time
 		rofi_time = 'rofi -dpi ' .. screen.primary.dpi ..
 							' -theme ' .. config_dir ..
-							'configuration/rofi/time/rofi.rasi'
+							'configuration/rofi/time/rofi.rasi',
 
+        -- Show calc
+        rofi_calc = 'rofi -dpi ' .. screen.primary.dpi ..
+                            ' -theme ' .. config_dir ..
+                            'configuration/rofi/calc/rofi.rasi' ..
+                            ' -show calc -modi calc -no-show-match -no-sort' ..
+                            ' -calc-command "echo -n \'{result}\' | xclip -sel clip"'
 		-- You can add more default applications here
 	},
 
