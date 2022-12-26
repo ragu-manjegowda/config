@@ -22,6 +22,7 @@ function M.config()
             "gopls",
             "lua-language-server",
             "pyright",
+            "shellcheck", -- sh linting
             "rust-analyzer",
             "vim-language-server",
             "yaml-language-server"
