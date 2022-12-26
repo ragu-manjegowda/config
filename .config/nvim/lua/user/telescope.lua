@@ -58,22 +58,22 @@ function M.before()
         { silent = true, desc = 'Telescope grep_word_exact' })
 
     -- LSP
-    map('n', '<leader>lA', '<cmd>lua vim.lsp.buf.code_action()<CR>',
-        { silent = true, desc = 'LSP code_action' })
+    -- map('n', '<leader>lA', '<cmd>lua vim.lsp.buf.code_action()<CR>',
+    --     { silent = true, desc = 'LSP code_action' })
     map('n', '<leader>lci', '<cmd>lua require("telescope.builtin").lsp_incoming_calls()<CR>',
         { silent = true, desc = 'LSP incoming_calls' })
     map('n', '<leader>lco', '<cmd>lua require("telescope.builtin").lsp_outgoing_calls()<CR>',
         { silent = true, desc = 'LSP outgoing_calls' })
-    map('n', '<leader>ld', '<cmd>lua require("telescope.builtin").lsp_definitions()<CR>',
-        { silent = true, desc = 'LSP definitions' })
-    map('n', '<leader>le', '<cmd>lua require("telescope.builtin").lsp_diagnostics()<CR>',
-        { silent = true, desc = 'LSP diagnostics' })
-    map('n', '<leader>li', '<cmd>lua require("telescope.builtin").lsp_implementations()<CR>',
-        { silent = true, desc = 'LSP implementations' })
-    map('n', '<leader>lr', '<cmd>lua require("telescope.builtin").lsp_references()<CR>',
-        { silent = true, desc = 'LSP references' })
-    map('n', '<leader>lt', '<cmd>lua require("telescope.builtin").lsp_type_definitions()<CR>',
-        { silent = true, desc = 'LSP type_definitions' })
+    -- map('n', '<leader>ld', '<cmd>lua require("telescope.builtin").lsp_definitions()<CR>',
+    --     { silent = true, desc = 'LSP definitions' })
+    map('n', '<leader>oe', '<cmd>lua require("telescope.builtin").lsp_diagnostics()<CR>',
+        { silent = true, desc = 'LSP diagnostics preview in Telescope' })
+    -- map('n', '<leader>li', '<cmd>lua require("telescope.builtin").lsp_implementations()<CR>',
+    --     { silent = true, desc = 'LSP implementations' })
+    -- map('n', '<leader>lr', '<cmd>lua require("telescope.builtin").lsp_references()<CR>',
+    --     { silent = true, desc = 'LSP references' })
+    -- map('n', '<leader>lt', '<cmd>lua require("telescope.builtin").lsp_type_definitions()<CR>',
+    --     { silent = true, desc = 'LSP type_definitions' })
 
     -- Git shortcuts
     map('n', '<leader>gco',    '<cmd>lua require("telescope.builtin").git_commits()<CR>',

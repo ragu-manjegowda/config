@@ -17,22 +17,22 @@ end
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
 local function on_attach(_, bufnr)
-    local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
+    -- local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
     local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
     --Enable completion triggered by <c-x><c-o>
     buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
 
     -- See `:help vim.diagnostic.*` for documentation on any of the below functions
-    local opts = { noremap=true, silent=true }
-    buf_set_keymap('n', '<leader>ep', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
-    buf_set_keymap('n', '[e', '<cmd> lua vim.diagnostic.goto_prev()<CR>', opts)
-    buf_set_keymap('n', ']e', '<cmd> lua vim.diagnostic.goto_next()<CR>', opts)
+    -- local opts = { noremap=true, silent=true }
+    -- buf_set_keymap('n', '<leader>ep', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
+    -- buf_set_keymap('n', '[e', '<cmd> lua vim.diagnostic.goto_prev()<CR>', opts)
+    -- buf_set_keymap('n', ']e', '<cmd> lua vim.diagnostic.goto_next()<CR>', opts)
 
     -- See `:help vim.lsp.*` for documentation on any of the below functions
-    buf_set_keymap('n', '<leader>lD', '<Cmd>lua vim.lsp.buf.declaration()<CR>',
-                   { silent = true, desc = 'LSP declaration' })
-    buf_set_keymap('i', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>',
-                   { silent = true, desc = 'LSP signature_help' })
+    -- buf_set_keymap('n', '<leader>lD', '<Cmd>lua vim.lsp.buf.declaration()<CR>',
+    --                { silent = true, desc = 'LSP declaration' })
+    -- buf_set_keymap('i', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>',
+    --                { silent = true, desc = 'LSP signature_help' })
 
     --protocol.SymbolKind = { }
     protocol.CompletionItemKind = {
@@ -216,6 +216,8 @@ function M.config()
                         "clientbuttons", -- awesomeWM
                         "startup",       -- awesomeWM
                         "message",       -- awesomeWM
+                        "pcall",         -- nvim
+                        "require"        -- nvim
                     },
                     disable = {
                         -- -- Need check nil
