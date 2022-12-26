@@ -49,8 +49,9 @@ M.config = function()
                 enable = true,
                 border = 'none',
                 peek_definition_code = {
-                    ["<leader>lpf"] = "@function.outer",
-                    ["<leader>lpc"] = "@class.outer",
+                    -- Offload this to lspsaga
+                    -- ["<leader>lpf"] = "@function.outer",
+                    -- ["<leader>lpc"] = "@class.outer",
                 },
             },
         },

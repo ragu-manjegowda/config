@@ -135,6 +135,16 @@ local core_plugins = {
         config = [[require("user.lspconfig").config()]],
     },
 
+    -- LSP Saga
+    {
+        "glepnir/lspsaga.nvim",
+        branch = "main",
+        requires = {
+            "neovim/nvim-lspconfig"
+        },
+        config = [[require("user.lspsaga").config()]],
+    },
+
     {
         "folke/lsp-colors.nvim",
         config = [[require("user.lsp-colors").config()]],
