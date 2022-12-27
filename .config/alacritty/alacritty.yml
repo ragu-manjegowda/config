@@ -534,9 +534,13 @@ key_bindings:
   #- { key: Return,   mods: Alt,           action: ToggleFullscreen }
 
   # (macOS only)
+  - { key: B,              mods: Alt,                             chars: "\x1bb"           }
   - { key: C,              mods: Alt,                             chars: "\x1bc"           }
+  - { key: F,              mods: Alt,                             chars: "\x1bf"           }
   - { key: G,              mods: Alt,                             chars: "\x1bg"           }
   - { key: H,              mods: Alt,                             chars: "\x1bh"           }
+  - { key: J,              mods: Alt,                             chars: "\x1bj"           }
+  - { key: K,              mods: Alt,                             chars: "\x1bk"           }
   - { key: Slash,          mods: Control,                         chars: "\x1f"            }
 
   #- { key: K,              mods: Command, mode: ~Vi|~Search, chars: "\x0c"                 }

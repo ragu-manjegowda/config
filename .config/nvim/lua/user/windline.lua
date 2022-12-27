@@ -14,6 +14,8 @@ M.config = function()
     local helper = require('windline.helpers')
     local sep = helper.separators
     local b_components = require('windline.components.basic')
+
+    ---@diagnostic disable-next-line: undefined-field
     local state = _G.WindLine.state
     local vim_components = require('windline.components.vim')
     local HSL = require('wlanimation.utils')
