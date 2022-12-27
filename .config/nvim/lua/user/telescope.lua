@@ -60,9 +60,9 @@ function M.before()
     -- LSP
     -- map('n', '<leader>lA', '<cmd>lua vim.lsp.buf.code_action()<CR>',
     --     { silent = true, desc = 'LSP code_action' })
-    map('n', '<leader>lci', '<cmd>lua require("telescope.builtin").lsp_incoming_calls()<CR>',
+    map('n', '<leader>lic', '<cmd>lua require("telescope.builtin").lsp_incoming_calls()<CR>',
         { silent = true, desc = 'LSP incoming_calls' })
-    map('n', '<leader>lco', '<cmd>lua require("telescope.builtin").lsp_outgoing_calls()<CR>',
+    map('n', '<leader>loc', '<cmd>lua require("telescope.builtin").lsp_outgoing_calls()<CR>',
         { silent = true, desc = 'LSP outgoing_calls' })
     -- map('n', '<leader>ld', '<cmd>lua require("telescope.builtin").lsp_definitions()<CR>',
     --     { silent = true, desc = 'LSP definitions' })
