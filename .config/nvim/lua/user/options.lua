@@ -52,9 +52,6 @@ for k, v in pairs(options) do
     vim.opt[k] = v
 end
 
-vim.cmd "set whichwrap+=<,>,[,],h,l"
-vim.cmd [[set iskeyword+=-]]
-
 -- Set shell to bash since zsh has noglob issues with gtests in dap
 vim.env.SHELL = "bash"
 

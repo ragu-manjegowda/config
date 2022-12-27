@@ -138,6 +138,7 @@
 .config/systemd/user/default.target.wants
 .config/systemd/user/graphical-session.target.wants
 .config/systemd/user/sleep.target.wants
+.config/systemd/user/xorg@.service
 .config/teams
 .config/tmux/.tmux_history
 .config/tmux/session-restore
