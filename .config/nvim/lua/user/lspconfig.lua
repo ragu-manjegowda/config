@@ -16,14 +16,16 @@ end
 
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
-local function on_attach(_, bufnr)
+local function on_attach(client, bufnr)
+
     local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
     local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
+
     --Enable completion triggered by <c-x><c-o>
     buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
 
     -- See `:help vim.diagnostic.*` for documentation on any of the below functions
-    local opts = { noremap=true, silent=true }
+    -- local opts = { noremap=true, silent=true }
     -- buf_set_keymap('n', '<leader>ep', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
     -- buf_set_keymap('n', '[e', '<cmd> lua vim.diagnostic.goto_prev()<CR>', opts)
     -- buf_set_keymap('n', ']e', '<cmd> lua vim.diagnostic.goto_next()<CR>', opts)
@@ -31,12 +33,26 @@ local function on_attach(_, bufnr)
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     -- buf_set_keymap('n', '<leader>lD', '<Cmd>lua vim.lsp.buf.declaration()<CR>',
     --                { silent = true, desc = 'LSP declaration' })
-    -- buf_set_keymap('i', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>',
-    --                { silent = true, desc = 'LSP signature_help' })
+    buf_set_keymap('i', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>',
+                   { silent = true, desc = 'LSP signature_help' })
+
     buf_set_keymap('n', '<leader>lf', '<cmd>lua vim.lsp.buf.format()<CR>',
                    { silent = true, desc = 'LSP formatting' })
     buf_set_keymap('v', '<leader>lf', '<cmd>lua vim.lsp.buf.format()<CR>',
                    { silent = true, desc = 'LSP range formatting' })
+
+    -- Pyright for completion, rename, type checking and
+    -- Pylsp for hover, documentation, go to definition, syntax checking
+    local rc = client.server_capabilities
+
+    if client.name == 'pyright' then
+        rc.hover = false
+    end
+
+    if client.name == 'pylsp' then
+        rc.rename = false
+        rc.signature_help = false
+    end
 
     --protocol.SymbolKind = { }
     protocol.CompletionItemKind = {
@@ -259,27 +275,56 @@ function M.config()
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
     -- Python
-    local util = require("lspconfig/util")
+    -- https://www.reddit.com/r/neovim/comments/sazbw6/comment/hw1s6qg/?utm_source=share&utm_medium=web2x&context=3
+    -- Pyright for completion, rename, type checking
     nvim_lsp.pyright.setup{
         on_attach = on_attach,
         flags = {
             debounce_text_changes = 150,
         },
-        single_file_support = true,
-        settings_scopes = { 'python', 'pyright' },
-        root_dir = function(fname)
-            return util.root_pattern(
-                ".gitignore", "setup.py",  "setup.cfg", "pyproject.toml",
-                "requirements.txt")(fname) or
-                util.path.dirname(fname)
-        end,
         settings = {
             python = {
                 analysis = {
-                    autoSearchPaths = true,
                     useLibraryCodeForTypes = true,
-                    diagnosticMode = 'workspace',
-                    -- typeCheckingMode = 'strict';
+                    diagnosticSeverityOverrides = {
+                        reportGeneralTypeIssues = "none",
+                        reportOptionalMemberAccess = "none",
+                        reportOptionalSubscript = "none",
+                        reportPrivateImportUsage = "none",
+                    },
+                    autoImportCompletions = false,
+                },
+                linting = { pylintEnabled = false }
+            },
+        },
+    }
+
+    -- Pylsp for hover, documentation, go to definition, syntax checking
+    nvim_lsp.pylsp.setup{
+        on_attach = on_attach,
+        flags = {
+            debounce_text_changes = 150,
+        },
+        settings = {
+            pylsp = {
+                builtin = {
+                    installExtraArgs = {
+                        'flake8', 'pycodestyle', 'pydocstyle',
+                        'pyflakes', 'pylint', 'yapf'
+                    },
+                },
+                plugins = {
+                    jedi_completion = { enabled = false },
+                    rope_completion = { enabled = false },
+                    flake8 = { enabled = false },
+                    pyflakes = { enabled = false },
+                    pycodestyle = {
+                        ignore = {
+                            'C0103', 'E226', 'E266', 'E302', 'E303',
+                            'E304', 'E305', 'E402', 'E501',
+                            'W0104', 'W0621', 'W391', 'W503', 'W504'
+                        }
+                    },
                 },
             },
         },
