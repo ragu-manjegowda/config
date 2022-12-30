@@ -3,6 +3,9 @@
     name  = Ragu Manjegowda
     signingkey = 91C27880D0BD8E18
 
+[init]
+    defaultBranch = main
+
 [color]
     ui = true
 
@@ -43,3 +46,13 @@
 
 [push]
     autoSetupRemote = true
+
+[mergetool]
+    ; remove all .orig files when using the mergetool
+    keepBackup = false
+    prompt = false
+    hideResolved = true
+
+[merge]
+    tool = nvimdiff
+    conflictstyle = diff3
