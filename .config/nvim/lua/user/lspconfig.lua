@@ -19,9 +19,11 @@ end
 local function on_attach(client, bufnr)
 
     local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
+
     local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
 
-    --Enable completion triggered by <c-x><c-o>
+    -- Enable completion triggered by <c-x><c-o>
+    -- <c-x><c-o> is also mapped to <c-d> in nvim-cmp
     buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
 
     buf_set_keymap('n', '<leader>lf', '<cmd>lua vim.lsp.buf.format()<CR>',
@@ -72,7 +74,7 @@ local function on_attach(client, bufnr)
     }
 end
 
-vim.lsp.handlers["textDocument/publishDiagnostics"]  = vim.lsp.with(
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
     vim.lsp.diagnostic.on_publish_diagnostics,
     {
         underline = false,
@@ -85,12 +87,12 @@ vim.lsp.handlers["textDocument/publishDiagnostics"]  = vim.lsp.with(
 
 vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(
   vim.lsp.handlers.hover,
-  {border = 'rounded'}
+  { border = 'rounded' }
 )
 
 vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
   vim.lsp.handlers.signature_help,
-  {border = 'rounded'}
+  { border = 'rounded' }
 )
 
 function M.config()
@@ -179,8 +181,8 @@ function M.config()
     -- Golang
     nvim_lsp.gopls.setup {
         on_attach = on_attach,
-        cmd = {"gopls", "serve"},
-        filetypes = {"go", "gomod"},
+        cmd = { "gopls", "serve" },
+        filetypes = { "go", "gomod" },
         root_dir = nvim_lsp.util.root_pattern("go.mod", ".gitignore"),
         settings = {
             gopls = {
@@ -223,7 +225,7 @@ function M.config()
     -- Set heap size to 4GB - https://github.com/microsoft/pyright/issues/3239
     vim.env.NODE_OPTIONS = "--max-old-space-size=4096"
 
-    nvim_lsp.pyright.setup{
+    nvim_lsp.pyright.setup {
         on_attach = on_attach,
         flags = {
             debounce_text_changes = 150,
@@ -246,7 +248,7 @@ function M.config()
     }
 
     -- Pylsp for hover, documentation, go to definition, syntax checking
-    nvim_lsp.pylsp.setup{
+    nvim_lsp.pylsp.setup {
         on_attach = on_attach,
         flags = {
             debounce_text_changes = 150,
@@ -293,7 +295,7 @@ function M.config()
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
     -- Yaml
-    nvim_lsp.yamlls.setup{
+    nvim_lsp.yamlls.setup {
         on_attach = on_attach
     }
 end
