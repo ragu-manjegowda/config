@@ -10,8 +10,7 @@
         "mouse",
         "root",
         "screen",
-        "startup",
-        "c"
+        "startup"
     ],
     "diagnostics": {
         "enable": true,
