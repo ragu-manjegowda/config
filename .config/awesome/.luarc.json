@@ -1,4 +1,18 @@
 {
+    "Lua.diagnostics.globals": [
+        "awesome",
+        "button",
+        "client",
+        "clientbuttons",
+        "clientkeys",
+        "dbus",
+        "message",
+        "mouse",
+        "root",
+        "screen",
+        "startup",
+        "c"
+    ],
     "diagnostics": {
         "enable": true,
         "globals": [
@@ -19,18 +33,18 @@
         }
     },
     "runtime": {
-        "version": "LuaJIT",
         "path": [
             "/usr/share/awesome/lib/?.lua"
         ],
-        "pathStrict": false
+        "pathStrict": false,
+        "version": "LuaJIT"
     },
     "workspace": {
+        "checkThirdParty": false,
         "library": [
             "runtime/lua",
             "/usr/share/awesome/lib"
         ],
-        "checkThirdParty": false,
         "maxPreload": 2000,
         "preloadFileSize": 1000
     }
