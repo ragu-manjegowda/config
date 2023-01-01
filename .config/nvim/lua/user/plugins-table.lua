@@ -151,6 +151,16 @@ local core_plugins = {
     },
 
     {
+        "folke/neodev.nvim",
+        requires = {
+            "neovim/nvim-lspconfig"
+        },
+        config = function()
+            require("neodev").setup()
+        end
+    },
+
+    {
         "Mofiqul/trld.nvim",
         config = function()
             require("trld").setup()

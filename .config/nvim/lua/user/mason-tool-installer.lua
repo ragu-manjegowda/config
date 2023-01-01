@@ -20,6 +20,7 @@ function M.config()
             "debugpy", -- python debugging
             "delve", -- golang debugging
             "gopls",
+            "json-lsp",
             "lua-language-server",
             "pyright",
             "python-lsp-server",

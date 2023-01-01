@@ -47,7 +47,10 @@ function M.config()
     "<cmd>lua require('lspsaga.diagnostic').goto_next({ severity = vim.diagnostic.severity.ERROR })<CR>",
     { silent = true, desc = 'LSP jump to next error' })
 
-    map('i', '<C-k>', '<cmd>Lspsaga signature_help<CR>',
+    map('i', '<C-k>', '<cmd>Lspsaga hover_doc<CR>',
+    { silent = true, desc = 'LSP signature help' })
+
+    map('n', '<C-k>', '<cmd>Lspsaga hover_doc<CR>',
     { silent = true, desc = 'LSP signature help' })
 
     map('n', '<leader>ep', '<cmd>Lspsaga show_line_diagnostics<CR>',
@@ -61,9 +64,6 @@ function M.config()
 
     map('n', '<leader>ld', '<cmd>Lspsaga lsp_finder<CR>',
     { silent = true, desc = 'LSP implementations' })
-
-    map('n', '<leader>ldoc', '<cmd>Lspsaga hover_doc<CR>',
-    { silent = true, desc = 'LSP hover doc' })
 
     map('n', '<leader>lco', '<cmd>Lspsaga outline<CR>',
     { silent = true, desc = 'LSP code outline' })

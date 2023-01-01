@@ -1,0 +1,60 @@
+{
+    "Lua.workspace.library": [
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/neodev.nvim/types/stable",
+        "/usr/share/nvim/runtime",
+        "/home/ragu/.local/share/nvim/site/pack/packer/opt/specs.nvim",
+        "/home/ragu/.local/share/nvim/site/pack/packer/opt/telescope.nvim",
+        "/home/ragu/.local/share/nvim/site/pack/packer/opt/which-key.nvim",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/FTerm.nvim",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/LuaSnip",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/clangd_extensions.nvim",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/cmp-buffer",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/cmp-cmdline",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/cmp-nvim-lsp",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/cmp-nvim-lsp-document-symbol",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/cmp-nvim-lua",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/cmp-path",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/firenvim",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/gitsigns.nvim",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/lightspeed.nvim",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/lsp-colors.nvim",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/lspkind-nvim",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/lspsaga.nvim",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/mason-tool-installer.nvim",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/mason.nvim",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/neodev.nvim",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/nvim-cmp",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/nvim-dap",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/nvim-dap-ui",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/nvim-dap-virtual-text",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/nvim-lspconfig",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/nvim-tree.lua",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/nvim-treesitter",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/nvim-treesitter-textobjects",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/nvim-web-devicons",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/packer.nvim",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/plenary.nvim",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/popup.nvim",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/tabby.nvim",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/telescope-dap.nvim",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/telescope-fzf-native.nvim",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/telescope-hop.nvim",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/telescope-live-grep-args.nvim",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/telescope-ui-select.nvim",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/trld.nvim",
+        "/home/ragu/.local/share/nvim/site/pack/packer/start/windline.nvim",
+        "${3rd}/luassert/library"
+    ],
+    "diagnostics": {
+        "enable": true,
+        "globals": [
+            "vim",
+            "capabilities",
+            "pcall",
+            "require"
+        ],
+        "neededFileStatus": {
+            "codestyle-check": "Any"
+        }
+    }
+}

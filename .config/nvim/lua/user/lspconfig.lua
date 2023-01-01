@@ -24,18 +24,6 @@ local function on_attach(client, bufnr)
     --Enable completion triggered by <c-x><c-o>
     buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
 
-    -- See `:help vim.diagnostic.*` for documentation on any of the below functions
-    -- local opts = { noremap=true, silent=true }
-    -- buf_set_keymap('n', '<leader>ep', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
-    -- buf_set_keymap('n', '[e', '<cmd> lua vim.diagnostic.goto_prev()<CR>', opts)
-    -- buf_set_keymap('n', ']e', '<cmd> lua vim.diagnostic.goto_next()<CR>', opts)
-
-    -- See `:help vim.lsp.*` for documentation on any of the below functions
-    -- buf_set_keymap('n', '<leader>lD', '<Cmd>lua vim.lsp.buf.declaration()<CR>',
-    --                { silent = true, desc = 'LSP declaration' })
-    buf_set_keymap('i', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>',
-                   { silent = true, desc = 'LSP signature_help' })
-
     buf_set_keymap('n', '<leader>lf', '<cmd>lua vim.lsp.buf.format()<CR>',
                    { silent = true, desc = 'LSP formatting' })
     buf_set_keymap('v', '<leader>lf', '<cmd>lua vim.lsp.buf.format()<CR>',
@@ -206,11 +194,14 @@ function M.config()
 
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
-    -- Lua
-    local runtime_path = vim.split(package.path, ";")
-    table.insert(runtime_path, "lua/?.lua")
-    table.insert(runtime_path, "lua/?/init.lua")
+    -- Json
+    nvim_lsp.jsonls.setup {
+        on_attach = on_attach
+    }
 
+    ---------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
+    -- Lua
     nvim_lsp.sumneko_lua.setup {
         on_attach = on_attach,
         -- root_dir is .luacheckrc which is added for both awesome and nvim
@@ -218,56 +209,7 @@ function M.config()
         settings = {
             Lua = {
                 telemetry = { enable = false },
-                runtime = {
-                    -- LuaJIT in the case of Neovim
-                    version = "LuaJIT",
-                    path = runtime_path,
-                },
-                diagnostics = {
-                    -- Get the language server to recognize the `vim` global
-                    globals = {
-                        "vim",
-                        "capabilities",  -- lspconfig
-                        "root",          -- awesomeWM
-                        "awesome",       -- awesomeWM
-                        "screen",        -- awesomeWM
-                        "client",        -- awesomeWM
-                        "clientkeys",    -- awesomeWM
-                        "clientbuttons", -- awesomeWM
-                        "startup",       -- awesomeWM
-                        "message",       -- awesomeWM
-                        "pcall",         -- nvim
-                        "require"        -- nvim
-                    },
-                    disable = {
-                        -- -- Need check nil
-                        -- "need-check-nil",
-                        -- -- This function requires 2 argument(s) but instead it is receiving 1
-                        -- "missing-parameter",
-                        -- -- Cannot assign `unknown` to `string`.
-                        -- "assign-type-mismatch",
-                        -- -- Cannot assign `unknown` to parameter `string`.
-                        -- "param-type-mismatch",
-                        -- -- This variable is defined as type `string`. Cannot convert its type to `unknown`.
-                        -- "cast-local-type",
-                    }
-                },
-                workspace = {
-                    -- Make the server aware of Neovim runtime files
-                    library = {
-                        [vim.fn.expand("$VIMRUNTIME/lua")] = true,
-                        [vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true,
-                    }
-                },
-                -- disable certain warnings that don't concern us
-                -- https://github.com/sumneko/lua-language-server/blob/master/doc/en-us/config.md
-                type = {
-                    -- Cannot assign `string|nil` to parameter `string`.
-                    weakNilCheck = true,
-                    weakUnionCheck = true,
-                    -- Cannot assign `number` to parameter `integer`.
-                    castNumberToInteger = true,
-                },
+                completion = { callSnippet = "Replace" },
             }
         }
     }
