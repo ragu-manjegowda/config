@@ -219,6 +219,10 @@ function M.config()
     -- Python
     -- https://www.reddit.com/r/neovim/comments/sazbw6/comment/hw1s6qg/?utm_source=share&utm_medium=web2x&context=3
     -- Pyright for completion, rename, type checking
+
+    -- Set heap size to 4GB - https://github.com/microsoft/pyright/issues/3239
+    vim.env.NODE_OPTIONS = "--max-old-space-size=4096"
+
     nvim_lsp.pyright.setup{
         on_attach = on_attach,
         flags = {
