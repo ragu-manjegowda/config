@@ -233,7 +233,7 @@ local locker = function(s)
 		else
 			printf "$fullname"
 		fi
-		]]     ,
+		]],
         function(stdout)
             stdout = stdout:gsub('%\n', '')
             uname_text:set_markup(stdout)
@@ -468,7 +468,9 @@ local locker = function(s)
 
                 if client_focused then
                     client_focused.minimized = false
+                    ---@diagnostic disable-next-line: undefined-global
                     c:emit_signal('request::activate')
+                    ---@diagnostic disable-next-line: undefined-global
                     c:raise()
                 end
             end
