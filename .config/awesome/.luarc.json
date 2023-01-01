@@ -1,0 +1,37 @@
+{
+    "diagnostics": {
+        "enable": true,
+        "globals": [
+            "awesome",
+            "button",
+            "client",
+            "clientbuttons",
+            "clientkeys",
+            "dbus",
+            "message",
+            "mouse",
+            "root",
+            "screen",
+            "startup"
+        ],
+        "neededFileStatus": {
+            "codestyle-check": "Any"
+        }
+    },
+    "runtime": {
+        "version": "LuaJIT",
+        "path": [
+            "/usr/share/awesome/lib/?.lua"
+        ],
+        "pathStrict": false
+    },
+    "workspace": {
+        "library": [
+            "runtime/lua",
+            "/usr/share/awesome/lib"
+        ],
+        "checkThirdParty": false,
+        "maxPreload": 2000,
+        "preloadFileSize": 1000
+    }
+}
