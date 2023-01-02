@@ -122,7 +122,7 @@ command! QFSort call s:SortUniqQFList()
 
 ]]
 
-vim.api.nvim_create_augroup("bufcheck", {clear = true})
+vim.api.nvim_create_augroup("bufcheck", { clear = true })
 
 -- Enable spell checking for certain file types
 vim.api.nvim_create_autocmd(
@@ -137,9 +137,9 @@ vim.api.nvim_create_autocmd(
 vim.api.nvim_create_autocmd(
     { "BufWritePost" },
     {
-        group    = "bufcheck",
-        pattern  = vim.env.MYVIMRC,
-        command  = "silent source %"
+        group   = "bufcheck",
+        pattern = vim.env.MYVIMRC,
+        command = "silent source %"
     }
 )
 
@@ -150,7 +150,7 @@ vim.api.nvim_create_autocmd(
         group    = "bufcheck",
         pattern  = "*",
         callback = function()
-            vim.highlight.on_yank{timeout=500}
+            vim.highlight.on_yank { timeout = 500 }
         end
     }
 )
@@ -159,9 +159,9 @@ vim.api.nvim_create_autocmd(
 vim.api.nvim_create_autocmd(
     { "TermOpen" },
     {
-        group    = "bufcheck",
-        pattern  = "*",
-        command  = "startinsert | set winfixheight"
+        group   = "bufcheck",
+        pattern = "*",
+        command = "startinsert | set winfixheight"
     }
 )
 
@@ -170,10 +170,10 @@ vim.api.nvim_create_autocmd(
     { "FileType" },
     {
         group    = "bufcheck",
-        pattern  = "man",
+        pattern  = { "man", "help" },
         callback = function()
-            vim.keymap.set("n", "<enter>"    , "K"    , {buffer=true})
-            vim.keymap.set("n", "<backspace>", "<c-o>", {buffer=true})
+            vim.keymap.set("n", "<enter>", "K", { buffer = true })
+            vim.keymap.set("n", "<backspace>", "<c-o>", { buffer = true })
         end
     }
 )
@@ -192,29 +192,32 @@ vim.api.nvim_create_autocmd(
 
 -- Go imports and formatting_sync on save
 vim.api.nvim_create_autocmd("BufWritePre", {
-  pattern = { "*.go" },
-  callback = function()
-	  vim.lsp.buf.formatting_sync(nil, 3000)
-  end,
+    pattern = { "*.go" },
+    callback = function()
+        vim.lsp.buf.formatting_sync(nil, 3000)
+    end,
 })
 
 vim.api.nvim_create_autocmd("BufWritePre", {
-	pattern = { "*.go" },
-	callback = function()
-		local params = vim.lsp.util.make_range_params(nil, vim.lsp.util._get_offset_encoding())
-		params.context = {only = {"source.organizeImports"}}
+    pattern = { "*.go" },
+    callback = function()
+        ---@diagnostic disable-next-line: missing-parameter
+        local params = vim.lsp.util.make_range_params(nil, vim.lsp.util._get_offset_encoding())
+        params.context = { only = { "source.organizeImports" } }
 
-		local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, 3000)
-		for _, res in pairs(result or {}) do
-			for _, r in pairs(res.result or {}) do
-				if r.edit then
-					vim.lsp.util.apply_workspace_edit(r.edit, vim.lsp.util._get_offset_encoding())
-				else
-					vim.lsp.buf.execute_command(r.command)
-				end
-			end
-		end
-	end,
+        ---@diagnostic disable-next-line: param-type-mismatch
+        local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, 3000)
+        for _, res in pairs(result or {}) do
+            for _, r in pairs(res.result or {}) do
+                if r.edit then
+                    ---@diagnostic disable-next-line: missing-parameter
+                    vim.lsp.util.apply_workspace_edit(r.edit, vim.lsp.util._get_offset_encoding())
+                else
+                    vim.lsp.buf.execute_command(r.command)
+                end
+            end
+        end
+    end,
 })
 
 -- Mason update
@@ -227,7 +230,7 @@ vim.api.nvim_create_autocmd('User', {
     end,
 })
 
--- Symbols in winbar
+-- Display symbols in winbar
 local function config_winbar_or_statusline()
     local exclude = {
         ['terminal'] = true,
@@ -275,4 +278,47 @@ vim.api.nvim_create_autocmd('FileType', {
 vim.api.nvim_create_autocmd('User', {
     pattern = 'LspsagaUpdateSymbol',
     callback = function() config_winbar_or_statusline() end,
+})
+
+-- Disable global status line for mergetool
+-- Do it by simply counting the number of windows
+vim.api.nvim_create_autocmd('VimEnter', {
+    callback = function()
+        local windows = vim.api.nvim_tabpage_list_wins(0)
+        if #windows == 4 then
+            vim.opt.laststatus = 2
+            local buf_name = { '%=LOCAL%=', '%=BASE%=', '%=REMOTE%=' }
+            for i, win in ipairs(windows) do
+                if i == 4 then
+                    return
+                end
+                vim.api.nvim_win_set_option(win, "statusline", buf_name[i])
+            end
+        end
+    end,
+})
+
+-- Toggle hlsearch b/w enter and exiting search mode
+events = { 'CmdlineEnter', 'CmdlineLeave' }
+
+vim.api.nvim_create_autocmd(events, {
+    pattern = "/,\\?",
+    callback = function(args)
+        if args.event == 'CmdlineEnter' then
+            vim.opt.hlsearch = true
+        elseif args.event == 'CmdlineLeave' then
+            vim.opt.hlsearch = false
+        end
+    end,
+})
+
+-- Set match pairs for c, cpp
+-- Remove `-` from iskeyword to avoid not matching pointer variables
+-- Ex: `this->pointer` considers `this-` but not `this` when matching words
+vim.api.nvim_create_autocmd('FileType', {
+    pattern = { 'cpp', 'c' },
+    callback = function()
+        vim.opt.mps:append "=:;"
+        vim.opt.iskeyword:remove "-"
+    end,
 })

@@ -3,15 +3,15 @@ local vim = vim
 local M = {}
 
 function M.grep()
-    require('telescope.builtin').grep_string({ search = vim.fn.input("Grep For > ")})
+    require('telescope.builtin').grep_string({ search = vim.fn.input("Grep For > ") })
 end
 
 function M.grep_word()
-    require('telescope.builtin').grep_string({ search = vim.fn.expand("<cword>")})
+    require('telescope.builtin').grep_string({ search = vim.fn.expand("<cword>") })
 end
 
 function M.grep_word_exact()
-    require('telescope.builtin').grep_string({ search = "'" .. vim.fn.expand("<cword>")})
+    require('telescope.builtin').grep_string({ search = "'" .. vim.fn.expand("<cword>") })
 end
 
 function M.before()
@@ -34,7 +34,8 @@ function M.before()
     map('n', '<leader>pc', '<cmd>lua require("telescope.builtin").command_history()<CR>',
         { silent = true, desc = 'Telescope command_history' })
     map('n', '<leader>pf',
-        '<cmd>lua require("telescope.builtin").find_files({ find_command = {"rg", "--files", "--hidden", "-g", "!.git" }})<CR>',
+        ---@diagnostic disable-next-line: codestyle-check
+        '<cmd>lua require("telescope.builtin").find_files({ find_command = {"rg", "--files", "--hidden", "-g", "!.git" }} )<CR>',
         { silent = true, desc = 'Telescope find_files' })
     map('n', '<leader>ph', '<cmd>lua require("telescope.builtin").help_tags()<CR>',
         { silent = true, desc = 'Telescope help_tags' })
@@ -76,17 +77,18 @@ function M.before()
     --     { silent = true, desc = 'LSP type_definitions' })
 
     -- Git shortcuts
-    map('n', '<leader>gco',    '<cmd>lua require("telescope.builtin").git_commits()<CR>',
+    map('n', '<leader>gco', '<cmd>lua require("telescope.builtin").git_commits()<CR>',
         { silent = true, desc = 'Git checkout commit' })
-    map('n', '<leader>glogf',  '<cmd>lua require("telescope.builtin").git_bcommits()<CR>',
+    map('n', '<leader>glogf', '<cmd>lua require("telescope.builtin").git_bcommits()<CR>',
         { silent = true, desc = 'Git log file' })
+    ---@diagnostic disable-next-line: codestyle-check
     -- map('n', '<leader>glogp',  '<cmd>lua require("telescope.builtin").git_commits({ git_command = {"git", "log", "--pretty=full"}})<CR>', opts)
     -- map('n', '<leader>gst',    '<cmd>lua require("telescope.builtin").git_status()<CR>', opts)
     map('n', '<leader>gstash', '<cmd>lua require("telescope.builtin").git_stash()<CR>',
         { silent = true, desc = 'Git list stash' })
 
     -- Spell suggest
-    map('n', 'z=',    '<cmd>lua require("telescope.builtin").spell_suggest()<CR>',
+    map('n', 'z=', '<cmd>lua require("telescope.builtin").spell_suggest()<CR>',
         { silent = true, desc = 'Spell suggest' })
 end
 
@@ -104,6 +106,7 @@ function M.config()
         return
     end
 
+    ---@diagnostic disable-next-line: assign-type-mismatch
     res, _ = pcall(require, "plenary")
     if not res then
         vim.notify("plenary not found", vim.log.levels.ERROR)
@@ -116,11 +119,11 @@ function M.config()
     end
 
     local actions = require("telescope.actions")
-    local action_state = require("telescope.actions.state")
+    local actions_state = require("telescope.actions.state")
     local lga_actions = require("telescope-live-grep-args.actions")
 
     local function yank_entry()
-        local entry = action_state.get_selected_entry()
+        local entry = actions_state.get_selected_entry()
         vim.fn.setreg("*", entry.value)
         print("Yanked:", entry.value)
     end
@@ -134,7 +137,7 @@ function M.config()
                     ["<C-j>"] = actions.move_selection_next,
                     ["<C-k>"] = actions.move_selection_previous,
                     ["<C-q>"] = actions.send_to_qflist,
-                    ["<C-space>"] = R"telescope".extensions.hop.hop,
+                    ["<C-space>"] = R "telescope".extensions.hop.hop,
                     ["<C-y>"] = yank_entry,
                     ["<leader><Tab>"] = actions.select_tab,
                     ["<leader>v"] = actions.select_vertical,
@@ -142,7 +145,7 @@ function M.config()
                 n = {
                     ["<C-f>"] = actions.to_fuzzy_refine,
                     ["<C-q>"] = actions.send_to_qflist,
-                    ["<C-space>"] = R"telescope".extensions.hop.hop,
+                    ["<C-space>"] = R "telescope".extensions.hop.hop,
                     ["<C-y>"] = yank_entry,
                     ["q"] = actions.close,
                     ["<leader><Tab>"] = actions.select_tab,

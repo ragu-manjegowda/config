@@ -51,6 +51,7 @@ function M.config()
                     end
                 end
             }),
+
             ["<S-Tab>"] = cmp.mapping({
                 i = function(fallback)
                     if cmp.visible() then
@@ -60,16 +61,19 @@ function M.config()
                     end
                 end
             }),
+
             ['<Down>'] = cmp.mapping(
                 cmp.mapping.select_next_item(
                     { behavior = cmp.SelectBehavior.Select }),
-                    { 'i' }
+                { 'i' }
             ),
+
             ['<Up>'] = cmp.mapping(
                 cmp.mapping.select_prev_item(
                     { behavior = cmp.SelectBehavior.Select }),
-                    { 'i' }
+                { 'i' }
             ),
+
             ['<C-n>'] = cmp.mapping({
                 c = function()
                     if cmp.visible() then
@@ -86,6 +90,7 @@ function M.config()
                     end
                 end
             }),
+
             ['<C-p>'] = cmp.mapping({
                 c = function()
                     if cmp.visible() then
@@ -102,27 +107,32 @@ function M.config()
                     end
                 end
             }),
+
             ['<C-u>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
             ['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
             ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
 
             ['<C-d>'] = cmp.mapping(cmp.mapping.complete({
-                            config = {
-                                sources = {
-                                    { name = 'omni' },
-                                }
-                            }
-                        }), { 'i' }),
+                config = {
+                    sources = {
+                        { name = 'omni' },
+                    }
+                }
+            }), { 'i' }),
 
             ['<C-e>'] = cmp.mapping({
-              i = cmp.mapping.close(), c = cmp.mapping.close() }),
+                i = cmp.mapping.close(), c = cmp.mapping.close()
+            }),
+
             ['<CR>'] = cmp.mapping({
                 i = cmp.mapping.confirm({
-                    behavior = cmp.ConfirmBehavior.Insert, select = false }),
+                    behavior = cmp.ConfirmBehavior.Insert, select = false
+                }),
                 c = function(fallback)
                     if cmp.visible() then
                         cmp.confirm({
-                            behavior = cmp.ConfirmBehavior.Replace, select = false })
+                            behavior = cmp.ConfirmBehavior.Replace, select = false
+                        })
                     else
                         fallback()
                     end
@@ -132,14 +142,8 @@ function M.config()
 
         sources = cmp.config.sources({
             { name = 'nvim_lsp' },
-        },
-        {
             { name = 'path' },
-        },
-        {
             { name = 'treesitter' },
-        },
-        {
             { name = 'buffer' },
         }),
 
@@ -197,15 +201,17 @@ function M.config()
         })
     })
 
-    vim.cmd [[
-        " Setup buffer configuration (nvim-lua source only enables in Lua filetype).
-        autocmd FileType lua lua require'cmp'.setup.buffer {
-        \   sources = {
-        \     { name = 'buffer' },
-        \     { name = 'nvim_lua' },
-        \   },
-        \ }
-    ]]
+    vim.api.nvim_create_autocmd('FileType', {
+        pattern = { 'lua' },
+        callback = function()
+            cmp.setup.buffer {
+                sources = {
+                    { name = 'nvim_lua' },
+                    { name = 'buffer' }
+                }
+            }
+        end,
+    })
 end
 
 return M
