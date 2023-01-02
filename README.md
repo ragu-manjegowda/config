@@ -44,7 +44,7 @@
 
 | ![image](man/figures/awesome.jpg) |
 |:--:|
-| ***AweomeWM - empty desktop and some notifications*** |
+| ***AweomeWM - Alacritty, Zim, Zathura and notifications panel*** |
 
 | ![image](man/figures/firefox.jpg) |
 |:--:|
