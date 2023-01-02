@@ -1,3 +1,5 @@
+-- Disable multiple space errors
+---@diagnostic disable: codestyle-check
 local options = {
     autoindent = true,
     backup = false,                          -- creates a backup file
@@ -5,11 +7,11 @@ local options = {
     colorcolumn = "80",
     completeopt = { "menuone", "noselect" }, -- mostly just for cmp
     conceallevel = 0,                        -- so that `` is visible in markdown files
+    confirm =true,                           -- Bring up confirm pop up for unsaved buffers
     cursorline = true,                       -- highlight the current line
     expandtab = true,                        -- convert tabs to spaces
     fileencoding = "utf-8",                  -- the encoding written to a file
     guicursor = "",                          -- keep block cursor in insert mode
-    hlsearch = false,                        -- don't highlight all matches on previous search pattern
     inccommand = "split",
     ignorecase = true,                       -- ignore case in search patterns
     laststatus = 3,                          -- enable global status line
@@ -47,6 +49,7 @@ local options = {
 
 vim.opt.path:append { '**' }                 -- Finding files - Search down into subfolders
 vim.opt.shortmess:append "c"
+vim.opt.iskeyword:append "-"
 
 for k, v in pairs(options) do
     vim.opt[k] = v
