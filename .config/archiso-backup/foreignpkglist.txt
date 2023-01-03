@@ -24,3 +24,4 @@ teams
 timeshift
 w3m-imgcat
 xidlehook
+zoom
