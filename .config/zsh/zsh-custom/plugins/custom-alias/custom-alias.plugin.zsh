@@ -206,6 +206,8 @@ function toggle-alacritty-theme () {
             zathura_config_dark_path="$HOME/.config/zathura/zathurarc-dark"
             cp $zathura_config_dark_path $zathura_config_path
 
+            dircolors_dark_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-dark"
+            eval `dircolors ${dircolors_dark_path}`
             ;;
         dark)
             sed -i -e "s#^colors: \*.*#colors: *solarized-light#g" $config_path
@@ -219,6 +221,8 @@ function toggle-alacritty-theme () {
             zathura_config_light_path="$HOME/.config/zathura/zathurarc-light"
             cp $zathura_config_light_path $zathura_config_path
 
+            dircolors_light_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-light"
+            eval `dircolors ${dircolors_light_path}`
             ;;
     esac
 
@@ -275,6 +279,8 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
             zathura_config_dark_path="$HOME/.config/zathura/zathurarc-dark"
             cp $zathura_config_dark_path $zathura_config_path
 
+            dircolors_dark_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-dark"
+            eval `dircolors ${dircolors_dark_path}`
         else
             export BAT_THEME="Solarized (light)"
 
@@ -286,6 +292,8 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
             zathura_config_light_path="$HOME/.config/zathura/zathurarc-light"
             cp $zathura_config_light_path $zathura_config_path
 
+            dircolors_light_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-light"
+            eval `dircolors ${dircolors_light_path}`
         fi
     fi
 fi
@@ -316,6 +324,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
                 zathura_config_dark_path="$HOME/.config/zathura/zathurarc-dark"
                 cp $zathura_config_dark_path $zathura_config_path
 
+                dircolors_dark_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-dark"
+                eval `gdircolors ${dircolors_dark_path}`
                 ;;
             *)
                 sed -i -e "s#^colors: \*.*#colors: *solarized-light#g" $config_path
@@ -329,6 +339,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
                 zathura_config_light_path="$HOME/.config/zathura/zathurarc-light"
                 cp $zathura_config_light_path $zathura_config_path
 
+                dircolors_light_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-light"
+                eval `gdircolors ${dircolors_light_path}`
                 ;;
         esac
     fi

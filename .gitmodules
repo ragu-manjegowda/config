@@ -51,3 +51,8 @@
 [submodule ".config/awesome/library/bling"]
 	path = .config/awesome/library/bling
 	url = https://github.com/BlingCorp/bling.git
+	branch = master
+[submodule ".config/zsh/zsh-custom/themes/dircolors-solarized"]
+	path = .config/zsh/zsh-custom/themes/dircolors-solarized
+	url = https://github.com/seebi/dircolors-solarized.git
+	branch = master
