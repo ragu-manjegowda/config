@@ -36,6 +36,7 @@ if [ -n "$BASH_VERSION" ]; then
 
     # include .bashrc if it exists
     if [ -f "$BASH_DIR/bashrc" ]; then
+        # shellcheck disable=SC1091
         source "$BASH_DIR/bashrc"
     fi
 
@@ -48,7 +49,7 @@ elif [ -n "$ZSH_VERSION" ]; then
     HISTFILE="$ZDOTDIR/.zsh_history"
 
     ## Back up zsh_history
-    cp ${HISTFILE} ${ZDOTDIR}/.zsh_history_$(date +\%Y_\%m_\%d).bak
+    cp "${HISTFILE}" "${ZDOTDIR}"/.zsh_history_"$(date +%Y_%m_%d)".bak
 
 fi
 
@@ -56,17 +57,20 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 
     # include .bash_custom if it exists
     if [ -f "$BASH_DIR/bash_custom" ]; then
+        # shellcheck disable=SC1091
         source "$BASH_DIR/bash_custom"
     fi
 
-    if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then
-        source $HOME/.nix-profile/etc/profile.d/nix.sh;
+    if [ -e "$HOME"/.nix-profile/etc/profile.d/nix.sh ]; then
+        # shellcheck disable=SC1091
+        source "$HOME"/.nix-profile/etc/profile.d/nix.sh;
     fi
 
 elif [[ "$OSTYPE" == "darwin"* ]]; then
 
     # include .bash_profile if it exists
     if [ -f "$BASH_DIR/bash_profile" ]; then
+        # shellcheck disable=SC1091
   	    source "$BASH_DIR/bash_profile"
     fi
 
@@ -90,9 +94,9 @@ alias cstv='cvim +Git +only'
 alias csu='config submodule foreach git pull --recurse-submodules --rebase'
 
 # fzf
-export FZF_DEFAULT_COMMAND='fd --type f --color=never --hidden'
-FZF_ROOT_SEARCH_COMMAND='fd --type f . / --color=never'
-FZF_HOME_SEARCH_COMMAND='fd --type f . $HOME --color=never --hidden'
+export FZF_DEFAULT_COMMAND="fd --type f --color=never --hidden"
+FZF_ROOT_SEARCH_COMMAND="fd --type f . / --color=never"
+FZF_HOME_SEARCH_COMMAND="fd --type f . $HOME --color=never --hidden"
 
 FZF_DEFAULT_OPTS1="--no-height --color=bg+:#343d46,gutter:-1"
 FZF_DEFAULT_OPTS2=",pointer:#ff3c3c,info:#0dbc79,hl:#0dbc79,hl+:#23d18b"
@@ -109,13 +113,13 @@ T_OPTS_BIND_OPTS5="',ctrl-h:reload($FZF_HOME_SEARCH_COMMAND),ctrl-r:reload($FZF_
 FZF_CTRL_T_OPTS="$T_OPTS_PREVIEW $T_OPTS_BIND_OPTS1$T_OPTS_BIND_OPTS2$T_OPTS_BIND_OPTS3"
 export FZF_CTRL_T_OPTS="${FZF_CTRL_T_OPTS}$T_OPTS_BIND_OPTS4$T_OPTS_BIND_OPTS5"
 
-export FZF_ALT_C_COMMAND='fd --type d . --color=never --hidden'
-FZF_ROOT_D_SEARCH_COMMAND='fd --type d . / --color=never'
-FZF_HOME_D_SEARCH_COMMAND='fd --type d . $HOME --color=never --hidden'
+export FZF_ALT_C_COMMAND="fd --type d . --color=never --hidden"
+FZF_ROOT_D_SEARCH_COMMAND="fd --type d . / --color=never"
+FZF_HOME_D_SEARCH_COMMAND="fd --type d . $HOME --color=never --hidden"
 
 C_OPTS_PREVIEW="--preview 'tree -C {}'"
 C_OPTS_BIND_OPTS1="--bind 'alt-j:preview-page-down,alt-k:preview-page-up'"
-T_OPTS_BIND_OPTS2="',ctrl-j:down,ctrl-k:up'"
+C_OPTS_BIND_OPTS2="',ctrl-j:down,ctrl-k:up'"
 C_OPTS_BIND_OPTS3="',ctrl-w:toggle-preview-wrap,ctrl-f:jump'"
 C_OPTS_BIND_OPTS4="',ctrl-u:preview-top,ctrl-d:preview-bottom'"
 C_OPTS_BIND_OPTS5="',ctrl-h:reload($FZF_HOME_D_SEARCH_COMMAND),ctrl-r:reload($FZF_ROOT_D_SEARCH_COMMAND)'"
@@ -127,3 +131,13 @@ R_OPTS_BIND="--bind 'ctrl-/:toggle-preview,ctrl-f:jump'"
 export FZF_CTRL_R_OPTS="${R_OPTS_PREVIEW} ${R_OPTS_BIND}"
 
 export FZF_TMUX_OPTS="-d 70%"
+
+# Paru, Pacman fzf
+if [ -f "/etc/arch-release" ]; then
+    alias pars='paru --color always -Sl | \
+        sed -e "s: :/:; s/ unknown-version//; /installed/d" | \
+        fzf --multi --ansi --preview "paru -Si {1}" | xargs -ro paru -S'
+
+    alias pacr="pacman --color always -Q | cut -f 1 -d ' ' | \
+        fzf --multi --ansi --preview 'pacman -Qi {1}' | xargs -ro sudo pacman -Rns"
+fi
