@@ -67,12 +67,12 @@ pavucontrol
 picom-git
 pkgconf
 playerctl
-pulseaudio
-pulseaudio-alsa
 ranger
 redshift
+refind
 reflector-pacman-hook-git
 rofi
+rofi-calc
 rofi-emoji
 rust
 slack-desktop
@@ -100,17 +100,14 @@ xorg-docs
 xorg-font-util
 xorg-fonts-100dpi
 xorg-fonts-75dpi
-xorg-fonts-encodings
 xorg-iceauth
 xorg-mkfontscale
 xorg-server
-xorg-server-common
 xorg-server-devel
 xorg-server-xephyr
 xorg-server-xnest
 xorg-server-xvfb
 xorg-sessreg
-xorg-setxkbmap
 xorg-smproxy
 xorg-x11perf
 xorg-xauth
@@ -122,7 +119,6 @@ xorg-xev
 xorg-xgamma
 xorg-xhost
 xorg-xinput
-xorg-xkbcomp
 xorg-xkbevd
 xorg-xkbutils
 xorg-xkill
@@ -145,4 +141,5 @@ xsettingsd
 zathura
 zathura-pdf-mupdf
 zim
+zoom
 zsh
