@@ -20,7 +20,8 @@ local core_plugins = {
             "hrsh7th/cmp-omni",
             "hrsh7th/cmp-path",
             "onsails/lspkind-nvim",
-            "rafamadriz/friendly-snippets"
+            "rafamadriz/friendly-snippets",
+            "saadparwaiz1/cmp_luasnip"
         },
         config = [[require("user.nvim-cmp").config()]],
     },
