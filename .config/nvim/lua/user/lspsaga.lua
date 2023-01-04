@@ -14,7 +14,7 @@ function M.config()
         finder_action_keys = {
             open = '<CR>',
             quit = 'q',
-            tabe = '<leader>t',
+            tabe = '<leader><Tab>',
         },
         code_action_keys = {
             exec = '<CR>',
@@ -23,7 +23,7 @@ function M.config()
         definition_action_keys = {
             edit = '<CR>',
             quit = 'q',
-            tabe = '<leader>t',
+            tabe = '<leader><Tab>',
         },
         symbol_in_winbar = {
             in_custom = true

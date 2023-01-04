@@ -46,6 +46,8 @@ function M.config()
                 i = function(fallback)
                     if cmp.visible() then
                         cmp.select_next_item({ behavior = cmp.SelectBehavior.Insert })
+                    elseif luasnip.expand_or_jumpable() then
+                        luasnip.expand_or_jump()
                     else
                         fallback()
                     end
@@ -56,6 +58,8 @@ function M.config()
                 i = function(fallback)
                     if cmp.visible() then
                         cmp.select_prev_item({ behavior = cmp.SelectBehavior.Insert })
+                    elseif luasnip.jumpable(-1) then
+                        luasnip.jump(-1)
                     else
                         fallback()
                     end
@@ -110,6 +114,7 @@ function M.config()
 
             ['<C-u>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
             ['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
+            ---@diagnostic disable-next-line: missing-parameter
             ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
 
             ['<C-d>'] = cmp.mapping(cmp.mapping.complete({
@@ -164,6 +169,7 @@ function M.config()
                 end
                 vim_item.kind = lspkind.presets.default[vim_item.kind] .. ' ' .. vim_item.kind
                 vim_item.menu = ({
+                    luasnip = '[Luasnip]',
                     nvim_lsp = '[LSP]',
                     path = '[Path]',
                     treesitter = '[Treesitter]',
@@ -187,10 +193,11 @@ function M.config()
 
     -- Use buffer source for `/`.
     cmp.setup.cmdline('/', {
+        ---@diagnostic disable-next-line: assign-type-mismatch
         completion = { autocomplete = false },
         sources = {
             -- { name = 'buffer' }
-            { name = 'buffer', option = { keyword_pattern = [=[[^[:blank:]].*]=] } }
+            { name = 'buffer' }
         }
     })
 
@@ -207,6 +214,7 @@ function M.config()
             cmp.setup.buffer {
                 sources = {
                     { name = 'nvim_lua' },
+                    { name = 'luasnip', option = { show_autosnippets = true } },
                     { name = 'buffer' }
                 }
             }
