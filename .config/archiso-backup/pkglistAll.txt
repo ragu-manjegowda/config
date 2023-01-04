@@ -67,6 +67,7 @@ pavucontrol
 picom-git
 pkgconf
 playerctl
+pulseaudio-alsa
 ranger
 redshift
 refind

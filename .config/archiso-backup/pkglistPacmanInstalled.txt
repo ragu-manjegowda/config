@@ -49,6 +49,7 @@ patch
 pavucontrol
 pkgconf
 playerctl
+pulseaudio-alsa
 ranger
 redshift
 refind
