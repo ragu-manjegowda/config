@@ -207,11 +207,13 @@ function M.config()
     nvim_lsp.sumneko_lua.setup {
         on_attach = on_attach,
         -- root_dir is .luacheckrc which is added for both awesome and nvim
-        cmd = { "lua-language-server", "--preview" },
         settings = {
             Lua = {
                 telemetry = { enable = false },
-                completion = { callSnippet = "Replace" },
+                completion = {
+                    keywordSnippet = "Both",
+                    callSnippet = "Both"
+                },
             }
         }
     }
