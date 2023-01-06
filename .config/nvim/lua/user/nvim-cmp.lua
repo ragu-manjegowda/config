@@ -146,6 +146,7 @@ function M.config()
         },
 
         sources = cmp.config.sources({
+            { name = 'luasnip', option = { show_autosnippets = true } },
             { name = 'nvim_lsp' },
             { name = 'path' },
             { name = 'treesitter' },
@@ -169,8 +170,8 @@ function M.config()
                 end
                 vim_item.kind = lspkind.presets.default[vim_item.kind] .. ' ' .. vim_item.kind
                 vim_item.menu = ({
-                    luasnip = '[Luasnip]',
                     nvim_lsp = '[LSP]',
+                    luasnip = '[Luasnip]',
                     path = '[Path]',
                     treesitter = '[Treesitter]',
                     buffer = '[Buffer]',
@@ -213,7 +214,7 @@ function M.config()
         callback = function()
             cmp.setup.buffer {
                 sources = {
-                    { name = 'nvim_lua' },
+                    { name = 'nvim_lsp' },
                     { name = 'luasnip', option = { show_autosnippets = true } },
                     { name = 'buffer' }
                 }

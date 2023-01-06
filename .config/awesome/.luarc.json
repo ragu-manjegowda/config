@@ -1,17 +1,8 @@
 {
-    "Lua.diagnostics.globals": [
-        "awesome",
-        "button",
-        "client",
-        "clientbuttons",
-        "clientkeys",
-        "dbus",
-        "message",
-        "mouse",
-        "root",
-        "screen",
-        "startup"
-    ],
+    "$schema": "https://raw.githubusercontent.com/sumneko/vscode-lua/master/setting/schema.json",
+    "completion": {
+        "callSnippet": "Both"
+    },
     "diagnostics": {
         "enable": true,
         "globals": [
@@ -31,18 +22,16 @@
             "codestyle-check": "Any"
         }
     },
-    "runtime": {
-        "path": [
-            "/usr/share/awesome/lib/?.lua"
-        ],
-        "pathStrict": false,
-        "version": "LuaJIT"
-    },
     "workspace": {
         "checkThirdParty": false,
         "library": [
-            "runtime/lua",
-            "/usr/share/awesome/lib"
+            "/usr/share/awesome/lib",
+            "~/.config/awesome/library",
+            "~/.config/awesome/layout",
+            "~/.config/awesome/module",
+            "~/.config/awesome/widget",
+            "${3rd}/busted/library",
+            "${3rd}/luassert/library"
         ],
         "maxPreload": 2000,
         "preloadFileSize": 1000
