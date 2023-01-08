@@ -197,7 +197,6 @@ function M.config()
         ---@diagnostic disable-next-line: assign-type-mismatch
         completion = { autocomplete = false },
         sources = {
-            -- { name = 'buffer' }
             { name = 'buffer' }
         }
     })
@@ -207,19 +206,6 @@ function M.config()
         sources = cmp.config.sources({
             { name = 'path' }
         })
-    })
-
-    vim.api.nvim_create_autocmd('FileType', {
-        pattern = { 'lua' },
-        callback = function()
-            cmp.setup.buffer {
-                sources = {
-                    { name = 'nvim_lsp' },
-                    { name = 'luasnip', option = { show_autosnippets = true } },
-                    { name = 'buffer' }
-                }
-            }
-        end,
     })
 end
 
