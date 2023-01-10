@@ -42,14 +42,15 @@ local options = {
     undofile = true,
     undolevels = 10000,
     updatetime = 300,                        -- faster completion (4000ms default)
+    wildchar = 4,                            -- <C-d> for completion - https://neovim.io/doc/user/options.html#'wc'
     wrap = false,                            -- display lines as one long line
     writebackup = false,                     -- if a file is being edited by another program (or was written to file
                                              -- while editing with another program), it is not allowed to be edited
 }
 
 vim.opt.path:append { '**' }                 -- Finding files - Search down into subfolders
-vim.opt.shortmess:append "c"
-vim.opt.iskeyword:append "-"
+vim.opt.shortmess:append "c"                 -- Show search preview in split
+vim.opt.iskeyword:append "-"                 -- Match word-with-hypen for '*'
 
 for k, v in pairs(options) do
     vim.opt[k] = v
