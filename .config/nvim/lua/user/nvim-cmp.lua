@@ -207,6 +207,18 @@ function M.config()
             { name = 'path' }
         })
     })
+
+    vim.api.nvim_create_autocmd('FileType', {
+        pattern = { 'text', 'mail', 'markdown', 'rmd', 'rst' },
+        callback = function()
+            cmp.setup.buffer {
+                sources = {
+                    { name = 'buffer' },
+                    { name = 'path' }
+                }
+            }
+        end,
+    })
 end
 
 return M

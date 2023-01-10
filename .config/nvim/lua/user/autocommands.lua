@@ -124,15 +124,6 @@ command! QFSort call s:SortUniqQFList()
 
 vim.api.nvim_create_augroup("bufcheck", { clear = true })
 
--- Enable spell checking for certain file types
-vim.api.nvim_create_autocmd(
-    { "BufRead", "BufNewFile" },
-    {
-        pattern = { "*.md", "*.Rmd", "*.txt", "*.tex", },
-        command = "setlocal spell spelllang=en_us"
-    }
-)
-
 -- reload config file on change
 vim.api.nvim_create_autocmd(
     { "BufWritePost" },
