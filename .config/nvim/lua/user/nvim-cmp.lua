@@ -43,6 +43,13 @@ function M.config()
 
         mapping = {
             ["<Tab>"] = cmp.mapping({
+                c = function(fallback)
+                    if cmp.visible() then
+                        cmp.select_next_item({ behavior = cmp.SelectBehavior.Insert })
+                    else
+                        fallback()
+                    end
+                end,
                 i = function(fallback)
                     if cmp.visible() then
                         cmp.select_next_item({ behavior = cmp.SelectBehavior.Insert })
@@ -55,6 +62,13 @@ function M.config()
             }),
 
             ["<S-Tab>"] = cmp.mapping({
+                c = function(fallback)
+                    if cmp.visible() then
+                        cmp.select_prev_item({ behavior = cmp.SelectBehavior.Insert })
+                    else
+                        fallback()
+                    end
+                end,
                 i = function(fallback)
                     if cmp.visible() then
                         cmp.select_prev_item({ behavior = cmp.SelectBehavior.Insert })
@@ -117,14 +131,6 @@ function M.config()
             ---@diagnostic disable-next-line: missing-parameter
             ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
 
-            ['<C-d>'] = cmp.mapping(cmp.mapping.complete({
-                config = {
-                    sources = {
-                        { name = 'omni' },
-                    }
-                }
-            }), { 'i' }),
-
             ['<C-e>'] = cmp.mapping({
                 i = cmp.mapping.close(), c = cmp.mapping.close()
             }),
@@ -149,7 +155,6 @@ function M.config()
             { name = 'luasnip', option = { show_autosnippets = true } },
             { name = 'nvim_lsp' },
             { name = 'path' },
-            { name = 'treesitter' },
             { name = 'buffer' },
         }),
 
@@ -173,7 +178,6 @@ function M.config()
                     nvim_lsp = '[LSP]',
                     luasnip = '[Luasnip]',
                     path = '[Path]',
-                    treesitter = '[Treesitter]',
                     buffer = '[Buffer]',
                 })[entry.source.name]
 
@@ -204,7 +208,8 @@ function M.config()
     -- Use cmdline & path source for ':'.
     cmp.setup.cmdline(':', {
         sources = cmp.config.sources({
-            { name = 'path' }
+            { name = 'path' },
+            { name = 'cmdline' }
         })
     })
 

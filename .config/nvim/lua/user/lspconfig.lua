@@ -23,7 +23,7 @@ local function on_attach(client, bufnr)
     local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
 
     -- Enable completion triggered by <c-x><c-o>
-    -- <c-x><c-o> is also mapped to <c-d> in nvim-cmp
+    -- <c-x><c-o> is also mapped to <c-d> in options.lua
     buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
 
     buf_set_keymap('n', '<leader>lf', '<cmd>lua vim.lsp.buf.format()<CR>',
