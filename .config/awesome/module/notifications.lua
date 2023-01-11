@@ -25,11 +25,8 @@ end
 naughty.config.padding = dpi(8)
 naughty.config.spacing = dpi(8)
 naughty.config.icon_dirs = {
-    '/usr/share/icons/Tela',
-    '/usr/share/icons/Tela-blue-dark',
-    '/usr/share/icons/Papirus/',
-    '/usr/share/icons/la-capitaine-icon-theme/',
-    '/usr/share/icons/gnome/',
+    '/usr/share/icons/Solarized-FLAT-Blue/',
+    '/usr/share/icons/Solarized-Dark-Green-Numix/',
     '/usr/share/icons/hicolor/',
     '/usr/share/pixmaps/'
 }
@@ -46,12 +43,12 @@ ruled.notification.connect_signal(
         ruled.notification.append_rule {
             rule       = { urgency = 'critical' },
             properties = {
-                font                = 'Hack Nerd Bold 12',
-                bg                  = beautiful.colors.red,
-                fg                  = beautiful.colors.red,
-                margin              = dpi(16),
-                position            = 'top_left',
-                implicit_timeout    = 0
+                font             = 'Hack Nerd Bold 12',
+                bg               = beautiful.colors.red,
+                fg               = beautiful.colors.red,
+                margin           = dpi(16),
+                position         = 'top_left',
+                implicit_timeout = 0
             }
         }
 
@@ -59,12 +56,12 @@ ruled.notification.connect_signal(
         ruled.notification.append_rule {
             rule       = { urgency = 'normal' },
             properties = {
-                font                = 'Hack Nerd Regular 12',
-                bg                  = beautiful.bg_focus,
-                fg                  = beautiful.fg_normal,
-                margin              = dpi(16),
-                position            = 'top_left',
-                implicit_timeout    = 5
+                font             = 'Hack Nerd Regular 12',
+                bg               = beautiful.bg_focus,
+                fg               = beautiful.fg_normal,
+                margin           = dpi(16),
+                position         = 'top_left',
+                implicit_timeout = 5
             }
         }
 
@@ -72,19 +69,19 @@ ruled.notification.connect_signal(
         ruled.notification.append_rule {
             rule       = { urgency = 'low' },
             properties = {
-                font                = 'Hack Nerd Regular 12',
-                bg                  = beautiful.transparent,
-                fg                  = beautiful.fg_normal,
-                margin              = dpi(16),
-                position            = 'top_left',
-                implicit_timeout    = 5
+                font             = 'Hack Nerd Regular 12',
+                bg               = beautiful.transparent,
+                fg               = beautiful.fg_normal,
+                margin           = dpi(16),
+                position         = 'top_left',
+                implicit_timeout = 5
             }
         }
 
         ruled.notification.append_rule {
             rule       = { app_name = 'Slack' },
             properties = {
-                implicit_timeout    = 0
+                implicit_timeout = 0
             }
         }
 
@@ -103,23 +100,32 @@ naughty.connect_signal(
     'request::display_error',
     function(message, startup)
         naughty.notification {
-            urgency = 'critical',
-            title   = 'Oops, an error happened'..(startup and ' during startup!' or '!'),
-            message = message,
+            urgency  = 'critical',
+            title    = 'Oops, an error happened' .. (startup and ' during startup!' or '!'),
+            message  = message,
             app_name = 'System Notification',
-            icon = beautiful.awesome_icon
+            icon     = beautiful.awesome_icon
         }
     end
 )
 
 -- XDG icon lookup
 naughty.connect_signal(
-    'request::icon',
-    function(n, context, hints)
-        if context ~= 'app_icon' then return end
+    "request::icon",
+    function(n, _, hints)
+
+        -- Handle cases where hints.app_icon is `nil`
+        if hints.app_icon == nil then
+            if n.app_name == nil then
+                return
+            else
+                -- handle cases where n.app_name is not nil ex: slack
+                hints.app_icon = n.app_name
+            end
+        end
 
         local path = menubar.utils.lookup_icon(hints.app_icon) or
-        menubar.utils.lookup_icon(hints.app_icon:lower())
+            menubar.utils.lookup_icon(hints.app_icon:lower())
 
         if path then
             n.icon = path
@@ -128,7 +134,7 @@ naughty.connect_signal(
 )
 
 --- Use XDG icon
-naughty.connect_signal("request::action_icon", function(a, context, hints)
+naughty.connect_signal("request::action_icon", function(a, _, hints)
     a.icon = menubar.utils.lookup_icon(hints.id)
 end)
 
@@ -141,8 +147,8 @@ naughty.connect_signal(
         local actions_template = wibox.widget {
             notification = n,
             base_layout = wibox.widget {
-                spacing        = dpi(0),
-                layout         = wibox.layout.flex.horizontal
+                spacing = dpi(0),
+                layout  = wibox.layout.flex.horizontal
             },
             widget_template = {
                 {
@@ -157,10 +163,10 @@ naughty.connect_signal(
                         },
                         widget = clickable_container
                     },
-                    bg                 = beautiful.bg_normal,
-                    shape              = gears.shape.rounded_rect,
-                    forced_height      = dpi(30),
-                    widget             = wibox.container.background
+                    bg            = beautiful.bg_normal,
+                    shape         = gears.shape.rounded_rect,
+                    forced_height = dpi(30),
+                    widget        = wibox.container.background
                 },
                 margins = dpi(4),
                 widget  = wibox.container.margin
@@ -210,7 +216,6 @@ naughty.connect_signal(
                                 {
                                     {
                                         {
-                                            layout = wibox.layout.fixed.vertical,
                                             {
                                                 {
                                                     {
@@ -229,8 +234,8 @@ naughty.connect_signal(
                                                     margins = beautiful.notification_margin,
                                                     widget  = wibox.container.margin,
                                                 },
-                                                bg = beautiful.bg_focus,
-                                                widget  = wibox.container.background,
+                                                bg     = beautiful.bg_focus,
+                                                widget = wibox.container.background,
                                             },
                                             {
                                                 {
@@ -265,16 +270,16 @@ naughty.connect_signal(
                                                 layout = wibox.layout.fixed.horizontal,
                                             },
                                             fill_space = true,
-                                            spacing = beautiful.notification_margin,
-                                            layout  = wibox.layout.fixed.vertical,
+                                            spacing    = beautiful.notification_margin,
+                                            layout     = wibox.layout.fixed.vertical,
                                         },
                                         -- Margin between the fake background
                                         -- Set to 0 to preserve the 'titlebar' effect
                                         margins = dpi(0),
                                         widget  = wibox.container.margin,
                                     },
-                                    bg = beautiful.background_light,
-                                    widget  = wibox.container.background,
+                                    bg     = beautiful.background_light,
+                                    widget = wibox.container.background,
                                 },
                                 -- Actions
                                 actions_template,
@@ -306,7 +311,7 @@ naughty.connect_signal(
             easing = animation.easing.linear,
             reset_on_stop = false,
             loop = n.timeout == 0,
-            update = function(self, pos)
+            update = function(_, pos)
                 timeout_arc.value = pos
             end,
         })

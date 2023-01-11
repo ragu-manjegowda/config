@@ -3,11 +3,14 @@ local theme_dir = filesystem.get_configuration_dir() .. '/theme'
 
 local theme = {}
 
+-- Icon theme
+theme.icon_theme = 'Solarized-Dark-Green-Numix'
+
 theme.icons = theme_dir .. '/icons/'
 theme.font = 'Hack Nerd Regular 12'
 theme.font_bold = 'Hack Nerd Bold 12'
 
-theme.colors = {}
+theme.colors         = {}
 theme.colors.base3   = "#002b3666"
 theme.colors.base2   = "#073642"
 theme.colors.base1   = "#586e75"
@@ -102,7 +105,7 @@ theme.groups_title_bg = theme.background
 theme.groups_bg = theme.background_light
 
 -- UI events
-theme.leave_event = transparent
+theme.leave_event = theme.transparent
 theme.enter_event = '#ffffff' .. '10'
 theme.press_event = '#ffffff' .. '15'
 theme.release_event = '#ffffff' .. '10'
@@ -110,9 +113,9 @@ theme.release_event = '#ffffff' .. '10'
 -- Awesome icon
 theme.awesome_icon = theme.icons .. 'awesome.svg'
 
-local awesome_overrides = function(theme) end
+local awesome_overrides = function(_) end
 
 return {
-	theme = theme,
- 	awesome_overrides = awesome_overrides
+    theme = theme,
+    awesome_overrides = awesome_overrides
 }
