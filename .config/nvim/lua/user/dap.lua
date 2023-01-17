@@ -10,13 +10,16 @@ function M.config()
         { silent = true, desc = 'DAP set breakpoint with condition' })
 
     map('n', '<leader>dce', '<cmd>lua require("dap").continue()<CR>',
-        { silent = true, desc = 'DAP launch or continue'})
+        { silent = true, desc = 'DAP launch or continue' })
 
     map('n', '<leader>deb', '<cmd>lua require("dap").set_exception_breakpoints({"all"})<CR>',
         { silent = true, desc = 'DAP set exception breakpoint' })
 
     map('n', '<leader>drb', '<cmd>lua require("dap").clear_breakpoints()<CR>',
         { silent = true, desc = 'DAP remove breakpoints' })
+
+    map('n', '<leader>drc', '<cmd>lua require("dap").run_to_cursor()<CR>',
+        { silent = true, desc = 'DAP run to cursor' })
 
     map('n', '<leader>drr', '<cmd>lua require("dap").run_last()<CR>',
         { silent = true, desc = 'DAP re-run restart' })
@@ -25,7 +28,7 @@ function M.config()
         { silent = true, desc = 'DAP toggle breakpoint' })
 
     map('n', '<leader>dte', '<cmd>lua require("dap").terminate()<CR>',
-        { silent = true, desc = 'DAP terminate'})
+        { silent = true, desc = 'DAP terminate' })
 
     map('n', '<leader>dtui', '<cmd>lua require("dapui").toggle()<CR>',
         { silent = true, desc = 'DAP toggle UI' })
@@ -42,7 +45,7 @@ function M.config()
     local res, dap = pcall(require, "dap")
     if not res then
         vim.notify("dap not found", vim.log.levels.ERROR)
-      return
+        return
     end
 
     local dap_virtual_text
@@ -85,23 +88,23 @@ function M.config()
 
     dap.configurations.cpp = {
         {
-            name = "Launch file",
-            type = "cppdbg",
-            request = "launch",
-            program = function()
+            name          = "Launch file",
+            type          = "cppdbg",
+            request       = "launch",
+            program       = function()
                 return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
             end,
-            args  = function()
+            args          = function()
                 local argument_string = vim.fn.input("Program arguments: ")
                 return vim.fn.split(argument_string, " ", true)
             end,
-            cwd = function()
+            cwd           = function()
                 return vim.fn.input("Program working directory: ", vim.fn.getcwd() .. "/", "file")
             end,
             setupCommands = {
                 {
                     text = "-enable-pretty-printing",
-                    description =  "enable pretty printing",
+                    description = "enable pretty printing",
                     ignoreFailures = false
                 },
             },
@@ -124,7 +127,7 @@ function M.config()
             setupCommands = {
                 {
                     text = "-enable-pretty-printing",
-                    description =  "enable pretty printing",
+                    description = "enable pretty printing",
                     ignoreFailures = false
                 },
             },
@@ -138,75 +141,76 @@ function M.config()
 
     -- Go adapters
     dap.adapters.go = function(callback, config)
-      local stdout = vim.loop.new_pipe(false)
-      local handle
-      local pid_or_err
-      local host = config.host or "127.0.0.1"
-      local port = config.port or "38697"
-      local addr = string.format("%s:%s", host, port)
-      local opts = {
-        stdio = {nil, stdout},
-        args = {"dap", "-l", addr},
-        detached = true
-      }
-      handle, pid_or_err = vim.loop.spawn("dlv", opts, function(code)
-        stdout:close()
-        handle:close()
-        if code ~= 0 then
-            vim.notify("dlv exited with code " .. code, vim.log.levels.ERROR)
-        end
-      end)
-      assert(handle, "Error running dlv: " .. tostring(pid_or_err))
-      stdout:read_start(function(err, chunk)
-        assert(not err, err)
-        if chunk then
-          vim.schedule(function()
-            require("dap.repl").append(chunk)
-          end)
-        end
-      end)
-      -- Wait for delve to start
-      vim.defer_fn(
-      function()
-        callback({type = "server", host = "127.0.0.1", port = port})
-      end,
-      100)
+        local stdout = vim.loop.new_pipe(false)
+        local handle
+        local pid_or_err
+        local host = config.host or "127.0.0.1"
+        local port = config.port or "38697"
+        local addr = string.format("%s:%s", host, port)
+        local opts = {
+            stdio = { nil, stdout },
+            args = { "dap", "-l", addr },
+            detached = true
+        }
+        handle, pid_or_err = vim.loop.spawn("dlv", opts, function(code)
+            stdout:close()
+            handle:close()
+            if code ~= 0 then
+                vim.notify("dlv exited with code " .. code, vim.log.levels.ERROR)
+            end
+        end)
+        assert(handle, "Error running dlv: " .. tostring(pid_or_err))
+        ---@diagnostic disable-next-line: undefined-field
+        stdout:read_start(function(err, chunk)
+            assert(not err, err)
+            if chunk then
+                vim.schedule(function()
+                    require("dap.repl").append(chunk)
+                end)
+            end
+        end)
+        -- Wait for delve to start
+        vim.defer_fn(
+            function()
+                callback({ type = "server", host = "127.0.0.1", port = port })
+            end,
+            100)
     end
 
     dap.configurations.go = {
-      {
-        type = "go",
-        name = "Debug",
-        request = "launch",
-        program = "${file}",
-      },
-      {
-        type = "go",
-        name = "Debug Package",
-        request = "launch",
-        program = "${fileDirname}",
-      },
-      {
-        type = "go",
-        name = "Attach",
-        mode = "local",
-        request = "attach",
-        processId = require("dap.utils").pick_process,
-      },
-      {
-        type = "go",
-        name = "Debug test",
-        request = "launch",
-        mode = "test",
-        program = "${file}",
-      },
-      {
-        type = "go",
-        name = "Debug test (go.mod)",
-        request = "launch",
-        mode = "test",
-        program = "./${relativeFileDirname}",
-      }
+        {
+            type = "go",
+            name = "Debug",
+            request = "launch",
+            program = "${file}",
+        },
+        {
+            type = "go",
+            name = "Debug Package",
+            request = "launch",
+            program = "${fileDirname}",
+        },
+        {
+            type = "go",
+            name = "Attach",
+            mode = "local",
+            request = "attach",
+            processId = require("dap.utils").pick_process,
+        },
+        {
+            type = "go",
+            name = "Debug test",
+            request = "launch",
+            mode = "test",
+            program = "${file}",
+        },
+        {
+            type = "go",
+            name = "Debug test (go.mod)",
+            request = "launch",
+            mode = "test",
+            program = "./${relativeFileDirname}",
+        }
     }
 
     -- Python adapters
@@ -242,7 +246,7 @@ function M.config()
             program = function()
                 return vim.fn.input("Path to file: ", vim.fn.expand("%"), "file")
             end,
-            args  = function()
+            args    = function()
                 local argument_string = vim.fn.input("Program arguments: ")
                 return vim.fn.split(argument_string, " ", true)
             end,
