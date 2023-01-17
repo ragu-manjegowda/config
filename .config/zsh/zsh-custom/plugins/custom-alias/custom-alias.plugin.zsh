@@ -199,6 +199,7 @@ function toggle-alacritty-theme () {
             export BAT_THEME="Solarized (dark)"
 
             sed -i -e "s#background=light#background=dark#g" $vim_config_path
+            sed -i -e "s#theme = \"light\"#theme = \"dark\"#g" $vim_config_path
 
             broot_config_dark_path="$HOME/.config/broot/conf-dark.hjson"
             cp $broot_config_dark_path $broot_config_path
@@ -214,6 +215,7 @@ function toggle-alacritty-theme () {
             export BAT_THEME="Solarized (light)"
 
             sed -i -e "s#background=dark#background=light#g" $vim_config_path
+            sed -i -e "s#theme = \"dark\"#theme = \"light\"#g" $vim_config_path
 
             broot_config_light_path="$HOME/.config/broot/conf-light.hjson"
             cp $broot_config_light_path $broot_config_path
@@ -272,6 +274,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
             export BAT_THEME="Solarized (dark)"
 
             sed -i -e "s#background=light#background=dark#g" $vim_config_path
+            sed -i -e "s#theme = \"light\"#theme = \"dark\"#g" $vim_config_path
 
             broot_config_dark_path="$HOME/.config/broot/conf-dark.hjson"
             cp $broot_config_dark_path $broot_config_path
@@ -285,6 +288,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
             export BAT_THEME="Solarized (light)"
 
             sed -i -e "s#background=dark#background=light#g" $vim_config_path
+            sed -i -e "s#theme = \"dark\"#theme = \"light\"#g" $vim_config_path
 
             broot_config_light_path="$HOME/.config/broot/conf-light.hjson"
             cp $broot_config_light_path $broot_config_path
@@ -317,6 +321,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
                 export BAT_THEME="Solarized (dark)"
 
                 sed -i -e "s#background=light#background=dark#g" $vim_config_path
+                sed -i -e "s#theme = \"light\"#theme = \"dark\"#g" $vim_config_path
 
                 broot_config_dark_path="$HOME/.config/broot/conf-dark.hjson"
                 cp $broot_config_dark_path $broot_config_path
@@ -332,6 +337,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
                 export BAT_THEME="Solarized (light)"
 
                 sed -i -e "s#background=dark#background=light#g" $vim_config_path
+                sed -i -e "s#theme = \"dark\"#theme = \"light\"#g" $vim_config_path
 
                 broot_config_light_path="$HOME/.config/broot/conf-light.hjson"
                 cp $broot_config_light_path $broot_config_path
