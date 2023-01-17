@@ -7,6 +7,9 @@ vim.cmd [[
 ]]
 
 local core_plugins = {
+    -- Color scheme
+    { "Tsuzat/NeoSolarized.nvim" },
+
     -- cmp plugins
     {
         "hrsh7th/nvim-cmp",
@@ -141,6 +144,7 @@ local core_plugins = {
         "glepnir/lspsaga.nvim",
         branch = "main",
         requires = {
+            "Tsuzat/NeoSolarized.nvim",
             "neovim/nvim-lspconfig"
         },
         config = [[require("user.lspsaga").config()]],
@@ -232,4 +236,3 @@ local core_plugins = {
 }
 
 return core_plugins
-
