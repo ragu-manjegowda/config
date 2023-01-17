@@ -221,56 +221,6 @@ vim.api.nvim_create_autocmd('User', {
     end,
 })
 
--- Display symbols in winbar
-local function config_winbar_or_statusline()
-    local exclude = {
-        ['terminal'] = true,
-        ['toggleterm'] = true,
-        ['prompt'] = true,
-        ['NvimTree'] = true,
-        ['help'] = true,
-    } -- Ignore float windows and exclude filetype
-    if vim.api.nvim_win_get_config(0).zindex or exclude[vim.bo.filetype] then
-        vim.wo.winbar = ''
-    else
-        local ok, lspsaga = pcall(require, 'lspsaga.symbolwinbar')
-        local sym
-        if ok then sym = lspsaga.get_symbol_node() end
-        local win_val = ''
-        if sym ~= nil then win_val = win_val .. sym end
-        vim.wo.winbar = win_val
-    end
-end
-
-local events = { 'FileType', 'BufEnter', 'BufWinEnter', 'CursorMoved' }
-
--- Limit filetype so that we do not blow up with CursorMoved event
-vim.api.nvim_create_autocmd('FileType', {
-    pattern = { 'cpp', 'go', 'lua', 'python', 'rust', 'sh' },
-    callback = function()
-        vim.api.nvim_create_autocmd(events, {
-            callback = function()
-                -- Tried to disable for large files, seems like plugin is
-                -- doing it's due diligence already!
-                -- if vim.api.nvim_buf_line_count(0) > 3000 then
-                --     vim.schedule(function()
-                --         print (vim.inspect(args))
-                --     end)
-                --     if args.event == 'CursorMoved' then
-                --         return
-                --     end
-                -- end
-                config_winbar_or_statusline()
-            end,
-        })
-    end,
-})
-
-vim.api.nvim_create_autocmd('User', {
-    pattern = 'LspsagaUpdateSymbol',
-    callback = function() config_winbar_or_statusline() end,
-})
-
 -- Disable global status line for mergetool
 -- Do it by simply counting the number of windows
 vim.api.nvim_create_autocmd('VimEnter', {
@@ -290,7 +240,7 @@ vim.api.nvim_create_autocmd('VimEnter', {
 })
 
 -- Toggle hlsearch b/w enter and exiting search mode
-events = { 'CmdlineEnter', 'CmdlineLeave' }
+local events = { 'CmdlineEnter', 'CmdlineLeave' }
 
 vim.api.nvim_create_autocmd(events, {
     pattern = "/,\\?",
