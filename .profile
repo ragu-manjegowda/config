@@ -145,5 +145,7 @@ fi
 # Make keyboard more responsive
 # https://www.reddit.com/r/vim/comments/foop8s/comment/flgcqc7/?utm_source=share&utm_medium=web2x&context=3
 if command -v xset &> /dev/null; then
-    xset r rate 200 25
+    if [ -n "$DISPLAY" ]; then
+        xset r rate 200 25
+    fi
 fi

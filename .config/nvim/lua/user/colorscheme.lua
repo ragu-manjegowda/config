@@ -23,7 +23,6 @@ vim.cmd [[
 
     try
         syntax enable
-        set background=dark
         " Use NeoSolarized
         let g:neosolarized_termtrans=1
         let g:neosolarized_contrast = "high"
