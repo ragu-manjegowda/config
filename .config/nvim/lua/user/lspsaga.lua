@@ -29,15 +29,12 @@ function M.config()
         },
         definition = {
             edit = '<CR>',
-            quit = 'q',
             tabe = '<leader><Tab>',
         },
         diagnostic = {
             show_code_action = false,
         },
         finder = {
-            edit = '<CR>',
-            quit = 'q',
             tabe = '<leader><Tab>',
         },
         outline = {
