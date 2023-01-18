@@ -236,12 +236,12 @@ function M.config()
             python = {
                 analysis = {
                     useLibraryCodeForTypes = true,
-                    diagnosticSeverityOverrides = {
-                        reportGeneralTypeIssues = "none",
-                        reportOptionalMemberAccess = "none",
-                        reportOptionalSubscript = "none",
-                        reportPrivateImportUsage = "none",
-                    },
+                    -- diagnosticSeverityOverrides = {
+                    --     reportGeneralTypeIssues = "none",
+                    --     reportOptionalMemberAccess = "none",
+                    --     reportOptionalSubscript = "none",
+                    --     reportPrivateImportUsage = "none",
+                    -- },
                     autoImportCompletions = false,
                 },
                 linting = { pylintEnabled = false }
@@ -250,6 +250,7 @@ function M.config()
     }
 
     -- Pylsp for hover, documentation, go to definition, syntax checking
+    -- https://github.com/python-lsp/python-lsp-server/blob/develop/CONFIGURATION.md
     nvim_lsp.pylsp.setup {
         on_attach = on_attach,
         flags = {
@@ -265,15 +266,16 @@ function M.config()
                 },
                 plugins = {
                     jedi_completion = { enabled = false },
-                    rope_completion = { enabled = false },
-                    flake8 = { enabled = false },
+                    flake8 = { enabled = true },
                     pyflakes = { enabled = false },
+                    pydocstyle = { enabled = true },
                     pycodestyle = {
                         ignore = {
                             'C0103', 'E226', 'E266', 'E302', 'E303',
                             'E304', 'E305', 'E402', 'E501',
                             'W0104', 'W0621', 'W391', 'W503', 'W504'
-                        }
+                        },
+                        maxLineLength = 80
                     },
                 },
             },
