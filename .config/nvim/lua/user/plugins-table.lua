@@ -50,6 +50,17 @@ local core_plugins = {
         "tpope/vim-dispatch"
     },
 
+    -- Cursor animation
+    { "gen740/SmoothCursor.nvim",
+        config = [[require("user.smoothcursor").config()]],
+    },
+
+    {
+        "edluffy/specs.nvim",
+        setup = [[require("user.specs").before()]],
+        config = [[require("user.specs").config()]],
+    },
+
     -- Debugging
     {
         "rcarriga/nvim-dap-ui",
@@ -98,12 +109,6 @@ local core_plugins = {
     {
         "numToStr/FTerm.nvim",
         config = [[require("user.fterm").config()]],
-    },
-
-    {
-        "edluffy/specs.nvim",
-        setup = [[require("user.specs").before()]],
-        config = [[require("user.specs").config()]],
     },
 
     {
