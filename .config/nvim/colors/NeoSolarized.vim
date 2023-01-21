@@ -141,6 +141,16 @@ let colors_name = "NeoSolarized"
 " GUI & CSApprox hexadecimal palettes"{{{
 " ---------------------------------------------------------------------
 "
+" Define some global variables for the colorscheme.
+let g:gui_blue        = "#268bd2"
+let g:gui_cyan        = "#2aa198"
+let g:gui_green       = "#719e07" "experimental
+let g:gui_magenta     = "#d33682"
+let g:gui_orange      = "#cb4b16"
+let g:gui_red         = "#dc322f"
+let g:gui_violet      = "#6c71c4"
+let g:gui_yellow      = "#b58900"
+
 " Set gui and terminal at the same time.
     let s:gui_mode       = "gui"
     let s:gui_base03      = "#002b36"
@@ -241,6 +251,17 @@ if &background == "light"
         let s:term_back =   s:term_base03
     endif
 endif
+"}}}
+
+" Define some global variables for the colorscheme "{{{
+let g:gui_base03    =  s:gui_base03
+let g:gui_base02    =  s:gui_base02
+let g:gui_base01    =  s:gui_base01
+let g:gui_base00    =  s:gui_base00
+let g:gui_base0     =  s:gui_base0
+let g:gui_base1     =  s:gui_base1
+let g:gui_base2     =  s:gui_base2
+let g:gui_base3     =  s:gui_base3
 "}}}
 
 " Optional contrast schemes "{{{

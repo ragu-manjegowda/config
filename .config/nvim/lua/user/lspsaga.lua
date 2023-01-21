@@ -9,16 +9,6 @@ function M.config()
         return
     end
 
-    -- Setup SagaUI colors
-    local colors
-    res, colors = pcall(require, "NeoSolarized.colors")
-    if not res then
-        vim.notify("NeoSolarized.colors not found", vim.log.levels.ERROR)
-        return
-    end
-
-    colors = colors.setup()
-
     saga.setup({
         border_style = "rounded",
         callhierarchy = {
@@ -50,20 +40,20 @@ function M.config()
             border = 'rounded',
             winblend = 0,
             colors = {
-                --float window normal bakcground color
-                normal_bg = colors.bg1,
-                --title background color
-                title_bg = colors.bg4,
-                red = colors.red,
-                magenta = colors.aqua,
-                orange = colors.orange,
-                yellow = colors.yellow,
-                green = colors.green,
-                cyan = colors.violet,
-                blue = colors.blue,
-                purple = colors.purple,
-                white = colors.yellow,
-                black = colors.orange,
+                normal_bg = vim.g.gui_base02,
+                title_bg = vim.g.gui_base03,
+                fg = vim.g.gui_base2,
+                red = vim.g.gui_red,
+                magenta = vim.g.gui_magenta,
+                orange = vim.g.gui_orange,
+                yellow = vim.g.gui_yellow,
+                green = vim.g.gui_green,
+                cyan = vim.g.gui_violet,
+                blue = vim.g.gui_blue,
+                purple = vim.g.gui_cyan,
+                gray = vim.g.gui_base0,
+                white = vim.g.gui_base2,
+                black = vim.g.gui_base02,
             }
         },
     })
