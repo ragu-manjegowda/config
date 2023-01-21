@@ -891,6 +891,18 @@ exe "hi! ALEErrorSign"          . s:fg_orange   .s:bg_none   .s:fmt_none
 exe "hi! ALEWarningSign"        . s:fg_yellow   .s:bg_none   .s:fmt_none
 " }}}"
 
+" SmoothCursor highlighting "{{{
+" ---------------------------------------------------------------------
+exe "hi! SmoothCursor"         . s:fg_magenta    .s:bg_none  .s:fmt_none
+exe "hi! SmoothCursorRed"      . s:fg_red        .s:bg_none  .s:fmt_none
+exe "hi! SmoothCursorOrange"   . s:fg_orange     .s:bg_none  .s:fmt_none
+exe "hi! SmoothCursorYellow"   . s:fg_yellow     .s:bg_none  .s:fmt_none
+exe "hi! SmoothCursorGreen"    . s:fg_green      .s:bg_none  .s:fmt_none
+exe "hi! SmoothCursorAqua"     . s:fg_cyan       .s:bg_none  .s:fmt_none
+exe "hi! SmoothCursorBlue"     . s:fg_blue       .s:bg_none  .s:fmt_none
+exe "hi! SmoothCursorPurple"   . s:fg_violet     .s:bg_none  .s:fmt_none
+" }}}"
+
 " NeoVim terminal buffer colours "{{{
 " ---------------------------------------------------------------------
 let g:terminal_color_0 = s:gui_base03

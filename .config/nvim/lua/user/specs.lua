@@ -5,15 +5,8 @@ local M = {}
 function M.before()
     vim.api.nvim_set_keymap(
         'n',
-        'n',
-        'n:lua require("specs").show_specs()<CR>',
-        { noremap = true, silent = true }
-    )
-
-    vim.api.nvim_set_keymap(
-        'n',
-        'N',
-        'N:lua require("specs").show_specs()<CR>',
+        '<leader>sc',
+        ':lua require("specs").show_specs()<CR>',
         { noremap = true, silent = true }
     )
 end
@@ -25,10 +18,10 @@ function M.config()
         return
     end
 
-    specs.setup{
-        show_jumps  = true,
-        min_jump = 30,
-        popup = {
+    specs.setup {
+        show_jumps       = false,
+        min_jump         = 30,
+        popup            = {
             delay_ms = 0, -- delay before popup displays
             inc_ms = 5, -- time increments used for fade/resize effects
             blend = 10, -- starting blend, between 0-100 (fully transparent), see :h winblend
@@ -38,7 +31,7 @@ function M.config()
             resizer = require('specs').shrink_resizer
         },
         ignore_filetypes = {},
-        ignore_buftypes = {
+        ignore_buftypes  = {
             nofile = true,
         },
     }
