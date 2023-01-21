@@ -42,6 +42,12 @@ local core_plugins = {
         setup = [[require("user.tagbar").before()]],
     },
 
+    -- Codeium
+    {
+        "Exafunction/codeium.vim",
+        setup = [[require("user.codeium").before()]]
+    },
+
     -- Compile
     {
         "tpope/vim-dispatch"
