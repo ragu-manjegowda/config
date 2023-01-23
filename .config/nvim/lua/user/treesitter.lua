@@ -1,3 +1,8 @@
+-------------------------------------------------------------------------------
+-- Author       : Ragu Manjegowda
+-- Github       : @ragu-manjegowda
+-------------------------------------------------------------------------------
+
 local M = {}
 
 M.config = function()
@@ -7,7 +12,7 @@ M.config = function()
         return
     end
 
-    require'nvim-treesitter.configs'.setup {
+    require 'nvim-treesitter.configs'.setup {
         indent = {
             enable = false,
             disable = {},

@@ -1,3 +1,8 @@
+-------------------------------------------------------------------------------
+-- Author       : Ragu Manjegowda
+-- Github       : @ragu-manjegowda
+-------------------------------------------------------------------------------
+
 -- References
 -- https://github.com/zhuorantan/dotfiles
 -- https://github.com/LunarVim/LunarVim

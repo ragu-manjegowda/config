@@ -1,8 +1,13 @@
+-------------------------------------------------------------------------------
+-- Author       : Ragu Manjegowda
+-- Github       : @ragu-manjegowda
+-------------------------------------------------------------------------------
+
 local M = {}
 
 M.config = function()
     local function getFunctionName()
-        return vim.api.nvim_call_function( "tagbar#currenttag", {'%s', ''})
+        return vim.api.nvim_call_function("tagbar#currenttag", { '%s', '' })
     end
 
     local res, windline = pcall(require, "windline")
@@ -79,7 +84,7 @@ M.config = function()
 
     basic.section_a = {
         hl_colors = airline_colors.a,
-        text = function(_,_,width)
+        text = function(_, _, width)
             if width > width_breakpoint then
                 return {
                     { ' ' .. state.mode[1] .. ' ', state.mode[2] },
@@ -96,10 +101,10 @@ M.config = function()
 
     basic.section_b = {
         hl_colors = airline_colors.b,
-        text = function(bufnr,_, width)
+        text = function(bufnr, _, width)
             if width > width_breakpoint and git_comps.is_git(bufnr) then
                 return {
-                    { git_comps.git_branch() , state.mode[2] },
+                    { git_comps.git_branch(), state.mode[2] },
                     { ' ', '' },
                     { sep.right_filled, state.mode[2] .. 'Sep' },
                 }
@@ -110,12 +115,12 @@ M.config = function()
 
     basic.section_c = {
         hl_colors = airline_colors.c,
-        text = function(_,_, width)
+        text = function(_, _, width)
             local function_name = getFunctionName()
             if width > width_breakpoint and #function_name > 1 then
                 return {
-                    { ' fn: ' , state.mode[2] },
-                    { function_name , '' },
+                    { ' fn: ', state.mode[2] },
+                    { function_name, '' },
                     { ' ', '' },
                     { sep.right_filled, state.mode[2] .. 'Sep' },
                 }
@@ -126,15 +131,15 @@ M.config = function()
 
     basic.section_x = {
         hl_colors = airline_colors.c,
-        text = function(_,_,width)
+        text = function(_, _, width)
             if width > width_breakpoint then
                 return {
-                { sep.left_filled, state.mode[2] .. 'Sep' },
-                { ' ', state.mode[2] },
-                { b_components.file_encoding()},
-                { ' ' },
-                { b_components.file_format({ icon = true }) },
-                { ' ' },
+                    { sep.left_filled, state.mode[2] .. 'Sep' },
+                    { ' ', state.mode[2] },
+                    { b_components.file_encoding() },
+                    { ' ' },
+                    { b_components.file_format({ icon = true }) },
+                    { ' ' },
                 }
             end
             return {
@@ -145,7 +150,7 @@ M.config = function()
 
     basic.section_y = {
         hl_colors = airline_colors.b,
-        text = function(_,_,width)
+        text = function(_, _, width)
             if width > width_breakpoint then
                 return {
                     { sep.left_filled, state.mode[2] .. 'Sep' },
@@ -159,14 +164,14 @@ M.config = function()
 
     basic.section_z = {
         hl_colors = airline_colors.a,
-        text = function(_,_,width)
+        text = function(_, _, width)
             if width > width_breakpoint then
                 return {
                     { sep.left_filled, state.mode[2] .. 'Sep' },
                     { ' ', state.mode[2] },
-                    { b_components.progress_lua},
-                    { ' '},
-                    { b_components.line_col_lua},
+                    { b_components.progress_lua },
+                    { ' ' },
+                    { b_components.line_col_lua },
                 }
             end
             return {
@@ -274,7 +279,7 @@ M.config = function()
 
     windline.setup({
         colors_name = function(colors)
-            local mod = function (c, value)
+            local mod = function(c, value)
                 if vim.o.background == 'light' then
                     return HSL.rgb_to_hsl(c):tint(value):to_rgb()
                 end
@@ -282,24 +287,24 @@ M.config = function()
             end
 
             colors.magenta_a = colors.magenta
-            colors.magenta_b = mod(colors.magenta,0.5)
-            colors.magenta_c = mod(colors.magenta,0.7)
+            colors.magenta_b = mod(colors.magenta, 0.5)
+            colors.magenta_c = mod(colors.magenta, 0.7)
 
             colors.yellow_a = colors.yellow
-            colors.yellow_b = mod(colors.yellow,0.5)
-            colors.yellow_c = mod(colors.yellow,0.7)
+            colors.yellow_b = mod(colors.yellow, 0.5)
+            colors.yellow_c = mod(colors.yellow, 0.7)
 
             colors.blue_a = colors.blue
-            colors.blue_b = mod(colors.blue,0.5)
-            colors.blue_c = mod(colors.blue,0.7)
+            colors.blue_b = mod(colors.blue, 0.5)
+            colors.blue_c = mod(colors.blue, 0.7)
 
             colors.green_a = colors.green
-            colors.green_b = mod(colors.green,0.5)
-            colors.green_c = mod(colors.green,0.7)
+            colors.green_b = mod(colors.green, 0.5)
+            colors.green_c = mod(colors.green, 0.7)
 
             colors.red_a = colors.red
-            colors.red_b = mod(colors.red,0.5)
-            colors.red_c = mod(colors.red,0.7)
+            colors.red_b = mod(colors.red, 0.5)
+            colors.red_c = mod(colors.red, 0.7)
 
             return colors
         end,

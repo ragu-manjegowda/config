@@ -1,3 +1,8 @@
+-------------------------------------------------------------------------------
+-- Author       : Ragu Manjegowda
+-- Github       : @ragu-manjegowda
+-------------------------------------------------------------------------------
+
 -- Disable multiple space errors
 ---@diagnostic disable: codestyle-check
 local options = {

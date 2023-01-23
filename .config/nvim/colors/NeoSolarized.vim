@@ -1,8 +1,10 @@
-" Name:     NeoSolarized: Colorscheme for truecolor vim
-" Author:   iCyMind <icyminnd@gmail.com>
-" URL:      https://github.com/iCyMind/NeoSolarized
-" License:  MIT
-" Modified: Wed Jun 12 18:41:42 PDT 2016
+" Name:             NeoSolarized: Colorscheme for truecolor vim
+" Author:           iCyMind <icyminnd@gmail.com>
+" URL:              https://github.com/iCyMind/NeoSolarized
+" Modified by  :    Ragu Manjegowda"
+" Github       :    @ragu-manjegowda
+" License:          MIT
+" Modified:         Mon Jan 23 01:04:42 PDT 2023
 
 " Usage "{{{
 "
