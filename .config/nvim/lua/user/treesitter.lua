@@ -23,12 +23,16 @@ M.config = function()
             additional_vim_regex_highlighting = false,
         },
         ensure_installed = {
+            "bash",
             "c",
+            "cmake",
             "cpp",
             "go",
+            "json",
             "lua",
             "python",
             "rust",
+            "vim",
             "yaml"
         },
     }
