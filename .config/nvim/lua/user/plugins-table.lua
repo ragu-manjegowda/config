@@ -1,16 +1,8 @@
--- Autocommand that reloads neovim whenever you save the plugins-table.lua file
-vim.cmd [[
-    augroup packer_user_config
-        autocmd!
-        autocmd BufWritePost plugins-table.lua source <afile> | PackerSync
-    augroup end
-]]
-
 local core_plugins = {
     -- cmp plugins
     {
         "hrsh7th/nvim-cmp",
-        requires = {
+        dependencies = {
             "L3MON4D3/LuaSnip",
             "hrsh7th/cmp-buffer",
             "hrsh7th/cmp-cmdline",
@@ -22,27 +14,37 @@ local core_plugins = {
             "rafamadriz/friendly-snippets",
             "saadparwaiz1/cmp_luasnip"
         },
-        config = [[require("user.nvim-cmp").config()]],
+        config = function()
+            require("user.nvim-cmp").config()
+        end,
+        event = "VeryLazy"
     },
 
     -- Code Browsing
     {
         "skywind3000/gutentags_plus",
-        requires = { "ludovicchabant/vim-gutentags" },
-        config = [[require("user.gutentags-plus").config()]],
+        dependencies = { "ludovicchabant/vim-gutentags" },
+        config = function()
+            require("user.gutentags-plus").config()
+        end,
+        event = "VeryLazy"
     },
 
     { "derekwyatt/vim-fswitch" },
 
     {
         "preservim/tagbar",
-        setup = [[require("user.tagbar").before()]],
+        init = function()
+            require("user.tagbar").before()
+        end
     },
 
     -- Codeium
     {
         "Exafunction/codeium.vim",
-        setup = [[require("user.codeium").before()]]
+        init = function()
+            require("user.codeium").before()
+        end
     },
 
     -- Compile
@@ -52,29 +54,39 @@ local core_plugins = {
 
     -- Cursor animation
     { "gen740/SmoothCursor.nvim",
-        config = [[require("user.smoothcursor").config()]],
+        config = function()
+            require("user.smoothcursor").config()
+        end
     },
 
     {
         "edluffy/specs.nvim",
-        setup = [[require("user.specs").before()]],
-        config = [[require("user.specs").config()]],
+        init = function()
+            require("user.specs").before()
+        end,
+        config = function()
+            require("user.specs").config()
+        end
     },
 
     -- Debugging
     {
         "rcarriga/nvim-dap-ui",
-        requires = {
+        dependencies = {
             {
                 "mfussenegger/nvim-dap",
-                config = [[require("user.dap").config()]],
-                requires = {
+                config = function()
+                    require("user.dap").config()
+                end,
+                dependencies = {
                     "WhoIsSethDaniel/mason-tool-installer.nvim",
-                },
+                }
             },
             "theHamsta/nvim-dap-virtual-text",
         },
-        config = [[require("user.dapui").config()]],
+        config = function()
+            require("user.dapui").config()
+        end
     },
 
     -- Extra
@@ -82,87 +94,115 @@ local core_plugins = {
 
     {
         "windwp/windline.nvim",
-        config = [[require("user.windline").config()]],
+        config = function()
+            require("user.windline").config()
+        end
     },
 
     {
         "nvim-tree/nvim-tree.lua",
-        requires = { "nvim-tree/nvim-web-devicons" },
-        config = [[require("user.nvim-tree").config()]],
+        dependencies = { "nvim-tree/nvim-web-devicons" },
+        config = function()
+            require("user.nvim-tree").config()
+        end,
+        event = "VeryLazy"
     },
 
     { "itchyny/vim-cursorword" },
 
     {
         "folke/which-key.nvim",
-        setup = [[require("user.which-key").before()]],
-        config = [[require("user.which-key").config()]],
+        init = function()
+            require("user.which-key").before()
+        end,
+        config = function()
+            require("user.which-key").config()
+        end
     },
 
     { "junegunn/vim-peekaboo" },
 
     {
         "Yggdroot/indentLine",
-        setup = [[require("user.indent-line").before()]],
+        init = function()
+            require("user.indent-line").before()
+        end
     },
 
     {
         "numToStr/FTerm.nvim",
-        config = [[require("user.fterm").config()]],
+        config = function()
+            require("user.fterm").config()
+        end
     },
 
     {
         "Rasukarusan/nvim-select-multi-line",
-        setup = [[require("user.nvim-select-multi-line").before()]],
+        init = function()
+            require("user.nvim-select-multi-line").before()
+        end
     },
 
     { "lambdalisue/suda.vim" },
 
     {
         "nanozuki/tabby.nvim",
-        config = [[require("user.tabby").config()]],
+        config = function()
+            require("user.tabby").config()
+        end
     },
 
     -- Git
     {
         "tpope/vim-fugitive",
-        config = [[require("user.fugitive").config()]],
+        config = function()
+            require("user.fugitive").config()
+        end
     },
 
     {
         "lewis6991/gitsigns.nvim",
-        config = [[require("user.gitsigns").config()]],
+        config = function()
+            require("user.gitsigns").config()
+        end
     },
 
     -- LSP
     {
         "neovim/nvim-lspconfig",
-        requires = {
+        dependencies = {
             "hrsh7th/nvim-cmp",
             "p00f/clangd_extensions.nvim",
             "WhoIsSethDaniel/mason-tool-installer.nvim",
         },
-        config = [[require("user.lspconfig").config()]],
+        config = function()
+            require("user.lspconfig").config()
+        end,
+        lazy = true
     },
 
     -- LSP Saga
     {
         "glepnir/lspsaga.nvim",
         branch = "main",
-        requires = {
+        dependencies = {
             "neovim/nvim-lspconfig"
         },
-        config = [[require("user.lspsaga").config()]],
+        config = function()
+            require("user.lspsaga").config()
+        end,
+        event = "VeryLazy"
     },
 
     {
         "folke/neodev.nvim",
-        requires = {
+        dependencies = {
             "neovim/nvim-lspconfig"
         },
         config = function()
             require("neodev").setup()
-        end
+        end,
+        event = "VeryLazy"
     },
 
     {
@@ -175,11 +215,15 @@ local core_plugins = {
     -- Package management
     {
         "WhoIsSethDaniel/mason-tool-installer.nvim",
-        requires = {
+        dependencies = {
             "williamboman/mason.nvim",
-            config = [[require("user.mason").config()]],
+            config = function()
+                require("user.mason").config()
+            end
         },
-        config = [[require("user.mason-tool-installer").config()]],
+        config = function()
+            require("user.mason-tool-installer").config()
+        end
     },
 
     -- Packer
@@ -188,50 +232,64 @@ local core_plugins = {
     -- Telescope
     {
         "nvim-telescope/telescope.nvim",
-        requires = {
+        dependencies = {
             "nvim-lua/popup.nvim",
             "nvim-lua/plenary.nvim",
             "nvim-telescope/telescope-dap.nvim",
             {
                 "nvim-telescope/telescope-fzf-native.nvim",
-                run = "make",
+                build = "make",
             },
             "nvim-telescope/telescope-hop.nvim",
             "nvim-telescope/telescope-live-grep-args.nvim",
             "nvim-telescope/telescope-ui-select.nvim",
         },
-        setup = [[require("user.telescope").before()]],
-        config = [[require("user.telescope").config()]],
+        init = function()
+            require("user.telescope").before()
+        end,
+        config = function()
+            require("user.telescope").config()
+        end,
+        event = "VeryLazy"
     },
 
 
     -- Treesitter
     {
         "nvim-treesitter/nvim-treesitter-textobjects",
-        requires = {
+        dependencies = {
             "nvim-treesitter/nvim-treesitter",
-            run = ":TSUpdate",
-            config = [[require("user.treesitter").config()]],
+            build = ":TSUpdate",
+            config = function()
+                require("user.treesitter").config()
+            end
         },
-        config = [[require("user.treesitter-textobjects").config()]],
+        config = function()
+            require("user.treesitter-textobjects").config()
+        end,
+        lazy = true
     },
 
     -- Vim Session
     {
         "xolox/vim-session",
-        requires = {
+        dependencies = {
             "xolox/vim-misc",
         },
-        setup = [[require("user.vim-session").before()]],
+        init = function()
+            require("user.vim-session").before()
+        end,
     },
 
     -- Vim in browser
     {
         "glacambre/firenvim",
-        run = function()
+        build = function()
             vim.fn["firenvim#install"](0)
         end,
-        config = [[require("user.firenvim").config()]],
+        config = function()
+            require("user.firenvim").config()
+        end
     }
 }
 
