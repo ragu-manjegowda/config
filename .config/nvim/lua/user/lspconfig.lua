@@ -1,3 +1,8 @@
+-------------------------------------------------------------------------------
+-- Author       : Ragu Manjegowda
+-- Github       : @ragu-manjegowda
+-------------------------------------------------------------------------------
+
 local vim = vim
 
 local M = {}
@@ -27,9 +32,9 @@ local function on_attach(client, bufnr)
     buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
 
     buf_set_keymap('n', '<leader>lf', '<cmd>lua vim.lsp.buf.format()<CR>',
-                   { silent = true, desc = 'LSP formatting' })
+        { silent = true, desc = 'LSP formatting' })
     buf_set_keymap('v', '<leader>lf', '<cmd>lua vim.lsp.buf.format()<CR>',
-                   { silent = true, desc = 'LSP range formatting' })
+        { silent = true, desc = 'LSP range formatting' })
 
     -- Pyright for completion, rename, type checking and
     -- Pylsp for hover, documentation, go to definition, syntax checking
@@ -86,13 +91,13 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
 )
 
 vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(
-  vim.lsp.handlers.hover,
-  { border = 'rounded' }
+    vim.lsp.handlers.hover,
+    { border = 'rounded' }
 )
 
 vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
-  vim.lsp.handlers.signature_help,
-  { border = 'rounded' }
+    vim.lsp.handlers.signature_help,
+    { border = 'rounded' }
 )
 
 function M.config()
@@ -112,7 +117,7 @@ function M.config()
     local lsp_defaults = nvim_lsp.util.default_config
 
     lsp_defaults.capabilities =
-        vim.tbl_deep_extend(
+    vim.tbl_deep_extend(
         'force',
         lsp_defaults.capabilities,
         cmp_nvim_lsp.default_capabilities())

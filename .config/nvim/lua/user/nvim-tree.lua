@@ -1,3 +1,8 @@
+-------------------------------------------------------------------------------
+-- Author       : Ragu Manjegowda
+-- Github       : @ragu-manjegowda
+-------------------------------------------------------------------------------
+
 local vim = vim
 
 local M = {}
@@ -18,7 +23,7 @@ end
 
 function M.config()
     local map = vim.api.nvim_set_keymap
-    local opts = {noremap = true, silent = true}
+    local opts = { noremap = true, silent = true }
 
     map("n", "<leader>tgr", '<cmd>lua require("nvim-tree.api").git.reload()<CR>', opts)
     map("n", "<leader>tmn", '<cmd>lua require("nvim-tree.api").marks.navigate.next()<CR>', opts)
@@ -34,8 +39,8 @@ function M.config()
     local tree_cb = require "nvim-tree.config".nvim_tree_callback
 
     local list = {
-        { key = { "<leader>v"},     cb = tree_cb("vsplit"), mode = "n" },
-        { key = { "<leader><Tab>"}, cb = tree_cb("tabnew"), mode = "n" }
+        { key = { "<leader>v" }, cb = tree_cb("vsplit"), mode = "n" },
+        { key = { "<leader><Tab>" }, cb = tree_cb("tabnew"), mode = "n" }
     }
 
     nvim_tree.setup {
@@ -55,8 +60,8 @@ function M.config()
             number = true,
             relativenumber = true,
             mappings = {
-              custom_only = false,
-              list = list
+                custom_only = false,
+                list = list
             }
         }
     }

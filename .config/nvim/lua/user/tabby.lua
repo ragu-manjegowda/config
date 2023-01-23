@@ -1,3 +1,8 @@
+-------------------------------------------------------------------------------
+-- Author       : Ragu Manjegowda
+-- Github       : @ragu-manjegowda
+-------------------------------------------------------------------------------
+
 local res, tabby
 
 res, tabby = pcall(require, "tabby")
@@ -31,7 +36,7 @@ local function gen_tab_name(tabid)
     local modifiedIcon = is_modified and ' ' or ''
 
     -- return final output
-    return  ' ' .. number .. ' ' .. append .. filename.unique(focus)
+    return ' ' .. number .. ' ' .. append .. filename.unique(focus)
         .. modifiedIcon
 end
 
@@ -47,9 +52,9 @@ local tab_only = {
             return {
                 ' ' .. gen_tab_name(tabid) .. ' ',
                 hl = {
-                  fg = hl_tabline_sel.fg,
-                  bg = hl_tabline_sel.bg,
-                  style = 'bold',
+                    fg = hl_tabline_sel.fg,
+                    bg = hl_tabline_sel.bg,
+                    style = 'bold',
                 },
             }
         end,
@@ -91,4 +96,3 @@ function M.config()
 end
 
 return M
-

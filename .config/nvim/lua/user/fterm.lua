@@ -1,3 +1,8 @@
+-------------------------------------------------------------------------------
+-- Author       : Ragu Manjegowda
+-- Github       : @ragu-manjegowda
+-------------------------------------------------------------------------------
+
 local vim = vim
 
 local M = {}
@@ -54,8 +59,8 @@ end
 
 function M.config()
     fterm.setup({
-        border = 'double',
-        dimensions  = {
+        border     = 'double',
+        dimensions = {
             height = 0.9,
             width = 0.9,
         },
@@ -71,4 +76,3 @@ function M.config()
 end
 
 return M
-

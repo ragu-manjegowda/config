@@ -1,3 +1,8 @@
+-------------------------------------------------------------------------------
+-- Author       : Ragu Manjegowda
+-- Github       : @ragu-manjegowda
+-------------------------------------------------------------------------------
+
 local opts = { silent = true }
 
 -- Shorten function name
@@ -127,4 +132,3 @@ keymap("x", "<A-k>", ":move '<-2<CR>gv-gv", opts)
 
 -- Terminal exit insert mode
 keymap("t", "<leader><C-c>", "<C-\\><C-n>", opts)
-
