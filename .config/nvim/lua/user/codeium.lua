@@ -8,13 +8,23 @@ local vim = vim
 local M = {}
 
 function M.before()
-    vim.keymap.set('i', '<C-l>', function()
-        return vim.fn['codeium#Clear']()
-    end, { expr = true, desc = 'Codeium cancel suggestion' })
+    vim.g.codeium_disable_bindings = 1
 
-    vim.keymap.set('i', '<C-s>', function()
+    vim.keymap.set('i', '<C-e>', function()
         return vim.fn['codeium#Accept']()
-    end, { expr = true, desc = 'Codeium accept suggestion' })
+    end, { expr = true, silent = true, desc = 'Codeium accept suggestion' })
+
+    vim.keymap.set('i', '<C-;>', function()
+        return vim.fn['codeium#CycleCompletions'](1)
+    end, { expr = true, silent = true, desc = 'Codeium next suggestion' })
+
+    vim.keymap.set('i', '<C-,>', function()
+        return vim.fn['codeium#CycleCompletions'](-1)
+    end, { expr = true, silent = true, desc = 'Codeium prev suggestion' })
+
+    vim.keymap.set('i', '<C-x>', function()
+        return vim.fn['codeium#Clear']()
+    end, { expr = true, silent = true, desc = 'Codeium clear suggestion' })
 end
 
 return M
