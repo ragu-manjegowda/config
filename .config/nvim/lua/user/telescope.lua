@@ -19,6 +19,29 @@ function M.grep_word_exact()
     require('telescope.builtin').grep_string({ search = "'" .. vim.fn.expand("<cword>") })
 end
 
+function M.getVisualSelection()
+    vim.cmd('noau normal! "vy"')
+    local text = vim.fn.getreg('v')
+    vim.fn.setreg('v', {})
+
+    text = string.gsub(text, "\n", "")
+    if #text > 0 then
+        return text
+    else
+        return ''
+    end
+end
+
+function M.grep_selection()
+    local text = M.getVisualSelection()
+    require('telescope.builtin').grep_string({ search = text })
+end
+
+function M.live_grep_selection()
+    local text = M.getVisualSelection()
+    require("telescope").extensions.live_grep_args.live_grep_args({ default_text = text })
+end
+
 function M.before()
     vim.cmd "autocmd User TelescopePreviewerLoaded setlocal number"
 
@@ -34,13 +57,16 @@ function M.before()
     map('n', '<leader>fg',
         '<cmd>lua require("telescope").extensions.live_grep_args.live_grep_args()<CR>',
         { silent = true, desc = 'Telescope grep folder' })
+    map('v', '<leader>fg',
+        '<cmd>lua require("user.telescope").live_grep_selection()<CR>',
+        { silent = true, desc = 'Telescope grep visual selection in folder' })
     map('n', '<leader>pb', '<cmd>lua require("telescope.builtin").buffers()<CR>',
         { silent = true, desc = 'Telescope grep folder' })
     map('n', '<leader>pc', '<cmd>lua require("telescope.builtin").command_history()<CR>',
         { silent = true, desc = 'Telescope command_history' })
     map('n', '<leader>pf',
-        ---@diagnostic disable-next-line: codestyle-check
-        '<cmd>lua require("telescope.builtin").find_files({ find_command = {"rg", "--files", "--hidden", "-g", "!.git" }} )<CR>',
+        '<cmd>lua require("telescope.builtin").find_files({ ' ..
+        'find_command = {"rg", "--files", "--hidden", "-g", "!.git" }} )<CR>',
         { silent = true, desc = 'Telescope find_files' })
     map('n', '<leader>ph', '<cmd>lua require("telescope.builtin").help_tags()<CR>',
         { silent = true, desc = 'Telescope help_tags' })
@@ -60,6 +86,8 @@ function M.before()
         { silent = true, desc = 'Telescope treesitter' })
     map('n', '<leader>pw', '<cmd>lua require("user.telescope").grep_word()<CR>',
         { silent = true, desc = 'Telescope grep_word' })
+    map('v', '<leader>pw', '<cmd>lua require("user.telescope").grep_selection()<CR>',
+        { silent = true, desc = 'Telescope grep visual select text' })
     map('n', '<leader>pW', '<cmd>lua require("user.telescope").grep_word_exact()<CR>',
         { silent = true, desc = 'Telescope grep_word_exact' })
 
@@ -84,10 +112,11 @@ function M.before()
     -- Git shortcuts
     map('n', '<leader>gco', '<cmd>lua require("telescope.builtin").git_commits()<CR>',
         { silent = true, desc = 'Git checkout commit' })
-    map('n', '<leader>glogf', '<cmd>lua require("telescope.builtin").git_bcommits()<CR>',
-        { silent = true, desc = 'Git log file' })
-    ---@diagnostic disable-next-line: codestyle-check
-    -- map('n', '<leader>glogp',  '<cmd>lua require("telescope.builtin").git_commits({ git_command = {"git", "log", "--pretty=full"}})<CR>', opts)
+    map('n', '<leader>glogft', '<cmd>lua require("telescope.builtin").git_bcommits()<CR>',
+        { silent = true, desc = 'Git log file with telescope' })
+    -- map('n', '<leader>glogp',  '<cmd>lua ' ..
+    --     'require("telescope.builtin").git_commits({ ' ..
+    --     'git_command = {"git", "log", "--pretty=full"}})<CR>', opts)
     -- map('n', '<leader>gst',    '<cmd>lua require("telescope.builtin").git_status()<CR>', opts)
     map('n', '<leader>gstash', '<cmd>lua require("telescope.builtin").git_stash()<CR>',
         { silent = true, desc = 'Git list stash' })
