@@ -258,21 +258,18 @@ local core_plugins = {
         event = "UIEnter"
     },
 
-
     -- Treesitter
     {
-        "nvim-treesitter/nvim-treesitter-textobjects",
+        "nvim-treesitter/nvim-treesitter",
         dependencies = {
-            "nvim-treesitter/nvim-treesitter",
-            build = ":TSUpdate",
-            config = function()
-                require("user.treesitter").config()
-            end
+            "nvim-treesitter/nvim-treesitter-textobjects",
+            lazy = true,
         },
+        build = ":TSUpdate",
         config = function()
-            require("user.treesitter-textobjects").config()
+            require("user.treesitter").config()
         end,
-        lazy = true
+        event = "BufRead"
     },
 
     -- Vim Session
