@@ -19,7 +19,7 @@ function M.config()
         nnoremap <silent> <leader>gcm :tab Git commit -s<CR>
         nnoremap <silent> <leader>gfa :Git fetch --all --prune<CR>
         nnoremap <silent> <leader>glog :GcLog!<Bar>cclose<Bar>tab copen<CR>
-        " nnoremap <silent> <leader>glogf :tab Git log --oneline --decorate --graph -- %<CR>
+        nnoremap <silent> <leader>glogf :tab Git log --oneline --decorate --graph -- %<CR>
         nnoremap <silent> <leader>glogp :tab Git log --pretty=full<CR>
         nnoremap <silent> <leader>gpulla :Git pull --rebase --autostash<CR>
         nnoremap <silent> <leader>gpush :Git push<CR>

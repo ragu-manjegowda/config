@@ -196,18 +196,7 @@ local core_plugins = {
         config = function()
             require("user.lspsaga").config()
         end,
-        event = "VeryLazy"
-    },
-
-    {
-        "folke/neodev.nvim",
-        dependencies = {
-            "neovim/nvim-lspconfig"
-        },
-        config = function()
-            require("neodev").setup()
-        end,
-        event = "VeryLazy"
+        event = "BufRead"
     },
 
     {
