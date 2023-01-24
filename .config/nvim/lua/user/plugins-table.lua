@@ -22,7 +22,7 @@ local core_plugins = {
         config = function()
             require("user.nvim-cmp").config()
         end,
-        event = "VeryLazy"
+        event = { "CmdlineEnter", "InsertEnter" },
     },
 
     -- Code Browsing
@@ -122,7 +122,8 @@ local core_plugins = {
         end,
         config = function()
             require("user.which-key").config()
-        end
+        end,
+        event = "VeryLazy"
     },
 
     { "junegunn/vim-peekaboo" },
@@ -176,14 +177,13 @@ local core_plugins = {
     {
         "neovim/nvim-lspconfig",
         dependencies = {
-            "hrsh7th/nvim-cmp",
             "p00f/clangd_extensions.nvim",
             "WhoIsSethDaniel/mason-tool-installer.nvim",
         },
         config = function()
             require("user.lspconfig").config()
         end,
-        lazy = true
+        event = "BufRead"
     },
 
     -- LSP Saga
@@ -255,7 +255,7 @@ local core_plugins = {
         config = function()
             require("user.telescope").config()
         end,
-        event = "VeryLazy"
+        event = "UIEnter"
     },
 
 
