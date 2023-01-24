@@ -136,7 +136,7 @@ function M.config()
             ---@diagnostic disable-next-line: missing-parameter
             ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
 
-            ['<C-e>'] = cmp.mapping({
+            ['<C-q>'] = cmp.mapping({
                 i = cmp.mapping.close(), c = cmp.mapping.close()
             }),
 
