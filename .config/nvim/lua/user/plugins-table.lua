@@ -183,7 +183,7 @@ local core_plugins = {
         config = function()
             require("user.lspconfig").config()
         end,
-        event = "BufRead"
+        event = "BufReadPre"
     },
 
     -- LSP Saga
