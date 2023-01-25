@@ -34,6 +34,9 @@ function M.load(plugins)
     end
 
     local opts = {
+        defauls = {
+            lazy = true
+        },
         diff = {
             cmd = "diffview.nvim",
         },

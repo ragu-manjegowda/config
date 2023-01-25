@@ -32,6 +32,11 @@ function M.getVisualSelection()
     end
 end
 
+function M.current_buffer_fuzzy_find_selection()
+    local text = M.getVisualSelection()
+    require('telescope.builtin').current_buffer_fuzzy_find({ default_text = text })
+end
+
 function M.grep_selection()
     local text = M.getVisualSelection()
     require('telescope.builtin').grep_string({ search = text })
@@ -48,8 +53,12 @@ function M.before()
     local map = vim.api.nvim_set_keymap
 
     -- Telescope fuzzy finder shortcuts
-    map('n', '<leader>bs', '<cmd>lua require("telescope.builtin").current_buffer_fuzzy_find()<CR>',
+    map('n', '<leader>bs',
+        '<cmd>lua require("telescope.builtin").current_buffer_fuzzy_find()<CR>',
         { silent = true, desc = 'Telescope buffer fuzzy find' })
+    map('v', '<leader>bs',
+        '<cmd>lua require("user.telescope").current_buffer_fuzzy_find_selection()<CR>',
+        { silent = true, desc = 'Telescope buffer fuzzy find visual selection' })
     map('n', '<leader>dlb', '<cmd>lua require("telescope").extensions.dap.list_breakpoints{}<CR>',
         { silent = true, desc = 'DAP list_breakpoints' })
     map('n', '<leader>dbt', '<cmd>lua require("telescope").extensions.dap.frames{}<CR>',
