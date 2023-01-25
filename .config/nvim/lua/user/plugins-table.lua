@@ -4,6 +4,8 @@
 -------------------------------------------------------------------------------
 
 local core_plugins = {
+    { "folke/lazy.nvim", tag = "stable" },
+
     -- cmp plugins
     {
         "hrsh7th/nvim-cmp",
@@ -178,7 +180,6 @@ local core_plugins = {
         "neovim/nvim-lspconfig",
         dependencies = {
             "p00f/clangd_extensions.nvim",
-            "WhoIsSethDaniel/mason-tool-installer.nvim",
         },
         config = function()
             require("user.lspconfig").config()
@@ -219,9 +220,6 @@ local core_plugins = {
             require("user.mason-tool-installer").config()
         end
     },
-
-    -- Packer
-    { "wbthomason/packer.nvim" },
 
     -- Telescope
     {
