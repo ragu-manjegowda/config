@@ -51,7 +51,8 @@ local core_plugins = {
         "Exafunction/codeium.vim",
         init = function()
             require("user.codeium").before()
-        end
+        end,
+        event = { "InsertEnter" },
     },
 
     -- Compile
@@ -93,7 +94,8 @@ local core_plugins = {
         },
         config = function()
             require("user.dapui").config()
-        end
+        end,
+        event = "VeryLazy"
     },
 
     -- Extra
@@ -264,10 +266,12 @@ local core_plugins = {
         "xolox/vim-session",
         dependencies = {
             "xolox/vim-misc",
+            event = "VeryLazy"
         },
         init = function()
             require("user.vim-session").before()
         end,
+        event = "VeryLazy"
     },
 
     -- Vim in browser
