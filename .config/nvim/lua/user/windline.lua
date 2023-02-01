@@ -16,6 +16,11 @@ M.config = function()
         return
     end
 
+    local wpm_available, wpm = pcall(require, "wpm")
+    if not wpm_available then
+        vim.notify("wpm not found", vim.log.levels.ERROR)
+    end
+
     local helper = require('windline.helpers')
     local sep = helper.separators
     local b_components = require('windline.components.basic')
@@ -35,6 +40,7 @@ M.config = function()
         Inactive = { 'InactiveFg', 'InactiveBg' },
         Active = { 'ActiveFg', 'ActiveBg' },
     }
+
     local basic = {}
 
     local airline_colors = {}
@@ -76,6 +82,32 @@ M.config = function()
         Visual = { 'white', 'yellow_c' },
         Replace = { 'white', 'blue_c' },
         Command = { 'white', 'red_c' },
+    }
+
+    airline_colors.c_r = {
+        NormalSep = { 'magenta_c', 'magenta_d' },
+        InsertSep = { 'green_c', 'green_d' },
+        VisualSep = { 'yellow_c', 'yellow_d' },
+        ReplaceSep = { 'blue_c', 'blue_d' },
+        CommandSep = { 'red_c', 'red_d' },
+        Normal = { 'white', 'magenta_c' },
+        Insert = { 'white', 'green_c' },
+        Visual = { 'white', 'yellow_c' },
+        Replace = { 'white', 'blue_c' },
+        Command = { 'white', 'red_c' },
+    }
+
+    airline_colors.d = {
+        NormalSep = { 'magenta_d', 'NormalBg' },
+        InsertSep = { 'green_d', 'NormalBg' },
+        VisualSep = { 'yellow_d', 'NormalBg' },
+        ReplaceSep = { 'blue_d', 'NormalBg' },
+        CommandSep = { 'red_d', 'NormalBg' },
+        Normal = { 'white', 'magenta_d' },
+        Insert = { 'white', 'green_d' },
+        Visual = { 'white', 'yellow_d' },
+        Replace = { 'white', 'blue_d' },
+        Command = { 'white', 'red_d' },
     }
 
     basic.divider = { b_components.divider, hl_list.Normal }
@@ -130,7 +162,7 @@ M.config = function()
     }
 
     basic.section_x = {
-        hl_colors = airline_colors.c,
+        hl_colors = airline_colors.c_r,
         text = function(_, _, width)
             if width > width_breakpoint then
                 return {
@@ -221,6 +253,28 @@ M.config = function()
             return ''
         end,
     }
+
+    basic.wpm = {
+        name = 'wpm',
+        width = width_breakpoint,
+        hl_colors = airline_colors.d,
+        text = function(_, _, width)
+            if width > width_breakpoint and wpm_available then
+                return {
+                    { sep.left_filled, state.mode[2] .. 'Sep' },
+                    { ' wpm: ', state.mode[2] },
+                    { wpm.wpm },
+                    { ' ' },
+                    { wpm.historic_graph },
+                    { ' ' },
+                }
+            end
+            return {
+                { sep.left_filled, state.mode[2] .. 'Sep' },
+            }
+        end
+    }
+
     local quickfix = {
         filetypes = { 'qf', 'Trouble' },
         active = {
@@ -265,6 +319,7 @@ M.config = function()
             { vim_components.search_count(), { 'cyan', 'NormalBg' } },
             basic.divider,
             basic.git,
+            basic.wpm,
             basic.section_x,
             basic.section_y,
             basic.section_z,
@@ -287,24 +342,29 @@ M.config = function()
             end
 
             colors.magenta_a = colors.magenta
-            colors.magenta_b = mod(colors.magenta, 0.5)
-            colors.magenta_c = mod(colors.magenta, 0.7)
+            colors.magenta_b = mod(colors.magenta, 0.3)
+            colors.magenta_c = mod(colors.magenta, 0.5)
+            colors.magenta_d = mod(colors.magenta, 0.7)
 
             colors.yellow_a = colors.yellow
-            colors.yellow_b = mod(colors.yellow, 0.5)
-            colors.yellow_c = mod(colors.yellow, 0.7)
+            colors.yellow_b = mod(colors.yellow, 0.3)
+            colors.yellow_c = mod(colors.yellow, 0.5)
+            colors.yellow_d = mod(colors.yellow, 0.7)
 
             colors.blue_a = colors.blue
-            colors.blue_b = mod(colors.blue, 0.5)
-            colors.blue_c = mod(colors.blue, 0.7)
+            colors.blue_b = mod(colors.blue, 0.3)
+            colors.blue_c = mod(colors.blue, 0.5)
+            colors.blue_d = mod(colors.blue, 0.7)
 
             colors.green_a = colors.green
-            colors.green_b = mod(colors.green, 0.5)
-            colors.green_c = mod(colors.green, 0.7)
+            colors.green_b = mod(colors.green, 0.3)
+            colors.green_c = mod(colors.green, 0.5)
+            colors.green_d = mod(colors.green, 0.7)
 
             colors.red_a = colors.red
-            colors.red_b = mod(colors.red, 0.5)
-            colors.red_c = mod(colors.red, 0.7)
+            colors.red_b = mod(colors.red, 0.3)
+            colors.red_c = mod(colors.red, 0.5)
+            colors.red_d = mod(colors.red, 0.7)
 
             return colors
         end,

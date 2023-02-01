@@ -109,7 +109,7 @@ function M.before()
         { silent = true, desc = 'LSP outgoing_calls' })
     -- map('n', '<leader>ld', '<cmd>lua require("telescope.builtin").lsp_definitions()<CR>',
     --     { silent = true, desc = 'LSP definitions' })
-    map('n', '<leader>oe', '<cmd>lua require("telescope.builtin").lsp_diagnostics()<CR>',
+    map('n', '<leader>oe', '<cmd>lua require("telescope.builtin").diagnostics()<CR>',
         { silent = true, desc = 'LSP diagnostics preview in Telescope' })
     -- map('n', '<leader>li', '<cmd>lua require("telescope.builtin").lsp_implementations()<CR>',
     --     { silent = true, desc = 'LSP implementations' })

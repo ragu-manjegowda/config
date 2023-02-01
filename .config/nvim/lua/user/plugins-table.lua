@@ -102,13 +102,6 @@ local core_plugins = {
     { "mbbill/undotree" },
 
     {
-        "windwp/windline.nvim",
-        config = function()
-            require("user.windline").config()
-        end
-    },
-
-    {
         "nvim-tree/nvim-tree.lua",
         dependencies = { "nvim-tree/nvim-web-devicons" },
         config = function()
@@ -222,6 +215,20 @@ local core_plugins = {
             require("user.mason-tool-installer").config()
         end
     },
+
+    -- Status line
+    {
+        "windwp/windline.nvim",
+        dependencies = {
+            "jcdickinson/wpm.nvim",
+            config = function()
+                require("wpm").setup({})
+            end
+        },
+        config = function()
+            require("user.windline").config()
+        end
+   },
 
     -- Telescope
     {
