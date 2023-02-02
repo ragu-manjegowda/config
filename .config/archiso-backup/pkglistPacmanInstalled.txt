@@ -4,6 +4,7 @@ alsa-utils
 aspell-en
 autoconf
 automake
+avidemux-qt
 base
 bison
 blueman
@@ -57,6 +58,7 @@ rofi
 rofi-calc
 rofi-emoji
 rust
+rust-src
 sudo
 texinfo
 thunar

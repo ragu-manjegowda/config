@@ -4,6 +4,7 @@ alsa-utils
 aspell-en
 autoconf
 automake
+avidemux-qt
 awesome-luajit-git
 awmtt
 base
@@ -76,6 +77,7 @@ rofi
 rofi-calc
 rofi-emoji
 rust
+rust-src
 slack-desktop
 solarized-colors-iconpack-git
 sudo
