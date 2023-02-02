@@ -31,17 +31,24 @@ function M.config()
     whichkey.setup {
         plugins = {
             marks = true, -- shows a list of your marks on ' and `
-            registers = false, -- shows your registers on " in NORMAL or <C-r> in INSERT mode
-            -- the presets plugin, adds help for a bunch of default keybindings in Neovim
-            -- No actual key bindings are created
+             -- shows your registers on " in NORMAL or <C-r> in INSERT mode
+            -- the presets plugin, adds help for a bunch of default
+            -- keybindings in Neovim. No actual key bindings are created
+            registers = false,
             spelling = {
-                enabled = true, -- enabling this will show WhichKey when pressing z= to select spelling suggestions
-                suggestions = 20 -- how many suggestions should be shown in the list?
+                -- enabling this will show WhichKey when pressing z= to
+                -- select spelling suggestions
+                enabled = true,
+                -- how many suggestions should be shown in the list?
+                suggestions = 20
             },
             presets = {
-                operators = false, -- adds help for operators like d, y, ... and registers them for motion / text object completion
+                -- adds help for operators like d, y, ... and registers them
+                -- for motion / text object completion
+                operators = false,
                 motions = false, -- adds help for motions
-                text_objects = false, -- help for text objects triggered after entering an operator
+                -- help for text objects triggered after entering an operator
+                text_objects = false,
                 windows = true, -- default bindings on <c-w>
                 nav = true, -- misc bindings to work with windows
                 z = true, -- bindings for folds, spelling and others prefixed with z
@@ -52,14 +59,16 @@ function M.config()
         -- to enable all native operators, set the preset / operators plugin above
         operators = { gc = "Comments" },
         key_labels = {
-            -- override the label used to display some keys. It doesn't effect WK in any other way.
+            -- override the label used to display some keys.
+            -- It doesn't effect WK in any other way.
             -- For example:
             ["<space>"] = "SPC",
             ["<cr>"] = "RET",
             ["<tab>"] = "TAB"
         },
         icons = {
-            breadcrumb = "»", -- symbol used in the command line area that shows your active key combo
+            -- symbol used in the command line area that shows your active key combo
+            breadcrumb = "»",
             separator = "➜", -- symbol used between a key and it's label
             group = "+" -- symbol prepended to a group
         },
@@ -74,9 +83,15 @@ function M.config()
             width = { min = 20, max = 50 }, -- min and max width of the columns
             spacing = 5 -- spacing between columns
         },
-        hidden = { "<silent>", "<cmd>", "<Cmd>", "<CR>", "call", "lua", "^:", "^ " }, -- hide mapping boilerplate
-        show_help = true, -- show help message on the command line when the popup is visible
-        triggers = "auto" -- automatically setup triggers
+        -- hide mapping boilerplate
+        hidden = {
+            "<silent>", "<cmd>", "<Cmd>", "<CR>", "call",
+            "lua", "^:", "^ "
+        },
+        -- show help message on the command line when the popup is visible
+        show_help = true,
+        -- automatically setup triggers
+        triggers = "auto"
         -- triggers = {"<leader>"} -- or specifiy a list manually
     }
 end

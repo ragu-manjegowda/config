@@ -60,6 +60,7 @@ function M.config()
         return
     end
 
+    ---@diagnostic disable-next-line: missing-parameter
     dap_virtual_text.setup()
 
     -- nvim-dap-virtual-text. Show virtual text for current frame
