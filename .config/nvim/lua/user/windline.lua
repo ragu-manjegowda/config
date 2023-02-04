@@ -297,18 +297,6 @@ M.config = function()
         show_last_status = true
     }
 
-    local explorer = {
-        filetypes = { 'fern', 'NvimTree', 'lir' },
-        active = {
-            { '  ', { 'white', 'magenta_b' } },
-            { helper.separators.slant_right, { 'magenta_b', 'NormalBg' } },
-            { b_components.divider, '' },
-            { b_components.file_name(''), { 'NormalFg', 'NormalBg' } },
-        },
-        always_active = true,
-        show_last_status = true
-    }
-
     local default = {
         filetypes = { 'default' },
         active = {
@@ -370,9 +358,12 @@ M.config = function()
         end,
         statuslines = {
             default,
-            quickfix,
-            explorer,
+            quickfix
         },
+        global_skip_filetypes = {
+            'NvimTree',
+            'tagbar'
+        }
     })
 end
 

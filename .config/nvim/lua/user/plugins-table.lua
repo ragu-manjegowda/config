@@ -148,13 +148,6 @@ local core_plugins = {
 
     { "lambdalisue/suda.vim" },
 
-    {
-        "nanozuki/tabby.nvim",
-        config = function()
-            require("user.tabby").config()
-        end
-    },
-
     -- Git
     {
         "tpope/vim-fugitive",
@@ -229,6 +222,16 @@ local core_plugins = {
             require("user.windline").config()
         end
    },
+
+    -- Tabline
+    {
+        "akinsho/bufferline.nvim",
+        dependencies = { "nvim-tree/nvim-web-devicons" },
+        config = function()
+            require("user.bufferline").config()
+        end,
+        event = "VeryLazy"
+    },
 
     -- Telescope
     {
