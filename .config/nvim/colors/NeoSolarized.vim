@@ -905,6 +905,25 @@ exe "hi! SmoothCursorBlue"     . s:fg_blue       .s:bg_none  .s:fmt_none
 exe "hi! SmoothCursorPurple"   . s:fg_violet     .s:bg_none  .s:fmt_none
 " }}}"
 
+" Gitsigns "{{{
+" ---------------------------------------------------------------------
+exe "hi! GitSignsAdd"               . s:fg_green
+exe "hi! GitSignsAddNr"             . s:fg_green
+exe "hi! GitSignsAddLn"             . s:fg_base3
+exe "hi! GitSignsAddInline"         . s:fg_base3      .s:bg_green
+exe "hi! GitSignsAddLnInline"       . s:fg_base3      .s:bg_green
+exe "hi! GitSignsChange"            . s:fg_yellow
+exe "hi! GitSignsChangeNr"          . s:fg_yellow
+exe "hi! GitSignsChangeLn"          . s:fg_base3
+exe "hi! GitSignsChangeInline"      . s:fg_base3      .s:bg_yellow
+exe "hi! GitSignsChangeLnInline"    . s:fg_base3      .s:bg_yellow
+exe "hi! GitSignsDelete"            . s:fg_red
+exe "hi! GitSignsDeletNr"           . s:fg_red
+exe "hi! GitSignsDeleteLn"          . s:fg_base3
+exe "hi! GitSignsDeleteInline"      . s:fg_base3      .s:bg_magenta
+exe "hi! GitSignsDeleteLnInline"    . s:fg_base3      .s:bg_magenta
+" }}}"
+
 " NeoVim terminal buffer colours "{{{
 " ---------------------------------------------------------------------
 let g:terminal_color_0 = s:gui_base03
@@ -981,5 +1000,5 @@ autocmd GUIEnter * if (has('gui_running')) | exe "colorscheme " . g:colors_name 
 " OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 " THE SOFTWARE.
 "
-" vim: set foldmethod=marker foldlevel=0:
+" vim: set filetype=colorscheme:
 "}}}
