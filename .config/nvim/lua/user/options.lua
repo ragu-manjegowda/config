@@ -56,6 +56,8 @@ local options = {
 
 vim.opt.diffopt:append { 'algorithm:patience' } -- Use patience diff algorithm
 vim.opt.iskeyword:append "-"                 -- Match word-with-hypen for '*'
+vim.opt.list = true
+vim.opt.listchars:append "lead:⋅"            -- Show leading spaces
 vim.opt.path:append { '**' }                 -- Finding files - Search down into subfolders
 vim.opt.shortmess:append "c"                 -- Show search preview in split
 
