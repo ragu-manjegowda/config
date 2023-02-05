@@ -186,8 +186,9 @@ function toggle-alacritty-theme () {
     fi
 
     config_path="$HOME/.config/alacritty/colors.yml"
-    vim_config_path="$HOME/.config/nvim/lua/user/colorscheme.lua"
+    git_config_path="$HOME/.config/git/config"
     broot_config_path="$HOME/.config/broot/conf.hjson"
+    vim_config_path="$HOME/.config/nvim/lua/user/colorscheme.lua"
     zathura_config_path="$HOME/.config/zathura/zathurarc"
 
     # Get current mode
@@ -197,6 +198,8 @@ function toggle-alacritty-theme () {
         light)
             sed -i -e "s#^colors: \*.*#colors: *solarized-dark#g" $config_path
             export BAT_THEME="Solarized (dark)"
+
+            sed -i -e "s#(light)#(dark)#g" $git_config_path
 
             sed -i -e "s#background=light#background=dark#g" $vim_config_path
 
@@ -212,6 +215,8 @@ function toggle-alacritty-theme () {
         dark)
             sed -i -e "s#^colors: \*.*#colors: *solarized-light#g" $config_path
             export BAT_THEME="Solarized (light)"
+
+            sed -i -e "s#(dark)#(light)#g" $git_config_path
 
             sed -i -e "s#background=dark#background=light#g" $vim_config_path
 
@@ -264,12 +269,15 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
         echo "file $HOME/.config/alacritty/colors.yml doesn't exist"
     else
         config_path="$HOME/.config/alacritty/colors.yml"
-        vim_config_path="$HOME/.config/nvim/lua/user/colorscheme.lua"
+        git_config_path="$HOME/.config/git/config"
         broot_config_path="$HOME/.config/broot/conf.hjson"
+        vim_config_path="$HOME/.config/nvim/lua/user/colorscheme.lua"
         zathura_config_path="$HOME/.config/zathura/zathurarc"
 
         if grep -Fxq "colors: *solarized-dark" "$config_path"; then
             export BAT_THEME="Solarized (dark)"
+
+            sed -i -e "s#(light)#(dark)#g" $git_config_path
 
             sed -i -e "s#background=light#background=dark#g" $vim_config_path
 
@@ -283,6 +291,8 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
             eval `dircolors ${dircolors_dark_path}`
         else
             export BAT_THEME="Solarized (light)"
+
+            sed -i -e "s#(dark)#(light)#g" $git_config_path
 
             sed -i -e "s#background=dark#background=light#g" $vim_config_path
 
@@ -304,8 +314,9 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         echo "file $HOME/.config/alacritty/colors.yml doesn't exist"
     else
         config_path="$HOME/.config/alacritty/colors.yml"
-        vim_config_path="$HOME/.config/nvim/lua/user/colorscheme.lua"
+        git_config_path="$HOME/.config/git/config"
         broot_config_path="$HOME/.config/broot/conf.hjson"
+        vim_config_path="$HOME/.config/nvim/lua/user/colorscheme.lua"
         zathura_config_path="$HOME/.config/zathura/zathurarc"
 
         # Get current mode
@@ -315,6 +326,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
             Dark)
                 sed -i -e "s#^colors: \*.*#colors: *solarized-dark#g" $config_path
                 export BAT_THEME="Solarized (dark)"
+
+                sed -i -e "s#(light)#(dark)#g" $git_config_path
 
                 sed -i -e "s#background=light#background=dark#g" $vim_config_path
 
@@ -330,6 +343,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
             *)
                 sed -i -e "s#^colors: \*.*#colors: *solarized-light#g" $config_path
                 export BAT_THEME="Solarized (light)"
+
+                sed -i -e "s#(dark)#(light)#g" $git_config_path
 
                 sed -i -e "s#background=dark#background=light#g" $vim_config_path
 

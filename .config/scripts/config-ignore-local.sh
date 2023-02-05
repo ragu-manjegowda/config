@@ -152,6 +152,7 @@ config update-index --assume-unchanged \
     .config/awesome/widget/xdg-folders/icons/user-trash-full.svg \
     .config/awesome/widget/xdg-folders/icons/yes.svg \
     .config/chrome-flags.conf \
+    .config/git/config \
     .config/nvim/lua/user/colorscheme.lua \
     .config/rofi/config.rasi \
     .config/xsettingsd/xsettingsd.conf \
