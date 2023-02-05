@@ -269,8 +269,7 @@ vim.api.nvim_create_autocmd('FileType', {
     end,
 })
 
--- "fix gf functionality inside .lua files"
--- credit: https://github.com/LunarVim/LunarVim
+-- Fix gf functionality inside .lua files
 vim.api.nvim_create_autocmd('FileType', {
     pattern = { "lua" },
     callback = function()
@@ -292,4 +291,23 @@ vim.api.nvim_create_autocmd('FileType', {
 vim.api.nvim_create_autocmd('VimResized', {
     pattern = "*",
     command = "tabdo wincmd ="
+})
+
+-- Enable miniindentscope for files where indent-blankline is disabled
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "NvimTree", "tagbar" },
+    callback = function()
+        vim.b.miniindentscope_config = {
+            symbol = "╎"
+        }
+    end
+})
+
+-- Disable displaying leading spaces for certain filetypes
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "checkhealth", "fugitive", "gitcommit" },
+    callback = function()
+        vim.opt.list = false
+        vim.opt.listchars:remove "lead:⋅"
+    end
 })

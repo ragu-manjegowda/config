@@ -924,6 +924,13 @@ exe "hi! GitSignsDeleteInline"      . s:fg_base3      .s:bg_magenta
 exe "hi! GitSignsDeleteLnInline"    . s:fg_base3      .s:bg_magenta
 " }}}"
 
+" IndentLine "{{{
+" ---------------------------------------------------------------------
+exe "hi! IndentBlanklineChar"                           . s:fg_base01
+hi! link IndentBlanklineSpaceChar IndentBlanklineChar
+exe "hi! IndentBlanklineSpaceCharBlankline"             . s:fg_none
+" }}}"
+
 " NeoVim terminal buffer colours "{{{
 " ---------------------------------------------------------------------
 let g:terminal_color_0 = s:gui_base03

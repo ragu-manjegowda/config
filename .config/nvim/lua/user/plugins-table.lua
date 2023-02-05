@@ -125,10 +125,28 @@ local core_plugins = {
 
     { "junegunn/vim-peekaboo" },
 
+    -- Indent markers
     {
-        "Yggdroot/indentLine",
+        -- Used only for the sake of indent objects ]i, [i, ai, ii
+        'echasnovski/mini.indentscope',
+        event = "VeryLazy",
+        config = function()
+            require('user.indentscope').config()
+        end,
+        version = false
+    },
+
+    {
+        "lukas-reineke/indent-blankline.nvim",
+        dependencies = {
+            "nvim-treesitter/nvim-treesitter",
+        },
+        event = "UIEnter",
         init = function()
-            require("user.indent-line").before()
+            require("user.indent-blankline").before()
+        end,
+        config = function()
+            require("user.indent-blankline").config()
         end
     },
 
