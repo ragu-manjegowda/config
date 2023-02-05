@@ -1,58 +1,88 @@
-[user]
-    email = raghavendrahm0410@gmail.com
-    name  = Ragu Manjegowda
-    signingkey = 91C27880D0BD8E18
-
-[init]
-    defaultBranch = main
-
 [color]
     ui = true
 
-[core]
-    editor = "$EDITOR --noplugin -c 'set spell spelllang=en_us'"
-    pager = diff-so-fancy | less --tabs=4 -RFX
-
-[pager]
-    diff = diff-so-fancy | less --tabs=1,5 -RFX
-    show = diff-so-fancy | less --tabs=1,5 -RFX
-
-[status]
-    submodulesummary = false
-
-[github]
-    user = ragu-manjegowda
-
 [color "diff-highlight"]
-    oldNormal = red bold
-    oldHighlight = red bold 52
-    newNormal = green bold
     newHighlight = green bold 22
+    newNormal = green bold
+    oldHighlight = red bold 52
+    oldNormal = red bold
 
 [color "diff"]
-    meta = yellow
-    frag = magenta bold
     commit = yellow bold
-    old = red bold
+    frag = magenta bold
+    meta = yellow
     new = green bold
+    old = red bold
     whitespace = red reverse
-
-[diff-so-fancy]
-    first-run = false
 
 [commit]
     gpgsign = true
     template = ~/.config/git/gitmessage.txt
 
-[push]
-    autoSetupRemote = true
+[core]
+    editor = "$EDITOR --noplugin -c 'set spell spelllang=en_us'"
+    pager = delta | less --tabs=4 -RFX
+
+[delta]
+    features = unobtrusive-line-numbers decorations
+    hyperlinks = true
+    syntax-theme = "Solarized (light)"
+    whitespace-error-style = 22 reverse
+
+[delta "interactive"]
+    keep-plus-minus-markers = false
+
+[delta "unobtrusive-line-numbers"]
+    line-numbers = true
+    line-numbers-left-format = "{nm:>4}┊"
+    line-numbers-left-style = blue
+    line-numbers-minus-style = red
+    line-numbers-plus-style = bold green
+    line-numbers-right-format = "{np:>4}│"
+    line-numbers-right-style = blue
+    line-numbers-zero-style = cyan
+
+[delta "decorations"]
+    commit-decoration-style = bold yellow box
+    commit-style = raw
+    file-style = bold yellow
+    hunk-header-decoration-style = yellow box
+
+[diff]
+    colorMoved = default
+
+[github]
+    user = ragu-manjegowda
+
+[init]
+    defaultBranch = main
+
+[interactive]
+    diffFilter = delta --color-only --features=interactive
+
+[merge]
+    conflictstyle = diff3
+    tool = nvimdiff
 
 [mergetool]
+    hideResolved = true
     ; remove all .orig files when using the mergetool
     keepBackup = false
     prompt = false
-    hideResolved = true
 
-[merge]
-    tool = nvimdiff
-    conflictstyle = diff3
+[pager]
+    diff = delta | less --tabs=1,5 -RFX
+    show = delta | less --tabs=1,5 -RFX
+
+[push]
+    autoSetupRemote = true
+
+[status]
+    submodulesummary = false
+
+[user]
+    email = raghavendrahm0410@gmail.com
+    name  = Ragu Manjegowda
+    signingkey = 91C27880D0BD8E18
+
+# vim: set filetype=gitconfig :
