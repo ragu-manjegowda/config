@@ -54,9 +54,10 @@ local options = {
                                              -- while editing with another program), it is not allowed to be edited
 }
 
+vim.opt.diffopt:append { 'algorithm:patience' } -- Use patience diff algorithm
+vim.opt.iskeyword:append "-"                 -- Match word-with-hypen for '*'
 vim.opt.path:append { '**' }                 -- Finding files - Search down into subfolders
 vim.opt.shortmess:append "c"                 -- Show search preview in split
-vim.opt.iskeyword:append "-"                 -- Match word-with-hypen for '*'
 
 for k, v in pairs(options) do
     vim.opt[k] = v
