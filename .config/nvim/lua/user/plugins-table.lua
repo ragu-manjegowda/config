@@ -98,9 +98,6 @@ local core_plugins = {
         event = "VeryLazy"
     },
 
-    -- Extra
-    { "mbbill/undotree" },
-
     {
         "nvim-tree/nvim-tree.lua",
         dependencies = { "nvim-tree/nvim-web-devicons" },
@@ -227,6 +224,15 @@ local core_plugins = {
         end
     },
 
+    -- Performance
+    {
+        "LunarVim/bigfile.nvim",
+        init = function()
+            require("user.bigfile").setup()
+        end,
+        event = "VeryLazy"
+    },
+
     -- Status line
     {
         "windwp/windline.nvim",
@@ -265,6 +271,7 @@ local core_plugins = {
             "nvim-telescope/telescope-hop.nvim",
             "nvim-telescope/telescope-live-grep-args.nvim",
             "nvim-telescope/telescope-ui-select.nvim",
+            "debugloop/telescope-undo.nvim"
         },
         init = function()
             require("user.telescope").before()
