@@ -96,9 +96,6 @@ keymap("n", "<leader>oq", ":copen<CR><C-w>T", opts)
 -- Map to navigate QuickFix list after error from Dispatch
 keymap("n", "<leader>od", ":Copen<CR><C-w>T", opts)
 
--- Toggle undo tree
-keymap("n", "<leader>ut", ":UndotreeToggle<CR>", opts)
-
 -- Get full path of the current buffer
 keymap("n", "<leader>fp", "1<C-g><CR>", { noremap = true })
 

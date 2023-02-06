@@ -133,6 +133,11 @@ function M.before()
     -- Spell suggest
     map('n', 'z=', '<cmd>lua require("telescope.builtin").spell_suggest()<CR>',
         { silent = true, desc = 'Spell suggest' })
+
+    -- Undo Tree
+    map('n', '<leader>ut',
+        '<cmd>lua require("telescope").extensions.undo.undo()<CR>',
+        { silent = true, desc = 'Open undo tree in telescope' })
 end
 
 function M.config()
@@ -164,6 +169,7 @@ function M.config()
     local actions = require("telescope.actions")
     local actions_state = require("telescope.actions.state")
     local lga_actions = require("telescope-live-grep-args.actions")
+    local undo_actions = require("telescope-undo.actions")
 
     local function yank_entry()
         local entry = actions_state.get_selected_entry()
@@ -232,6 +238,15 @@ function M.config()
                     }
                 }
             },
+            undo = {
+                mappings = { -- extend mappings
+                    i = {
+                        ["<CR>"] = undo_actions.restore,
+                        ["<C-a>"] = undo_actions.yank_additions,
+                        ["<C-r>"] = undo_actions.yank_deletions
+                    }
+                }
+            },
         },
     })
 
@@ -240,6 +255,7 @@ function M.config()
     telescope.load_extension("hop")
     telescope.load_extension("live_grep_args")
     telescope.load_extension("ui-select")
+    telescope.load_extension("undo")
 
 end
 
