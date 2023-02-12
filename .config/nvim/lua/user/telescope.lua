@@ -7,97 +7,146 @@ local vim = vim
 
 local M = {}
 
-function M.grep()
-    require('telescope.builtin').grep_string({ search = vim.fn.input("Grep For > ") })
-end
-
-function M.grep_word()
-    require('telescope.builtin').grep_string({ search = vim.fn.expand("<cword>") })
-end
-
-function M.grep_word_exact()
-    require('telescope.builtin').grep_string({ search = "'" .. vim.fn.expand("<cword>") })
+local util_res, utils = pcall(require, "user.utils")
+if not util_res then
+    vim.notify("utils not found", vim.log.levels.ERROR)
+    return
 end
 
 function M.getVisualSelection()
-    vim.cmd('noau normal! "vy"')
-    local text = vim.fn.getreg('v')
-    vim.fn.setreg('v', {})
+    return utils.getVisualSelection()
+end
 
-    text = string.gsub(text, "\n", "")
-    if #text > 0 then
-        return text
-    else
-        return ''
+function M.grep(options)
+    local opts = options or {}
+
+    if not options or options.grep_word == nil then
+        local text = M.getVisualSelection()
+        if text ~= '' then
+            opts.search = text
+        else
+            opts.search = vim.fn.input("Grep For > ")
+        end
     end
+
+    require('telescope.builtin').grep_string(opts)
 end
 
-function M.current_buffer_fuzzy_find_selection()
-    local text = M.getVisualSelection()
-    require('telescope.builtin').current_buffer_fuzzy_find({ default_text = text })
+function M.grep_folder()
+    local opts = {}
+    opts.search_dirs = {}
+    opts.search_dirs[1] = vim.fn.input("Grep in Directory > ")
+    M.grep(opts)
 end
 
-function M.grep_selection()
-    local text = M.getVisualSelection()
-    require('telescope.builtin').grep_string({ search = text })
+function M.grep_word()
+    local opts = {}
+    opts.grep_word = vim.fn.expand("<cword>")
+    M.grep(opts)
 end
 
-function M.live_grep_selection()
+function M.grep_word_exact()
+    local opts = {}
+    opts.word_match = "-w"
+    opts.grep_word = vim.fn.expand("<cword>")
+    M.grep(opts)
+end
+
+function M.current_buffer_fuzzy_find()
+    local opts = {}
+
     local text = M.getVisualSelection()
-    require("telescope").extensions.live_grep_args.live_grep_args({ default_text = text })
+    if text ~= '' then
+        opts.default_text = text
+    else
+        opts.default_text = nil
+    end
+
+    require('telescope.builtin').current_buffer_fuzzy_find(opts)
+end
+
+function M.live_grep()
+    local opts = {}
+
+    local text = M.getVisualSelection()
+    if text ~= '' then
+        opts.default_text = text
+    else
+        opts.default_text = nil
+    end
+
+    require("telescope").extensions.live_grep_args.live_grep_args(opts)
+end
+
+function M.find_files()
+    local opts = {}
+
+    opts.find_command = { "rg", "--files", "--hidden", "-g", "!.git" }
+
+    require("telescope.builtin").find_files(opts)
 end
 
 function M.before()
     vim.cmd "autocmd User TelescopePreviewerLoaded setlocal number"
 
-    local map = vim.api.nvim_set_keymap
+    local map = vim.keymap.set
 
     -- Telescope fuzzy finder shortcuts
-    map('n', '<leader>bs',
-        '<cmd>lua require("telescope.builtin").current_buffer_fuzzy_find()<CR>',
+    map({ 'n', 'v' }, '<leader>bs',
+        '<cmd>lua require("user.telescope").current_buffer_fuzzy_find()<CR>',
         { silent = true, desc = 'Telescope buffer fuzzy find' })
-    map('v', '<leader>bs',
-        '<cmd>lua require("user.telescope").current_buffer_fuzzy_find_selection()<CR>',
-        { silent = true, desc = 'Telescope buffer fuzzy find visual selection' })
+
     map('n', '<leader>dlb', '<cmd>lua require("telescope").extensions.dap.list_breakpoints{}<CR>',
         { silent = true, desc = 'DAP list_breakpoints' })
+
     map('n', '<leader>dbt', '<cmd>lua require("telescope").extensions.dap.frames{}<CR>',
         { silent = true, desc = 'DAP stack backtrace' })
-    map('n', '<leader>fg',
-        '<cmd>lua require("telescope").extensions.live_grep_args.live_grep_args()<CR>',
+
+    map({ 'n', 'v' }, '<leader>fg',
+        '<cmd>lua require("user.telescope").live_grep()<CR>',
         { silent = true, desc = 'Telescope grep folder' })
-    map('v', '<leader>fg',
-        '<cmd>lua require("user.telescope").live_grep_selection()<CR>',
-        { silent = true, desc = 'Telescope grep visual selection in folder' })
+
     map('n', '<leader>pb', '<cmd>lua require("telescope.builtin").buffers()<CR>',
-        { silent = true, desc = 'Telescope grep folder' })
+        { silent = true, desc = 'Telescope list project buffers' })
+
     map('n', '<leader>pc', '<cmd>lua require("telescope.builtin").command_history()<CR>',
         { silent = true, desc = 'Telescope command_history' })
+
     map('n', '<leader>pf',
-        '<cmd>lua require("telescope.builtin").find_files({ ' ..
-        'find_command = {"rg", "--files", "--hidden", "-g", "!.git" }} )<CR>',
+        '<cmd>lua require("user.telescope").find_files()<CR>',
         { silent = true, desc = 'Telescope find_files' })
+
     map('n', '<leader>ph', '<cmd>lua require("telescope.builtin").help_tags()<CR>',
         { silent = true, desc = 'Telescope help_tags' })
+
     map('n', '<leader>pj', '<cmd>lua require("telescope.builtin").jumplist()<CR>',
         { silent = true, desc = 'Telescope jumplist' })
+
     map('n', '<leader>pk', '<cmd>lua require("telescope.builtin").keymaps()<CR>',
         { silent = true, desc = 'Telescope keymaps' })
+
     map('n', '<leader>pm', '<cmd>lua require("telescope.builtin").man_pages()<CR>',
         { silent = true, desc = 'Telescope man_pages' })
+
     map('n', '<leader>pq', '<cmd>lua require("telescope.builtin").quickfix()<CR>',
         { silent = true, desc = 'Telescope quickfix' })
+
     map('n', '<leader>pr', '<cmd>lua require("telescope.builtin").registers()<CR>',
         { silent = true, desc = 'Telescope registers' })
-    map('n', '<leader>ps', '<cmd>lua require("user.telescope").grep()<CR>',
+
+    map({ 'n', 'v' }, '<leader>ps', '<cmd>lua require("user.telescope").grep()<CR>',
         { silent = true, desc = 'Telescope grep' })
+
+    map({ 'n', 'v' }, '<leader>psf', '<cmd>lua require("user.telescope").grep_folder()<CR>',
+        { silent = true, desc = 'Telescope grep in directories' })
+
     map('n', '<leader>pt', '<cmd>lua require("telescope.builtin").treesitter()<CR>',
         { silent = true, desc = 'Telescope treesitter' })
-    map('n', '<leader>pw', '<cmd>lua require("user.telescope").grep_word()<CR>',
+
+    map({ 'n', 'v' }, '<leader>pw', '<cmd>lua require("user.telescope").grep_word()<CR>',
         { silent = true, desc = 'Telescope grep_word' })
-    map('v', '<leader>pw', '<cmd>lua require("user.telescope").grep_selection()<CR>',
-        { silent = true, desc = 'Telescope grep visual select text' })
-    map('n', '<leader>pW', '<cmd>lua require("user.telescope").grep_word_exact()<CR>',
+
+    map({ 'n', 'v' }, '<leader>pW', '<cmd>lua require("user.telescope").grep_word_exact()<CR>',
         { silent = true, desc = 'Telescope grep_word_exact' })
 
     -- LSP

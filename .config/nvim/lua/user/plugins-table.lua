@@ -9,6 +9,9 @@ local core_plugins = {
     -- cmp plugins
     {
         "hrsh7th/nvim-cmp",
+        config = function()
+            require("user.nvim-cmp").config()
+        end,
         dependencies = {
             "L3MON4D3/LuaSnip",
             "hrsh7th/cmp-buffer",
@@ -20,11 +23,7 @@ local core_plugins = {
             "onsails/lspkind-nvim",
             "rafamadriz/friendly-snippets",
             "saadparwaiz1/cmp_luasnip"
-        },
-        config = function()
-            require("user.nvim-cmp").config()
-        end,
-        event = { "CmdlineEnter", "InsertEnter" },
+        }
     },
 
     -- Code Browsing
