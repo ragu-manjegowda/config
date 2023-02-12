@@ -1,12 +1,14 @@
 [color]
     ui = true
 
+# Not needed since delta has it's own flags, keeping it here for reference
 [color "diff-highlight"]
     newHighlight = green bold 22
     newNormal = green bold
     oldHighlight = red bold 52
     oldNormal = red bold
 
+# Not needed since delta has it's own flags, keeping it here for reference
 [color "diff"]
     commit = yellow bold
     frag = magenta bold
@@ -24,8 +26,8 @@
     pager = delta | less --tabs=4 -RFX
 
 [delta]
+    plus-style = green bold
     features = unobtrusive-line-numbers decorations
-    hyperlinks = true
     syntax-theme = "Solarized (light)"
     whitespace-error-style = 22 reverse
 

@@ -50,6 +50,10 @@ ZSH_COMPDUMP="${ZDOTDIR}/.zcompdump-${ZSH_VERSION}"
 
 source $ZSH/oh-my-zsh.sh
 
+# Fix <CTRL-U> to delete till beginning of line
+# https://stackoverflow.com/a/3483679
+bindkey \^U backward-kill-line
+
 # To customize prompt, run `p10k configure` or edit $ZDOTDIR/.p10k.zsh.
 [[ ! -f $ZDOTDIR/p10k.zsh ]] || source $ZDOTDIR/p10k.zsh
 
