@@ -209,7 +209,7 @@ function M.config()
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
     -- Lua
-    nvim_lsp.sumneko_lua.setup {
+    nvim_lsp.lua_ls.setup {
         on_attach = on_attach,
         -- root_dir is .luacheckrc which is added for both awesome and nvim
         settings = {
