@@ -86,6 +86,7 @@
 .config/gedit
 .config/git/.git-completion.bash
 .config/git/.git-completion.zsh
+.config/git/config-e
 .config/gnome-initial-setup-done
 .config/gnote
 .config/gnupg/.*

@@ -269,7 +269,6 @@ local core_plugins = {
             },
             "nvim-telescope/telescope-hop.nvim",
             "nvim-telescope/telescope-live-grep-args.nvim",
-            "nvim-telescope/telescope-ui-select.nvim",
             "debugloop/telescope-undo.nvim"
         },
         init = function()
