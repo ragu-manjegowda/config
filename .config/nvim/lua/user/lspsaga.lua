@@ -32,6 +32,9 @@ function M.config()
         finder = {
             tabe = '<leader><Tab>',
         },
+        lightbulb = {
+            enable = false
+        },
         outline = {
             keys = {
                 expand_collaspe = '<CR>',
