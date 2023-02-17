@@ -244,7 +244,7 @@ local core_plugins = {
         config = function()
             require("user.windline").config()
         end
-   },
+    },
 
     -- Tabline
     {

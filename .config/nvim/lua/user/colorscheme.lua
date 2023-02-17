@@ -12,10 +12,12 @@ vim.cmd [[
     try
         syntax enable
         " Use NeoSolarized
-        let g:neosolarized_termtrans=1
         let g:neosolarized_contrast = "high"
-        let g:neosolarized_visibility = "high"
+        let g:neosolarized_diffmode = "high"
+        let g:neosolarized_italic=1
         let g:neosolarized_termcolors=256
+        let g:neosolarized_termtrans=1
+        let g:neosolarized_visibility = "high"
         colorscheme NeoSolarized
     catch /^Vim\%((\a\+)\)\=:E185/
         colorscheme default

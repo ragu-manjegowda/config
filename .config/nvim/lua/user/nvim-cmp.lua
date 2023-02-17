@@ -227,7 +227,7 @@ function M.config()
                     { name = 'path' }
                 }
             }
-        end,
+        end
     })
 end
 
