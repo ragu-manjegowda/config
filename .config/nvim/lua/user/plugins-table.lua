@@ -66,16 +66,6 @@ local core_plugins = {
         end
     },
 
-    {
-        "edluffy/specs.nvim",
-        init = function()
-            require("user.specs").before()
-        end,
-        config = function()
-            require("user.specs").config()
-        end
-    },
-
     -- Debugging
     {
         "rcarriga/nvim-dap-ui",
@@ -221,15 +211,6 @@ local core_plugins = {
         config = function()
             require("user.mason-tool-installer").config()
         end
-    },
-
-    -- Performance
-    {
-        "LunarVim/bigfile.nvim",
-        init = function()
-            require("user.bigfile").setup()
-        end,
-        event = "VeryLazy"
     },
 
     -- Status line
