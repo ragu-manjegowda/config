@@ -864,67 +864,67 @@ hi! link pandocMetadataTitle             pandocMetadata
 
 " neomake highlighting "{{{
 " ---------------------------------------------------------------------
-exe "hi! NeomakeErrorSign"          . s:fg_orange   .s:bg_none   .s:fmt_none
-exe "hi! NeomakeWarningSign"        . s:fg_yellow   .s:bg_none   .s:fmt_none
-exe "hi! NeomakeMessageSign"        . s:fg_cyan     .s:bg_none   .s:fmt_none
-exe "hi! NeomakeNeomakeInfoSign"    . s:fg_green    .s:bg_none   .s:fmt_none
+exe "hi! NeomakeErrorSign"          .s:fg_orange   .s:bg_none   .s:fmt_none
+exe "hi! NeomakeWarningSign"        .s:fg_yellow   .s:bg_none   .s:fmt_none
+exe "hi! NeomakeMessageSign"        .s:fg_cyan     .s:bg_none   .s:fmt_none
+exe "hi! NeomakeNeomakeInfoSign"    .s:fg_green    .s:bg_none   .s:fmt_none
 
 "}}}
 
 " gitgutter highlighting "{{{
 " ---------------------------------------------------------------------
-exe "hi! GitGutterAdd"              . s:fg_green    .s:bg_none  .s:fmt_none
-exe "hi! GitGutterChange"           . s:fg_yellow   .s:bg_none  .s:fmt_none
-exe "hi! GitGutterDelete"           . s:fg_red      .s:bg_none  .s:fmt_none
-exe "hi! GitGutterChangeDelete"     . s:fg_red      .s:bg_none  .s:fmt_none
+exe "hi! GitGutterAdd"              .s:fg_green    .s:bg_none  .s:fmt_none
+exe "hi! GitGutterChange"           .s:fg_yellow   .s:bg_none  .s:fmt_none
+exe "hi! GitGutterDelete"           .s:fg_red      .s:bg_none  .s:fmt_none
+exe "hi! GitGutterChangeDelete"     .s:fg_red      .s:bg_none  .s:fmt_none
 " }}}"
 
 " signify highlighting "{{{
 " ---------------------------------------------------------------------
-exe "hi! SignifySignAdd"            . s:fg_green    .s:bg_none  .s:fmt_none
-exe "hi! SignifySignChange"         . s:fg_yellow   .s:bg_none  .s:fmt_none
-exe "hi! SignifySignDelete"         . s:fg_red      .s:bg_none  .s:fmt_none
-exe "hi! SignifySignChangeDelete"   . s:fg_red      .s:bg_none  .s:fmt_none
+exe "hi! SignifySignAdd"            .s:fg_green    .s:bg_none  .s:fmt_none
+exe "hi! SignifySignChange"         .s:fg_yellow   .s:bg_none  .s:fmt_none
+exe "hi! SignifySignDelete"         .s:fg_red      .s:bg_none  .s:fmt_none
+exe "hi! SignifySignChangeDelete"   .s:fg_red      .s:bg_none  .s:fmt_none
 " }}}"
 
 " ALE highlighting "{{{
 " ---------------------------------------------------------------------
-exe "hi! ALEErrorSign"          . s:fg_orange   .s:bg_none   .s:fmt_none
-exe "hi! ALEWarningSign"        . s:fg_yellow   .s:bg_none   .s:fmt_none
+exe "hi! ALEErrorSign"          .s:fg_orange   .s:bg_none   .s:fmt_none
+exe "hi! ALEWarningSign"        .s:fg_yellow   .s:bg_none   .s:fmt_none
 " }}}"
 
 " SmoothCursor highlighting "{{{
 " ---------------------------------------------------------------------
-exe "hi! SmoothCursor"         . s:fg_magenta    .s:bg_none  .s:fmt_none
-exe "hi! SmoothCursorRed"      . s:fg_red        .s:bg_none  .s:fmt_none
-exe "hi! SmoothCursorOrange"   . s:fg_orange     .s:bg_none  .s:fmt_none
-exe "hi! SmoothCursorYellow"   . s:fg_yellow     .s:bg_none  .s:fmt_none
-exe "hi! SmoothCursorGreen"    . s:fg_green      .s:bg_none  .s:fmt_none
-exe "hi! SmoothCursorAqua"     . s:fg_cyan       .s:bg_none  .s:fmt_none
-exe "hi! SmoothCursorBlue"     . s:fg_blue       .s:bg_none  .s:fmt_none
-exe "hi! SmoothCursorPurple"   . s:fg_violet     .s:bg_none  .s:fmt_none
+exe "hi! SmoothCursor"         .s:fg_magenta    .s:bg_none  .s:fmt_none
+exe "hi! SmoothCursorRed"      .s:fg_red        .s:bg_none  .s:fmt_none
+exe "hi! SmoothCursorOrange"   .s:fg_orange     .s:bg_none  .s:fmt_none
+exe "hi! SmoothCursorYellow"   .s:fg_yellow     .s:bg_none  .s:fmt_none
+exe "hi! SmoothCursorGreen"    .s:fg_green      .s:bg_none  .s:fmt_none
+exe "hi! SmoothCursorAqua"     .s:fg_cyan       .s:bg_none  .s:fmt_none
+exe "hi! SmoothCursorBlue"     .s:fg_blue       .s:bg_none  .s:fmt_none
+exe "hi! SmoothCursorPurple"   .s:fg_violet     .s:bg_none  .s:fmt_none
 " }}}"
 
 " Gitsigns "{{{
 " ---------------------------------------------------------------------
-exe "hi! GitSignsAdd"               . s:fg_green
-exe "hi! GitSignsAddNr"             . s:fg_green
-exe "hi! GitSignsAddLn"             . s:fg_base3
-exe "hi! GitSignsAddInline"         . s:fg_base3      .s:bg_green
-exe "hi! GitSignsAddLnInline"       . s:fg_base3      .s:bg_green
-exe "hi! GitSignsChange"            . s:fg_yellow
-exe "hi! GitSignsChangeNr"          . s:fg_yellow
-exe "hi! GitSignsChangeLn"          . s:fg_base3
-exe "hi! GitSignsChangeInline"      . s:fg_base3      .s:bg_yellow
-exe "hi! GitSignsChangeLnInline"    . s:fg_base3      .s:bg_yellow
-exe "hi! GitSignsDelete"            . s:fg_red
-exe "hi! GitSignsDeletNr"           . s:fg_red
-exe "hi! GitSignsDeleteLn"          . s:fg_base3
-exe "hi! GitSignsDeleteInline"      . s:fg_base3      .s:bg_magenta
-exe "hi! GitSignsDeleteLnInline"    . s:fg_base3      .s:bg_magenta
+exe "hi! GitSignsAdd"               .s:fg_green
+exe "hi! GitSignsAddNr"             .s:fg_green
+exe "hi! GitSignsAddLn"             .s:fg_base3
+exe "hi! GitSignsAddInline"         .s:fg_base3      .s:bg_green
+exe "hi! GitSignsAddLnInline"       .s:fg_base3      .s:bg_green
+exe "hi! GitSignsChange"            .s:fg_yellow
+exe "hi! GitSignsChangeNr"          .s:fg_yellow
+exe "hi! GitSignsChangeLn"          .s:fg_base3
+exe "hi! GitSignsChangeInline"      .s:fg_base3      .s:bg_yellow
+exe "hi! GitSignsChangeLnInline"    .s:fg_base3      .s:bg_yellow
+exe "hi! GitSignsDelete"            .s:fg_red
+exe "hi! GitSignsDeletNr"           .s:fg_red
+exe "hi! GitSignsDeleteLn"          .s:fg_base3
+exe "hi! GitSignsDeleteInline"      .s:fg_base3      .s:bg_magenta
+exe "hi! GitSignsDeleteLnInline"    .s:fg_base3      .s:bg_magenta
 " }}}"
 
-" IndentLine "{{{
+" IndentBlankLine "{{{
 " ---------------------------------------------------------------------
 exe "hi! IndentBlanklineChar"                           . s:fg_base01
 hi! link IndentBlanklineSpaceChar IndentBlanklineChar
