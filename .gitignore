@@ -225,6 +225,8 @@
 .ssh/id_ed25519_github.pub
 .ssh/id_ed25519_gitlab
 .ssh/id_ed25519_gitlab.pub
+.ssh/id_ed25519_nv_shared
+.ssh/id_ed25519_nv_shared.pub
 .ssh/id_ed25519_nvidia
 .ssh/id_ed25519_nvidia.pub
 .ssh/id_rsa
@@ -261,6 +263,7 @@ Public
 Templates
 UPSC
 Videos
+ndas
 openjdk.jdk
 p4v-2019.2.1904275
 p4v.tgz
