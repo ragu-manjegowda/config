@@ -146,14 +146,14 @@ zstyle ":completion:*:commands" rehash 1
 zstyle ':autocomplete:*' default-context ''
 
 # Wait this many seconds for typing to stop, before showing completions.
-#zstyle ':autocomplete:*' min-delay 0.1  # float
+# zstyle ':autocomplete:*' min-delay 0.1  # float
 
 # Wait until this many characters have been typed, before showing completions.
 zstyle ':autocomplete:*' min-input 1  # int
 
 # '':     Always show completions.
 # '..##': Don't show completions when the input consists of two or more dots.
-zstyle ':autocomplete:*' ignored-input ';;##' # extended glob pattern
+zstyle ':autocomplete:*' ignored-input '..##' # extended glob pattern
 
 # If there are fewer than this many lines below the prompt, move the prompt up
 # to make room for showing this many lines of completions (approximately).
@@ -164,7 +164,7 @@ zstyle ':autocomplete:history-search:*' list-lines 5  # int
 
 # no:  Tab inserts the top completion.
 # yes: Tab first inserts a substring common to all listed completions, if any.
-zstyle ':autocomplete:*' insert-unambiguous yes
+# zstyle ':autocomplete:*' insert-unambiguous yes
 
 # complete-word: (Shift-)Tab inserts the top (bottom) completion.
 # menu-complete: Press again to cycle to next (previous) completion.
