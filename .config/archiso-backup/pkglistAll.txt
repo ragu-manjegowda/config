@@ -69,6 +69,7 @@ picom-git
 pkgconf
 playerctl
 pulseaudio-alsa
+pulseaudio-bluetooth
 ranger
 redshift
 refind
