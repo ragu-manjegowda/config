@@ -22,26 +22,34 @@ function M.dec_width_ind()
 end
 
 function M.config()
-    local map = vim.api.nvim_set_keymap
-    local opts = { noremap = true, silent = true }
+    local res, api = pcall(require, "nvim-tree.api")
+    if not res then
+        vim.notify("nvim-tree.api not found", vim.log.levels.ERROR)
+    else
+        local map = vim.keymap.set
+        local opts = function(desc)
+            return {
+                desc = 'nvim-tree: ' .. desc, noremap = true, silent = true
+            }
+        end
 
-    map("n", "<leader>tgr", '<cmd>lua require("nvim-tree.api").git.reload()<CR>', opts)
-    map("n", "<leader>tmn", '<cmd>lua require("nvim-tree.api").marks.navigate.next()<CR>', opts)
-    map("n", "<leader>tmp", '<cmd>lua require("nvim-tree.api").marks.navigate.prev()<CR>', opts)
-    map('n', '<leader>tt', '<cmd>lua require("nvim-tree").toggle()<CR>', opts)
+        map("n", "<leader><Tab>", api.node.open.tab, opts("open in new tab"))
+        map("n", "<leader>tgr", api.git.reload, opts("reload nvim-tree git"))
 
-    local res, nvim_tree = pcall(require, "nvim-tree")
+        map("n", "<leader>tmn", api.marks.navigate.next,
+            opts("navigate to next mark"))
+        map("n", "<leader>tmp", api.marks.navigate.prev,
+            opts("navigate to previous mark"))
+
+        map('n', '<leader>tt', api.tree.toggle, opts("toggle nvim-tree"))
+    end
+
+    local nvim_tree
+    res, nvim_tree = pcall(require, "nvim-tree")
     if not res then
         vim.notify("nvim-tree not found", vim.log.levels.ERROR)
         return
     end
-
-    local tree_cb = require "nvim-tree.config".nvim_tree_callback
-
-    local list = {
-        { key = { "<leader>v" }, cb = tree_cb("vsplit"), mode = "n" },
-        { key = { "<leader><Tab>" }, cb = tree_cb("tabnew"), mode = "n" }
-    }
 
     nvim_tree.setup {
         update_focused_file = {
@@ -65,7 +73,6 @@ function M.config()
             relativenumber = true,
             mappings = {
                 custom_only = false,
-                list = list
             }
         }
     }

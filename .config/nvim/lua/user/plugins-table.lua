@@ -298,6 +298,7 @@ local core_plugins = {
             vim.fn["firenvim#install"](0)
         end,
         config = function()
+            require("lazy").load({ plugins = "firenvim", wait = true })
             require("user.firenvim").config()
         end
     }
