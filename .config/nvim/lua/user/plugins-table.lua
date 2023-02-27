@@ -87,6 +87,16 @@ local core_plugins = {
         event = "VeryLazy"
     },
 
+    -- Extras
+    {
+        'echasnovski/mini.bracketed',
+        event = "VeryLazy",
+        config = function()
+            require('user.bracketed').config()
+        end,
+        version = false
+    },
+
     {
         "nvim-tree/nvim-tree.lua",
         dependencies = { "nvim-tree/nvim-web-devicons" },
@@ -112,16 +122,6 @@ local core_plugins = {
     { "junegunn/vim-peekaboo" },
 
     -- Indent markers
-    {
-        -- Used only for the sake of indent objects ]i, [i, ai, ii
-        'echasnovski/mini.indentscope',
-        event = "VeryLazy",
-        config = function()
-            require('user.indentscope').config()
-        end,
-        version = false
-    },
-
     {
         "lukas-reineke/indent-blankline.nvim",
         dependencies = {
