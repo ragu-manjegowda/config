@@ -10,6 +10,8 @@
 #
 # * James Fraser <wulfgar.pro@gmail.com>
 #   https://www.wulfgar.pro
+# * Ragu Manjegowda <raghavendrahm0410@gmail.com>
+#   GitHub: https://github.com/ragu-manjegowda
 # ----------------------------------------------------------------
 #
 autoload -U colors && colors
@@ -30,6 +32,7 @@ ZSH_HISTORY_FILE="${ZDOTDIR}/${ZSH_HISTORY_FILE_NAME}"
 ZSH_HISTORY_FILE_ENC_NAME="zsh_history"
 ZSH_HISTORY_FILE_ENC="${ZDOTDIR}/${ZSH_HISTORY_FILE_ENC_NAME}"
 ZSH_HISTORY_FILE_DECRYPT_NAME="zsh_history_decrypted"
+ZSH_HISTORY_MERGE_SCRIPT_NAME="merge_zsh_histories.rb"
 GIT_COMMIT_MSG="[chor] zsh history file latest $(date)"
 
 function _print_git_error_msg() {
@@ -81,7 +84,7 @@ function history_sync_pull() {
     fi
 
     # Merge
-    cat "$ZSH_HISTORY_FILE" "$ZSH_HISTORY_FILE_DECRYPT_NAME" | awk '/:[0-9]/ { if(s) { print s } s=$0 } !/:[0-9]/ { s=s"\n"$0 } END { print s }' | LC_ALL=C sort -u > "$ZSH_HISTORY_FILE"
+    ${ZDOTDIR}/${ZSH_HISTORY_MERGE_SCRIPT_NAME} "$ZSH_HISTORY_FILE" "$ZSH_HISTORY_FILE_DECRYPT_NAME" > "$ZSH_HISTORY_FILE"
     rm  "$ZSH_HISTORY_FILE_DECRYPT_NAME"
     cd  "$DIR"
 }
