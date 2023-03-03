@@ -4,7 +4,10 @@
 -------------------------------------------------------------------------------
 
 local core_plugins = {
-    { "folke/lazy.nvim", tag = "stable" },
+    {
+        "folke/lazy.nvim",
+        tag = "stable"
+    },
 
     -- cmp plugins
     {
