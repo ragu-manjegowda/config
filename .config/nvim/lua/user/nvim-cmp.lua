@@ -161,6 +161,7 @@ function M.config()
             { name = 'nvim_lsp' },
             { name = 'path' },
             { name = 'buffer' },
+            { name = 'tags' }
         }),
 
         completion = {
@@ -184,6 +185,7 @@ function M.config()
                     luasnip = '[Luasnip]',
                     path = '[Path]',
                     buffer = '[Buffer]',
+                    tags = '[tags]'
                 })[entry.source.name]
 
                 return vim_item
