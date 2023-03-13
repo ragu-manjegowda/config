@@ -17,8 +17,7 @@ function M.config()
         let g:gutentags_generate_on_missing = 1
         let g:gutentags_trace = 0
         let g:gutentags_define_advanced_commands = 1
-        " do not change focus to quickfix window after search
-        let g:gutentags_plus_switch = 0
+        let g:gutentags_plus_switch = 1
         let g:gutentags_generate_on_write = 1
         let g:gutentags_generate_on_empty_buffer = 0
         let g:gutentags_ctags_auto_set_tags = 0
@@ -41,17 +40,17 @@ function M.config()
         let g:gutentags_plus_nomap = 1
 
         " Find symbols
-        noremap <silent> <leader>gsy :GscopeFind s <C-R><C-W><cr>
+        noremap <silent> <leader>gsy :GscopeFind s <C-R><C-W><CR><C-W>T<CR>
         " Find definitions
-        noremap <silent> <leader>gd :GscopeFind g <C-R><C-W><cr>
+        noremap <silent> <leader>gd :GscopeFind g <C-R><C-W><CR><C-W>T<CR>
         " Find called by this function
-        noremap <silent> <leader>gc :GscopeFind d <C-R><C-W><cr>
+        noremap <silent> <leader>gc :GscopeFind d <C-R><C-W><CR><C-W>T<CR>
         " Find calling this function
-        noremap <silent> <leader>gC :GscopeFind c <C-R><C-W><cr>
+        noremap <silent> <leader>gC :GscopeFind c <C-R><C-W><CR><C-W>T<CR>
         " Find files including this file
-        noremap <silent> <leader>gi :GscopeFind i <C-R>=expand("<cfile>")<cr><cr>
+        noremap <silent> <leader>gi :GscopeFind i <C-R>=expand("<cfile>")<CR><CR><C-W>T<CR>
         " Find where this symbol is assigned value
-        noremap <silent> <leader>ga :GscopeFind a <C-R><C-W><cr>
+        noremap <silent> <leader>ga :GscopeFind a <C-R><C-W><CR><C-W>T<CR>
     ]]
 
     local status_ok, whichkey = pcall(require, "which-key")

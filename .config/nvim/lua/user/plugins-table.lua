@@ -16,6 +16,7 @@ local core_plugins = {
             require("user.nvim-cmp").config()
         end,
         dependencies = {
+            "quangnguyen30192/cmp-nvim-tags",
             "L3MON4D3/LuaSnip",
             "hrsh7th/cmp-buffer",
             "hrsh7th/cmp-cmdline",
@@ -35,8 +36,7 @@ local core_plugins = {
         dependencies = { "ludovicchabant/vim-gutentags" },
         config = function()
             require("user.gutentags-plus").config()
-        end,
-        event = "VeryLazy"
+        end
     },
 
     { "derekwyatt/vim-fswitch" },
