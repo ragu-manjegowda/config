@@ -36,17 +36,16 @@ local function on_attach(client, bufnr)
     buf_set_keymap('v', '<leader>lf', '<cmd>lua vim.lsp.buf.format()<CR>',
         { silent = true, desc = 'LSP range formatting' })
 
-    -- Pyright for completion, rename, type checking and
-    -- Pylsp for hover, documentation, go to definition, syntax checking
+    -- Pyright is pretty much useless, disabling most of the stuff and keeping
+    -- around for now.
     local rc = client.server_capabilities
 
     if client.name == 'pyright' then
         rc.hover = false
-    end
-
-    if client.name == 'pylsp' then
-        rc.rename = false
+        rc.definitions = false
         rc.signature_help = false
+        rc.completion = false
+        rc.rename = false
     end
 
     --protocol.SymbolKind = { }
@@ -227,10 +226,18 @@ function M.config()
     ---------------------------------------------------------------------------
     -- Python
     -- https://www.reddit.com/r/neovim/comments/sazbw6/comment/hw1s6qg/?utm_source=share&utm_medium=web2x&context=3
-    -- Pyright for completion, rename, type checking
 
     -- Set heap size to 4GB - https://github.com/microsoft/pyright/issues/3239
-    vim.env.NODE_OPTIONS = "--max-old-space-size=4096"
+    -- exclude this on macunix, we know it's 4GB, issue is mostly on Ubuntu
+    if not vim.fn.has("macunix") then
+        local cmd = "node -e 'console.log(v8.getHeapStatistics().total_available_size / 1024 / 1024)'"
+        local f = assert(io.popen(cmd, 'r'))
+        local s = assert(f:read('*a'))
+        f:close()
+        if tonumber(s) < 4096 then
+            vim.env.NODE_OPTIONS = "--max-old-space-size=4096"
+        end
+    end
 
     nvim_lsp.pyright.setup {
         on_attach = on_attach,
@@ -240,14 +247,15 @@ function M.config()
         settings = {
             python = {
                 analysis = {
-                    useLibraryCodeForTypes = true,
+                    autoImportCompletions = false,
+                    diagnosticMode = "openFilesOnly",
                     -- diagnosticSeverityOverrides = {
                     --     reportGeneralTypeIssues = "none",
                     --     reportOptionalMemberAccess = "none",
                     --     reportOptionalSubscript = "none",
                     --     reportPrivateImportUsage = "none",
                     -- },
-                    autoImportCompletions = false,
+                    useLibraryCodeForTypes = true
                 },
                 linting = { pylintEnabled = false }
             },
@@ -270,7 +278,9 @@ function M.config()
                     },
                 },
                 plugins = {
-                    jedi_completion = { enabled = false },
+                    jedi_completion = {
+                        fuzzy = true
+                    },
                     flake8 = { enabled = true },
                     pyflakes = { enabled = false },
                     pydocstyle = { enabled = true },
