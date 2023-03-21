@@ -73,6 +73,7 @@
 .config/catt
 .config/coc
 .config/compiz-1
+.config/configstore
 .config/conky
 .config/cppman
 .config/dconf
@@ -257,6 +258,7 @@ Music
 MyWiki
 NVIDIA-Linux-x86_64-430.17.run
 NVIDIA-Linux-x86_64-440.95.01.run
+NX
 NoMachine
 Perforce
 Pictures
@@ -264,6 +266,7 @@ Public
 Templates
 UPSC
 Videos
+maglev
 ndas
 openjdk.jdk
 p4v-2019.2.1904275

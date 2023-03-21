@@ -38,6 +38,9 @@ ZSH_ALIAS_FINDER_AUTOMATIC=true
 
 # Custom tab completions
 fpath=($ZSH_CUSTOM/completions $fpath)
+if type brew &>/dev/null; then
+    fpath=($(brew --prefix)/share/zsh-completions $fpath)
+fi
 
 if [ ! -d $ZDOTDIR/.zsh.cache ]; then
   mkdir $ZDOTDIR/.zsh.cache
