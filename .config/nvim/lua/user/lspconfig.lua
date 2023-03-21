@@ -271,27 +271,20 @@ function M.config()
         },
         settings = {
             pylsp = {
-                builtin = {
-                    installExtraArgs = {
-                        'flake8', 'pycodestyle', 'pydocstyle',
-                        'pyflakes', 'pylint', 'yapf'
-                    },
-                },
                 plugins = {
                     jedi_completion = {
                         fuzzy = true
                     },
                     flake8 = { enabled = true },
-                    pyflakes = { enabled = false },
-                    pydocstyle = { enabled = true },
                     pycodestyle = {
                         ignore = {
-                            'C0103', 'E226', 'E266', 'E302', 'E303',
-                            'E304', 'E305', 'E402', 'E501',
-                            'W0104', 'W0621', 'W391', 'W503', 'W504'
+                            'C0103', 'E266',
+                            'W0104', 'W391', 'W503', 'W504'
                         },
                         maxLineLength = 80
                     },
+                    pydocstyle = { enabled = true },
+                    pyflakes = { enabled = false },
                 },
             },
         },
