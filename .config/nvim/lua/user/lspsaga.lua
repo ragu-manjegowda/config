@@ -76,11 +76,13 @@ function M.config()
         { silent = true, desc = 'LSP jump to next diagnostics' })
 
     map('n', '[e',
-        "<cmd>lua require('lspsaga.diagnostic').goto_prev({ severity = vim.diagnostic.severity.ERROR })<CR>",
+        "<cmd>lua require('lspsaga.diagnostic'):goto_prev({ " ..
+            "severity = vim.diagnostic.severity.ERROR })<CR>",
         { silent = true, desc = 'LSP jump to prev error' })
 
     map('n', ']e',
-        "<cmd>lua require('lspsaga.diagnostic').goto_next({ severity = vim.diagnostic.severity.ERROR })<CR>",
+        "<cmd>lua require('lspsaga.diagnostic'):goto_next({ " ..
+            "severity = vim.diagnostic.severity.ERROR })<CR>",
         { silent = true, desc = 'LSP jump to next error' })
 
     map('i', '<C-k>', '<cmd>Lspsaga hover_doc<CR>',
