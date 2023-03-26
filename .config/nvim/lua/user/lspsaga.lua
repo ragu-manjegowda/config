@@ -85,12 +85,6 @@ function M.config()
             "severity = vim.diagnostic.severity.ERROR })<CR>",
         { silent = true, desc = 'LSP jump to next error' })
 
-    map('i', '<C-k>', '<cmd>Lspsaga hover_doc<CR>',
-        { silent = true, desc = 'LSP signature help' })
-
-    map('n', '<C-k>', '<cmd>Lspsaga hover_doc<CR>',
-        { silent = true, desc = 'LSP signature help' })
-
     map('n', '<leader>ep', '<cmd>Lspsaga show_line_diagnostics<CR>',
         { silent = true, desc = 'LSP line diagnostics' })
 

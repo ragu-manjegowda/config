@@ -188,6 +188,7 @@ local core_plugins = {
         "neovim/nvim-lspconfig",
         dependencies = {
             "p00f/clangd_extensions.nvim",
+            "ray-x/lsp_signature.nvim"
         },
         config = function()
             require("user.lspconfig").config()
