@@ -931,6 +931,11 @@ hi! link IndentBlanklineSpaceChar IndentBlanklineChar
 exe "hi! IndentBlanklineSpaceCharBlankline"             . s:fg_none
 " }}}"
 
+" LSP Signature "{{{
+" ---------------------------------------------------------------------
+exe "hi! LspSignatureActiveParameter"   .s:fg_green    .s:bg_base03
+" }}}"
+
 " NeoVim terminal buffer colours "{{{
 " ---------------------------------------------------------------------
 let g:terminal_color_0 = s:gui_base03

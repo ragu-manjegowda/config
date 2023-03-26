@@ -22,19 +22,15 @@ end
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
 local function on_attach(client, bufnr)
-
-    local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
-
-    local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
+    local map = vim.keymap.set
 
     -- Enable completion triggered by <c-x><c-o>
-    -- <c-x><c-o> is also mapped to <c-d> in options.lua
-    buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
+    -- <c-x><c-o> is also mapped to <c-d> in options.lua via wildchar
+    -- buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
+    vim.opt.omnifunc = "v:lua.vim.lsp.omnifunc"
 
-    buf_set_keymap('n', '<leader>lf', '<cmd>lua vim.lsp.buf.format()<CR>',
+    map({ 'n', 'v' }, '<leader>lf', '<cmd>lua vim.lsp.buf.format()<CR>',
         { silent = true, desc = 'LSP formatting' })
-    buf_set_keymap('v', '<leader>lf', '<cmd>lua vim.lsp.buf.format()<CR>',
-        { silent = true, desc = 'LSP range formatting' })
 
     -- Pyright is pretty much useless, disabling most of the stuff and keeping
     -- around for now.
@@ -46,6 +42,21 @@ local function on_attach(client, bufnr)
         rc.signature_help = false
         rc.completion = false
         rc.rename = false
+    end
+
+    local lsp_signature
+    res, lsp_signature = pcall(require, "lsp_signature")
+
+    if not res then
+        vim.notify("lsp_signature not found", vim.log.levels.ERROR)
+    else
+        lsp_signature.on_attach({
+            doc_lines = 0,
+        }, bufnr)
+
+        map({ 'n', 'i' }, '<C-k>',
+            '<cmd>lua require("lsp_signature").toggle_float_win()<CR>',
+            { silent = true, desc = 'Toggle LSP signature' })
     end
 
     --protocol.SymbolKind = { }
@@ -116,10 +127,10 @@ function M.config()
     local lsp_defaults = nvim_lsp.util.default_config
 
     lsp_defaults.capabilities =
-    vim.tbl_deep_extend(
-        'force',
-        lsp_defaults.capabilities,
-        cmp_nvim_lsp.default_capabilities())
+        vim.tbl_deep_extend(
+            'force',
+            lsp_defaults.capabilities,
+            cmp_nvim_lsp.default_capabilities())
 
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
