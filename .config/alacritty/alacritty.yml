@@ -192,7 +192,8 @@ selection:
 live_config_reload: true
 
 # Send ESC (\x1b) before characters when alt is pressed.
-alt_send_esc: true
+# This is always true now. To alter on macOS, use `window.option_as_alt`
+# alt_send_esc: true
 
 mouse:
   # Click settings
