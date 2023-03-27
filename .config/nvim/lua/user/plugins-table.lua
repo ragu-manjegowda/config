@@ -187,7 +187,12 @@ local core_plugins = {
     {
         "neovim/nvim-lspconfig",
         dependencies = {
-            "p00f/clangd_extensions.nvim",
+            {
+                "lvimuser/lsp-inlayhints.nvim",
+                config = function()
+                    require("lsp-inlayhints").setup()
+                end
+            },
             "ray-x/lsp_signature.nvim"
         },
         config = function()
