@@ -46,9 +46,8 @@ local function on_attach(client, bufnr)
 
     local lsp_signature
     res, lsp_signature = pcall(require, "lsp_signature")
-
     if not res then
-        vim.notify("lsp_signature not found", vim.log.levels.ERROR)
+        vim.notify("lsp_signature not found", vim.log.levels.WARN)
     else
         lsp_signature.on_attach({
             doc_lines = 0,
@@ -57,6 +56,14 @@ local function on_attach(client, bufnr)
         map({ 'n', 'i' }, '<C-k>',
             '<cmd>lua require("lsp_signature").toggle_float_win()<CR>',
             { silent = true, desc = 'Toggle LSP signature' })
+    end
+
+    local lsp_inlayhints
+    res, lsp_inlayhints = pcall(require, "lsp-inlayhints")
+    if not res then
+        vim.notify("lsp-inlayhints not found", vim.log.levels.WARN)
+    else
+        lsp_inlayhints.on_attach(client, bufnr)
     end
 
     --protocol.SymbolKind = { }
@@ -164,24 +171,10 @@ function M.config()
         table.insert(clangd_cmd, "--malloc-trim")
     end
 
-    local clangd_extensions
-    res, clangd_extensions = pcall(require, "clangd_extensions")
-    if not res then
-        vim.notify("clangd_extensions not found", vim.log.levels.ERROR)
-        return
-    end
-
-    clangd_extensions.setup {
-        server = {
-            on_attach = on_attach,
-            root_dir = nvim_lsp.util.root_pattern("compile_commands.json", ".gitignore"),
-            cmd = clangd_cmd,
-        },
-        extensions = {
-            symbol_info = {
-                border = "rounded",
-            },
-        }
+    nvim_lsp.clangd.setup {
+        on_attach = on_attach,
+        root_dir = nvim_lsp.util.root_pattern("compile_commands.json", ".gitignore"),
+        cmd = clangd_cmd
     }
 
     ---------------------------------------------------------------------------
@@ -206,6 +199,15 @@ function M.config()
                 },
                 staticcheck = true,
             },
+            hints = {
+                assignVariableTypes = true,
+                compositeLiteralFields = true,
+                compositeLiteralTypes = true,
+                constantValues = true,
+                functionTypeParameters = true,
+                parameterNames = true,
+                rangeVariableTypes = true,
+            }
         }
     }
 
@@ -224,11 +226,12 @@ function M.config()
         -- root_dir is .luacheckrc which is added for both awesome and nvim
         settings = {
             Lua = {
-                telemetry = { enable = false },
                 completion = {
                     keywordSnippet = "Both",
                     callSnippet = "Both"
                 },
+                hint = { enable = true },
+                telemetry = { enable = false }
             }
         }
     }
@@ -305,7 +308,31 @@ function M.config()
     ---------------------------------------------------------------------------
     -- Rust
     nvim_lsp.rust_analyzer.setup {
-        on_attach = on_attach
+        on_attach = on_attach,
+        settings = {
+            ["rust-analyzer"] = {
+                imports = {
+                    granularity = {
+                        group = "module",
+                    },
+                    prefix = "self",
+                },
+                cargo = {
+                    buildScripts = {
+                        enable = true,
+                    },
+                },
+                procMacro = {
+                    enable = true
+                },
+                inlayHints = {
+                    enabled = true,
+                    typeHints = {
+                        enable = true,
+                    },
+                },
+            }
+        }
     }
 
     ---------------------------------------------------------------------------
