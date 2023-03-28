@@ -51,6 +51,7 @@ local function on_attach(client, bufnr)
     else
         lsp_signature.on_attach({
             doc_lines = 0,
+            select_signature_key = "<M-n>"
         }, bufnr)
 
         map({ 'n', 'i' }, '<C-k>',
