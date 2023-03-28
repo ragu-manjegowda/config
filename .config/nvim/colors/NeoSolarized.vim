@@ -926,14 +926,15 @@ exe "hi! GitSignsDeleteLnInline"    .s:fg_base3      .s:bg_magenta
 
 " IndentBlankLine "{{{
 " ---------------------------------------------------------------------
-exe "hi! IndentBlanklineChar"                           . s:fg_base01
+exe "hi! IndentBlanklineChar"                           .s:fg_base01
 hi! link IndentBlanklineSpaceChar IndentBlanklineChar
-exe "hi! IndentBlanklineSpaceCharBlankline"             . s:fg_none
+exe "hi! IndentBlanklineSpaceCharBlankline"             .s:fg_none
 " }}}"
 
 " LSP Signature "{{{
 " ---------------------------------------------------------------------
-exe "hi! LspSignatureActiveParameter"   .s:fg_green    .s:bg_base03
+exe "hi! NormalFloat"                   .s:fg_none      .s:bg_base03
+exe "hi! LspSignatureActiveParameter"   .s:fg_base03    .s:bg_green
 " }}}"
 
 " NeoVim terminal buffer colours "{{{
