@@ -42,10 +42,11 @@ export LDFLAGS="-L$HOMEBREW_PATH/opt/python@3.8/lib:$LDFLAGS"
 export PATH="$PATH:$HOMEBREW_PATH/opt/sphinx-doc/bin"
 
 # Rust
-export CARGO_HOME="$HOME/.config/cargo"
 export RUSTUP_HOME="$HOME/.config/rustup"
 export CARGO_NAME="Ragu Manjegowda"
 export CARGO_EMAIL="raghavendrahm0410@gmail.com"
+export CARGO_HOME="$HOME/.config/cargo"
+export PATH="$PATH:$CARGO_HOME/bin"
 
 if [ -f "$BASH_DIR/bash_extras" ]; then
     source "$BASH_DIR/bash_extras"
