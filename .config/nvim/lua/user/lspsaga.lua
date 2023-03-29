@@ -66,7 +66,7 @@ function M.config()
         },
     })
 
-    local map = vim.api.nvim_set_keymap
+    local map = vim.keymap.set
 
     -- LSP
     map('n', '[d', '<cmd>Lspsaga diagnostic_jump_prev<CR>',
@@ -91,11 +91,11 @@ function M.config()
     map('n', '<leader>eP', '<cmd>Lspsaga show_cursor_diagnostics<CR>',
         { silent = true, desc = 'LSP cursor diagnostics' })
 
-    map('n', '<leader>lca', '<cmd>Lspsaga code_action<CR>',
+    map({'n', 'v' }, '<leader>lca', '<cmd>Lspsaga code_action<CR>',
         { silent = true, desc = 'LSP code action' })
 
-    map('n', '<leader>ld', '<cmd>Lspsaga lsp_finder<CR>',
-        { silent = true, desc = 'LSP implementations' })
+    map('n', '<leader>ld', '<cmd>Lspsaga goto_definition<CR>',
+        { silent = true, desc = 'LSP goto definition' })
 
     map('n', '<leader>lco', '<cmd>Lspsaga outline<CR>',
         { silent = true, desc = 'LSP code outline' })
@@ -104,7 +104,13 @@ function M.config()
         { silent = true, desc = 'LSP peek function definition' })
 
     map('n', '<leader>lr', '<cmd>Lspsaga rename<CR>',
-        { silent = true, desc = 'LSP rename' })
+        { silent = true, desc = 'LSP rename in buffer' })
+
+    map('n', '<leader>lrp', '<cmd>Lspsaga rename ++project<CR>',
+        { silent = true, desc = 'LSP rename in project' })
+
+    map('n', '<leader>lsy', '<cmd>Lspsaga lsp_finder<CR>',
+        { silent = true, desc = 'LSP find symbols' })
 end
 
 return M
