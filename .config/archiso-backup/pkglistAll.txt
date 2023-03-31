@@ -12,6 +12,7 @@ bison
 blueman
 broadcom-wl-dkms
 check-broken-packages-pacman-hook-git
+cyrus-sasl-xoauth2-git
 darkman
 docker
 efibootmgr
@@ -45,6 +46,7 @@ ly
 m4
 maim
 make
+mbsync-git
 mosh-git
 msmtp
 myxer
@@ -79,7 +81,6 @@ rofi-calc
 rofi-emoji
 rust
 rust-src
-slack-desktop
 solarized-colors-iconpack-git
 sudo
 sync-pacman-hook-git

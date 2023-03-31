@@ -170,6 +170,7 @@ source "cat $alias_file 2> /dev/null |" # only source if file exists
 
 # }}}
 
+
 # Accounts ==========================={{{
 
 # Default account
@@ -179,3 +180,10 @@ macro index,pager i1 '<sync-mailbox><enter-command>source $XDG_CONFIG_HOME/neomu
 macro index,pager i2 '<sync-mailbox><enter-command>source $XDG_CONFIG_HOME/neomutt/accounts/outlook-offline<enter><change-folder>!<enter>;<check-stats>' "switch to outlook - offline"
 
 # }}}
+
+
+# GNUPG settings to encrypt/decrypt/sign email  ============================{{{
+
+source "$XDG_CONFIG_HOME/neomutt/gpg.rc"
+
+#}}}
