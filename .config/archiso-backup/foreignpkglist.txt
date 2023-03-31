@@ -1,6 +1,7 @@
 awesome-luajit-git
 awmtt
 check-broken-packages-pacman-hook-git
+cyrus-sasl-xoauth2-git
 darkman
 find-cursor
 google-chrome
@@ -8,6 +9,7 @@ gtk-theme-numix-solarized
 light-git
 lua-pam-git
 ly
+mbsync-git
 mosh-git
 myxer
 nomachine
@@ -17,7 +19,6 @@ pacman-cleanup-hook
 paru
 picom-git
 reflector-pacman-hook-git
-slack-desktop
 solarized-colors-iconpack-git
 sync-pacman-hook-git
 teams

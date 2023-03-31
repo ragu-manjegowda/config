@@ -32,9 +32,15 @@ Channel nvidia
 Far :nvidia-remote:
 Near :nvidia-local:
 Patterns *
+# Store arrival date
+CopyArrivalDate yes
 # Automatically create missing mailboxes, both locally and on the server
 Create Both
 # Automatically delete items on both IMAP and local
 Expunge Both
+# Expire unread after extended absence
+ExpireUnread yes
 # Save the synchronization state files in the relevant directory
 SyncState *
+# Synchronization operation, never push to remote
+Sync PullNew PullDelete
