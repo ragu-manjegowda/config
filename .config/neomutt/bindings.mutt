@@ -2,6 +2,11 @@
 # Keyboard bindings for mutt.
 #
 
+###############################################################################
+## Author       : Ragu Manjegowda
+## Github       : @ragu-manjegowda
+###############################################################################
+
 bind attach,pager,index g noop
 
 # Moving around

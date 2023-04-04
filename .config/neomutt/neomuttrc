@@ -1,6 +1,11 @@
 # vim: filetype=neomuttrc
 # muttrc file for account outlook offline
 
+###############################################################################
+## Author  : Ragu Manjegowda
+## Github  : @ragu-manjegowda
+###############################################################################
+
 # General settings =========================={{{
 
 # Source stored password
@@ -120,8 +125,9 @@ set mailcap_path = "$XDG_CONFIG_HOME/neomutt/mailcap"
 
 auto_view text/calendar
 auto_view application/ics
-auto_view text/html       # view html automatically
-alternative_order text/calendar application/ics text/plain text/enriched text/html     # list html for last
+auto_view text/html
+auto_view text/plain
+alternative_order text/calendar application/ics text/html text/plain text/enriched     # list html for last
 
 # }}}
 

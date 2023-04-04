@@ -1,7 +1,11 @@
 ###############################################################################
 # Solarized Theme for Neomutt (Actual colors are defined in Alacritty config)
 #
-# @author Ragu Manjegowda <ragu.manjegowda@gmail.com>
+###############################################################################
+## Author       : Ragu Manjegowda
+## Github       : @ragu-manjegowda
+###############################################################################
+
 
 # general ------------ foreground ---- background -----------------------------
 color error		    brightred	    default

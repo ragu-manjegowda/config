@@ -1,7 +1,12 @@
+###############################################################################
+## Author       : Ragu Manjegowda
+## Github       : @ragu-manjegowda
+###############################################################################
+
 # HTML ================================={{{
 
 # text/html; elinks -dump %s -dump-charset %{charset} -force-html; nametemplate=%s.html; copiousoutput
-text/html; w3m -v -F -o display_link_number=1 -I %{charset} -T text/html -dump; copiousoutput;
+text/html; w3m -v -F -o display_link_number=1 -I %{charset} -T text/html -dump; copiousoutput
 # text/html; firefox -new-window 2> /dev/null %s &
 
 # }}}
@@ -15,14 +20,14 @@ text/plain; nvim %s
 # MS Word documents ===================={{{
 
 application/vnd.openxmlformats-officedocument.wordprocessingml.document; nvim %s; copiousoutput
-application/msword ; nvim %s ; copiousoutput
+application/msword ; nvim %s; copiousoutput
 
 # }}}
 
 # Images ==============================={{{
 
 # Save the image in .mutt/tmp/attachments/ and opens it
-image/*; sxiv -a -b %s &
+image/*; feh %s &
 
 # }}}
 
@@ -32,19 +37,16 @@ image/*; sxiv -a -b %s &
 #application/pdf; pdftohtml -q -stdout %s | w3m -T text/html; copiousoutput
 
 # See pdf with BROWSER
-application/pdf; zathura 2> /dev/null '%s';
+application/pdf; zathura 2> /dev/null '%s'
 
 # }}}
 
 
 # Calendar invites ===================== {{{
 
-# for replying
-text/calendar; ~/.config/neomutt/mutt-ical.py -i -e "rmanjegowda@nvidia.com" %s
-application/ics; ~/.config/neomutt/mutt-ical.py -i -e "rmanjegowda@nvidia.com" %s
-# for auto-view
-text/calendar; ~/.config/neomutt/mutt-ical.py -D %s; copiousoutput
-application/ics; ~/.config/neomutt/mutt-ical.py -D %s; copiousoutput
+# show calendar invites
+text/calendar; $(brew --prefix)/bin/python3 $XDG_CONFIG_HOME/neomutt/render-calendar-attachment.py %s; copiousoutput;
+application/ics; $(brew --prefix)/bin/python3 $XDG_CONFIG_HOME/neomutt/render-calendar-attachment.py %s; copiousoutput;
 
 
 # }}}
