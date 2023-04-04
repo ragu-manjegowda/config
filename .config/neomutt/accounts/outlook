@@ -1,6 +1,11 @@
 # vim: filetype=neomuttrc
 # muttrc file for account outlook offline
 
+###############################################################################
+## Author       : Ragu Manjegowda
+## Github       : @ragu-manjegowda
+###############################################################################
+
 unmailboxes *
 
 # The variables $my_username, $my_password and $my_name are stored in pass.gpg,
@@ -79,3 +84,10 @@ folder-hook "Team" "$my_indexing"
 
 set my_account = "$from (mutt-imap)"
 set status_format = "$my_account %D %?u? %u ?%?R? %R ?%?d? %d ?%?t? %t ?%?F? %F ?%?p? %p? "
+
+
+macro attach a \
+"<shell-escape>rm -vf /tmp/.mutt.ics<enter><save-entry><kill-line>\
+/tmp/.mutt.ics<enter><shell-escape>$(brew --prefix)/bin/python3 \
+$XDG_CONFIG_HOME/neomutt/mutt-ical.py \
+-e $from -i /tmp/.mutt.ics<enter>"

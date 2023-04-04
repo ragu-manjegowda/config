@@ -1,3 +1,10 @@
+# vim: filetype=neomuttrc
+
+###############################################################################
+## Author  : Ragu Manjegowda
+## Github  : @ragu-manjegowda
+###############################################################################
+
 set ts_status_format = 'mutt %m messages%?n?, %n new?'
 
 set folder_format = '%4C %t %f'

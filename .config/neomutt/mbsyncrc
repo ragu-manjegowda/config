@@ -1,3 +1,8 @@
+###############################################################################
+## Author       : Ragu Manjegowda
+## Github       : @ragu-manjegowda
+###############################################################################
+
 ## This file pulls nvidia and syncs it to a local folder
 ## passwords are stored as encrypted files in my home directory
 
