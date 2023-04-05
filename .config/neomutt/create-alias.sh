@@ -1,47 +1,28 @@
 #!/bin/bash
 
 ###############################################################################
-# Read email from stdin and identify sender address. Create an alias for that #
-#    address in the format mutt expects. Then, if no alias for that address   #
-#  exists yet, append it to the alias file. Also handles duplicate nicknames. #
-#              Inspired by this: http://wcaleb.org/blog/mutt-tips             #
+## Reference         : https://github.com/jpmenil/dotfiles/blob/master/.config/neomutt/aliases.sh
+## Modified by       : Ragu Manjegowda
+## Github            : @ragu-manjegowda
 ###############################################################################
 
-shopt -s extglob
-alias_file=~/.config/neomutt/aliases
+ALIASFILE="$HOME/.config/neomutt/aliases"
+MESSAGE=$(cat)
 
-function create_alias(){
-  local line words nickname count
+NEWALIAS=$(echo "${MESSAGE}" | grep ^"From: " | sed s/[\,\"\']//g | awk '{$1=""; if (NF == 3) {print "alias" $0;} else if (NF == 2) {print "alias" $0 $0;} else if (NF > 3) {print "alias", tolower($(NF-1))"-"tolower($2) $0;}}')
 
-  while read -ra line; do
-    # find line with "From:" filed and check if it ends with an email
-    if [[ ${line[0]} == From: && ${line[-1]} == *@*.* ]]; then
-      # remove punctuation and email suffix
-      words=("${line[@]//?(@*.*|[[:punct:]])}")
+# We never want to create some aliases
+NOALIAS_PAT="facebook|twitter|amazon|paypal|ops@exoscale.ch|noreply"
 
-      case ${#line[@]} in
-        1)   ;;
-        2|3) nickname=${words[1],,} ;;
-        *)   nickname=${words[-2],,}-${words[1],,} ;;
-      esac
-      break
-    fi
-  done
 
-  # check if nickname is set and if the email is not already present
-  if [[ -v nickname ]] && ! grep -Fqs -- "${line[-1]}" $alias_file; then
-    count=$(grep -cs "^alias $nickname\(-[[:digit:]]\+\)\? " $alias_file)
+if grep -Eq "$NOALIAS_PAT" <<< "$NEWALIAS"; then
+    :
+elif grep -Fxq "$NEWALIAS" "$ALIASFILE"; then
+    :
+else
+    echo "$NEWALIAS" >> "$ALIASFILE"
+fi
 
-    # if nickname already exist append count as suffix
-    if [[ -z $count || $count == 0 ]]; then
-      printf "%s\n" "alias $nickname ${line[*]:1}" >> $alias_file
-    else
-      printf "%s\n" "alias $nickname-$count ${line[*]:1}" >> $alias_file
-    fi
-  fi
+sort -d -i -o "$ALIASFILE" "$ALIASFILE"
 
-  tmp=$(sort -k 2,2  $alias_file) && echo "$tmp" > "$alias_file"
-}
-
-# pass stdin to create_alias and stdout
-tee >(create_alias)
+echo "${MESSAGE}"
