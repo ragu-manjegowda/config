@@ -31,6 +31,14 @@ window:
   # The value `0.0` is completely transparent and `1.0` is opaque.
   opacity: 1.0
 
+  # https://github.com/helix-editor/helix/issues/2469#issuecomment-1416845029
+  # Make `Option` key behave as `Alt` (macOS only):
+  #   - OnlyLeft
+  #   - OnlyRight
+  #   - Both
+  #   - None (default)
+  option_as_alt: Both
+
 scrolling:
   # Maximum number of lines in the scrollback buffer.
   # Specifying '0' will disable scrolling.
@@ -537,15 +545,15 @@ key_bindings:
   # For more refer -
   # https://github.com/alexherbo2/alacritty-extended-keys/blob/master/keys.yml
   # (macOS only)
-  - { key: B,              mods: Alt,                             chars: "\x1bb"           }
-  - { key: C,              mods: Alt,                             chars: "\x1bc"           }
-  - { key: F,              mods: Alt,                             chars: "\x1bf"           }
-  - { key: G,              mods: Alt,                             chars: "\x1bg"           }
-  - { key: H,              mods: Alt,                             chars: "\x1bh"           }
-  - { key: J,              mods: Alt,                             chars: "\x1bj"           }
-  - { key: K,              mods: Alt,                             chars: "\x1bk"           }
-  - { key: LBracket,       mods: Alt,                             chars: "\x1b]"           }
-  - { key: RBracket,       mods: Alt,                             chars: "\x1b["           }
+  # - { key: B,              mods: Alt,                             chars: "\x1bb"           }
+  # - { key: C,              mods: Alt,                             chars: "\x1bc"           }
+  # - { key: F,              mods: Alt,                             chars: "\x1bf"           }
+  # - { key: G,              mods: Alt,                             chars: "\x1bg"           }
+  # - { key: H,              mods: Alt,                             chars: "\x1bh"           }
+  # - { key: J,              mods: Alt,                             chars: "\x1bj"           }
+  # - { key: K,              mods: Alt,                             chars: "\x1bk"           }
+  # - { key: LBracket,       mods: Alt,                             chars: "\x1b]"           }
+  # - { key: RBracket,       mods: Alt,                             chars: "\x1b["           }
   - { key: Slash,          mods: Control,                         chars: "\x1f"            }
 
   #- { key: K,              mods: Command, mode: ~Vi|~Search, chars: "\x0c"                 }
