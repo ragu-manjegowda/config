@@ -26,8 +26,14 @@ application/msword ; nvim %s; copiousoutput
 
 # Images ==============================={{{
 
-# Save the image in .mutt/tmp/attachments/ and opens it
-image/*; feh %s &
+image/*; firefox %s &
+
+# }}}
+
+# Audio/Video ==============================={{{
+
+audio/*; mpv %s &
+video/*; mpv %s &
 
 # }}}
 
