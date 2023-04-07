@@ -161,6 +161,7 @@ function M.config()
             { name = 'nvim_lsp' },
             { name = 'path' },
             { name = 'buffer' },
+            { name = 'bazel' },
             { name = 'tags' }
         }),
 
@@ -185,6 +186,7 @@ function M.config()
                     luasnip = '[Luasnip]',
                     path = '[Path]',
                     buffer = '[Buffer]',
+                    bazel = '[Bazel]',
                     tags = '[tags]'
                 })[entry.source.name]
 
@@ -226,7 +228,8 @@ function M.config()
             cmp.setup.buffer {
                 sources = {
                     { name = 'buffer' },
-                    { name = 'path' }
+                    { name = 'path' },
+                    { name = 'bazel' }
                 }
             }
         end

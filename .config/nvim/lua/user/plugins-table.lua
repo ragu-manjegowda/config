@@ -9,6 +9,18 @@ local core_plugins = {
         tag = "stable"
     },
 
+    -- Bazel
+    {
+        "alexander-born/bazel.nvim",
+        init = function()
+            require("user.bazel").before()
+        end,
+        dependencies = {
+            "nvim-treesitter/nvim-treesitter"
+        },
+        event = "VeryLazy"
+    },
+
     -- cmp plugins
     {
         "hrsh7th/nvim-cmp",
@@ -16,7 +28,7 @@ local core_plugins = {
             require("user.nvim-cmp").config()
         end,
         dependencies = {
-            "quangnguyen30192/cmp-nvim-tags",
+            "alexander-born/cmp-bazel",
             "L3MON4D3/LuaSnip",
             "hrsh7th/cmp-buffer",
             "hrsh7th/cmp-cmdline",
@@ -26,18 +38,19 @@ local core_plugins = {
             "hrsh7th/cmp-path",
             "onsails/lspkind-nvim",
             "rafamadriz/friendly-snippets",
-            "saadparwaiz1/cmp_luasnip"
+            "saadparwaiz1/cmp_luasnip",
+            "quangnguyen30192/cmp-nvim-tags"
         }
     },
 
     -- Code Browsing
-    {
-        "skywind3000/gutentags_plus",
-        dependencies = { "ludovicchabant/vim-gutentags" },
-        config = function()
-            require("user.gutentags-plus").config()
-        end
-    },
+    -- {
+    --     "skywind3000/gutentags_plus",
+    --     dependencies = { "ludovicchabant/vim-gutentags" },
+    --     config = function()
+    --         require("user.gutentags-plus").config()
+    --     end
+    -- },
 
     { "derekwyatt/vim-fswitch" },
 
@@ -63,7 +76,8 @@ local core_plugins = {
     },
 
     -- Cursor animation
-    { "gen740/SmoothCursor.nvim",
+    {
+        "gen740/SmoothCursor.nvim",
         config = function()
             require("user.smoothcursor").config()
         end
