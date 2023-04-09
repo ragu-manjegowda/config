@@ -83,6 +83,8 @@ M.config = function()
             },
         }
     }
+
+    vim.opt["foldexpr"] = "nvim_treesitter#foldexpr()"
 end
 
 return M
