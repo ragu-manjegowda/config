@@ -648,24 +648,23 @@ hi! link gitcommitUnmergedArrow  gitcommitUnmergedFile
 "exe "hi! gitcommitOverflow"
 "exe "hi! gitcommitBlank"
 " }}}
-"
+
 " html highlighting "{{{
 " ---------------------------------------------------------------------
-exe "hi! htmlTag"           .s:fmt_none .s:fg_base01 .s:bg_none
-exe "hi! htmlEndTag"        .s:fmt_none .s:fg_base01 .s:bg_none
-exe "hi! htmlTagN"          .s:fmt_bold .s:fg_base1  .s:bg_none
-exe "hi! htmlTagName"       .s:fmt_bold .s:fg_blue   .s:bg_none
-exe "hi! htmlSpecialTagName".s:fmt_ital .s:fg_blue   .s:bg_none
-exe "hi! htmlArg"           .s:fmt_none .s:fg_base00 .s:bg_none
-exe "hi! javaScript"        .s:fmt_none .s:fg_yellow .s:bg_none
+" exe "hi! htmlTag"           .s:fmt_none .s:fg_base01 .s:bg_none
+" exe "hi! htmlEndTag"        .s:fmt_none .s:fg_base01 .s:bg_none
+" exe "hi! htmlTagN"          .s:fmt_bold .s:fg_base1  .s:bg_none
+" exe "hi! htmlTagName"       .s:fmt_bold .s:fg_blue   .s:bg_none
+" exe "hi! htmlSpecialTagName".s:fmt_ital .s:fg_blue   .s:bg_none
+" exe "hi! htmlArg"           .s:fmt_none .s:fg_base00 .s:bg_none
+" exe "hi! javaScript"        .s:fmt_none .s:fg_yellow .s:bg_none
 "}}}
 
 " perl highlighting "{{{
 " ---------------------------------------------------------------------
-exe "hi! perlHereDoc"    . s:fg_base1  .s:bg_back   .s:fmt_none
-exe "hi! perlVarPlain"   . s:fg_yellow .s:bg_back   .s:fmt_none
-exe "hi! perlStatementFileDesc". s:fg_cyan.s:bg_back.s:fmt_none
-
+" exe "hi! perlHereDoc"    . s:fg_base1  .s:bg_back   .s:fmt_none
+" exe "hi! perlVarPlain"   . s:fg_yellow .s:bg_back   .s:fmt_none
+" exe "hi! perlStatementFileDesc". s:fg_cyan.s:bg_back.s:fmt_none
 "}}}
 
 " tex highlighting "{{{
@@ -679,7 +678,7 @@ exe "hi! texRefLabel"    . s:fg_yellow .s:bg_back   .s:fmt_none
 
 " ruby highlighting "{{{
 " ---------------------------------------------------------------------
-exe "hi! rubyDefine"     . s:fg_base1  .s:bg_back   .s:fmt_bold
+" exe "hi! rubyDefine"     . s:fg_base1  .s:bg_back   .s:fmt_bold
 "rubyInclude
 "rubySharpBang
 "rubyAccess
@@ -710,39 +709,38 @@ exe "hi! rubyDefine"     . s:fg_base1  .s:bg_back   .s:fmt_bold
 " http://github.com/urso/dotrc/blob/master/vim/syntax/haskell.vim
 " ---------------------------------------------------------------------
 "
-" Treat True and False specially, see the plugin referenced above
-let hs_highlight_boolean=1
-" highlight delims, see the plugin referenced above
-let hs_highlight_delimiters=1
-
-exe "hi! cPreCondit". s:fg_orange.s:bg_none   .s:fmt_none
-
-exe "hi! VarId"    . s:fg_blue   .s:bg_none   .s:fmt_none
-exe "hi! ConId"    . s:fg_yellow .s:bg_none   .s:fmt_none
-exe "hi! hsImport" . s:fg_magenta.s:bg_none   .s:fmt_none
-exe "hi! hsString" . s:fg_base00 .s:bg_none   .s:fmt_none
-
-exe "hi! hsStructure"        . s:fg_cyan   .s:bg_none   .s:fmt_none
-exe "hi! hs_hlFunctionName"  . s:fg_blue   .s:bg_none
-exe "hi! hsStatement"        . s:fg_cyan   .s:bg_none   .s:fmt_none
-exe "hi! hsImportLabel"      . s:fg_cyan   .s:bg_none   .s:fmt_none
-exe "hi! hs_OpFunctionName"  . s:fg_yellow .s:bg_none   .s:fmt_none
-exe "hi! hs_DeclareFunction" . s:fg_orange .s:bg_none   .s:fmt_none
-exe "hi! hsVarSym"           . s:fg_cyan   .s:bg_none   .s:fmt_none
-exe "hi! hsType"             . s:fg_yellow .s:bg_none   .s:fmt_none
-exe "hi! hsTypedef"          . s:fg_cyan   .s:bg_none   .s:fmt_none
-exe "hi! hsModuleName"       . s:fg_green  .s:bg_none   .s:fmt_undr
-exe "hi! hsModuleStartLabel" . s:fg_magenta.s:bg_none   .s:fmt_none
-hi! link hsImportParams      Delimiter
-hi! link hsDelimTypeExport   Delimiter
-hi! link hsModuleStartLabel  hsStructure
-hi! link hsModuleWhereLabel  hsModuleStartLabel
-
-" following is for the haskell-conceal plugin
-" the first two items don't have an impact, but better safe
-exe "hi! hsNiceOperator"     . s:fg_cyan   .s:bg_none   .s:fmt_none
-exe "hi! hsniceoperator"     . s:fg_cyan   .s:bg_none   .s:fmt_none
-
+" " Treat True and False specially, see the plugin referenced above
+" let hs_highlight_boolean=1
+" " highlight delims, see the plugin referenced above
+" let hs_highlight_delimiters=1
+"
+" exe "hi! cPreCondit". s:fg_orange.s:bg_none   .s:fmt_none
+"
+" exe "hi! VarId"    . s:fg_blue   .s:bg_none   .s:fmt_none
+" exe "hi! ConId"    . s:fg_yellow .s:bg_none   .s:fmt_none
+" exe "hi! hsImport" . s:fg_magenta.s:bg_none   .s:fmt_none
+" exe "hi! hsString" . s:fg_base00 .s:bg_none   .s:fmt_none
+"
+" exe "hi! hsStructure"        . s:fg_cyan   .s:bg_none   .s:fmt_none
+" exe "hi! hs_hlFunctionName"  . s:fg_blue   .s:bg_none
+" exe "hi! hsStatement"        . s:fg_cyan   .s:bg_none   .s:fmt_none
+" exe "hi! hsImportLabel"      . s:fg_cyan   .s:bg_none   .s:fmt_none
+" exe "hi! hs_OpFunctionName"  . s:fg_yellow .s:bg_none   .s:fmt_none
+" exe "hi! hs_DeclareFunction" . s:fg_orange .s:bg_none   .s:fmt_none
+" exe "hi! hsVarSym"           . s:fg_cyan   .s:bg_none   .s:fmt_none
+" exe "hi! hsType"             . s:fg_yellow .s:bg_none   .s:fmt_none
+" exe "hi! hsTypedef"          . s:fg_cyan   .s:bg_none   .s:fmt_none
+" exe "hi! hsModuleName"       . s:fg_green  .s:bg_none   .s:fmt_undr
+" exe "hi! hsModuleStartLabel" . s:fg_magenta.s:bg_none   .s:fmt_none
+" hi! link hsImportParams      Delimiter
+" hi! link hsDelimTypeExport   Delimiter
+" hi! link hsModuleStartLabel  hsStructure
+" hi! link hsModuleWhereLabel  hsModuleStartLabel
+"
+" " following is for the haskell-conceal plugin
+" " the first two items don't have an impact, but better safe
+" exe "hi! hsNiceOperator"     . s:fg_cyan   .s:bg_none   .s:fmt_none
+" exe "hi! hsniceoperator"     . s:fg_cyan   .s:bg_none   .s:fmt_none
 "}}}
 
 " pandoc markdown syntax highlighting "{{{
@@ -887,16 +885,16 @@ exe "hi! GitGutterChangeDelete"     .s:fg_red      .s:bg_none  .s:fmt_none
 
 " signify highlighting "{{{
 " ---------------------------------------------------------------------
-exe "hi! SignifySignAdd"            .s:fg_green    .s:bg_none  .s:fmt_none
-exe "hi! SignifySignChange"         .s:fg_yellow   .s:bg_none  .s:fmt_none
-exe "hi! SignifySignDelete"         .s:fg_red      .s:bg_none  .s:fmt_none
-exe "hi! SignifySignChangeDelete"   .s:fg_red      .s:bg_none  .s:fmt_none
+" exe "hi! SignifySignAdd"            .s:fg_green    .s:bg_none  .s:fmt_none
+" exe "hi! SignifySignChange"         .s:fg_yellow   .s:bg_none  .s:fmt_none
+" exe "hi! SignifySignDelete"         .s:fg_red      .s:bg_none  .s:fmt_none
+" exe "hi! SignifySignChangeDelete"   .s:fg_red      .s:bg_none  .s:fmt_none
 " }}}"
 
 " ALE highlighting "{{{
 " ---------------------------------------------------------------------
-exe "hi! ALEErrorSign"          .s:fg_orange   .s:bg_none   .s:fmt_none
-exe "hi! ALEWarningSign"        .s:fg_yellow   .s:bg_none   .s:fmt_none
+" exe "hi! ALEErrorSign"          .s:fg_orange   .s:bg_none   .s:fmt_none
+" exe "hi! ALEWarningSign"        .s:fg_yellow   .s:bg_none   .s:fmt_none
 " }}}"
 
 " SmoothCursor highlighting "{{{
@@ -916,18 +914,18 @@ exe "hi! SmoothCursorPurple"   .s:fg_violet     .s:bg_none  .s:fmt_none
 exe "hi! GitSignsAdd"               .s:fg_green
 exe "hi! GitSignsAddNr"             .s:fg_green
 exe "hi! GitSignsAddLn"             .s:fg_base3
-exe "hi! GitSignsAddInline"         .s:fg_base3      .s:bg_green
-exe "hi! GitSignsAddLnInline"       .s:fg_base3      .s:bg_green
+exe "hi! GitSignsAddInline"         .s:fmt_undb     .s:bg_base02
+exe "hi! GitSignsAddLnInline"       .s:fmt_undb     .s:bg_base02
 exe "hi! GitSignsChange"            .s:fg_yellow
 exe "hi! GitSignsChangeNr"          .s:fg_yellow
 exe "hi! GitSignsChangeLn"          .s:fg_base3
-exe "hi! GitSignsChangeInline"      .s:fg_base3      .s:bg_yellow
-exe "hi! GitSignsChangeLnInline"    .s:fg_base3      .s:bg_yellow
+exe "hi! GitSignsChangeInline"      .s:fmt_undb     .s:bg_base02
+exe "hi! GitSignsChangeLnInline"    .s:fmt_undb     .s:bg_base02
 exe "hi! GitSignsDelete"            .s:fg_red
 exe "hi! GitSignsDeletNr"           .s:fg_red
 exe "hi! GitSignsDeleteLn"          .s:fg_base3
-exe "hi! GitSignsDeleteInline"      .s:fg_base3      .s:bg_magenta
-exe "hi! GitSignsDeleteLnInline"    .s:fg_base3      .s:bg_magenta
+exe "hi! GitSignsDeleteInline"      .s:fmt_undb     .s:bg_base02
+exe "hi! GitSignsDeleteLnInline"    .s:fmt_undb     .s:bg_base02
 " }}}"
 
 " IndentBlankLine "{{{

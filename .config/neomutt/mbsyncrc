@@ -19,7 +19,7 @@ User rmanjegowda@nvidia.com
 # I've now installed the package oauth2ms from https://github.com/harishkrupo/oauth2ms locally
 #PassCmd "/home/linuxbrew/.linuxbrew/bin/python3 /home/ragu/Documents/oauth2ms/oauth2ms"
 PassCmd "$XDG_CONFIG_HOME/neomutt/mutt_oauth2.py $XDG_CONFIG_HOME/neomutt/TOKEN_FILENAME"
-SSLType IMAPS
+TLSType IMAPS
 AuthMechs XOAUTH2
 Timeout 120
 PipelineDepth 50
