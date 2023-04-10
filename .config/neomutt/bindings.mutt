@@ -87,7 +87,11 @@ macro index \cr "<tag-pattern>.<enter><tag-prefix><clear-flag>N<untag-pattern>.<
 macro pager \cr "<tag-pattern>.<enter><tag-prefix><clear-flag>N<untag-pattern>.<enter>"
 macro index,pager,generic <F5> "<redraw-screen>"
 
-macro index,pager Mi ";<save-message>=INBOX<enter>" "move mail to inbox"
+# [m]ove a mail to another folder
+bind index,pager m noop # unbind m first so that it doesn't conflict
+macro index,pager mi ";<save-message>=INBOX<enter>" "move mail to inbox"
+macro pager mf "<save-message>?<toggle-mailboxes>" "move to..."
+macro index mf "<tag-prefix><save-message>?<toggle-mailboxes>" "move to..."
 
 # Open attachment with
 macro attach O \
@@ -106,3 +110,9 @@ macro attach of \
 <save-entry><kill-line>/tmp/mutt-attach<enter>\
 <shell-escape> firefox -new-window 2> /dev/null /tmp/mutt-attach &<enter>\
 " "Open attachment with firefox"
+
+macro attach a \
+"<shell-escape>rm -vf /tmp/.mutt.ics<enter><save-entry><kill-line>\
+/tmp/.mutt.ics<enter><shell-escape>$(brew --prefix)/bin/python3 \
+$XDG_CONFIG_HOME/neomutt/mutt-ical.py \
+-e $from -i /tmp/.mutt.ics<enter>"

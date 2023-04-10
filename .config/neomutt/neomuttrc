@@ -151,12 +151,12 @@ source "$XDG_CONFIG_HOME/neomutt/styles.muttrc"
 # Sidebar for neomutt
 set sidebar_visible = yes
 set sidebar_width = 25
-set sidebar_short_path = yes
-set sidebar_next_new_wrap = yes
 set mail_check_stats
-set sidebar_component_depth = 5
+set sidebar_short_path = yes
+set sidebar_delim_chars="/"
 set sidebar_folder_indent = yes
 set sidebar_indent_string = '  ' # Two spaces
+set sidebar_next_new_wrap = yes
 
 #}}}
 

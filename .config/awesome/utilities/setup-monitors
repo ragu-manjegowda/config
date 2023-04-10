@@ -7,11 +7,13 @@
 xrandr --dpi 144
 
 # set up high DPI monitor
-xrandr --output eDP-1 --mode 2560x1440 --pos 0x0
+xrandr --output eDP1 --mode 2560x1440 --pos 0x0
 
 # Following fixes low res monitor cursor and resolution issue
 
 # xrandr --output HDMI-1 --mode 1920x1080 --right-of eDP-1 --scale 1.5x1.5
+
+# xrandr --output DP2 --mode 1920x1080 --right-of eDP1 --scale 1.5x1.5
 
 # xrandr --output DP-2 --mode 1920x1080 --pos 2048x0 --scale 2x2
 
