@@ -19,7 +19,6 @@ set header_cache = $XDG_CONFIG_HOME/neomutt/account.$my_user.outlook/cache/heade
 set message_cachedir = $XDG_CONFIG_HOME/neomutt/account.$my_user.outlook/cache/bodies
 set mbox_type = Maildir
 
-macro index o "<shell-escape>mbsync -V -c ~/.config/neomutt/mbsyncrc nvidia<enter>" "run mbsync to sync nvidia"
 unmailboxes *
 
 set spoolfile = "+Inbox"
@@ -29,21 +28,24 @@ set trash = "+Deleted Items"
 
 # To list all the mailboxes
 # mbsync -Vl -c ~/.config/neomutt/mbsyncrc nvidia
-named-mailboxes "   Inbox" +Inbox
-named-mailboxes "   Drafts" +Drafts
-named-mailboxes "   Sent Items" +"Sent Items"
-named-mailboxes "   Deleted Items" +"Deleted Items"
-mailboxes +"Archive" +"HR" +"HR/Approvals" +"HR/Benefits and Tax" +"HR/Car"
-mailboxes +"HR/Immigration " +"HR/*NEW HIRE INFO*" +"HR/Personal" +"HR/Purchase"
-mailboxes +"Junk Email" +"Outbox" +"Sent Items" +"Team" +"Team/AI Infra"
-mailboxes +"Team/Autosar" +"Team/Bazel" +"Team/Bugs " +"Team/Camera"
-mailboxes +"Team/Codecs" +"Team/Garage" +"Team/GVS" +"Team/IMU"
-mailboxes +"Team/IMU/Plugin" +"Team/LiDAR" +"Team/LiDAR/Cepton"
-mailboxes +"Team/LiDAR/Hesai" +"Team/LiDAR/Luminar" +"Team/LiDAR/Luminar/Iris"
-mailboxes +"Team/LiDAR/Ouster" +"Team/LiDAR/Velodyne" +"Team/MB" +"Team/Misc"
-mailboxes +"Team/Monorepo" +"Team/Platform" +"Team/Radar"
-mailboxes +"Team/Radar/Conti ARS430" +"Team/Recorder"
-mailboxes +"Team/Recorder/Perf with Drivehub" +"Team/Recorder/SATA3" +"Team/Release" +"Team/Release/DW4.0" +"Team/Release/DW5.x" +"Team/Sensor Auth" +"Team/Time Sensor" +"Team/USS" +"Team/VAL" +"Team/VT" +"Team/Weekly Status" +"Trash"
+named-mailboxes "   Inbox" =Inbox
+named-mailboxes "   Drafts" =Drafts
+named-mailboxes "   Sent Items" ="Sent Items"
+named-mailboxes "   Deleted Items" ="Deleted Items"
+mailboxes ="Archive" ="HR" ="HR/Approvals" ="HR/Benefits and Tax" ="HR/Car"
+mailboxes ="HR/Immigration " ="HR/*NEW HIRE INFO*" ="HR/Personal" ="HR/Purchase"
+mailboxes ="Junk Email" ="Outbox" ="Sent Items" ="Team" ="Team/AI Infra"
+mailboxes ="Team/Autosar" ="Team/Bazel" ="Team/Bugs " ="Team/Camera"
+mailboxes ="Team/Codecs" ="Team/Garage" ="Team/GVS" ="Team/IMU"
+mailboxes ="Team/IMU/Plugin" ="Team/LiDAR" ="Team/LiDAR/Cepton"
+mailboxes ="Team/LiDAR/Hesai" ="Team/LiDAR/Luminar" ="Team/LiDAR/Luminar/Iris"
+mailboxes ="Team/LiDAR/Ouster" ="Team/LiDAR/Velodyne" ="Team/MB" ="Team/Misc"
+mailboxes ="Team/Monorepo" ="Team/Platform" ="Team/Radar"
+mailboxes ="Team/Radar/Conti ARS430" ="Team/Recorder"
+mailboxes ="Team/Recorder/Perf with Drivehub" ="Team/Recorder/SATA3"
+mailboxes ="Team/Release" ="Team/Release/DW4.0" ="Team/Release/DW5.x"
+mailboxes ="Team/Sensor Auth" ="Team/Time Sensor" ="Team/USS" ="Team/VAL"
+mailboxes ="Team/VT" ="Team/Weekly Status" ="Trash"
 
 index-format-hook attachment_info '~M text/calendar ~X > 0' ' '
 index-format-hook attachment_info '~M text/calendar' "  "
@@ -51,9 +53,9 @@ index-format-hook attachment_info '~X > 0' "  "
 index-format-hook attachment_info '~A' "   "
 
 # Do not group threads and search through messages for attachment_info
-set my_indexing = 'set index_format=" %4C %zc %zs %zt  | %-35.35L   %?M10?~(%1M) ?%-30.50s %> %?Y?%Y ? %(!%a %d %h %H:%M)'
+set my_indexing = 'set index_format=" %4C %zc %zs %zt  | %-35.35L   %?M10?~(%1M) ?%-30.50s %> %?Y?%Y ? %(!%a %d %h %H:%M)"'
 
-folder-hook Inbox 'set index_format=" %4C %zc %zs %zt  | %-35.35L   %@attachment_info@  %?M10?~(%1M) ?%-30.50s %> %?Y?%Y ? %(!%a %d %h %H:%M)'
+folder-hook Inbox 'set index_format=" %4C %zc %zs %zt  | %-35.35L   %@attachment_info@  %?M10?~(%1M) ?%-30.50s %> %?Y?%Y ? %(!%a %d %h %H:%M)"'
 
 folder-hook "Junk Email" "$my_indexing"
 folder-hook "Drafts" "$my_indexing"
@@ -66,8 +68,4 @@ folder-hook "Team" "$my_indexing"
 set my_account = "$from (mbsync-imap)"
 set status_format = "$my_account %D %?u? %u ?%?R? %R ?%?d? %d ?%?t? %t ?%?F? %F ?%?p? %p? "
 
-macro attach a \
-"<shell-escape>rm -vf /tmp/.mutt.ics<enter><save-entry><kill-line>\
-/tmp/.mutt.ics<enter><shell-escape>$(brew --prefix)/bin/python3 \
-$XDG_CONFIG_HOME/neomutt/mutt-ical.py \
--e $from -i /tmp/.mutt.ics<enter>"
+macro index o "<shell-escape>mbsync -V -c ~/.config/neomutt/mbsyncrc nvidia<enter>" "run mbsync to sync nvidia"
