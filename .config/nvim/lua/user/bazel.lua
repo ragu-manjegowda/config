@@ -11,6 +11,8 @@ local M = {}
 function M.before()
     vim.g.bazel_config = vim.g.bazel_config or ""
 
+    vim.g.bazel_cmd = "dazel"
+
     vim.cmd([[
         set errorformat=ERROR:\ %f:%l:%c:%m
         set errorformat+=%f:%l:%c:%m
