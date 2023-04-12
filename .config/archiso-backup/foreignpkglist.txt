@@ -11,6 +11,7 @@ lua-pam-git
 ly
 mbsync-git
 mosh-git
+mu
 myxer
 nomachine
 numix-cursor-theme
@@ -23,6 +24,7 @@ solarized-colors-iconpack-git
 sync-pacman-hook-git
 teams
 timeshift
+vdhcoapp
 w3m-imgcat
 xidlehook
 zoom
