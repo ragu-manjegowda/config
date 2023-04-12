@@ -523,7 +523,7 @@ PREFIX_BIND_OPTS3=",ctrl-w:toggle-preview-wrap,ctrl-f:jump"
 PREFIX_BIND_OPTS4=",ctrl-u:preview-top,ctrl-d:preview-bottom"
 PREFIX_BIND_OPTS="$PREFIX_BIND_OPTS1$PREFIX_BIND_OPTS2$PREFIX_BIND_OPTS3$PREFIX_BIND_OPTS4"
 
-function "${FZF_PREFIX}gg" () {
+function "${FZF_PREFIX}gt" () {
   config -c color.status=always status --short |
   fzf -m --ansi --nth 2..,.. \
     --preview '(git --git-dir=$HOME/.config.git/ --work-tree=$HOME diff \
@@ -532,7 +532,7 @@ function "${FZF_PREFIX}gg" () {
   cut -c4- | sed 's/.* -> //'
 }
 
-function "${FZF_PREFIX}gh" () {
+function "${FZF_PREFIX}gn" () {
   is_in_git_repo || return
   git -c color.status=always status --short |
   fzf -m --ansi --nth 2..,.. \
@@ -559,7 +559,7 @@ bind-git-helper() {
   done
 }
 
-bind-git-helper g h
+bind-git-helper t n
 unset -f bind-git-helper
 
 ###############################################################################
