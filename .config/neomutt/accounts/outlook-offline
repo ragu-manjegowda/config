@@ -32,11 +32,15 @@ named-mailboxes "   Inbox" =Inbox
 named-mailboxes "   Drafts" =Drafts
 named-mailboxes "   Sent Items" ="Sent Items"
 named-mailboxes "   Deleted Items" ="Deleted Items"
-mailboxes ="Archive" ="HR" ="HR/Approvals" ="HR/Benefits and Tax" ="HR/Car"
+mailboxes ="Archive" ="Calendar" ="Contacts" ="HR" ="HR/Approvals"
+mailboxes ="HR/Benefits and Tax" ="HR/Car"
 mailboxes ="HR/Immigration " ="HR/*NEW HIRE INFO*" ="HR/Personal" ="HR/Purchase"
 mailboxes ="Junk Email" ="Outbox" ="Sent Items" ="Team" ="Team/AI Infra"
+mailboxes ="Team/AI Infra/Maglev-Alpha" ="Team/AI Infra/Maglev-Alpha/AEB-FP"
+mailboxes ="Team/AI Infra/Maglev-Alpha/Dataset-Manager"
+mailboxes ="Team/AI Infra/Maglev-Alpha/Remote-dev"
 mailboxes ="Team/Autosar" ="Team/Bazel" ="Team/Bugs " ="Team/Camera"
-mailboxes ="Team/Codecs" ="Team/Garage" ="Team/GVS" ="Team/IMU"
+mailboxes ="Team/Codecs" ="Team/Garage" ="Team/GPS" ="Team/GVS" ="Team/IMU"
 mailboxes ="Team/IMU/Plugin" ="Team/LiDAR" ="Team/LiDAR/Cepton"
 mailboxes ="Team/LiDAR/Hesai" ="Team/LiDAR/Luminar" ="Team/LiDAR/Luminar/Iris"
 mailboxes ="Team/LiDAR/Ouster" ="Team/LiDAR/Velodyne" ="Team/MB" ="Team/Misc"
@@ -68,4 +72,11 @@ folder-hook "Team" "$my_indexing"
 set my_account = "$from (mbsync-imap)"
 set status_format = "$my_account %D %?u? %u ?%?R? %R ?%?d? %d ?%?t? %t ?%?F? %F ?%?p? %p? "
 
-macro index o "<shell-escape>mbsync -V -c ~/.config/neomutt/mbsyncrc nvidia<enter>" "run mbsync to sync nvidia"
+macro index o "<shell-escape>mbsync -V -c ~/.config/neomutt/mbsyncrc nvidia<enter> \
+<shell-escape>mu index<enter>" \
+"run mbsync to sync nvidia"
+
+macro index \\ "<enter-command>unset wait_key<enter>\
+<shell-escape>$XDG_CONFIG_HOME/neomutt/mu-search.sh maildir:/nvidia<enter>\
+<change-folder-readonly>$XDG_CACHE_HOME/mu/search_results<enter>"
+"search mails in all folder (using mu)"

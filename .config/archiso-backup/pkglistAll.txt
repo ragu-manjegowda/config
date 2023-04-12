@@ -49,6 +49,7 @@ make
 mbsync-git
 mosh-git
 msmtp
+mu
 myxer
 neomutt
 neovim
@@ -92,6 +93,7 @@ ttf-dejavu
 ttf-hack-nerd
 upower
 urlscan
+vdhcoapp
 w3m
 w3m-imgcat
 webkit2gtk
