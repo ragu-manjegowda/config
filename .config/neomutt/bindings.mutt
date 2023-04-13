@@ -92,6 +92,7 @@ bind index,pager m noop # unbind m first so that it doesn't conflict
 macro index,pager mi ";<save-message>=INBOX<enter>" "move mail to inbox"
 macro pager mf "<save-message>?<toggle-mailboxes>" "move to..."
 macro index mf "<tag-prefix><save-message>?<toggle-mailboxes>" "move to..."
+macro index,pager c "<mail>" "compose new mail"
 
 # Open attachment with
 macro attach O \
