@@ -48,4 +48,4 @@ ExpireUnread yes
 # Save the synchronization state files in the relevant directory
 SyncState *
 # Synchronization operation, never push to remote
-Sync PullNew PullDelete
+Sync PullNew PullGone

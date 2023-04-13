@@ -51,7 +51,7 @@ local client_focused = nil
 local uname_text = wibox.widget {
     id = 'uname_text',
     markup = '$USER',
-    font = 'Hack Nerd Bold 14',
+    font = 'Hack Nerd Bold 18',
     align = 'center',
     valign = 'center',
     widget = wibox.widget.textbox
@@ -60,7 +60,7 @@ local uname_text = wibox.widget {
 local caps_text = wibox.widget {
     id = 'uname_text',
     markup = 'Caps Lock is on',
-    font = 'Hack Nerd Italic 12',
+    font = 'Hack Nerd Italic 18',
     align = 'center',
     valign = 'center',
     opacity = 0.0,
@@ -83,13 +83,13 @@ local profile_imagebox = wibox.widget {
     widget = wibox.widget.imagebox
 }
 
-local clock_format = '<span font="Hack Nerd Bold 52">%H:%M</span>'
+local clock_format = '<span font="Hack Nerd Bold 26">%A %B %d, %H:%M</span>'
 if not locker_config.military_clock then
-    clock_format = '<span font="Hack Nerd Bold 52">%I:%M %p</span>'
+    clock_format = '<span font="Hack Nerd Bold 26">%A %B %d, %I:%M %p</span>'
 end
 
 -- Create clock widget
-local time = wibox.widget.textclock(clock_format, 1)
+local time = wibox.widget.textclock(clock_format, 60)
 
 local wanted_text = wibox.widget {
     markup = 'INTRUDER ALERT!',
@@ -130,45 +130,6 @@ local wanted_image = wibox.widget {
     clip_shape    = gears.shape.rounded_rect,
     widget        = wibox.widget.imagebox
 }
-
-local date_value = function()
-    local ordinal = nil
-    local date = os.date('%d')
-    local day = os.date('%A')
-    local month = os.date('%B')
-
-    ---@diagnostic disable-next-line: param-type-mismatch
-    local first_digit = string.sub(date, 0, 1)
-    ---@diagnostic disable-next-line: param-type-mismatch
-    local last_digit = string.sub(date, -1)
-    if first_digit == '0' then
-        date = last_digit
-    end
-
-    if last_digit == '1' and date ~= '11' then
-        ordinal = 'st'
-    elseif last_digit == '2' and date ~= '12' then
-        ordinal = 'nd'
-    elseif last_digit == '3' and date ~= '13' then
-        ordinal = 'rd'
-    else
-        ordinal = 'th'
-    end
-
-    return date .. ordinal .. ' of ' .. month .. ', ' .. day
-end
-
-local date_today = wibox.widget {
-    markup = date_value(),
-    font = 'Hack Nerd Bold 20',
-    align = 'center',
-    valign = 'center',
-    widget = wibox.widget.textbox
-}
-
-local update_date_text = function()
-    date_today.markup = date_value()
-end
 
 local circle_container = wibox.widget {
     bg = beautiful.transparent,
@@ -211,7 +172,6 @@ local arc_color = { red, green, yellow, blue }
 
 -- Processes
 local locker = function(s)
-
     local lockscreen = wibox {
         screen = s,
         visible = false,
@@ -325,7 +285,6 @@ local locker = function(s)
 
     -- Rotate the color arc on random direction
     local locker_arc_rotate = function()
-
         local direction = rotation_direction[math.random(#rotation_direction)]
         local color = arc_color[math.random(#arc_color)]
 
@@ -550,7 +509,6 @@ local locker = function(s)
                 end
                 input_password = input_password .. key
             end
-
         end,
         keyreleased_callback = function(self, _, key, _)
             locker_arc.bg = beautiful.transparent
@@ -621,17 +579,6 @@ local locker = function(s)
                         },
                         nil
                     },
-                    {
-                        layout = wibox.layout.align.horizontal,
-                        expand = 'none',
-                        nil,
-                        {
-                            bg     = beautiful.bg_normal,
-                            widget = wibox.container.background,
-                            date_today,
-                        },
-                        nil
-                    },
                     spacing = dpi(10),
                     expand = 'none',
                     layout = wibox.layout.fixed.vertical
@@ -674,10 +621,6 @@ local locker = function(s)
     awesome.connect_signal(
         'module::sleep_resumed',
         function()
-            -- Force update date widget
-            update_date_text()
-            date_today:emit_signal('widget::redraw_needed')
-
             awesome.emit_signal('module::spawn_apps')
             awesome.emit_signal('module::change_wallpaper')
             awesome.emit_signal('module::change_background_wallpaper')

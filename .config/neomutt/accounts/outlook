@@ -33,6 +33,9 @@ set spoolfile = "+Inbox"
 set postponed = "+Drafts"
 set trash = "+Deleted Items"
 
+# Do not mark unread mail as old
+set mark_old=no
+
 # Store message headers locally to speed things up
 # If hcache is a folder, Mutt will create sub cache folders for each account which may speeds things up even more
 set header_cache = $XDG_CONFIG_HOME/neomutt/account.$my_user.outlook/cache/headers
