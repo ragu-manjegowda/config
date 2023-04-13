@@ -33,7 +33,12 @@ set imap_keepalive = 900
 
 # Don't ask to confirm the recipient and the subject when reply to an e-mail
 # set fast_reply=yes
+
+# Include copy of original message in reply
 set include=yes
+
+# Let the user edit the headers while composing
+set edit_headers
 
 # always show X number of mails in the index
 set pager_index_lines = 10
@@ -57,9 +62,6 @@ set smart_wrap
 
 # Don't insert '+' character for wrapped lines
 unset markers
-
-# Do not mark unread mail as old
-set mark_old=no
 
 # Pad blank lines in pager with ~ (ala vi)
 set tilde

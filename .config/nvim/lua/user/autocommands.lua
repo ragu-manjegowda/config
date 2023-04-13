@@ -31,6 +31,7 @@ function! DisableLineBreak()
         set nolist  " list disables linebreak
         set textwidth=0
         set wrapmargin=0
+        set comments+=nb:>
         set fo-=t
     endif
 endfun
