@@ -133,6 +133,19 @@ function M.config()
         return
     end
 
+    local lsp_inlayhints
+    res, lsp_inlayhints = pcall(require, "lsp-inlayhints")
+    if not res then
+        vim.notify("lsp-inlayhints not found", vim.log.levels.WARN)
+    else
+        vim.api.nvim_create_user_command(
+            'InlayHintsToggle',
+            function()
+                lsp_inlayhints.toggle()
+            end, {}
+        )
+    end
+
     local lsp_defaults = nvim_lsp.util.default_config
 
     lsp_defaults.capabilities =

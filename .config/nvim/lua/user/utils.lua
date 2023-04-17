@@ -117,4 +117,13 @@ vim.api.nvim_create_autocmd(events, {
     end,
 })
 
+vim.api.nvim_create_autocmd('DirChanged', {
+    pattern = "auto", -- trigger on autochdir
+    callback = function(_)
+        current_root_dir = vim.fn.getcwd()
+        -- set session directory
+        set_session_directory()
+    end,
+})
+
 return M

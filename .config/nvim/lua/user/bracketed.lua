@@ -24,6 +24,17 @@ function M.config()
         window = { suffix = '' },
         yank = { suffix = '' }
     })
+
+    vim.api.nvim_create_user_command(
+        'MiniIndentscopeToggle',
+        function()
+            if vim.g.minibracketed_disable then
+                vim.g.minibracketed_disable = false
+            else
+                vim.g.minibracketed_disable = true
+            end
+        end, {}
+    )
 end
 
 return M
