@@ -181,11 +181,19 @@ source "cat $alias_file 2> /dev/null |" # only source if file exists
 # Accounts ==========================={{{
 
 # Default account
-source $XDG_CONFIG_HOME/neomutt/accounts/outlook
+source $XDG_CONFIG_HOME/neomutt/accounts/work/outlook
 
-macro index,pager i1 '<sync-mailbox><enter-command>source $XDG_CONFIG_HOME/neomutt/accounts/outlook<enter><change-folder>!<enter>;<check-stats>' "switch to outlook - online"
-macro index,pager i2 '<sync-mailbox><enter-command>source $XDG_CONFIG_HOME/neomutt/accounts/outlook-offline<enter><change-folder>!<enter>;<check-stats>' "switch to outlook - offline"
-macro index,pager i3 '<sync-mailbox><enter-command>source $XDG_CONFIG_HOME/neomutt/accounts/raghudarshan<enter><change-folder>!<enter>;<check-stats>' "switch to raghu-darshan - online"
+macro index,pager i1 '<sync-mailbox><enter-command>source \
+    $XDG_CONFIG_HOME/neomutt/accounts/work/outlook<enter>\
+    <change-folder>!<enter>;<check-stats>' "switch to outlook - online"
+
+macro index,pager i2 '<sync-mailbox><enter-command>source \
+    $XDG_CONFIG_HOME/neomutt/accounts/work/outlook-offline<enter>\
+    <change-folder>!<enter>;<check-stats>' "switch to outlook - offline"
+
+macro index,pager i3 '<sync-mailbox><enter-command>source \
+    $XDG_CONFIG_HOME/neomutt/accounts/personal/raghudarshan<enter>\
+    <change-folder>!<enter>;<check-stats>' "switch to raghu-darshan - online"
 
 # }}}
 

@@ -14,7 +14,7 @@ IMAPAccount nvidia
 # Address to connect to
 Host outlook.office365.com
 User rmanjegowda@nvidia.com
-PassCmd "$XDG_CONFIG_HOME/neomutt/mutt_oauth2_outlook.py $XDG_CONFIG_HOME/neomutt/TOKEN_FILENAME_outlook"
+PassCmd "$XDG_CONFIG_HOME/neomutt/accounts/work/mutt_oauth2_outlook.py $XDG_CONFIG_HOME/neomutt/accounts/work/TOKEN_FILENAME_outlook"
 TLSType IMAPS
 AuthMechs XOAUTH2
 Timeout 120
