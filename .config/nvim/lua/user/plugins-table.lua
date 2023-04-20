@@ -119,8 +119,7 @@ local core_plugins = {
         dependencies = { "nvim-tree/nvim-web-devicons" },
         config = function()
             require("user.nvim-tree").config()
-        end,
-        event = "VeryLazy"
+        end
     },
 
     { "itchyny/vim-cursorword" },

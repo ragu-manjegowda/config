@@ -51,6 +51,9 @@ function M.config()
         return
     end
 
+    vim.g.loaded_netrw = 1
+    vim.g.loaded_netrwPlugin = 1
+
     nvim_tree.setup {
         update_focused_file = {
             -- enables the feature
