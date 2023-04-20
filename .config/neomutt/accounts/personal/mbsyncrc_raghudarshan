@@ -14,7 +14,7 @@ IMAPAccount raghudarshan
 # Address to connect to
 Host imap.gmail.com
 User raghu.darshan@gmail.com
-PassCmd "$XDG_CONFIG_HOME/neomutt/mutt_oauth2_raghudarshan.py $XDG_CONFIG_HOME/neomutt/TOKEN_FILENAME_raghudarshan"
+PassCmd "$XDG_CONFIG_HOME/neomutt/accounts/personal/mutt_oauth2_raghudarshan.py $XDG_CONFIG_HOME/neomutt/accounts/personal/TOKEN_FILENAME_raghudarshan"
 TLSType IMAPS
 AuthMechs XOAUTH2
 Timeout 120

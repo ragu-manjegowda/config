@@ -2,7 +2,7 @@ defaults
 auth	on
 tls	on
 tls_trust_file	/etc/ssl/certs/ca-certificates.crt
-logfile ~/.config/neomutt/msmtp.log
+logfile ~/.config/neomutt/accounts/work/msmtp.log
 
 #### account 1 ------------------------------------
 account nvidia
@@ -11,5 +11,5 @@ port 587
 from rmanjegowda@nvidia.com
 user rmanjegowda@nvidia.com
 auth xoauth2
-passwordeval "$XDG_CONFIG_HOME/neomutt/mutt_oauth2_outlook.py $XDG_CONFIG_HOME/neomutt/TOKEN_FILENAME_outlook"
+passwordeval "$XDG_CONFIG_HOME/neomutt/accounts/work/mutt_oauth2_outlook.py $XDG_CONFIG_HOME/neomutt/accounts/work/TOKEN_FILENAME_outlook"
 
