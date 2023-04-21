@@ -87,21 +87,6 @@ command! QFSort call s:SortUniqQFList()
 
 vim.api.nvim_create_augroup("bufcheck", { clear = true })
 
--- Disable line breaks for file type mail
-vim.api.nvim_create_autocmd(
-    { "FileType" },
-    {
-        group    = "bufcheck",
-        pattern  = { "mail" },
-        callback = function()
-            vim.cmd [[
-                set comments+=nb:>
-                set fo+=w
-            ]]
-        end
-    }
-)
-
 -- add keymap for QuickFix list
 vim.api.nvim_create_autocmd(
     { "FileType" },
