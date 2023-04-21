@@ -137,4 +137,4 @@ keymap("x", "<A-k>", ":move '<-2<CR>gv-gv", opts)
 -------------------------------------------------------------------------------
 
 -- Terminal exit insert mode
-keymap("t", "<leader><C-c>", "<C-\\><C-n>", opts)
+keymap("t", "<leader><C-[>", "<C-\\><C-n>", opts)
