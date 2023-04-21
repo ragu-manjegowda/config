@@ -5,49 +5,6 @@
 
 vim.cmd [[
 
-augroup QuickFix
-    " Open qf entry in vertical split
-    au FileType qf nnoremap <buffer> <leader>v <C-w><CR><C-w>L
-    " Open qf list in new tab
-    au FileType qf nnoremap <buffer> <leader><Tab> <C-w><CR><C-w>T
-augroup END
-
-" Reference - https://stackoverflow.com/a/6496995
-function! StripTrailingWhitespace()
-    " Don't strip on these filetypes
-    if &ft =~ 'mail' || &ft =~ 'markdown' || &ft =~ 'rmd' ||
-        \ &ft =~ 'text' || &ft =~ 'rst'
-        return
-    endif
-    %s/\s\+$//e
-endfun
-autocmd BufWritePre * call StripTrailingWhitespace()
-
-" Disable line breaks for file type mail
-function! DisableLineBreak()
-    if &ft =~ 'mail'
-        set wrap
-        set linebreak
-        set nolist  " list disables linebreak
-        set textwidth=0
-        set wrapmargin=0
-        set comments+=nb:>
-        set fo-=t
-    endif
-endfun
-autocmd VimEnter * call DisableLineBreak()
-
-" Open man page
-function! s:RaguCppMan()
-    let old_isk = &iskeyword
-    setl iskeyword+=:
-    let str = expand("<cword>")
-    let &l:iskeyword = old_isk
-    execute system("tmux split-window cppman " . str)
-endfunction
-command! RaguCppMan :call s:RaguCppMan()
-au FileType cpp nnoremap <leader>man :RaguCppMan<CR>
-
 " Zoom / Restore window
 function! s:ZoomToggle() abort
     if exists('t:zoomed') && t:zoomed
@@ -129,6 +86,53 @@ command! QFSort call s:SortUniqQFList()
 ]]
 
 vim.api.nvim_create_augroup("bufcheck", { clear = true })
+
+-- Disable line breaks for file type mail
+vim.api.nvim_create_autocmd(
+    { "FileType" },
+    {
+        group    = "bufcheck",
+        pattern  = { "mail" },
+        callback = function()
+            vim.cmd [[
+                set comments+=nb:>
+                set fo+=w
+            ]]
+        end
+    }
+)
+
+-- add keymap for QuickFix list
+vim.api.nvim_create_autocmd(
+    { "FileType" },
+    {
+        group    = "bufcheck",
+        pattern  = { "qf" },
+        callback = function()
+            vim.keymap.set("n", "<leader>v", "<C-w><CR><C-w>L",
+                { buffer = true })
+            vim.keymap.set("n", "<leader><Tab>", "<C-w><CR><C-w>T",
+                { buffer = true })
+        end
+    }
+)
+
+-- remove trailing whitespaces
+vim.api.nvim_create_autocmd(
+    { "BufWritePre" },
+    {
+        group    = "bufcheck",
+        pattern  = '*',
+        callback = function()
+            local ft = vim.bo.filetype
+            if ft == "mail" or ft == "markdown" or ft == "rmd" or ft == "text"
+                or ft == "rst" then
+                return
+            end
+            vim.cmd(":%s/\\s\\+$//e")
+        end
+    }
+)
 
 -- reload config file on change
 vim.api.nvim_create_autocmd(
