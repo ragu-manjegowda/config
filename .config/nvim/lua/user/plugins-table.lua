@@ -152,12 +152,23 @@ local core_plugins = {
         end
     },
 
+    -- Terminal
     {
         "numToStr/FTerm.nvim",
         config = function()
             require("user.fterm").config()
         end
     },
+
+    {
+        'willothy/flatten.nvim',
+        -- Ensure that it runs first to minimize delay when opening file
+        -- from terminal
+        lazy = false,
+        opts = require("user.flatten").opts(),
+        priority = 1001,
+    },
+
 
     {
         "Rasukarusan/nvim-select-multi-line",
