@@ -34,9 +34,6 @@ set imap_keepalive = 900
 # Include copy of original message in reply
 set include=yes
 
-# Let the user edit the headers while composing
-set edit_headers
-
 # always show X number of mails in the index
 set pager_index_lines = 10
 
@@ -45,11 +42,12 @@ set sleep_time = 0
 
 set ts_enabled = yes
 
-# A customizable header
-set edit_headers = yes
+# Headers
+source ~/.config/neomutt/headers
+
 set editor = "nvim +/^$ +nohlsearch -c 'set spell spelllang=en_us fo+=aw' \
               -c 'set noautoindent filetype=mail wm=0 tw=0 digraph nolist' \
-              -c 'set ft=mail enc=utf-8'"
+              -c 'set comments+=nb:> enc=utf-8'"
 
 # Add this to insert new line after 78 characters
 # -c 'set textwidth=78' -c 'set wrapmargin=0' \
