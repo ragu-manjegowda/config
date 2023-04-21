@@ -1,0 +1,47 @@
+###############################################################################
+## Author       : Ragu Manjegowda
+## Github       : @ragu-manjegowda
+###############################################################################
+
+## This file pulls raghudarshan and syncs it to a local folder
+## password is stored as encrypted file.
+
+FieldDelimiter -
+
+CopyArrivalDate yes
+
+IMAPAccount raghudarshan
+# Address to connect to
+Host imap.gmail.com
+User raghu.darshan@gmail.com
+PassCmd "$XDG_CONFIG_HOME/neomutt/mutt_oauth2_raghudarshan.py $XDG_CONFIG_HOME/neomutt/TOKEN_FILENAME_raghudarshan"
+TLSType IMAPS
+AuthMechs XOAUTH2
+Timeout 120
+PipelineDepth 50
+
+IMAPStore raghudarshan-remote
+Account raghudarshan
+
+MaildirStore raghudarshan-local
+# The trailing "/" is important
+Path ~/.config/neomutt/maildir/raghudarshan/
+Inbox ~/.config/neomutt/maildir/raghudarshan/Inbox
+SubFolders Verbatim
+
+Channel raghudarshan
+Far :raghudarshan-remote:
+Near :raghudarshan-local:
+Patterns *
+# Store arrival date
+CopyArrivalDate yes
+# Automatically create missing mailboxes, both locally and on the server
+Create Both
+# Automatically delete items on both IMAP and local
+Expunge Both
+# Expire unread after extended absence
+ExpireUnread yes
+# Save the synchronization state files in the relevant directory
+SyncState *
+# Synchronization operation, never push to remote
+Sync PullNew PullGone

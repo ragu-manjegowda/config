@@ -118,7 +118,7 @@
 .config/monitors.xml~
 .config/nautilus
 .config/neofetch/config.conf
-.config/neomutt/TOKEN_FILENAME
+.config/neomutt/TOKEN_FILENAME*
 .config/neomutt/account.*.outlook
 .config/neomutt/aliases
 .config/neomutt/history

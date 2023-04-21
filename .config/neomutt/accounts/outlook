@@ -1,12 +1,13 @@
 # vim: filetype=neomuttrc
-# muttrc file for account outlook offline
+# muttrc file for account outlook
 
 ###############################################################################
 ## Author       : Ragu Manjegowda
 ## Github       : @ragu-manjegowda
 ###############################################################################
 
-unmailboxes *
+# Source stored password
+source "gpg -dq --no-emit-version --for-your-eyes-only ~/.config/neomutt/pass.gpg |"
 
 # The variables $my_username, $my_password and $my_name are stored in pass.gpg,
 # neomutt decrypt that file and source them
@@ -22,10 +23,13 @@ set folder = "imaps://$from@outlook.office365.com:993"
 set use_from=yes
 set imap_authenticators="oauthbearer:xoauth2"
 set smtp_authenticators=${imap_authenticators}
-set imap_oauth_refresh_command = "$XDG_CONFIG_HOME/neomutt/mutt_oauth2.py $XDG_CONFIG_HOME/neomutt/TOKEN_FILENAME"
+set imap_oauth_refresh_command = "$XDG_CONFIG_HOME/neomutt/mutt_oauth2_outlook.py \
+    $XDG_CONFIG_HOME/neomutt/TOKEN_FILENAME_outlook"
 set smtp_oauth_refresh_command = ${imap_oauth_refresh_command}
 set ssl_force_tls = "yes"
 set ssl_starttls  = "yes"
+
+unmailboxes *
 
 set spoolfile = "+Inbox"
 # set record = "+Sent Items"
@@ -48,7 +52,6 @@ set message_cachedir = $XDG_CONFIG_HOME/neomutt/account.$my_user.outlook/cache/b
 set certificate_file = $XDG_CONFIG_HOME/neomutt/account.$my_user.outlook/certificates
 
 # To list all the mailboxes
-# mbsync -Vl -c ~/.config/neomutt/mbsyncrc nvidia
 named-mailboxes "   Inbox" =Inbox
 named-mailboxes "   Drafts" =Drafts
 named-mailboxes "   Sent Items" ="Sent Items"
