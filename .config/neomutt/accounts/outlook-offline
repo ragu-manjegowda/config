@@ -6,6 +6,9 @@
 ## Github       : @ragu-manjegowda
 ###############################################################################
 
+# Source stored password
+source "gpg -dq --no-emit-version --for-your-eyes-only ~/.config/neomutt/pass.gpg |"
+
 # The variables $my_username, $my_password and $my_name are stored in pass.gpg,
 # neomutt decrypt that file and source them
 set my_user = "$my_username"
@@ -13,7 +16,7 @@ set imap_pass = "$my_password"
 set realname = "$my_name"
 
 set from = "$my_email"
-set sendmail = "msmtp -C ~/.config/neomutt/msmtprc -a nvidia"
+set sendmail = "msmtp -C ~/.config/neomutt/msmtprc_outlook -a nvidia"
 set folder = $XDG_CONFIG_HOME/neomutt/maildir/nvidia
 set header_cache = $XDG_CONFIG_HOME/neomutt/account.$my_user.outlook/cache/headers
 set message_cachedir = $XDG_CONFIG_HOME/neomutt/account.$my_user.outlook/cache/bodies
@@ -27,7 +30,7 @@ set postponed = "+Drafts"
 set trash = "+Deleted Items"
 
 # To list all the mailboxes
-# mbsync -Vl -c ~/.config/neomutt/mbsyncrc nvidia
+# mbsync -Vl -c ~/.config/neomutt/mbsyncrc_outlook nvidia
 named-mailboxes "   Inbox" =Inbox
 named-mailboxes "   Drafts" =Drafts
 named-mailboxes "   Sent Items" ="Sent Items"
@@ -72,7 +75,7 @@ folder-hook "Team" "$my_indexing"
 set my_account = "$from (mbsync-imap)"
 set status_format = "$my_account %D %?u? %u ?%?R? %R ?%?d? %d ?%?t? %t ?%?F? %F ?%?p? %p? "
 
-macro index o "<shell-escape>mbsync -V -c ~/.config/neomutt/mbsyncrc nvidia<enter> \
+macro index o "<shell-escape>mbsync -V -c ~/.config/neomutt/mbsyncrc_outlook nvidia<enter> \
 <shell-escape>mu index<enter>" \
 "run mbsync to sync nvidia"
 

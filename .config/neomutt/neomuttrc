@@ -8,9 +8,6 @@
 
 # General settings =========================={{{
 
-# Source stored password
-source "gpg -dq --no-emit-version --for-your-eyes-only ~/.config/neomutt/pass.gpg |"
-
 # Folder hooks
 # folder-hook 'email1.outlook' 'source $XDG_CONFIG_HOME/neomutt/email1.outlook'
 set rfc2047_parameters = yes
@@ -188,6 +185,7 @@ source $XDG_CONFIG_HOME/neomutt/accounts/outlook
 
 macro index,pager i1 '<sync-mailbox><enter-command>source $XDG_CONFIG_HOME/neomutt/accounts/outlook<enter><change-folder>!<enter>;<check-stats>' "switch to outlook - online"
 macro index,pager i2 '<sync-mailbox><enter-command>source $XDG_CONFIG_HOME/neomutt/accounts/outlook-offline<enter><change-folder>!<enter>;<check-stats>' "switch to outlook - offline"
+macro index,pager i3 '<sync-mailbox><enter-command>source $XDG_CONFIG_HOME/neomutt/accounts/raghudarshan<enter><change-folder>!<enter>;<check-stats>' "switch to raghu-darshan - online"
 
 # }}}
 
