@@ -26,8 +26,11 @@ function M.config()
     map('n', '<leader>drc', '<cmd>lua require("dap").run_to_cursor()<CR>',
         { silent = true, desc = 'DAP run to cursor' })
 
-    map('n', '<leader>drr', '<cmd>lua require("dap").run_last()<CR>',
-        { silent = true, desc = 'DAP re-run restart' })
+    map('n', '<leader>drl', '<cmd>lua require("dap").run_last()<CR>',
+        { silent = true, desc = 'DAP re-run last adapter configuration' })
+
+    map('n', '<leader>drr', '<cmd>lua require("dap").restart()<CR>',
+        { silent = true, desc = 'DAP restart' })
 
     map('n', '<leader>dtb', '<cmd>lua require("dap").toggle_breakpoint()<CR>',
         { silent = true, desc = 'DAP toggle breakpoint' })

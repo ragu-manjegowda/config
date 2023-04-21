@@ -156,9 +156,14 @@ vim.api.nvim_create_autocmd(
 vim.api.nvim_create_autocmd(
     { "TermOpen" },
     {
-        group   = "bufcheck",
-        pattern = "*",
-        command = "startinsert | set winfixheight"
+        group    = "bufcheck",
+        pattern  = "*",
+        callback = function()
+            if string.find(vim.bo.filetype, "dapui") ~= nil then
+                return
+            end
+            vim.cmd("startinsert | set winfixheight")
+        end
     }
 )
 
