@@ -11,10 +11,19 @@ if not res then
     return
 end
 
+local web_devicons
+res, web_devicons = pcall(require, "nvim-web-devicons")
+if not res then
+    vim.notify("nvim-web-devicons not found", vim.log.levels.WARN)
+    return
+end
+
 vim.api.nvim_set_hl(0, 'bufferline_offset',
     {
-        fg = vim.g.gui_base03, bg = vim.g.gui_base01,
-        bold = true, italic = true
+        fg = vim.g.gui_base03,
+        bg = vim.g.gui_base01,
+        bold = true,
+        italic = true
     })
 
 local M = {}
@@ -114,7 +123,11 @@ function M.config()
             },
             color_icons = true,
             show_buffer_close_icons = false,
-            show_buffer_default_icon = false,
+            get_element_icon = function(element)
+                local icon, hl = web_devicons.get_icon_by_filetype(
+                    element.filetype, { default = false })
+                return icon, hl
+            end,
             show_tab_indicators = false,
             show_duplicate_prefix = true,
             persist_buffer_sort = true,
