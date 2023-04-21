@@ -527,7 +527,7 @@ function "${FZF_PREFIX}gt" () {
   config -c color.status=always status --short |
   fzf -m --ansi --nth 2..,.. \
     --preview '(git --git-dir=$HOME/.config.git/ --work-tree=$HOME diff \
-    --color=always -- {-1} | sed 1,4d; cat {-1}) | head -500' \
+    --color=always -- {-1} | delta)' \
     --bind "${PREFIX_BIND_OPTS}" --layout=reverse |
   cut -c4- | sed 's/.* -> //'
 }
@@ -536,8 +536,7 @@ function "${FZF_PREFIX}gn" () {
   is_in_git_repo || return
   git -c color.status=always status --short |
   fzf -m --ansi --nth 2..,.. \
-    --preview '(git diff --color=always -- {-1} | sed 1,4d; cat {-1}) | \
-    head -500' \
+    --preview '(git diff --color=always -- {-1} | delta)' \
     --bind "${PREFIX_BIND_OPTS}" --layout=reverse |
   cut -c4- | sed 's/.* -> //'
 }
