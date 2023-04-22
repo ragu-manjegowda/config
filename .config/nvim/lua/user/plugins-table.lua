@@ -262,12 +262,6 @@ local core_plugins = {
     -- Status line
     {
         "windwp/windline.nvim",
-        dependencies = {
-            "jcdickinson/wpm.nvim",
-            config = function()
-                require("wpm").setup({})
-            end
-        },
         config = function()
             require("user.windline").config()
         end
