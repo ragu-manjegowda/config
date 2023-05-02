@@ -52,7 +52,6 @@ pkgconf
 playerctl
 pulseaudio-alsa
 pulseaudio-bluetooth
-ranger
 redshift
 refind
 rofi

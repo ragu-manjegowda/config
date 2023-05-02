@@ -15,7 +15,7 @@ NEWALIAS=$(echo "${MESSAGE}" | grep ^"From: " | sed s/[\,\"\']//g | awk '{$1="";
 NEWALIAS="$(echo "$NEWALIAS" | sed 's/\[\([0-9]\+\)\]//g')"
 
 # We never want to create some aliases
-NOALIAS_PAT="facebook|twitter|amazon|paypal|ops@exoscale.ch|noreply|no_reply"
+NOALIAS_PAT="facebook|twitter|amazon|paypal|ops@exoscale.ch|noreply|no_reply|no-reply|slack|gerrit"
 
 if grep -Eq "$NOALIAS_PAT" <<< "$NEWALIAS"; then
     :

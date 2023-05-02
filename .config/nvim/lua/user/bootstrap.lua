@@ -47,11 +47,14 @@ function M.load(plugins)
             lazy = true
         },
         diff = {
-            cmd = "diffview.nvim",
+            cmd = "diffview.nvim"
         },
         install = {
             -- try to load one of these colorschemes when starting an installation during startup
-            colorscheme = { "NeoSolarized" },
+            colorscheme = { "NeoSolarized" }
+        },
+        ui = {
+            border = "rounded"
         }
     }
 

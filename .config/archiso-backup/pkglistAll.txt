@@ -73,7 +73,7 @@ pkgconf
 playerctl
 pulseaudio-alsa
 pulseaudio-bluetooth
-ranger
+ranger-git
 redshift
 refind
 reflector-pacman-hook-git

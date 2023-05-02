@@ -131,7 +131,7 @@ function M.config()
             show_tab_indicators = false,
             show_duplicate_prefix = true,
             persist_buffer_sort = true,
-            separator_style = "padded_slant",
+            separator_style = "slant",
             enforce_regular_tabs = true,
             always_show_bufferline = true,
             hover = {

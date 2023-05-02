@@ -19,6 +19,7 @@ openrazer-meta
 pacman-cleanup-hook
 paru
 picom-git
+ranger-git
 reflector-pacman-hook-git
 solarized-colors-iconpack-git
 sync-pacman-hook-git

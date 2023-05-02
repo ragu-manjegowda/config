@@ -21,6 +21,14 @@ local core_plugins = {
         event = "VeryLazy"
     },
 
+    -- Clipboard
+    {
+        "ojroques/nvim-osc52",
+        config = function()
+            require("user.nvim-osc52").config()
+        end
+    },
+
     -- cmp plugins
     {
         "hrsh7th/nvim-cmp",
