@@ -72,14 +72,3 @@ end
 -- Set shell to bash since zsh has noglob issues with gtests in dap
 vim.env.SHELL = "bash"
 vim.opt["shell"] = "bash"
-
-------------------------------------------------------------------------------
--- Use system clipboard for yanks
-------------------------------------------------------------------------------
-if vim.fn.has('clipboard') == 1 then
-  if vim.fn.has('unnamedplus') == 1 then
-    vim.o.clipboard = 'unnamedplus'
-  else
-    vim.o.clipboard = 'unnamed'
-  end
-end

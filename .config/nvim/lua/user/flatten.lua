@@ -7,14 +7,12 @@ local M = {}
 
 function M.opts()
     return {
+        callbacks = {
+            post_open = function(_, _, _, _)
+            end
+        },
         window = {
             open = "tab"
-        },
-        callbacks = {
-            post_open = function(_, winnr, _, _)
-                require("user.fterm").__fterm_zsh()
-                vim.api.nvim_set_current_win(winnr)
-            end
         }
     }
 end

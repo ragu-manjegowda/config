@@ -146,7 +146,7 @@ source "$XDG_CONFIG_HOME/neomutt/styles.muttrc"
 # Sidebar ==================================={{{
 
 # Sidebar for neomutt
-set sidebar_visible = yes
+set sidebar_visible = no
 set sidebar_width = 25
 set mail_check_stats
 set sidebar_short_path = yes

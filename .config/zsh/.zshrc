@@ -63,4 +63,3 @@ bindkey \^U backward-kill-line
 if [ -f "$ZDOTDIR/fzf.zsh" ] ; then
     source "$ZDOTDIR/fzf.zsh"
 fi
-
