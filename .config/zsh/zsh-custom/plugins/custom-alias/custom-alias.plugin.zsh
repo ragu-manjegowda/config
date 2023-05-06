@@ -428,7 +428,7 @@ function gpg-encrypt-decrypt () {
 
 function cliclick()
 {
-    while true; do xdotool click 1; sleep 120; done
+    while true; do xdotool click 1; sleep 20; done
 }
 
 function compresspdf() {
