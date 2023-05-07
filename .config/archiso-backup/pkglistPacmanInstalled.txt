@@ -52,6 +52,7 @@ pkgconf
 playerctl
 pulseaudio-alsa
 pulseaudio-bluetooth
+python-pynvim
 redshift
 refind
 rofi

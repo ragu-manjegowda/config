@@ -73,6 +73,7 @@ pkgconf
 playerctl
 pulseaudio-alsa
 pulseaudio-bluetooth
+python-pynvim
 ranger-git
 redshift
 refind

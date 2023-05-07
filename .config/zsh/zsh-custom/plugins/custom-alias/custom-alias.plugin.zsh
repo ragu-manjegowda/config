@@ -6,14 +6,6 @@ git_version="${${(As: :)$(git version 2>/dev/null)}[3]}"
 # Functions
 #
 
-# The name of the current branch
-# Back-compatibility wrapper for when this function was defined here in
-# the plugin, before being pulled in to core lib/git.zsh as git_current_branch()
-# to fix the core -> git plugin dependency.
-function current_branch() {
-  git_current_branch
-}
-
 # Pretty log messages
 function _git_log_prettily(){
   if ! [ -z $1 ]; then
@@ -21,26 +13,6 @@ function _git_log_prettily(){
   fi
 }
 compdef _git _git_log_prettily=git-log
-
-# Warn if the current branch is a WIP
-function work_in_progress() {
-  if $(git log -n 1 2>/dev/null | grep -q -c "\-\-wip\-\-"); then
-    echo "WIP!!"
-  fi
-}
-
-# Check if main exists and use instead of master
-function git_main_branch() {
-  command git rev-parse --git-dir &>/dev/null || return
-  local branch
-  for branch in main trunk; do
-    if command git show-ref -q --verify refs/heads/$branch; then
-      echo $branch
-      return
-    fi
-  done
-  echo master
-}
 
 #
 # Aliases
@@ -75,20 +47,6 @@ alias gst='git status'
 alias gstv='vim +Git +only'
 alias gsu='git submodule foreach git pull --recurse-submodules --rebase'
 
-function grename() {
-  if [[ -z "$1" || -z "$2" ]]; then
-    echo "Usage: $0 old_branch new_branch"
-    return 1
-  fi
-
-  # Rename branch locally
-  git branch -m "$1" "$2"
-  # Rename branch in origin remote
-  if git push origin :"$1"; then
-    git push --set-upstream origin "$2"
-  fi
-}
-
 unset git_version
 
 # Unset alias l
@@ -103,18 +61,6 @@ function ldot() {
         ls -d $1/.*
     fi
 }
-
-# use nvim if installed, vi default
-case "$(command -v nvim)" in
-    */nvim)
-        VIM=nvim
-        alias vim="nvim"
-        ;;
-    *)  VIM=vi ;;
-esac
-
-export EDITOR=$VIM
-export FCEDIT=$EDITOR
 
 # Zsh-hist
 HISTSIZE=10000000
@@ -636,4 +582,14 @@ function merge-images-diagonally() {
 
 function scale-gtk-app() {
     eval "Exec=env GDK_SCALE=2 $@"
+}
+
+###############################################################################
+############################## goimapnotify ###################################
+###############################################################################
+
+function start-goimapnotify () {
+    goimapnotify -conf ~/.config/imapnotify/imapnotify.conf > \
+        ~/.cache/awesome/imapnotify.log 2>&1 &
+    disown %goimapnotify
 }
