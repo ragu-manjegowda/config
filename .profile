@@ -76,6 +76,30 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 
 fi
 
+# use nvim if installed,
+# if not use vim
+# else vi
+case "$(command -v nvim)" in
+    */nvim)
+        VIM="nvim"
+        alias vim="nvim"
+        ;;
+    *)
+        case "$(command -v vim)" in
+            */vim)
+                VIM="vim"
+                ;;
+            *)
+                VIM="vi"
+                ;;
+        esac
+        ;;
+esac
+
+export EDITOR=$VIM
+export VISUAL=$VIM
+export FCEDIT=$EDITOR
+
 ## Config alias
 alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
 alias cvim='GIT_DIR=$HOME/.config.git/ GIT_WORK_TREE=$HOME vim'
