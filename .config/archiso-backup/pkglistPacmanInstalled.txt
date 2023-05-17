@@ -32,6 +32,7 @@ linux-lts
 linux-lts-headers
 lua-lgi
 lxqt-policykit
+ly
 m4
 maim
 make

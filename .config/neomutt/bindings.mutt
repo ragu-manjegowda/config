@@ -47,7 +47,6 @@ bind pager V noop # Normally <show-version>.
 bind pager ^ noop # Normally <top>, which we have bound to gg.
 bind pager i noop # Normally <exit>, but that is also bound to q.
 bind pager o noop # Normally <sort-mailbox>.
-bind pager u exit
 
 # Bindings for sidebar
 macro index b '<enter-command>toggle sidebar_visible<enter><refresh>'
