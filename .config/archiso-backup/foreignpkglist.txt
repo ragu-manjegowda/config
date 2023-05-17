@@ -8,7 +8,6 @@ google-chrome
 gtk-theme-numix-solarized
 light-git
 lua-pam-git
-ly
 mbsync-git
 mosh-git
 mu

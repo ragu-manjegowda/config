@@ -118,7 +118,7 @@ function M.config()
                 },
             },
 
-            stopAtEntry = true,
+            stopAtEntry   = true,
         },
         {
             name = "Attach to gdbserver :1234",
@@ -226,16 +226,16 @@ function M.config()
     dap.adapters.python = {
         type = "executable",
         command = path.concat
-        {
-            vim.fn.stdpath "data",
-            "mason",
-            "packages",
-            "debugpy",
-            "venv",
-            "bin",
-            "python"
-        },
-        args = { "-m", "debugpy.adapter" };
+            {
+                vim.fn.stdpath "data",
+                "mason",
+                "packages",
+                "debugpy",
+                "venv",
+                "bin",
+                "python"
+            },
+        args = { "-m", "debugpy.adapter" }
     }
 
     dap.adapters.remote_python = function(callback)
@@ -248,20 +248,22 @@ function M.config()
 
     dap.configurations.python = {
         {
-            type = "python",
-            request = "launch",
-            name = "Launch file",
+            type        = "python",
+            request     = "launch",
+            name        = "Launch file",
 
-            program = function()
-                return vim.fn.input("Path to file: ", vim.fn.expand("%"), "file")
+            program     = function()
+                return vim.fn.input("Path to file: ",
+                    vim.fn.expand("%"), "file")
             end,
-            args    = function()
+            args        = function()
                 local argument_string = vim.fn.input("Program arguments: ")
                 return vim.fn.split(argument_string, " ", true)
             end,
 
-            cwd = function()
-                return vim.fn.input("Program working directory: ", vim.fn.getcwd() .. "/", "file")
+            cwd         = function()
+                return vim.fn.input("Program working directory: ",
+                    vim.fn.getcwd() .. "/", "file")
             end,
 
             stopAtEntry = true,

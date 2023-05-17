@@ -49,7 +49,7 @@ local function on_attach(client, bufnr)
     if not res then
         vim.notify("lsp_signature not found", vim.log.levels.WARN)
     else
-        lsp_signature.on_attach({
+        lsp_signature.setup({
             doc_lines = 0,
             hint_enable = false,
             select_signature_key = "<M-n>"
