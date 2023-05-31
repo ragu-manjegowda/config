@@ -37,28 +37,28 @@ return {
         quake = '',
         -- Run menu
         rofi_runmenu = 'rofi -dpi ' .. screen.primary.dpi ..
-                            ' -show run -theme '.. config_dir ..
-                            'configuration/rofi/runmenu/rofi.rasi',
+            ' -show run -theme ' .. config_dir ..
+            'configuration/rofi/runmenu/rofi.rasi',
         -- Emoji menu
         rofi_emojimenu = 'rofi -dpi ' .. screen.primary.dpi ..
-                            ' -show emoji -modi emoji -theme '.. config_dir ..
-                            'configuration/rofi/emojimenu/rofi.rasi',
+            ' -show emoji -modi emoji -theme ' .. config_dir ..
+            'configuration/rofi/emojimenu/rofi.rasi',
         -- App menu
         rofi_appmenu = 'rofi -dpi ' .. screen.primary.dpi ..
-                            ' -show drun -theme ' .. config_dir ..
-                            'configuration/rofi/appmenu/rofi.rasi',
+            ' -show drun -theme ' .. config_dir ..
+            'configuration/rofi/appmenu/rofi.rasi',
 
         -- Show time
         rofi_time = 'rofi -dpi ' .. screen.primary.dpi ..
-                            ' -theme ' .. config_dir ..
-                            'configuration/rofi/time/rofi.rasi',
+            ' -theme ' .. config_dir ..
+            'configuration/rofi/time/rofi.rasi',
 
         -- Show calc
         rofi_calc = 'rofi -dpi ' .. screen.primary.dpi ..
-                            ' -theme ' .. config_dir ..
-                            'configuration/rofi/calc/rofi.rasi' ..
-                            ' -show calc -modi calc -no-show-match -no-sort' ..
-                            ' -calc-command "echo -n \'{result}\' | xclip -sel clip"'
+            ' -theme ' .. config_dir ..
+            'configuration/rofi/calc/rofi.rasi' ..
+            ' -show calc -modi calc -no-show-match -no-sort' ..
+            ' -calc-command "echo -n \'{result}\' | xclip -sel clip"'
         -- You can add more default applications here
     },
 
@@ -118,6 +118,6 @@ return {
         -- Update profile picture
         update_profile  = utils_dir .. 'profile-image',
         -- Show time with rofi
-        show_time  = utils_dir .. 'time'
+        show_time       = utils_dir .. 'time'
     }
 }

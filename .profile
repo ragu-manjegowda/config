@@ -164,6 +164,8 @@ if [ -f "/etc/arch-release" ]; then
 
     alias pacr="pacman --color always -Q | cut -f 1 -d ' ' | \
         fzf --multi --ansi --preview 'pacman -Qi {1}' | xargs -ro sudo pacman -Rns"
+
+    alias sindu=paru
 fi
 
 # Make keyboard more responsive

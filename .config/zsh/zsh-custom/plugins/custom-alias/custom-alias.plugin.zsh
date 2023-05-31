@@ -87,6 +87,11 @@ zstyle ":completion:*:commands" rehash 1
 
 ############# zsh-autocomplete specific
 
+# Make Tab cycle completions on the command line
+# bindkey '\t' menu-complete "$terminfo[kcbt]" reverse-menu-complete
+bindkey '\t' menu-select "$terminfo[kcbt]" menu-select
+bindkey -M menuselect '\t' menu-complete "$terminfo[kcbt]" reverse-menu-complete
+
 # '': Start each new command line with normal autocompletion.
 # history-incremental-search-backward: Start in live history search mode.
 zstyle ':autocomplete:*' default-context ''
