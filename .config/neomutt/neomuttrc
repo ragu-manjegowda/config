@@ -179,7 +179,7 @@ source "cat $alias_file 2> /dev/null |" # only source if file exists
 # Accounts ==========================={{{
 
 # Default account
-source $XDG_CONFIG_HOME/neomutt/accounts/work/outlook
+source $XDG_CONFIG_HOME/neomutt/accounts/work/outlook-offline
 
 macro index,pager i1 '<sync-mailbox><enter-command>source \
     $XDG_CONFIG_HOME/neomutt/accounts/work/outlook<enter>\
