@@ -12,11 +12,15 @@
             "clientbuttons",
             "clientkeys",
             "dbus",
+            "drawable",
+            "drawin",
+            "key",
             "message",
             "mouse",
             "root",
             "screen",
-            "startup"
+            "startup",
+            "tag"
         ],
         "neededFileStatus": {
             "codestyle-check": "Any"
