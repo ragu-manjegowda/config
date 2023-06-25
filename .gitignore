@@ -155,6 +155,7 @@
 .config/update-notifier
 .config/user-dirs.dirs
 .config/user-dirs.locale
+.config/vlc
 .config/volumeicon
 .config/webbrowser-app
 .config/wireshark
