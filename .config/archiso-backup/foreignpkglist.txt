@@ -1,4 +1,4 @@
-awesome-luajit-git
+awesome-git
 awmtt
 check-broken-packages-pacman-hook-git
 cyrus-sasl-xoauth2-git

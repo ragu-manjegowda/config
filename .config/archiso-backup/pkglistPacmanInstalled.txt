@@ -68,6 +68,7 @@ ttf-dejavu
 ttf-hack-nerd
 upower
 urlscan
+vlc
 w3m
 webkit2gtk
 which

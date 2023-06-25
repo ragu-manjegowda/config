@@ -5,7 +5,7 @@ aspell-en
 autoconf
 automake
 avidemux-qt
-awesome-luajit-git
+awesome-git
 awmtt
 base
 bison
@@ -95,6 +95,7 @@ ttf-hack-nerd
 upower
 urlscan
 vdhcoapp
+vlc
 w3m
 w3m-imgcat
 webkit2gtk
