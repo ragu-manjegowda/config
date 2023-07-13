@@ -14,7 +14,7 @@ local run_once = function(cmd)
         findme = cmd:sub(0, firstspace - 1)
     end
     awful.spawn.easy_async_with_shell(
-        string.format('pgrep -u $USER -x %s > /dev/null || (%s)', findme, cmd),
+        string.format('pgrep -f -u $USER -x %s > /dev/null || (%s)', findme, cmd),
         function(_, stderr)
             -- Debugger
             if not stderr or stderr == '' or not debug_mode then
