@@ -163,6 +163,7 @@
 .config/xpad
 .config/yelp
 .config/zathura/zathurarc
+.config/zoom.conf
 .config/zoomus.conf
 .config/zsh/.zcompdump*
 .config/zsh/.zsh_history

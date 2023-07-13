@@ -75,11 +75,11 @@ bind index V noop # Normally bound to "show-version".
 #bind pager <space> next-page
 
 # Misc
-macro index,pager \cl "<pipe-message>urlscan -d -w 80<Enter>" "call urlscan to open links"
-
-macro attach,compose \cl \
-    "!echo 'Use url scan from index/pager - o/p is buggy/clogged here'<enter>" \
-    "Call urlscan to extract URLs out of a message"
+macro index,pager ,ol \
+"\
+<enter-command>unset wait_key<enter>\
+<pipe-message>urlscan -d -w 80<Enter>\
+" "call urlscan to open links"
 
 macro index,pager,generic <F1> "!w3m /usr/share/doc/neomutt/manual.html\n" "Show Mutt documentation"
 macro attach s '<save-entry><kill-line>~/Downloads/<enter>a' "Save file to ~/Downloads"
@@ -94,11 +94,14 @@ macro index ,mf ":set auto_tag=yes<enter><save-message>?<toggle-mailboxes>" \
     "move to..."
 
 # Set message priority
-macro compose ,ph "<enter-command>my_hdr X-Priority: 1<enter>\
-    <enter-command>my_hdr Importance: high<enter>" "Set priority to high"
+macro compose ,sp \
+"\
+<enter-command>my_hdr X-Priority: 1<enter>\
+<enter-command>my_hdr Importance: high<enter>\
+" "Set priority/importance to high"
 
 # Open attachment with
-macro attach O \
+macro attach ,ow \
 "\
 <enter-command>unset wait_key<enter>\
 <shell-escape>rm -f /tmp/mutt-attach<enter>\
@@ -107,7 +110,7 @@ macro attach O \
 " "Open attachment with prompt to choose application"
 
 # Open attachment with firefox
-macro attach of \
+macro attach ,of \
 "\
 <enter-command>unset wait_key<enter>\
 <shell-escape>rm -f /tmp/mutt-attach<enter>\
@@ -115,7 +118,13 @@ macro attach of \
 <shell-escape> firefox -new-window 2> /dev/null /tmp/mutt-attach &<enter>\
 " "Open attachment with firefox"
 
-macro attach a \
+macro index,pager ,of \
+"\
+<enter-command>unset wait_key<enter>\
+<pipe-message>~/.config/neomutt/viewmailattachments.py 2> /dev/null\n &<enter>\
+" "View HTML email in browser"
+
+macro attach ,ai \
 "<shell-escape>rm -vf /tmp/.mutt.ics<enter><save-entry><kill-line>\
 /tmp/.mutt.ics<enter><shell-escape>$(brew --prefix)/bin/python3 \
 $XDG_CONFIG_HOME/neomutt/mutt-ical.py \

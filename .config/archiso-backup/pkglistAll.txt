@@ -83,6 +83,7 @@ rofi-calc
 rofi-emoji
 rust
 rust-src
+slack-desktop
 solarized-colors-iconpack-git
 sudo
 sync-pacman-hook-git
