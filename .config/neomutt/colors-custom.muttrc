@@ -22,11 +22,10 @@ color tree          red             default
 
 # message index ------ foreground ---- background -----------------------------
 color index         red             default     ~D # deleted messages
-color index         red             default     ~D~v # deleted messages
-color index         green           default     ~F # flagged messages
-color index         green           default     "~h X-Priority.*" # messages marked priority
-color index         magenta         default     ~Q # messages which have been replied to
+color index         yellow          default     ~F # flagged messages
+color index         yellow          default     "~h X-Priority.*" # messages marked priority
 color index         magenta         default     ~P # messages from me
+color index         magenta         default     ~Q # messages which have been replied to
 color index         brightcyan      default     ~T # tagged messages
 color index         blue            default     ~v~(!~N) # collapsed thread with no unread
 color index         brightgreen     default     ~v~(~N) # collapsed thread with some unread
@@ -36,7 +35,7 @@ color index         red             default     ~v~(~D) # collapsed thread with 
 
 # message headers ---- foreground ---- background -----------------------------
 color hdrdefault    blue            default
-color header        cyan            default     ^Subject:.*
+color header        brightred       default     ^Subject:.*
 
 # message body ------- foreground ---- background -----------------------------
 color attachment    yellow          default

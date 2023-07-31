@@ -44,4 +44,4 @@ ExpireUnread yes
 # Save the synchronization state files in the relevant directory
 SyncState *
 # Synchronization operation
-Sync Pull Push
+Sync Full
