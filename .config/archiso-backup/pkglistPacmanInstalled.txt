@@ -64,6 +64,7 @@ rust-src
 sudo
 texinfo
 thunar
+timeshift
 ttf-dejavu
 ttf-hack-nerd
 upower

@@ -24,7 +24,6 @@ slack-desktop
 solarized-colors-iconpack-git
 sync-pacman-hook-git
 teams
-timeshift
 vdhcoapp
 w3m-imgcat
 xidlehook
