@@ -33,7 +33,7 @@ function M.config()
             }
         end
 
-        map("n", "<leader>t<Tab>", api.node.open.tab, opts("open in new tab"))
+        map("n", "<leader><Tab>", api.node.open.tab, opts("open in new tab"))
         map("n", "<leader>tgr", api.git.reload, opts("reload nvim-tree git"))
 
         map("n", "<leader>tmn", api.marks.navigate.next,
