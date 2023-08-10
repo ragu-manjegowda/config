@@ -83,7 +83,8 @@ macro index,pager ,ol \
 
 macro index,pager,generic <F1> "!w3m /usr/share/doc/neomutt/manual.html\n" "Show Mutt documentation"
 macro attach s '<save-entry><kill-line>~/Downloads/<enter>a' "Save file to ~/Downloads"
-bind index,pager $ sync-mailbox # more like a refresh than a sync
+bind index,pager $ imap-fetch-mail # more like a refresh than a sync
+bind index,pager * sync-mailbox # more like a refresh than a sync
 macro index,pager \cr "<tag-pattern>.<enter><tag-prefix><clear-flag>N<untag-pattern>.<enter>"
 macro index,pager,generic <F5> "<redraw-screen>"
 
