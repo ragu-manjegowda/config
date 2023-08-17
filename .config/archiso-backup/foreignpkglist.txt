@@ -1,4 +1,5 @@
-awesome-git
+anydesk-bin
+awesome-luajit-git
 awmtt
 check-broken-packages-pacman-hook-git
 cyrus-sasl-xoauth2-git
@@ -8,6 +9,7 @@ google-chrome
 gtk-theme-numix-solarized
 light-git
 lua-pam-git
+luajit-lgi
 mbsync-git
 mosh-git
 mu

@@ -21,7 +21,7 @@ function M.dec_width_ind()
     return g.nvim_tree_width
 end
 
-function M.config()
+function M.on_attach(_)
     local res, api = pcall(require, "nvim-tree.api")
     if not res then
         vim.notify("nvim-tree.api not found", vim.log.levels.ERROR)
@@ -43,9 +43,10 @@ function M.config()
 
         map('n', '<leader>tt', api.tree.toggle, opts("toggle nvim-tree"))
     end
+end
 
-    local nvim_tree
-    res, nvim_tree = pcall(require, "nvim-tree")
+function M.config()
+    local res, nvim_tree = pcall(require, "nvim-tree")
     if not res then
         vim.notify("nvim-tree not found", vim.log.levels.ERROR)
         return
@@ -55,6 +56,7 @@ function M.config()
     vim.g.loaded_netrwPlugin = 1
 
     nvim_tree.setup {
+        on_attach = M.on_attach(),
         update_focused_file = {
             -- enables the feature
             enable      = true,
@@ -73,10 +75,7 @@ function M.config()
             width = 30,
             side = 'left',
             number = true,
-            relativenumber = true,
-            mappings = {
-                custom_only = false,
-            }
+            relativenumber = true
         }
     }
 end
