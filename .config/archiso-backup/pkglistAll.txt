@@ -1,11 +1,12 @@
 acpilight
 alacritty
 alsa-utils
+anydesk-bin
 aspell-en
 autoconf
 automake
 avidemux-qt
-awesome-git
+awesome-luajit-git
 awmtt
 base
 bison
@@ -41,6 +42,7 @@ linux-lts
 linux-lts-headers
 lua-lgi
 lua-pam-git
+luajit-lgi
 lxqt-policykit
 ly
 m4

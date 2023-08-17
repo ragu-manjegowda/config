@@ -593,8 +593,18 @@ function scale-gtk-app() {
 ############################## goimapnotify ###################################
 ###############################################################################
 
-function start-goimapnotify () {
+function watch-email() {
+    # Kill old processes
+    killall goimapnotify 2>/dev/null
+    killall notify.sh 2>/dev/null
+
+    # Start goimapnotify
     goimapnotify -conf ~/.config/imapnotify/imapnotify.conf > \
         ~/.cache/awesome/imapnotify.log 2>&1 &
     disown %goimapnotify
+
+    # Start notify.sh
+    eval "${HOME}/.config/imapnotify/notify.sh" > \
+        ~/.cache/awesome/notify.log 2>&1 &
+    disown %eval
 }
