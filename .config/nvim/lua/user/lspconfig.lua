@@ -208,11 +208,19 @@ function M.config()
         filetypes = { "go", "gomod" },
         root_dir = nvim_lsp.util.root_pattern("go.mod", ".gitignore"),
         settings = {
+            directoryFilters = {
+                "-**/node_modules",
+                "-**/.DS_Store",
+                "-bazel-*/**/*",
+                "-bazel-*/",
+                "-.vscode",
+                "-.idea"
+            },
             gopls = {
                 analyses = {
                     unusedparams = true,
                 },
-                staticcheck = true,
+                staticcheck = true
             },
             hints = {
                 assignVariableTypes = true,
@@ -221,7 +229,7 @@ function M.config()
                 constantValues = true,
                 functionTypeParameters = true,
                 parameterNames = true,
-                rangeVariableTypes = true,
+                rangeVariableTypes = true
             }
         }
     }
