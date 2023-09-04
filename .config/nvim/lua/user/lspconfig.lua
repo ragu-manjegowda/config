@@ -202,34 +202,30 @@ function M.config()
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
     -- Golang
+    -- https://github.com/bazelbuild/rules_go/wiki/Editor-setup
+
+    local lua_config_dir = vim.fn.stdpath("config") .. "/lua/user/"
+
     nvim_lsp.gopls.setup {
         on_attach = on_attach,
         cmd = { "gopls", "serve" },
         filetypes = { "go", "gomod" },
         root_dir = nvim_lsp.util.root_pattern("go.mod", ".gitignore"),
         settings = {
-            directoryFilters = {
-                "-**/node_modules",
-                "-**/.DS_Store",
-                "-bazel-*/**/*",
-                "-bazel-*/",
-                "-.vscode",
-                "-.idea"
-            },
             gopls = {
                 analyses = {
                     unusedparams = true,
                 },
+                directoryFilters = {
+                    "-bazel-bin",
+                    "-bazel-out",
+                    "-bazel-testlogs",
+                    "-bazel-mypkg",
+                },
+                env = {
+                    GOPACKAGESDRIVER = lua_config_dir .. "gopackagesdriver.sh"
+                },
                 staticcheck = true
-            },
-            hints = {
-                assignVariableTypes = true,
-                compositeLiteralFields = true,
-                compositeLiteralTypes = true,
-                constantValues = true,
-                functionTypeParameters = true,
-                parameterNames = true,
-                rangeVariableTypes = true
             }
         }
     }
