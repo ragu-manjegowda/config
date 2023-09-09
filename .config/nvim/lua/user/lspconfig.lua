@@ -208,6 +208,9 @@ function M.config()
 
     nvim_lsp.gopls.setup {
         on_attach = on_attach,
+        flags = {
+            debounce_text_changes = 150,
+        },
         cmd = { "gopls", "serve" },
         filetypes = { "go", "gomod" },
         root_dir = nvim_lsp.util.root_pattern("go.mod", ".gitignore"),
