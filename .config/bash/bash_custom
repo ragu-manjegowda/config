@@ -1,7 +1,7 @@
 # vim: filetype=sh
 
 # Alias to notify ssh client
-CLIENT_IP=$(echo $SSH_CLIENT | awk '{ print $1}')
+CLIENT_IP=$(echo "$SSH_CLIENT" | awk '{ print $1}')
 alias notify='ssh ragu@$CLIENT_IP afplay /System/Library/Sounds/Glass.aiff'
 
 # Homebrew Path
@@ -11,7 +11,7 @@ export PATH="$PATH:$HOMEBREW_PATH/sbin"
 
 # Broot
 if [ -f "$HOME/.config/broot/launcher/bash/br" ]; then
-    source $HOME/.config/broot/launcher/bash/br
+    source "$HOME/.config/broot/launcher/bash/br"
 fi
 
 # Completion
@@ -21,12 +21,13 @@ if [ -n "$BASH_VERSION" ]; then
   fi
 elif [ -n "$ZSH_VERSION" ]; then
   if [ -r "$HOMEBREW_PATH/share/zsh/site-functions" ]; then
-    fpath=($HOMEBREW_PATH/share/zsh/site-functions $fpath)
+    export fpath=("$HOMEBREW_PATH/share/zsh/site-functions" $fpath)
   fi
 fi
 
 # Go
-export GOPATH="$HOME/.config/go"
+export GOPATH="$HOME/.cache/go"
+export GOBIN="$HOME/.local/bin"
 
 # Java
 export PATH="$HOMEBREW_PATH/opt/openjdk@11/bin:$PATH"
