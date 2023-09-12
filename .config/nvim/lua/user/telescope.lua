@@ -104,7 +104,7 @@ function M.before()
 
     map({ 'n', 'v' }, '<leader>fg',
         '<cmd>lua require("user.telescope").live_grep()<CR>',
-        { silent = true, desc = 'Telescope grep folder' })
+        { silent = true, desc = 'Telescope live grep with regex' })
 
     map('n', '<leader>pb', '<cmd>lua require("telescope.builtin").buffers()<CR>',
         { silent = true, desc = 'Telescope list project buffers' })
