@@ -204,7 +204,25 @@ function M.config()
     -- Golang
     -- https://github.com/bazelbuild/rules_go/wiki/Editor-setup
 
-    local lua_config_dir = vim.fn.stdpath("config") .. "/lua/user/"
+    local gopackagesdriver = ""
+
+    local git_root = vim.fn.systemlist("git rev-parse --show-toplevel")[1]
+
+    -- if git then check if WORKSPACE file exists in root
+    if vim.v.shell_error == 0 then
+        -- Define patterns for Bazel files (BUILD and WORKSPACE)
+        local build_file_pattern = git_root .. '/BUILD'
+        local workspace_file_pattern = git_root .. '/WORKSPACE'
+
+        -- Check if either BUILD or WORKSPACE files exist in the project directory
+        local has_build_file = vim.fn.filereadable(build_file_pattern) == 1
+        local has_workspace_file = vim.fn.filereadable(workspace_file_pattern) == 1
+
+        if has_build_file or has_workspace_file then
+            local lua_config_dir = vim.fn.stdpath("config") .. "/lua/user/"
+            gopackagesdriver = lua_config_dir .. "gopackagesdriver.sh"
+        end
+    end
 
     nvim_lsp.gopls.setup {
         on_attach = on_attach,
@@ -226,7 +244,7 @@ function M.config()
                     "-bazel-mypkg",
                 },
                 env = {
-                    GOPACKAGESDRIVER = lua_config_dir .. "gopackagesdriver.sh"
+                    GOPACKAGESDRIVER = gopackagesdriver
                 },
                 staticcheck = true
             }
