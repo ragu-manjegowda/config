@@ -46,6 +46,7 @@ noto-fonts
 noto-fonts-emoji
 ntp
 okular
+openrazer-daemon
 openssl-1.1
 patch
 pavucontrol

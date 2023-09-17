@@ -7,6 +7,9 @@
 
 # Homebrew Path
 export HOMEBREW_PATH="/usr/local"
+if [ -r "/opt/homebrew" ]; then
+    export HOMEBREW_PATH="/opt/homebrew"
+fi
 export PATH="$HOMEBREW_PATH/bin:$PATH"
 export PATH="$HOMEBREW_PATH/sbin:$PATH"
 
