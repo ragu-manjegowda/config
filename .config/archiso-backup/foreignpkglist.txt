@@ -16,7 +16,6 @@ mu
 myxer
 nomachine
 numix-cursor-theme
-openrazer-meta
 pacman-cleanup-hook
 paru
 picom-git

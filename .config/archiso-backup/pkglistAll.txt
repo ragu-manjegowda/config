@@ -64,7 +64,7 @@ noto-fonts-emoji
 ntp
 numix-cursor-theme
 okular
-openrazer-meta
+openrazer-daemon
 openssl-1.1
 pacman-cleanup-hook
 paru
