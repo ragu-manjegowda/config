@@ -35,7 +35,8 @@ end
 function M.grep_folder()
     local opts = {}
     opts.search_dirs = {}
-    opts.search_dirs[1] = vim.fn.input("Grep in Directory > ")
+    opts.search_dirs[1] = vim.fn.input("Grep in Directory > ",
+        vim.fn.getcwd() .. "/", "file")
     M.grep(opts)
 end
 
@@ -304,7 +305,6 @@ function M.config()
     telescope.load_extension("hop")
     telescope.load_extension("live_grep_args")
     telescope.load_extension("undo")
-
 end
 
 return M
