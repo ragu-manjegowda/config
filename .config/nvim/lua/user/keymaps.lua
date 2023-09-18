@@ -100,7 +100,7 @@ keymap("n", "<leader>od", ":Copen<CR><C-w>T", opts)
 keymap("n", "<leader>fp", "1<C-g><CR>", { noremap = true })
 
 -- go substitute because the default map for sleeping is silly
-keymap("n", "gs", ":%s/ / /gic<Left><Left><Left><Left><Left><Left><Left>", { noremap = true })
+keymap("n", "gs", ":%s///gic<Left><Left><Left><Left><Left><Left><Left>", { noremap = true })
 
 
 -------------------------------------------------------------------------------
