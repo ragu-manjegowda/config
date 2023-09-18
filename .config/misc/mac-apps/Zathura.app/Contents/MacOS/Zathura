@@ -3,5 +3,10 @@
 #
 ##########################################
 export LANG=en_CA.UTF-8
-. ~/.profile
-/usr/local/bin/zathura;
+
+export HOMEBREW_PATH="/usr/local"
+if [ -r "/opt/homebrew" ]; then
+    export HOMEBREW_PATH="/opt/homebrew"
+fi
+
+$HOMEBREW_PATH/bin/zathura;
