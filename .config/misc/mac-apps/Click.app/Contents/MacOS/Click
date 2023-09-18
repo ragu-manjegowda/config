@@ -1,0 +1,18 @@
+#!/bin/sh
+#Script written for a Cliclick Mac app by Ragu Manjegowda
+#
+##########################################
+export LANG=en_CA.UTF-8
+
+while true
+do
+	# osascript -e 'tell app "System Events" to display notification "Clicked"';
+	# echo display notification \"Clicked\"  | osascript
+	export HOMEBREW_PATH="/usr/local"
+	if [ -r "/opt/homebrew" ]; then
+		export HOMEBREW_PATH="/opt/homebrew"
+	fi
+
+	$HOMEBREW_PATH/bin/cliclick c:.;
+	sleep 10;
+done
