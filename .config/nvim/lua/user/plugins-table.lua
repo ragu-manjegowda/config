@@ -148,16 +148,14 @@ local core_plugins = {
     -- Indent markers
     {
         "lukas-reineke/indent-blankline.nvim",
+        config = function()
+            require("user.indent-blankline").config()
+        end,
         dependencies = {
             "nvim-treesitter/nvim-treesitter",
         },
         event = "UIEnter",
-        init = function()
-            require("user.indent-blankline").before()
-        end,
-        config = function()
-            require("user.indent-blankline").config()
-        end
+        main = "ibl"
     },
 
     -- Terminal
