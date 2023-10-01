@@ -4,10 +4,10 @@
 # Written by ragu-manjegowda
 
 # make everything on highDPI monitor not look teeny-tiny
-xrandr --dpi 144
+xrandr --dpi 192
 
 # set up high DPI monitor
-xrandr --output eDP1 --mode 2560x1440 --pos 0x0
+xrandr --output eDP-1 --mode 3840x2400 --pos 0x0
 
 # Following fixes low res monitor cursor and resolution issue
 

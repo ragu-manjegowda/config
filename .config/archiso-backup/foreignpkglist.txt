@@ -9,7 +9,6 @@ google-chrome
 gtk-theme-numix-solarized
 light-git
 lua-pam-git
-luajit-lgi
 mbsync-git
 mosh-git
 mu
@@ -17,6 +16,7 @@ myxer
 nomachine
 numix-cursor-theme
 pacman-cleanup-hook
+pam-fprint-grosshack
 paru
 picom-git
 ranger-git
