@@ -15,7 +15,7 @@ local vertical_separator =  wibox.widget {
 
 local info_center = function(s)
 	-- Set the info center geometry
-	local panel_width = s.geometry.width / 5
+	local panel_width = s.geometry.width / 6
 	local panel_margins = dpi(5)
 
 	local panel = awful.popup {
