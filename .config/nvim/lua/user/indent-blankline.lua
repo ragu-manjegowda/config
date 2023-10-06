@@ -15,19 +15,13 @@ function M.config()
     end
 
     indent_blankline.setup({
-        bufname_exclude = { "README.md" },
-        char_list = { "|", "¦", "┆", "┊" },
         exclude = {
             filetypes = {
                 "lspinfo", "lazy", "checkhealth", "help", "man", "fugitive"
-            }
+            },
+            buftypes = { "markdown" },
         },
-        indent = { tab_char = "|" },
-        space_char_blankline = " ",
-        show_trailing_blankline_indent = false,
-        show_current_context = true,
-        use_treesitter = true,
-        treesitter_scope = true
+        indent = { tab_char = "|" }
     })
 end
 
