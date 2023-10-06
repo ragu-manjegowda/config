@@ -1,5 +1,6 @@
 acpilight
 alacritty
+alsa-firmware
 alsa-utils
 aspell-en
 avidemux-qt
@@ -7,6 +8,7 @@ base
 base-devel
 blueman
 broadcom-wl-dkms
+darkman
 docker
 efibootmgr
 ffmpeg
@@ -14,6 +16,8 @@ firefox
 fprintd
 git
 goimapnotify
+gst-plugin-pipewire
+gst-plugins-good
 imagemagick
 imlib2
 iwd
@@ -58,6 +62,8 @@ rofi-calc
 rofi-emoji
 rsync
 rust-src
+sof-firmware
+thermald
 thunar
 timeshift
 tmux
