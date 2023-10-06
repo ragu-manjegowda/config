@@ -1,5 +1,6 @@
 acpilight
 alacritty
+alsa-firmware
 alsa-utils
 anydesk-bin
 aspell-en
@@ -22,9 +23,15 @@ fprintd
 git
 goimapnotify
 google-chrome
+gst-plugin-pipewire
+gst-plugins-good
 gtk-theme-numix-solarized
+icamerasrc-git
 imagemagick
 imlib2
+intel-ipu6-dkms-git
+intel-ipu6ep-camera-bin-fix
+intel-ipu6ep-camera-hal-git-fix
 iwd
 jack2
 libreoffice-still
@@ -82,9 +89,11 @@ rofi-emoji
 rsync
 rust-src
 slack-desktop
+sof-firmware
 solarized-colors-iconpack-git
 sync-pacman-hook-git
 teams
+thermald
 thunar
 timeshift
 tmux
@@ -92,6 +101,8 @@ ttf-dejavu
 ttf-hack-nerd
 upower
 urlscan
+v4l2-relayd
+v4l2loopback-dkms-git-fix
 vdhcoapp
 vlc
 w3m

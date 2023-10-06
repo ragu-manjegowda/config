@@ -3,10 +3,13 @@ awesome-luajit-git
 awmtt
 check-broken-packages-pacman-hook-git
 cyrus-sasl-xoauth2-git
-darkman
 find-cursor
 google-chrome
 gtk-theme-numix-solarized
+icamerasrc-git
+intel-ipu6-dkms-git
+intel-ipu6ep-camera-bin-fix
+intel-ipu6ep-camera-hal-git-fix
 light-git
 lua-pam-git
 mbsync-git
@@ -25,6 +28,8 @@ slack-desktop
 solarized-colors-iconpack-git
 sync-pacman-hook-git
 teams
+v4l2-relayd
+v4l2loopback-dkms-git-fix
 vdhcoapp
 w3m-imgcat
 xidlehook
