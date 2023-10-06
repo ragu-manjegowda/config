@@ -47,17 +47,17 @@ return {
 
         screen_recorder = {
             -- Default record dimension
-            resolution = '2560x1440',
+            resolution = '3840x2400',
             -- X,Y coordinate
             offset = '0,0',
             -- Enable audio by default
-            audio = false,
+            audio = true,
             -- Recordings directory
             save_directory = '$HOME/Videos/Recordings/',
             -- Mic level
             mic_level = '20',
             -- FPS
-            fps = '30'
+            fps = '60'
         }
     },
 
