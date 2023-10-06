@@ -128,7 +128,8 @@ return {
             -- Camera path (Some systemts will have more than one built-in
             -- camera, pick the right one with this command
             -- $ v4l2-ctl --list-devices
-            camera_device = '/dev/video2',
+            camera_device = '/dev/video8',
+            capture_script = utils_dir .. 'capture',
             -- Intruder image save location (Will create directory if it doesn't exist)
             face_capture_dir = '$HOME/Pictures/Intruders/',
             -- Background directory - Defaults to 'awesome/config/theme/wallpapers/' if null
