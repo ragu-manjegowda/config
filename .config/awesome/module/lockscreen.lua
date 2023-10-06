@@ -9,6 +9,7 @@ local dpi = beautiful.xresources.apply_dpi
 local apps = require('configuration.apps')
 local widget_icon_dir = config_dir .. 'configuration/user-profile/'
 local config = require('configuration.config')
+local utils_dir = config_dir .. 'utilities/'
 
 require('module.dynamic-wallpaper')
 require('module.auto-start')
@@ -320,20 +321,20 @@ local locker = function(s)
     -- Snap an image of the intruder
     local intruder_capture = function()
         local capture_image = [[
-		save_dir="]] .. locker_config.face_capture_dir .. [["
-		date="$(date +%Y%m%d_%H%M%S)"
-		file_loc="${save_dir}SUSPECT-${date}.png"
+        save_dir="]] .. locker_config.face_capture_dir .. [["
+        date="$(date +%Y%m%d_%H%M%S)"
+        file_loc="${save_dir}SUSPECT-${date}.png"
 
-		if [ ! -d "$save_dir" ]; then
-			mkdir -p "$save_dir";
-		fi
+        if [ ! -d "$save_dir" ]; then
+            mkdir -p "$save_dir";
+        fi
 
-		ffmpeg -f video4linux2 -s 800x600 -i ]] ..
-            config.module.lockscreen.camera_device .. [[ -ss 0:0:2 -frames 1 "${file_loc}"
+        ]] .. config.module.lockscreen.capture_script ..
+            " " .. config.module.lockscreen.camera_device .. [[ "${file_loc}"
 
-		canberra-gtk-play -i camera-shutter &
-		echo "${file_loc}"
-		]]
+        canberra-gtk-play -i camera-shutter &
+        echo "${file_loc}"
+        ]]
 
         -- Capture the filthy intruder face
         awful.spawn.easy_async_with_shell(

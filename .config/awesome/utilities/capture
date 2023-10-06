@@ -1,0 +1,4 @@
+#!/bin/bash
+
+ffmpeg -f v4l2 -input_format yuyv422 -i $1 -vf \
+    'select=gte(n\,3),scale=1280:720,format=yuv420p' -vframes 1 $2
