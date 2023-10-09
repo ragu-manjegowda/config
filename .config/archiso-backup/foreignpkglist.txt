@@ -18,6 +18,7 @@ mu
 myxer
 nomachine
 numix-cursor-theme
+nvidia-container-toolkit
 pacman-cleanup-hook
 pam-fprint-grosshack
 paru

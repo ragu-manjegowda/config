@@ -270,9 +270,9 @@ vim.api.nvim_create_autocmd("FileType", {
 
 -- Disable displaying leading spaces for certain filetypes
 vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "checkhealth", "fugitive", "gitcommit" },
+    pattern = { "checkhealth", "fugitive", "gitcommit", "text" },
     callback = function()
         vim.opt.list = false
-        vim.opt.listchars:remove "lead:⋅"
+        vim.opt.listchars:remove "lead"
     end
 })

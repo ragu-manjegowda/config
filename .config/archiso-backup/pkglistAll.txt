@@ -65,6 +65,7 @@ noto-fonts-emoji
 ntp
 numix-cursor-theme
 nvidia
+nvidia-container-toolkit
 nvidia-utils
 okular
 openrazer-daemon

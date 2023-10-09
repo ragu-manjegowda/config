@@ -139,7 +139,7 @@ function M.config()
         vim.notify("lsp-inlayhints not found", vim.log.levels.WARN)
     else
         vim.api.nvim_create_user_command(
-            'InlayHintsToggle',
+            'ToggleInlayHints',
             function()
                 lsp_inlayhints.toggle()
             end, {}

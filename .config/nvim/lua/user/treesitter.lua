@@ -30,6 +30,8 @@ M.config = function()
             "go",
             "json",
             "lua",
+            "markdown",
+            "markdown_inline",
             "python",
             "rust",
             "vim",

@@ -106,7 +106,9 @@ return {
         -- Start volctl
         config_dir .. 'utilities/volctl &',
         -- Start playerctl daemon
-        'playerctld daemon'
+        'playerctld daemon',
+        -- Set colemak dh layout and enable right alt key
+        'setxkbmap us colemak_dh && setxkbmap -option "lv3:ralt_alt"'
     },
 
     -- List of binaries/shell scripts that will execute for a certain task
