@@ -7,6 +7,8 @@ local vim = vim
 
 local M = {}
 
+vim.g.u_indent_blankline_enabled = true
+
 function M.config()
     local res, indent_blankline = pcall(require, "ibl")
     if not res then
@@ -17,12 +19,24 @@ function M.config()
     indent_blankline.setup({
         exclude = {
             filetypes = {
-                "lspinfo", "lazy", "checkhealth", "help", "man", "fugitive"
+                "lspinfo", "lazy", "checkhealth", "help", "man", "fugitive",
+                "README", "text", "markdown"
             },
             buftypes = { "markdown" },
         },
         indent = { tab_char = "|" }
     })
+
+    vim.api.nvim_create_user_command(
+        'ToggleIndentBlankLine',
+        function()
+            if vim.g.u_indent_blankline_enabled then
+                indent_blankline.update { enabled = false }
+            else
+                indent_blankline.update { enabled = true }
+            end
+        end, {}
+    )
 end
 
 return M
