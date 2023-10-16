@@ -545,6 +545,16 @@ local global_keys = awful.util.table.join(
         { description = 'decrease keyboard brightness by 10%', group = 'hotkeys' }
     ),
 
+    awful.key(
+        {},
+        'XF86KbdLightOnOff',
+        function()
+            awesome.emit_signal('widget::kbd_brightness')
+            awesome.emit_signal('module::kbd_brightness_osd:show', true)
+        end,
+        { description = 'Toggle keyboard brightness', group = 'hotkeys' }
+    ),
+
     -- ALSA volume control
     awful.key(
         {},
