@@ -13,15 +13,7 @@ M.config = function()
     end
 
     require 'nvim-treesitter.configs'.setup {
-        indent = {
-            enable = false,
-            disable = {},
-        },
-        highlight = {
-            enable = true, -- false will disable the whole extension
-            disable = { "" }, -- list of language that will be disabled
-            additional_vim_regex_highlighting = false,
-        },
+        auto_install = true,
         ensure_installed = {
             "bash",
             "c",
@@ -37,6 +29,18 @@ M.config = function()
             "vim",
             "yaml"
         },
+        highlight = {
+            enable = true, -- false will disable the whole extension
+            disable = { "" }, -- list of language that will be disabled
+            additional_vim_regex_highlighting = false,
+        },
+        ignore_install = {},
+        indent = {
+            enable = false,
+            disable = {},
+        },
+        modules = {},
+        sync_install = false,
         textobjects = {
             select = {
                 enable = true,
@@ -87,6 +91,8 @@ M.config = function()
     }
 
     vim.opt["foldexpr"] = "nvim_treesitter#foldexpr()"
+    -- vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+    -- vim.opt.foldtext = "v:lua.vim.treesitter.foldtext()"
 
     -- Setup new symantic highlighting
     -- Reference: reddit.com/r/neovim/comments/12gvms4
