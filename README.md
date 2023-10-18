@@ -50,11 +50,13 @@
 |:--:|
 | ***AweomeWM - firefox*** |
 
-## Setup Instructions
+## Setup/Install
 
-`.config/homebrew-backup` has information about steps needs to be performed before following configs kick in action.
+### Run the bootstrap script
+`$ bash -c "$(curl -fsSL https://raw.githubusercontent.com/ragu-manjegowda/config/master/.config/scripts/bootstrap.sh)"`
 
-The following describes a simple way to manage profile configuration files using GitHub.
+
+## The following describes a simple way to manage profile configuration files using GitHub.
 
 ### Features
 
