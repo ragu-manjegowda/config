@@ -91,6 +91,14 @@ local core_plugins = {
         end
     },
 
+    {
+        "echasnovski/mini.animate",
+        config = function()
+            require("user.animate").config()
+        end,
+        version = false
+    },
+
     -- Debugging
     {
         "rcarriga/nvim-dap-ui",
@@ -114,10 +122,10 @@ local core_plugins = {
 
     -- Extras
     {
-        'echasnovski/mini.bracketed',
+        "echasnovski/mini.bracketed",
         event = "VeryLazy",
         config = function()
-            require('user.bracketed').config()
+            require("user.bracketed").config()
         end,
         version = false
     },
@@ -128,6 +136,14 @@ local core_plugins = {
         config = function()
             require("user.nvim-tree").config()
         end
+    },
+
+    {
+        "echasnovski/mini.files",
+        config = function()
+            require("user.files").config()
+        end,
+        version = false
     },
 
     { "itchyny/vim-cursorword" },
@@ -167,7 +183,7 @@ local core_plugins = {
     },
 
     {
-        'willothy/flatten.nvim',
+        "willothy/flatten.nvim",
         -- Ensure that it runs first to minimize delay when opening file
         -- from terminal
         lazy = false,

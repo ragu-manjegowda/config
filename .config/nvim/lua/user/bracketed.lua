@@ -26,7 +26,7 @@ function M.config()
     })
 
     vim.api.nvim_create_user_command(
-        'ToggleMiniIndentscope',
+        'ToggleMiniBracketed',
         function()
             if vim.g.minibracketed_disable then
                 vim.g.minibracketed_disable = false
