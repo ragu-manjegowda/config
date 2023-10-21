@@ -77,12 +77,12 @@ function M.config()
 
     map('n', '[e',
         "<cmd>lua require('lspsaga.diagnostic'):goto_prev({ " ..
-            "severity = vim.diagnostic.severity.ERROR })<CR>",
+        "severity = vim.diagnostic.severity.ERROR })<CR>",
         { silent = true, desc = 'LSP jump to prev error' })
 
     map('n', ']e',
         "<cmd>lua require('lspsaga.diagnostic'):goto_next({ " ..
-            "severity = vim.diagnostic.severity.ERROR })<CR>",
+        "severity = vim.diagnostic.severity.ERROR })<CR>",
         { silent = true, desc = 'LSP jump to next error' })
 
     map('n', '<leader>ep', '<cmd>Lspsaga show_line_diagnostics<CR>',
@@ -91,7 +91,7 @@ function M.config()
     map('n', '<leader>eP', '<cmd>Lspsaga show_cursor_diagnostics<CR>',
         { silent = true, desc = 'LSP cursor diagnostics' })
 
-    map({'n', 'v' }, '<leader>lca', '<cmd>Lspsaga code_action<CR>',
+    map({ 'n', 'v' }, '<leader>lca', '<cmd>Lspsaga code_action<CR>',
         { silent = true, desc = 'LSP code action' })
 
     map('n', '<leader>ld', '<cmd>Lspsaga goto_definition<CR>',

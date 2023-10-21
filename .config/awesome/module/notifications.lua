@@ -38,7 +38,6 @@ naughty.config.icon_formats = { 'svg', 'png', 'jpg', 'gif' }
 ruled.notification.connect_signal(
     'request::rules',
     function()
-
         -- Critical notifs
         ruled.notification.append_rule {
             rule       = { urgency = 'critical' },
@@ -91,7 +90,6 @@ ruled.notification.connect_signal(
         --         ignore    = true
         --     }
         -- }
-
     end
 )
 
@@ -113,7 +111,6 @@ naughty.connect_signal(
 naughty.connect_signal(
     "request::icon",
     function(n, _, hints)
-
         -- Handle cases where hints.app_icon is `nil`
         if hints.app_icon == nil then
             if n.app_name == nil then
@@ -142,7 +139,6 @@ end)
 naughty.connect_signal(
     'request::display',
     function(n)
-
         -- Actions Blueprint
         local actions_template = wibox.widget {
             notification = n,
@@ -191,7 +187,7 @@ naughty.connect_signal(
                     from = { 0, 0 },
                     to = { 400, 400 },
                     stops = {
-                        { 0, beautiful.accent },
+                        { 0,   beautiful.accent },
                         { 0.2, beautiful.accent },
                         { 0.4, beautiful.accent },
                         { 0.6, beautiful.accent },
