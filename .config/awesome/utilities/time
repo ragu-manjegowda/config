@@ -16,4 +16,4 @@ YEAR="$(date +"%Y")"
 options="$DAY\n$MONTH\n$YEAR"
 
 ## Main
-chosen="$(echo -e "$options" | $@ -p "   $DN, $TIME" -dmenu -selected-row 1)"
+chosen="$(echo -e "$options" | $@ -p "󰔠   $DN, $TIME" -dmenu -selected-row 1)"
