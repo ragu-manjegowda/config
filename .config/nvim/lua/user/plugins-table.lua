@@ -229,6 +229,18 @@ local core_plugins = {
         end
     },
 
+    -- Leetcode in Vim
+    {
+        "Dhanus3133/LeetBuddy.nvim",
+        config = function()
+            require("user.leetbuddy").config()
+        end,
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "nvim-telescope/telescope.nvim",
+        }
+    },
+
     -- LSP
     {
         "neovim/nvim-lspconfig",
