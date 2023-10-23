@@ -56,7 +56,7 @@
 	path = .config/zsh/zsh-custom/themes/dircolors-solarized
 	url = https://github.com/seebi/dircolors-solarized.git
 	branch = master
-[submodule "/home/ragu/.config/ranger/plugins/ranger_fzf_filter"]
-	path = /home/ragu/.config/ranger/plugins/ranger_fzf_filter
+[submodule ".config/ranger/plugins/ranger_fzf_filter"]
+	path = .config/ranger/plugins/ranger_fzf_filter
 	url = https://github.com/MuXiu1997/ranger-fzf-filter.git
 	branch = main

@@ -152,10 +152,14 @@ export FZF_ALT_C_OPTS="${FZF_ALT_C_OPTS}$C_OPTS_BIND_OPTS4$C_OPTS_BIND_OPTS5"
 
 R_OPTS_PREVIEW="--preview 'echo {}' --preview-window down:3:hidden:wrap"
 R_OPTS_BIND_1="--bind 'ctrl-/:toggle-preview,ctrl-f:jump'"
-R_OPTS_BIND_2="--bind 'ctrl-y:execute-silent(echo -n {2..} | xclip -sel clip)+abort'"
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    R_OPTS_BIND_2="--bind 'ctrl-y:execute-silent(echo -n {2..} | xclip -sel clip)+abort'"
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    R_OPTS_BIND_2="--bind 'ctrl-y:execute-silent(echo -n {2..} | pbcopy)+abort'"
+fi
 export FZF_CTRL_R_OPTS="${R_OPTS_PREVIEW} ${R_OPTS_BIND_1} ${R_OPTS_BIND_2}"
 
-export FZF_TMUX_OPTS="-d 70%"
+export FZF_TMUX_OPTS="-p95%,90%"
 
 # Paru, Pacman fzf
 if [ -f "/etc/arch-release" ]; then
