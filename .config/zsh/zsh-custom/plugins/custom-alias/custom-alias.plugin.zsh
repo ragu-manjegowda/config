@@ -126,7 +126,7 @@ zstyle ':autocomplete:*' widget-style menu-select
 # yes: Tab first tries Fzf's completion, then falls back to Zsh's.
 zstyle ':autocomplete:*' fzf-completion yes
 
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=6'
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=yellow,bold,underline"
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 
 # function to toggle alacritty theme defined in colors.yml
