@@ -143,6 +143,7 @@ local core_plugins = {
         config = function()
             require("user.files").config()
         end,
+        event = "VeryLazy",
         version = false
     },
 
@@ -238,7 +239,8 @@ local core_plugins = {
         dependencies = {
             "nvim-lua/plenary.nvim",
             "nvim-telescope/telescope.nvim",
-        }
+        },
+        event = "VeryLazy"
     },
 
     -- LSP
