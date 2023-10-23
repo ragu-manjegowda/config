@@ -138,6 +138,9 @@
 .config/pavucontrol.ini
 .config/pip
 .config/qalculate
+.config/ranger/plugins/__init__.py
+.config/ranger/plugins/__pycache__/
+.config/ranger/rifle.conf
 .config/rclone/rclone.conf
 .config/redshift.conf
 .config/remmina
