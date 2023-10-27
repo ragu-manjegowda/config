@@ -71,6 +71,7 @@ function M.config()
 
     -- Shift the focus to terminal, avoid focusing buffer in insert mode
     -- because of TermOpen autocmd
+    ---@diagnostic disable-next-line: undefined-field
     dap.defaults.fallback.focus_terminal = true
 
     -- Configure language adapaters
@@ -84,6 +85,7 @@ function M.config()
     end
 
 
+    ---@diagnostic disable-next-line: undefined-field
     dap.adapters.cppdbg = {
         id = "cppdbg",
         type = "executable",
@@ -95,6 +97,7 @@ function M.config()
         },
     }
 
+    ---@diagnostic disable-next-line: undefined-field
     dap.configurations.cpp = {
         {
             name          = "Launch file",
@@ -144,11 +147,14 @@ function M.config()
     }
 
     -- Re-use this for C and Rust
+    ---@diagnostic disable-next-line: undefined-field
     dap.configurations.c = dap.configurations.cpp
+    ---@diagnostic disable-next-line: undefined-field
     dap.configurations.rust = dap.configurations.cpp
 
 
     -- Go adapters
+    ---@diagnostic disable-next-line: undefined-field
     dap.adapters.go = function(callback, config)
         local stdout = vim.loop.new_pipe(false)
         local handle
@@ -165,7 +171,7 @@ function M.config()
             stdout:close()
             handle:close()
             if code ~= 0 then
-                vim.notify("dlv exited with code " .. code, vim.log.levels.ERROR)
+                print("dlv exited with code " .. code)
             end
         end)
         assert(handle, "Error running dlv: " .. tostring(pid_or_err))
@@ -186,43 +192,97 @@ function M.config()
             100)
     end
 
+    ---@diagnostic disable-next-line: undefined-field
     dap.configurations.go = {
         {
-            type = "go",
-            name = "Debug",
+            type    = "go",
+            name    = "Debug",
             request = "launch",
             program = "${file}",
+
+            args    = function()
+                local argument_string = vim.fn.input("Program arguments: ")
+                return vim.fn.split(argument_string, " ", true)
+            end
         },
         {
-            type = "go",
-            name = "Debug Package",
+            type    = "go",
+            name    = "Debug Package",
             request = "launch",
             program = "${fileDirname}",
+
+            args    = function()
+                local argument_string = vim.fn.input("Program arguments: ")
+                return vim.fn.split(argument_string, " ", true)
+            end
         },
         {
-            type = "go",
-            name = "Attach",
-            mode = "local",
-            request = "attach",
-            processId = require("dap.utils").pick_process,
+            -- Run dlv server then pick the process
+            -- dlv exec --headless -l=:38697 ./goimapnotify -- -conf /home/ragu/.config/imapnotify/imapnotify.conf
+            type           = "go",
+            name           = "Attach",
+            mode           = "remote",
+            request        = "attach",
+            port           = "38697",
+            processId      = require("dap.utils").pick_process,
+            trace          = "log",
+            logOutput      = "rpc",
+            substitutePath = {
+                {
+                    from = "${workspaceFolder}/bazel-${workspaceFolderBasename}/external/",
+                    to = "external/",
+                },
+                {
+                    from = "external/",
+                    to = "${workspaceFolder}/bazel-${workspaceFolderBasename}/external/",
+                },
+                {
+                    from = "GOROOT/",
+                    to = "${workspaceFolder}/bazel-${workspaceFolderBasename}/external/go_sdk/",
+                },
+                {
+                    from = "${workspaceFolder}/bazel-${workspaceFolderBasename}/external/go_sdk/",
+                    to = "GOROOT/",
+                },
+                {
+                    from = "",
+                    to =
+                    "${workspaceFolder}"
+                },
+                {
+                    from = "${workspaceFolder}",
+                    to = ""
+                }
+            }
         },
         {
-            type = "go",
-            name = "Debug test",
+            type    = "go",
+            name    = "Debug test",
             request = "launch",
-            mode = "test",
+            mode    = "test",
             program = "${file}",
+
+            args    = function()
+                local argument_string = vim.fn.input("Program arguments: ")
+                return vim.fn.split(argument_string, " ", true)
+            end
         },
         {
-            type = "go",
-            name = "Debug test (go.mod)",
+            type    = "go",
+            name    = "Debug test (go.mod)",
             request = "launch",
-            mode = "test",
+            mode    = "test",
             program = "./${relativeFileDirname}",
+
+            args    = function()
+                local argument_string = vim.fn.input("Program arguments: ")
+                return vim.fn.split(argument_string, " ", true)
+            end
         }
     }
 
     -- Python adapters
+    ---@diagnostic disable-next-line: undefined-field
     dap.adapters.python = {
         type = "executable",
         command = path.concat
@@ -238,6 +298,7 @@ function M.config()
         args = { "-m", "debugpy.adapter" }
     }
 
+    ---@diagnostic disable-next-line: undefined-field
     dap.adapters.remote_python = function(callback)
         callback({
             type = "server",
@@ -246,6 +307,7 @@ function M.config()
         })
     end
 
+    ---@diagnostic disable-next-line: undefined-field
     dap.configurations.python = {
         {
             type        = "python",
@@ -266,7 +328,7 @@ function M.config()
                     vim.fn.getcwd() .. "/", "file")
             end,
 
-            stopAtEntry = true,
+            stopAtEntry = true
         },
         {
             type = "remote_python",
@@ -275,7 +337,7 @@ function M.config()
             port = 3000,
             host = "localhost",
 
-            stopAtEntry = true,
+            stopAtEntry = true
         },
     }
 end
