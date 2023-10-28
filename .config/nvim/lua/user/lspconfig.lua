@@ -203,25 +203,34 @@ function M.config()
     ---------------------------------------------------------------------------
     -- Golang
     -- https://github.com/bazelbuild/rules_go/wiki/Editor-setup
+    -- https://github.com/AnatoleLucet/dotfiles/blob/9f329f8d624655ab262329e12531eb1dfb54df15/nvim.save/.config/nvim/lua/lsp/init.lua#L153
+
+    local cwd = vim.fn.getcwd()
 
     local gopackagesdriver = ""
+    local bazel_workspace_dir = ""
+    local goroot = ""
 
-    local git_root = vim.fn.systemlist("git rev-parse --show-toplevel")[1]
+    -- Define patterns for Bazel files (BUILD and WORKSPACE)
+    local build_file_pattern = cwd .. '/BUILD'
+    local workspace_file_pattern = cwd .. '/WORKSPACE'
 
-    -- if git then check if WORKSPACE file exists in root
-    if vim.v.shell_error == 0 then
-        -- Define patterns for Bazel files (BUILD and WORKSPACE)
-        local build_file_pattern = git_root .. '/BUILD'
-        local workspace_file_pattern = git_root .. '/WORKSPACE'
+    -- Check if either BUILD or WORKSPACE files exist in the project directory
+    local has_build_file = vim.fn.filereadable(build_file_pattern) == 1
+    local has_workspace_file = vim.fn.filereadable(workspace_file_pattern) == 1
 
-        -- Check if either BUILD or WORKSPACE files exist in the project directory
-        local has_build_file = vim.fn.filereadable(build_file_pattern) == 1
-        local has_workspace_file = vim.fn.filereadable(workspace_file_pattern) == 1
-
-        if has_build_file or has_workspace_file then
-            local lua_config_dir = vim.fn.stdpath("config") .. "/lua/user/"
-            gopackagesdriver = lua_config_dir .. "gopackagesdriver.sh"
+    if has_build_file or has_workspace_file then
+        gopackagesdriver = cwd .. "/scripts/gopackagesdriver.sh"
+        if vim.fn.filereadable(gopackagesdriver) ~= 1 then
+            gopackagesdriver = ""
         end
+
+        goroot = cwd .. "/bazel-" .. cwd:match("/([^/]*)$") .. "/external/go_sdk"
+        if vim.fn.isdirectory(goroot) ~= 1 then
+            goroot = ""
+        end
+
+        bazel_workspace_dir = vim.fn.fnamemodify(cwd, ':t')
     end
 
     nvim_lsp.gopls.setup {
@@ -241,9 +250,12 @@ function M.config()
                     "-bazel-bin",
                     "-bazel-out",
                     "-bazel-testlogs",
-                    "-bazel-mypkg",
+                    "-bazel-" .. bazel_workspace_dir,
                 },
                 env = {
+                    GOROOT = goroot,
+                    GOPACKAGESDRIVER_BAZEL_BUILD_FLAGS = "--strategy=GoStdlibList=local",
+                    GOPACKAGESDRIVER_BAZEL_QUERY = "kind(go_binary, //...)",
                     GOPACKAGESDRIVER = gopackagesdriver
                 },
                 staticcheck = true
