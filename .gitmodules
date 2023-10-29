@@ -60,3 +60,6 @@
 	path = .config/ranger/plugins/ranger_fzf_filter
 	url = https://github.com/MuXiu1997/ranger-fzf-filter.git
 	branch = main
+[submodule ".config/tmux/plugins/tmux-fuzzback"]
+	path = .config/tmux/plugins/tmux-fuzzback
+	url = https://github.com/roosta/tmux-fuzzback.git
