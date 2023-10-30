@@ -224,6 +224,13 @@ local core_plugins = {
     },
 
     {
+        "fredeeb/tardis.nvim",
+        config = true,
+        dependencies = { "nvim-lua/plenary.nvim" },
+        event = "VeryLazy"
+    },
+
+    {
         "lewis6991/gitsigns.nvim",
         config = function()
             require("user.gitsigns").config()
