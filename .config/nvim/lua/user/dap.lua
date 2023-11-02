@@ -218,6 +218,9 @@ function M.config()
         },
         {
             -- Run dlv server then pick the process
+            -- Compile with
+            --      * `go build -gcflags="all=-N -l" -o target_name`
+            --      * `bazel build -c dbg //path_to_target`
             -- dlv exec --headless -l=:38697 ./goimapnotify -- -conf /home/ragu/.config/imapnotify/imapnotify.conf
             type           = "go",
             name           = "Attach",

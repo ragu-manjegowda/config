@@ -57,6 +57,8 @@ config update-index --assume-unchanged \
     .config/awesome/theme/icons/thermometer.svg \
     .config/awesome/theme/icons/toggled-off.svg \
     .config/awesome/theme/icons/toggled-on.svg \
+    .config/awesome/theme/icons/touchpad/input-touchpad-disabled.svg \
+    .config/awesome/theme/icons/touchpad/input-touchpad-enabled.svg \
     .config/awesome/theme/icons/volume-high.svg \
     .config/awesome/theme/icons/volume-muted.svg \
     .config/awesome/theme/init.lua \

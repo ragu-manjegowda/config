@@ -120,6 +120,8 @@ return {
         -- Update profile picture
         update_profile  = utils_dir .. 'profile-image',
         -- Show time with rofi
-        show_time       = utils_dir .. 'time'
+        show_time       = utils_dir .. 'time',
+        -- Toggle touchpad
+        touchpad_toggle = utils_dir .. 'touchpad-toggle'
     }
 }
