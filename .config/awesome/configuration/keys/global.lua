@@ -461,6 +461,15 @@ local global_keys = awful.util.table.join(
     ),
 
     awful.key(
+        { modkey, 'Shift' },
+        't',
+        function()
+            awful.spawn.easy_async_with_shell(apps.utils.touchpad_toggle, function() end)
+        end,
+        { description = 'toggle touchpad', group = 'Utility' }
+    ),
+
+    awful.key(
         { modkey },
         'u',
         awful.client.urgent.jumpto,

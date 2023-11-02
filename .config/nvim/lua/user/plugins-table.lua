@@ -91,14 +91,6 @@ local core_plugins = {
         end
     },
 
-    {
-        "echasnovski/mini.animate",
-        config = function()
-            require("user.animate").config()
-        end,
-        version = false
-    },
-
     -- Debugging
     {
         "rcarriga/nvim-dap-ui",
