@@ -152,8 +152,6 @@ local core_plugins = {
         event = "VeryLazy"
     },
 
-    { "junegunn/vim-peekaboo" },
-
     -- Indent markers
     {
         "lukas-reineke/indent-blankline.nvim",
