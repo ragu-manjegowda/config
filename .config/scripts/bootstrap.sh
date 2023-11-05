@@ -16,7 +16,7 @@ OS="$(uname)"
 if [[ "${OS}" == "Linux" ]]; then
     if [[ "${DISTRO}" == "ubuntu" ]]; then
         # install curl and git
-        sudo apt update && sudo apt install -y curl git build-essential
+        sudo apt update && sudo apt install -y curl git build-essential zsh python3-pip python3-venv
     elif [[ "${DISTRO}" == "arch" ]]; then
         # install curl and git
         sudo pacman -Syyy && sudo pacman -S git curl base-devel
@@ -32,6 +32,12 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/in
 # Setup dotfiles
 ###############################################################################
 cd ~
+
+mv .config .config.bak
+
+mv .profile .profile.bak
+
+mv .ssh .ssh.bak
 
 git clone https://github.com/ragu-manjegowda/config.git config.git
 
@@ -64,7 +70,7 @@ then
 
     # install packages
     cd ~/.config/archiso-backup/
-    sudo pacman --noconfirm --needed -S $@
+    ./restore-archiso.sh
 fi
 ###############################################################################
 
@@ -105,6 +111,9 @@ cd ~
 
 # Change default shell
 chsh -s $(which zsh)
+
+# Install python provider for neovim
+python3 -m pip install --user --upgrade pynvim
 
 # Fix tmux color issue  on Mac OS
 if [[ "${OS}" == "Darwin" ]]; then
