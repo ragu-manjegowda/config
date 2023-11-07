@@ -25,7 +25,7 @@ ZSH_CUSTOM=$ZDOTDIR/zsh-custom
 
 # Plugins to load?
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
-plugins=(tmux zsh-autocomplete zsh-autosuggestions alias-finder custom-alias
+plugins=(tmux fzf-tab zsh-autosuggestions alias-finder custom-alias
          zsh-hist history-sync gitfast)
 
 # Enable alias finder by default for every command
@@ -56,6 +56,10 @@ source $ZSH/oh-my-zsh.sh
 # Fix <CTRL-U> to delete till beginning of line
 # https://stackoverflow.com/a/3483679
 bindkey \^U backward-kill-line
+
+# Enable fzf-tab,
+# https://github.com/Aloxaf/fzf-tab/issues/137#issuecomment-716627531
+enable-fzf-tab
 
 # To customize prompt, run `p10k configure` or edit $ZDOTDIR/.p10k.zsh.
 [[ ! -f $ZDOTDIR/p10k.zsh ]] || source $ZDOTDIR/p10k.zsh
