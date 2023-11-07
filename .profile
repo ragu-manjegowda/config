@@ -117,6 +117,15 @@ alias cstv='cvim +Git +only'
 # alias csu='config submodule update --remote --rebase'
 alias csu='config submodule foreach git pull --recurse-submodules --rebase'
 
+# alias bat to cat
+case "$(command -v bat)" in
+    */bat)
+        alias cat="bat"
+        ;;
+    *)
+        ;;
+esac
+
 # fzf
 export FZF_DEFAULT_COMMAND="fd --type f --color=never --hidden"
 FZF_ROOT_SEARCH_COMMAND="fd --type f . / --color=never"

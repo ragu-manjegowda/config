@@ -85,49 +85,21 @@ export PROMPT_EOL_MARK=""
 zshaddhistory() { whence ${${(z)1}[1]} >| /dev/null || return 1 }
 zstyle ":completion:*:commands" rehash 1
 
-############# zsh-autocomplete specific
+###############################################################################
 
-# Make Tab cycle completions on the command line
-# bindkey '\t' menu-complete "$terminfo[kcbt]" reverse-menu-complete
-bindkey '\t' menu-select "$terminfo[kcbt]" menu-select
-bindkey -M menuselect '\t' menu-complete "$terminfo[kcbt]" reverse-menu-complete
+############# zsh-autocomplete specific #######################################
 
-# '': Start each new command line with normal autocompletion.
-# history-incremental-search-backward: Start in live history search mode.
-zstyle ':autocomplete:*' default-context ''
+# Set completion color to yellow
+zstyle ':fzf-tab:*' default-color "$fg[yellow]"
+# Preview directory's content with ls when completing cd
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls -1 --color=always $realpath'
 
-# Wait this many seconds for typing to stop, before showing completions.
-# zstyle ':autocomplete:*' min-delay 0.1  # float
-
-# Wait until this many characters have been typed, before showing completions.
-zstyle ':autocomplete:*' min-input 1  # int
-
-# '':     Always show completions.
-# '..##': Don't show completions when the input consists of two or more dots.
-zstyle ':autocomplete:*' ignored-input '..##' # extended glob pattern
-
-# If there are fewer than this many lines below the prompt, move the prompt up
-# to make room for showing this many lines of completions (approximately).
-zstyle ':autocomplete:*' list-lines 5  # int
-
-# Show this many history lines when pressing ↑.
-zstyle ':autocomplete:history-search:*' list-lines 5  # int
-
-# no:  Tab inserts the top completion.
-# yes: Tab first inserts a substring common to all listed completions, if any.
-# zstyle ':autocomplete:*' insert-unambiguous yes
-
-# complete-word: (Shift-)Tab inserts the top (bottom) completion.
-# menu-complete: Press again to cycle to next (previous) completion.
-# menu-select:   Same as `menu-complete`, but updates selection in menu.
-zstyle ':autocomplete:*' widget-style menu-select
-
-# no:  Tab uses Zsh's completion system only.
-# yes: Tab first tries Fzf's completion, then falls back to Zsh's.
-zstyle ':autocomplete:*' fzf-completion yes
+############# zsh-autosuggestion specific #####################################
 
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=yellow,bold,underline"
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+
+###############################################################################
 
 # function to toggle alacritty theme defined in colors.yml
 function toggle-alacritty-theme () {

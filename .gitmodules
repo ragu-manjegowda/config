@@ -8,11 +8,6 @@
 	url = https://github.com/zsh-users/zsh-autosuggestions.git
 	update = rebase
 	branch = master
-[submodule ".config/zsh/zsh-custom/plugins/zsh-autocomplete"]
-	path = .config/zsh/zsh-custom/plugins/zsh-autocomplete
-	url = https://github.com/marlonrichert/zsh-autocomplete.git
-	update = rebase
-	branch = main
 [submodule ".config/zsh/zsh-custom/plugins/zsh-hist"]
 	path = .config/zsh/zsh-custom/plugins/zsh-hist
 	url = https://github.com/marlonrichert/zsh-hist.git
@@ -51,15 +46,25 @@
 [submodule ".config/awesome/library/bling"]
 	path = .config/awesome/library/bling
 	url = https://github.com/BlingCorp/bling.git
+	update = rebase
 	branch = master
 [submodule ".config/zsh/zsh-custom/themes/dircolors-solarized"]
 	path = .config/zsh/zsh-custom/themes/dircolors-solarized
 	url = https://github.com/seebi/dircolors-solarized.git
+	update = rebase
 	branch = master
 [submodule ".config/ranger/plugins/ranger_fzf_filter"]
 	path = .config/ranger/plugins/ranger_fzf_filter
 	url = https://github.com/MuXiu1997/ranger-fzf-filter.git
+	update = rebase
 	branch = main
 [submodule ".config/tmux/plugins/tmux-fuzzback"]
 	path = .config/tmux/plugins/tmux-fuzzback
 	url = https://github.com/roosta/tmux-fuzzback.git
+	update = rebase
+	branch = main
+[submodule ".config/zsh/zsh-custom/plugins/fzf-tab"]
+	path = .config/zsh/zsh-custom/plugins/fzf-tab
+	url = https://github.com/Aloxaf/fzf-tab
+	update = rebase
+	branch = master
