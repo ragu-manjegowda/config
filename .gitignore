@@ -237,6 +237,8 @@
 .ssh/id_ed25519_github.pub
 .ssh/id_ed25519_gitlab
 .ssh/id_ed25519_gitlab.pub
+.ssh/id_ed25519_nv_ovx
+.ssh/id_ed25519_nv_ovx.pub
 .ssh/id_ed25519_nv_shared
 .ssh/id_ed25519_nv_shared.pub
 .ssh/id_ed25519_nvidia
