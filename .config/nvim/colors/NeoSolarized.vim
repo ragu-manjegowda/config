@@ -941,6 +941,11 @@ exe "hi! NormalFloat"                   .s:fg_none      .s:bg_base03
 exe "hi! LspSignatureActiveParameter"   .s:fg_base03    .s:bg_green
 " }}}"
 
+" Telescope "{{{
+" ---------------------------------------------------------------------
+exe "hi! TelescopeMatching"         .s:fmt_revr   .s:fg_yellow .s:bg_none
+" }}}"
+
 " NeoVim terminal buffer colours "{{{
 " ---------------------------------------------------------------------
 let g:terminal_color_0 = s:gui_base03
