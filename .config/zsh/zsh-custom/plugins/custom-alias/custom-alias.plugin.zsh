@@ -93,6 +93,8 @@ zstyle ":completion:*:commands" rehash 1
 zstyle ':fzf-tab:*' default-color "$fg[yellow]"
 # Preview directory's content with ls when completing cd
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls -1 --color=always $realpath'
+# Set hl color
+zstyle ':fzf-tab:*' fzf-flags '--color=hl:green'
 
 ############# zsh-autosuggestion specific #####################################
 
