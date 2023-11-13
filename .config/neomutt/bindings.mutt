@@ -124,9 +124,3 @@ macro index,pager ,of \
 <enter-command>unset wait_key<enter>\
 <pipe-message>~/.config/neomutt/viewmailattachments.py 2> /dev/null\n &<enter>\
 " "View HTML email in browser"
-
-macro attach ,ai \
-"<shell-escape>rm -vf /tmp/.mutt.ics<enter><save-entry><kill-line>\
-/tmp/.mutt.ics<enter><shell-escape>$(brew --prefix)/bin/python3 \
-$XDG_CONFIG_HOME/neomutt/mutt-ical.py \
--e $from -i /tmp/.mutt.ics<enter>"
