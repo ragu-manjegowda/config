@@ -15,7 +15,7 @@ OS="$(uname)"
 
 if [[ "${OS}" == "Linux" ]]; then
     if [[ "${DISTRO}" == "ubuntu" ]]; then
-        # install curl and git
+        # install enssential packages
         sudo apt update && sudo apt install -y curl git build-essential zsh python3-pip python3-venv
     elif [[ "${DISTRO}" == "arch" ]]; then
         # install curl and git
@@ -24,34 +24,68 @@ if [[ "${OS}" == "Linux" ]]; then
 fi
 
 # Install Homebrew
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+if command -v brew &> /dev/null; then
+    echo "Homebrew already installed"
+    echo "To change ownership of brew folder, use the following command:"
+    echo "sudo chown -R local-rmanjegowda /raid/ragu/linuxbrew /raid/ragu/linuxbrew/Cellar /raid/ragu/linuxbrew/bin /raid/ragu/linuxbrew/etc /raid/ragu/linuxbrew/etc/bash_completion.d /raid/ragu/linuxbrew/include /raid/ragu/linuxbrew/lib /raid/ragu/linuxbrew/lib/pkgconfig /raid/ragu/linuxbrew/opt /raid/ragu/linuxbrew/sbin /raid/ragu/linuxbrew/share /raid/ragu/linuxbrew/share/aclocal /raid/ragu/linuxbrew/share/doc /raid/ragu/linuxbrew/share/info /raid/ragu/linuxbrew/share/locale /raid/ragu/linuxbrew/share/man /raid/ragu/linuxbrew/share/man/man1 /raid/ragu/linuxbrew/share/man/man3 /raid/ragu/linuxbrew/share/man/man5 /raid/ragu/linuxbrew/share/man/man7 /raid/ragu/linuxbrew/share/man/man8 /raid/ragu/linuxbrew/share/zsh /raid/ragu/linuxbrew/share/zsh/site-functions /raid/ragu/linuxbrew/var/homebrew/linked /raid/ragu/linuxbrew/var/homebrew/locks"
+    echo "chmod u+w /raid/ragu/linuxbrew /raid/ragu/linuxbrew/Cellar /raid/ragu/linuxbrew/bin /raid/ragu/linuxbrew/etc /raid/ragu/linuxbrew/etc/bash_completion.d /raid/ragu/linuxbrew/include /raid/ragu/linuxbrew/lib /raid/ragu/linuxbrew/lib/pkgconfig /raid/ragu/linuxbrew/opt /raid/ragu/linuxbrew/sbin /raid/ragu/linuxbrew/share /raid/ragu/linuxbrew/share/aclocal /raid/ragu/linuxbrew/share/doc /raid/ragu/linuxbrew/share/info /raid/ragu/linuxbrew/share/locale /raid/ragu/linuxbrew/share/man /raid/ragu/linuxbrew/share/man/man1 /raid/ragu/linuxbrew/share/man/man3 /raid/ragu/linuxbrew/share/man/man5 /raid/ragu/linuxbrew/share/man/man7 /raid/ragu/linuxbrew/share/man/man8 /raid/ragu/linuxbrew/share/zsh /raid/ragu/linuxbrew/share/zsh/site-functions /raid/ragu/linuxbrew/var/homebrew/linked /raid/ragu/linuxbrew/var/homebrew/locks"
+
+    #######################################################
+    ######### to change ownership of brew folder ###########
+    # sudo chown -R local-rmanjegowda /raid/ragu/linuxbrew /raid/ragu/linuxbrew/Cellar /raid/ragu/linuxbrew/bin /raid/ragu/linuxbrew/etc /raid/ragu/linuxbrew/etc/bash_completion.d /raid/ragu/linuxbrew/include /raid/ragu/linuxbrew/lib /raid/ragu/linuxbrew/lib/pkgconfig /raid/ragu/linuxbrew/opt /raid/ragu/linuxbrew/sbin /raid/ragu/linuxbrew/share /raid/ragu/linuxbrew/share/aclocal /raid/ragu/linuxbrew/share/doc /raid/ragu/linuxbrew/share/info /raid/ragu/linuxbrew/share/locale /raid/ragu/linuxbrew/share/man /raid/ragu/linuxbrew/share/man/man1 /raid/ragu/linuxbrew/share/man/man3 /raid/ragu/linuxbrew/share/man/man5 /raid/ragu/linuxbrew/share/man/man7 /raid/ragu/linuxbrew/share/man/man8 /raid/ragu/linuxbrew/share/zsh /raid/ragu/linuxbrew/share/zsh/site-functions /raid/ragu/linuxbrew/var/homebrew/linked /raid/ragu/linuxbrew/var/homebrew/locks
+    # chmod u+w /raid/ragu/linuxbrew /raid/ragu/linuxbrew/Cellar /raid/ragu/linuxbrew/bin /raid/ragu/linuxbrew/etc /raid/ragu/linuxbrew/etc/bash_completion.d /raid/ragu/linuxbrew/include /raid/ragu/linuxbrew/lib /raid/ragu/linuxbrew/lib/pkgconfig /raid/ragu/linuxbrew/opt /raid/ragu/linuxbrew/sbin /raid/ragu/linuxbrew/share /raid/ragu/linuxbrew/share/aclocal /raid/ragu/linuxbrew/share/doc /raid/ragu/linuxbrew/share/info /raid/ragu/linuxbrew/share/locale /raid/ragu/linuxbrew/share/man /raid/ragu/linuxbrew/share/man/man1 /raid/ragu/linuxbrew/share/man/man3 /raid/ragu/linuxbrew/share/man/man5 /raid/ragu/linuxbrew/share/man/man7 /raid/ragu/linuxbrew/share/man/man8 /raid/ragu/linuxbrew/share/zsh /raid/ragu/linuxbrew/share/zsh/site-functions /raid/ragu/linuxbrew/var/homebrew/linked /raid/ragu/linuxbrew/var/homebrew/locks
+    #######################################################
+
+else
+    if [ -d "/raid/ragu/linuxbrew" ]; then
+        echo "Installing Homebrew to /raid/ragu/linuxbrew"
+        HOMEBREW_INSTALL_DIR="/raid/ragu/linuxbrew"
+        curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C $HOMEBREW_INSTALL_DIR
+    else
+        echo "Installing Homebrew to HOME/.linuxbrew"
+        HOMEBREW_INSTALL_DIR=""
+        bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    fi
+
+    eval "$(${HOMEBREW_INSTALL_DIR}/bin/brew shellenv)"
+    brew update --force --quiet
+    chmod -R go-w "$(brew --prefix)/share/zsh"
+
+fi
+
 ###############################################################################
 
 
 ###############################################################################
 # Setup dotfiles
 ###############################################################################
-cd ~
 
-mv .config .config.bak
+cd ~/ || exit
 
-mv .profile .profile.bak
+# check if config is already clone
+if [ ! -f ~/LICENSE ]; then
 
-mv .ssh .ssh.bak
+    mv .config .config.bak
 
-git clone https://github.com/ragu-manjegowda/config.git config.git
+    mv .profile .profile.bak
 
-mv config.git/.git .config.git
+    mv .ssh .ssh.bak
 
-shopt -s dotglob
+    git clone https://github.com/ragu-manjegowda/config.git config.git
 
-mv -i config.git/* .
+    mv config.git/.git .config.git
 
-rmdir config.git
+    shopt -s dotglob
 
-# git submodule foreach git pull --recurse-submodules --rebase
+    mv -i config.git/* .
 
-git --git-dir=$HOME/.config.git --work-tree=$HOME config --local core.worktree $HOME
+    rmdir config.git
+
+    git --git-dir="${HOME}/.config.git" --work-tree="${HOME}" config --local core.worktree "${HOME}"
+
+    git --git-dir="${HOME}/.config.git" --work-tree="${HOME}" submodule update --init --recursive
+fi
 ###############################################################################
 
 
@@ -62,14 +96,14 @@ git --git-dir=$HOME/.config.git --work-tree=$HOME config --local core.worktree $
 if [ "$DISTRO" = "arch" ]
 then
     # install paru
-    cd ~/Downloads/
+    cd ~/Downloads/ || cd ~/ || exit
     sudo pacman -S --needed base-devel
     git clone https://aur.archlinux.org/paru.git
-    cd paru
+    cd paru || exit
     makepkg -si
 
     # install packages
-    cd ~/.config/archiso-backup/
+    cd ~/.config/archiso-backup/ || exit
     ./restore-archiso.sh
 fi
 ###############################################################################
@@ -79,7 +113,7 @@ fi
 ###############################################################################
 # Restore brew packages
 ###############################################################################
-cd ~/.config/homebrew-backup/
+cd ~/.config/homebrew-backup/ || exit
 
 if [[ "${OS}" == "Linux" ]]
 then
@@ -107,10 +141,10 @@ fi
 ###############################################################################
 # Miscellaneous
 ###############################################################################
-cd ~
+cd ~/ || exit
 
 # Change default shell
-chsh -s $(which zsh)
+chsh -s "$(which zsh)"
 
 # Install python provider for neovim
 python3 -m pip install --user --upgrade pynvim
