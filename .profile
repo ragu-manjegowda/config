@@ -82,22 +82,25 @@ fi
 case "$(command -v nvim)" in
     */nvim)
         VIM="nvim"
+        VISUAL="nvim --cmd 'let g:flatten_wait=1'"
         alias vim="nvim"
         ;;
     *)
         case "$(command -v vim)" in
             */vim)
                 VIM="vim"
+                VISUAL="vim"
                 ;;
             *)
                 VIM="vi"
+                VISUAL="vi"
                 ;;
         esac
         ;;
 esac
 
 export EDITOR=$VIM
-export VISUAL=$VIM
+export VISUAL=$VISUAL
 export FCEDIT=$EDITOR
 
 ## Config alias
@@ -126,49 +129,73 @@ case "$(command -v bat)" in
         ;;
 esac
 
-# fzf
-export FZF_DEFAULT_COMMAND="fd --type f --color=never --hidden"
-FZF_ROOT_SEARCH_COMMAND="fd --type f . / --color=never"
-FZF_HOME_SEARCH_COMMAND="fd --type f . $HOME --color=never --hidden"
+###############################################################################
+########################             FZF                      #################
+###############################################################################
 
+########################             Defaults                 #################
 FZF_DEFAULT_OPTS1="--no-height --color=bg+:#343d46,gutter:-1"
 FZF_DEFAULT_OPTS2=",pointer:#ff3c3c,info:#0dbc79,hl:#0dbc79,hl+:#23d18b"
-export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS1$FZF_DEFAULT_OPTS2"
 
+FZF_DEFAULT_BIND_OPTS1="--bind 'alt-j:preview-page-down,alt-k:preview-page-up'"
+FZF_DEFAULT_BIND_OPTS2="',ctrl-j:down,ctrl-k:up,ctrl-/:toggle-preview'"
+FZF_DEFAULT_BIND_OPTS3="',ctrl-w:toggle-preview-wrap,ctrl-f:jump'"
+FZF_DEFAULT_BIND_OPTS4="',ctrl-u:preview-top,ctrl-d:preview-bottom'"
+
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    FZF_DEFAULT_BIND_OPTS5="',ctrl-y:execute-silent(echo -n {} | xclip -sel clip)'"
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    FZF_DEFAULT_BIND_OPTS5="',ctrl-y:execute-silent(echo -n {} | pbcopy)'"
+fi
+
+FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS1$FZF_DEFAULT_OPTS2"
+FZF_BIND_OPTS1="$FZF_DEFAULT_BIND_OPTS1$FZF_DEFAULT_BIND_OPTS2"
+FZF_BIND_OPTS2="$FZF_DEFAULT_BIND_OPTS3$FZF_DEFAULT_BIND_OPTS4$FZF_DEFAULT_BIND_OPTS5"
+
+export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS} ${FZF_BIND_OPTS1}${FZF_BIND_OPTS2}"
+
+export FZF_DEFAULT_COMMAND="fd --type f --color=never --hidden"
+
+########################             CTRL-T                 ###################
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
-T_OPTS_PREVIEW="--preview 'bat --color=always {}'"
-T_OPTS_BIND_OPTS1="--bind 'alt-j:preview-page-down,alt-k:preview-page-up'"
-T_OPTS_BIND_OPTS2="',ctrl-j:down,ctrl-k:up'"
-T_OPTS_BIND_OPTS3="',ctrl-w:toggle-preview-wrap,ctrl-f:jump'"
-T_OPTS_BIND_OPTS4="',ctrl-u:preview-top,ctrl-d:preview-bottom'"
-T_OPTS_BIND_OPTS5="',ctrl-h:reload($FZF_HOME_SEARCH_COMMAND),ctrl-r:reload($FZF_ROOT_SEARCH_COMMAND)'"
-FZF_CTRL_T_OPTS="$T_OPTS_PREVIEW $T_OPTS_BIND_OPTS1$T_OPTS_BIND_OPTS2$T_OPTS_BIND_OPTS3"
-export FZF_CTRL_T_OPTS="${FZF_CTRL_T_OPTS}$T_OPTS_BIND_OPTS4$T_OPTS_BIND_OPTS5"
+FZF_ROOT_SEARCH_T_COMMAND="fd --type f . / --color=never"
+FZF_HOME_SEARCH_T_COMMAND="fd --type f . $HOME --color=never --hidden"
 
+T_OPTS_PREVIEW="--preview 'bat --color=always {}'"
+T_OPTS_BIND_OPTS1="--bind 'ctrl-h:reload($FZF_HOME_SEARCH_T_COMMAND)'"
+T_OPTS_BIND_OPTS2="',ctrl-r:reload($FZF_ROOT_SEARCH_T_COMMAND)'"
+
+export FZF_CTRL_T_OPTS="$T_OPTS_PREVIEW $T_OPTS_BIND_OPTS1$T_OPTS_BIND_OPTS2"
+
+########################             ALT-C                 ####################
 export FZF_ALT_C_COMMAND="fd --type d . --color=never --hidden"
+
 FZF_ROOT_D_SEARCH_COMMAND="fd --type d . / --color=never"
 FZF_HOME_D_SEARCH_COMMAND="fd --type d . $HOME --color=never --hidden"
 
 C_OPTS_PREVIEW="--preview 'tree -C {}'"
-C_OPTS_BIND_OPTS1="--bind 'alt-j:preview-page-down,alt-k:preview-page-up'"
-C_OPTS_BIND_OPTS2="',ctrl-j:down,ctrl-k:up'"
-C_OPTS_BIND_OPTS3="',ctrl-w:toggle-preview-wrap,ctrl-f:jump'"
-C_OPTS_BIND_OPTS4="',ctrl-u:preview-top,ctrl-d:preview-bottom'"
-C_OPTS_BIND_OPTS5="',ctrl-h:reload($FZF_HOME_D_SEARCH_COMMAND),ctrl-r:reload($FZF_ROOT_D_SEARCH_COMMAND)'"
-FZF_ALT_C_OPTS="$C_OPTS_PREVIEW $C_OPTS_BIND_OPTS1$C_OPTS_BIND_OPTS2$C_OPTS_BIND_OPTS3"
-export FZF_ALT_C_OPTS="${FZF_ALT_C_OPTS}$C_OPTS_BIND_OPTS4$C_OPTS_BIND_OPTS5"
+C_OPTS_BIND_OPTS1="--bind 'ctrl-h:reload($FZF_HOME_D_SEARCH_COMMAND)'"
+C_OPTS_BIND_OPTS2="',ctrl-r:reload($FZF_ROOT_D_SEARCH_COMMAND)'"
 
+export FZF_ALT_C_OPTS="$C_OPTS_PREVIEW $C_OPTS_BIND_OPTS1$C_OPTS_BIND_OPTS2"
+
+########################             CTRL-R                 ###################
 R_OPTS_PREVIEW="--preview 'echo {}' --preview-window down:3:hidden:wrap"
-R_OPTS_BIND_1="--bind 'ctrl-/:toggle-preview,ctrl-f:jump'"
-if [[ "$OSTYPE" == "linux-gnu" ]]; then
-    R_OPTS_BIND_2="--bind 'ctrl-y:execute-silent(echo -n {2..} | xclip -sel clip)+abort'"
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-    R_OPTS_BIND_2="--bind 'ctrl-y:execute-silent(echo -n {2..} | pbcopy)+abort'"
-fi
-export FZF_CTRL_R_OPTS="${R_OPTS_PREVIEW} ${R_OPTS_BIND_1} ${R_OPTS_BIND_2}"
 
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    R_BIND_OPTS1="--bind 'ctrl-y:execute-silent(echo -n {2..} | xclip -sel clip)'"
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    R_BIND_OPTS1="--bind 'ctrl-y:execute-silent(echo -n {2..} | pbcopy)'"
+fi
+
+export FZF_CTRL_R_OPTS="${R_OPTS_PREVIEW} ${R_BIND_OPTS1}"
+
+########################             TMUX                   ###################
 export FZF_TMUX_OPTS="-p95%,90%"
+
+###############################################################################
+###############################################################################
 
 # Paru, Pacman fzf
 if [ -f "/etc/arch-release" ]; then
