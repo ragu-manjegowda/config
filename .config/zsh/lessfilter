@@ -1,0 +1,41 @@
+#! /usr/bin/env bash
+
+# Ref - https://github.com/Freed-Wu/Freed-Wu/blob/main/.lessfilter
+
+has_cmd() {
+    for opt in "$@"; do
+        command -v "$opt" >/dev/null
+    done
+}
+
+mime=$(file -Lbs --mime-type "$1")
+category=${mime%%/*}
+kind=${mime##*/}
+
+if [ "$kind" = json ]; then
+    if has_cmd jq; then
+        jq -Cr . "$1"
+    fi
+# https://github.com/wofr06/lesspipe/pull/107
+elif [ -d "$1" ]; then
+    if has_cmd ls; then
+        ls -a --color=always "$1"
+    fi
+# https://github.com/wofr06/lesspipe/pull/110
+elif [ "$kind" = pdf ]; then
+    if has_cmd pdftotext sed; then
+        pdftotext -q "$1" - | sed "s/\f/$(hr ─)\n/g"
+    fi
+# https://github.com/wofr06/lesspipe/pull/115
+elif [ "$kind" = rfc822 ]; then
+    if has_cmd bat; then
+        bat --color=always -lEmail "$1"
+    fi
+# https://github.com/wofr06/lesspipe/pull/117
+elif [ "$category" = text ]; then
+    if has_cmd bat; then
+        bat --color=always "$1"
+    fi
+else
+    exit 1
+fi

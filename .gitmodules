@@ -68,3 +68,6 @@
 	url = https://github.com/Aloxaf/fzf-tab
 	update = rebase
 	branch = master
+[submodule ".config/zsh/zsh-custom/plugins/fzf-tab-source"]
+	path = .config/zsh/zsh-custom/plugins/fzf-tab-source
+	url = https://github.com/Freed-Wu/fzf-tab-source.git
