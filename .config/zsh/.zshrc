@@ -25,8 +25,8 @@ ZSH_CUSTOM=$ZDOTDIR/zsh-custom
 
 # Plugins to load?
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
-plugins=(tmux fzf-tab zsh-autosuggestions alias-finder custom-alias
-         zsh-hist history-sync gitfast)
+plugins=(tmux fzf-tab fzf-tab-source zsh-autosuggestions alias-finder
+         custom-alias zsh-hist history-sync gitfast)
 
 # Enable alias finder by default for every command
 ZSH_ALIAS_FINDER_AUTOMATIC=true
@@ -52,6 +52,10 @@ zstyle ':completion:*' cache-path $ZDOTDIR/.zsh.cache
 ZSH_COMPDUMP="${ZDOTDIR}/.zcompdump-${ZSH_VERSION}"
 
 source $ZSH/oh-my-zsh.sh
+
+# Enable extended globbing
+# https://unix.stackexchange.com/a/366137
+setopt globdots
 
 # Fix <CTRL-U> to delete till beginning of line
 # https://stackoverflow.com/a/3483679

@@ -91,8 +91,15 @@ zstyle ":completion:*:commands" rehash 1
 
 # Set completion color to yellow
 zstyle ':fzf-tab:*' default-color "$fg[yellow]"
-# Preview directory's content with ls when completing cd
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls -1 --color=always $realpath'
+
+# Preview completion
+zstyle ':fzf-tab:complete:*:*' fzf-preview 'less ${(Q)realpath}'
+
+zstyle ':fzf-tab:complete:(-command-|-parameter-|-brace-parameter-|export|unset|expand):*' \
+	fzf-preview 'echo ${(P)word}'
+
+export LESSOPEN='|$HOME/.config/zsh/lessfilter %s'
+
 # Set hl color
 zstyle ':fzf-tab:*' fzf-flags '--color=hl:green'
 
