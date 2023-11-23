@@ -14,6 +14,7 @@ efibootmgr
 ffmpeg
 firefox
 fprintd
+gcr
 git
 goimapnotify
 gst-plugin-pipewire
@@ -40,6 +41,7 @@ neomutt
 neovim
 network-manager-applet
 networkmanager
+networkmanager-openconnect
 nfs-utils
 noto-fonts
 noto-fonts-emoji
@@ -74,6 +76,7 @@ urlscan
 vlc
 w3m
 webkit2gtk
+webkit2gtk-4.1
 xclip
 xf86-video-vesa
 xorg-bdftopcf
