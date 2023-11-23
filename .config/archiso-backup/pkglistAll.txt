@@ -20,6 +20,7 @@ ffmpeg
 find-cursor
 firefox
 fprintd
+gcr
 git
 goimapnotify
 google-chrome
@@ -58,6 +59,7 @@ neomutt
 neovim
 network-manager-applet
 networkmanager
+networkmanager-openconnect
 nfs-utils
 nomachine
 noto-fonts
@@ -109,6 +111,7 @@ vlc
 w3m
 w3m-imgcat
 webkit2gtk
+webkit2gtk-4.1
 xclip
 xf86-video-vesa
 xidlehook
