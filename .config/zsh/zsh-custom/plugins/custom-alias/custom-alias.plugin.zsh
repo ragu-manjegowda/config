@@ -103,6 +103,9 @@ export LESSOPEN='|$HOME/.config/zsh/lessfilter %s'
 # Set hl color
 zstyle ':fzf-tab:*' fzf-flags '--color=hl:green'
 
+# Custom binding
+zstyle ':fzf-tab:complete:*' fzf-bindings 'tab:toggle+down,shift-tab:toggle-all'
+
 ############# zsh-autosuggestion specific #####################################
 
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=yellow,bold,underline"
