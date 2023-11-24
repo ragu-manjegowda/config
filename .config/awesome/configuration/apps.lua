@@ -82,7 +82,7 @@ return {
         'xrdb -merge ~/.Xresources',
         -- Audio equalizer
         -- Enable blue light filter
-        'redshift -l 0:0 -t 4500:4500 -r &>/dev/null &',
+        'redshift &>/dev/null &',
         -- Auto screen look
         'systemctl --user reload-or-restart --now xidlehook.service',
         -- Darkman
