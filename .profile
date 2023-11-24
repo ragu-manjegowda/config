@@ -134,23 +134,24 @@ esac
 ###############################################################################
 
 ########################             Defaults                 #################
-FZF_DEFAULT_OPTS1="--no-height --color=bg+:#343d46,gutter:-1"
+FZF_DEFAULT_OPTS1="--no-height --cycle --color=bg+:#343d46,gutter:-1"
 FZF_DEFAULT_OPTS2=",pointer:#ff3c3c,info:#0dbc79,hl:#0dbc79,hl+:#23d18b"
 
 FZF_DEFAULT_BIND_OPTS1="--bind 'alt-j:preview-page-down,alt-k:preview-page-up'"
 FZF_DEFAULT_BIND_OPTS2="',ctrl-j:down,ctrl-k:up,ctrl-/:toggle-preview'"
 FZF_DEFAULT_BIND_OPTS3="',ctrl-w:toggle-preview-wrap,ctrl-f:jump'"
 FZF_DEFAULT_BIND_OPTS4="',ctrl-u:preview-top,ctrl-d:preview-bottom'"
+FZF_DEFAULT_BIND_OPTS5="',ctrl-g:last,ctrl-a:select-all,shift-tab:toggle-all'"
 
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
-    FZF_DEFAULT_BIND_OPTS5="',ctrl-y:execute-silent(echo -n {} | xclip -sel clip)'"
+    FZF_DEFAULT_BIND_OPTS6="',ctrl-y:execute-silent(echo -n {} | xclip -sel clip)'"
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-    FZF_DEFAULT_BIND_OPTS5="',ctrl-y:execute-silent(echo -n {} | pbcopy)'"
+    FZF_DEFAULT_BIND_OPTS6="',ctrl-y:execute-silent(echo -n {} | pbcopy)'"
 fi
 
 FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS1$FZF_DEFAULT_OPTS2"
-FZF_BIND_OPTS1="$FZF_DEFAULT_BIND_OPTS1$FZF_DEFAULT_BIND_OPTS2"
-FZF_BIND_OPTS2="$FZF_DEFAULT_BIND_OPTS3$FZF_DEFAULT_BIND_OPTS4$FZF_DEFAULT_BIND_OPTS5"
+FZF_BIND_OPTS1="$FZF_DEFAULT_BIND_OPTS1$FZF_DEFAULT_BIND_OPTS2$FZF_DEFAULT_BIND_OPTS3"
+FZF_BIND_OPTS2="$FZF_DEFAULT_BIND_OPTS4$FZF_DEFAULT_BIND_OPTS5$FZF_DEFAULT_BIND_OPTS6"
 
 export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS} ${FZF_BIND_OPTS1}${FZF_BIND_OPTS2}"
 
