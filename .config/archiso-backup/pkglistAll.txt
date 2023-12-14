@@ -10,6 +10,7 @@ awmtt
 base
 base-devel
 blueman
+bluez-utils
 broadcom-wl-dkms
 check-broken-packages-pacman-hook-git
 cyrus-sasl-xoauth2-git
@@ -78,8 +79,8 @@ pam-fprint-grosshack
 paru
 pavucontrol
 picom-git
+pipewire-pulse
 playerctl
-pulseaudio
 pulseaudio-alsa
 python-pynvim
 ranger-git
@@ -98,6 +99,7 @@ sync-pacman-hook-git
 teams
 thermald
 thunar
+tigervnc
 timeshift
 tmux
 ttf-dejavu

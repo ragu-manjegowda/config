@@ -7,6 +7,7 @@ avidemux-qt
 base
 base-devel
 blueman
+bluez-utils
 broadcom-wl-dkms
 darkman
 docker
@@ -53,8 +54,8 @@ openrazer-daemon
 openssh
 openssl-1.1
 pavucontrol
+pipewire-pulse
 playerctl
-pulseaudio
 pulseaudio-alsa
 python-pynvim
 redshift
@@ -67,6 +68,7 @@ rust-src
 sof-firmware
 thermald
 thunar
+tigervnc
 timeshift
 tmux
 ttf-dejavu
