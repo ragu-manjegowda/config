@@ -114,7 +114,11 @@ vim.api.nvim_create_autocmd(
                 or ft == "rst" then
                 return
             end
+            -- Save current cursor position
+            local save_cursor = vim.fn.getcurpos()
             vim.cmd(":%s/\\s\\+$//e")
+            -- Set cursor position to the saved position
+            vim.fn.setpos('.', save_cursor)
         end
     }
 )
