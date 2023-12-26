@@ -150,6 +150,7 @@
 .config/systemd/user/sleep.target.wants
 .config/systemd/user/xorg@.service
 .config/teams
+.config/termshark/termshark.toml-e
 .config/tmux/.tmux_history
 .config/tmux/session-restore
 .config/totem
