@@ -125,6 +125,7 @@ function toggle-alacritty-theme () {
     broot_config_path="$HOME/.config/broot/conf.hjson"
     vim_config_path="$HOME/.config/nvim/lua/user/colorscheme.lua"
     zathura_config_path="$HOME/.config/zathura/zathurarc"
+    termshark_config_path="$HOME/.config/termshark/termshark.toml"
 
     # Get current mode
     mode=$(awk 'sub(/colors:'\ '\*solarized-/,""){print $1}' $config_path)
@@ -143,6 +144,8 @@ function toggle-alacritty-theme () {
 
             zathura_config_dark_path="$HOME/.config/zathura/zathurarc-dark"
             cp $zathura_config_dark_path $zathura_config_path
+
+            sed -i -e "s#^dark-mode = false#dark-mode = true#g" $termshark_config_path
 
             dircolors_dark_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-dark"
             if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -164,6 +167,8 @@ function toggle-alacritty-theme () {
 
             zathura_config_light_path="$HOME/.config/zathura/zathurarc-light"
             cp $zathura_config_light_path $zathura_config_path
+
+            sed -i -e "s#^dark-mode = true#dark-mode = false#g" $termshark_config_path
 
             dircolors_light_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-light"
             if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -216,6 +221,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
         broot_config_path="$HOME/.config/broot/conf.hjson"
         vim_config_path="$HOME/.config/nvim/lua/user/colorscheme.lua"
         zathura_config_path="$HOME/.config/zathura/zathurarc"
+        termshark_config_path="$HOME/.config/termshark/termshark.toml"
 
         if grep -Fxq "colors: *solarized-dark" "$config_path"; then
             export BAT_THEME="Solarized (dark)"
@@ -229,6 +235,8 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 
             zathura_config_dark_path="$HOME/.config/zathura/zathurarc-dark"
             cp $zathura_config_dark_path $zathura_config_path
+
+            sed -i -e "s#^dark-mode = false#dark-mode = true#g" $termshark_config_path
 
             dircolors_dark_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-dark"
             eval `dircolors ${dircolors_dark_path}`
@@ -244,6 +252,8 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 
             zathura_config_light_path="$HOME/.config/zathura/zathurarc-light"
             cp $zathura_config_light_path $zathura_config_path
+
+            sed -i -e "s#^dark-mode = true#dark-mode = false#g" $termshark_config_path
 
             dircolors_light_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-light"
             eval `dircolors ${dircolors_light_path}`
@@ -261,6 +271,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         broot_config_path="$HOME/.config/broot/conf.hjson"
         vim_config_path="$HOME/.config/nvim/lua/user/colorscheme.lua"
         zathura_config_path="$HOME/.config/zathura/zathurarc"
+        termshark_config_path="$HOME/.config/termshark/termshark.toml"
 
         # Get current mode
         mode=$(defaults read -g AppleInterfaceStyle 2>/dev/null)
@@ -280,6 +291,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
                 zathura_config_dark_path="$HOME/.config/zathura/zathurarc-dark"
                 cp $zathura_config_dark_path $zathura_config_path
 
+                sed -i -e "s#^dark-mode = false#dark-mode = true#g" $termshark_config_path
+
                 dircolors_dark_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-dark"
                 eval `gdircolors ${dircolors_dark_path}`
                 ;;
@@ -296,6 +309,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
                 zathura_config_light_path="$HOME/.config/zathura/zathurarc-light"
                 cp $zathura_config_light_path $zathura_config_path
+
+                sed -i -e "s#^dark-mode = true#dark-mode = false#g" $termshark_config_path
 
                 dircolors_light_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-light"
                 eval `gdircolors ${dircolors_light_path}`
