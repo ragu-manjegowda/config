@@ -1,0 +1,110 @@
+#------------------------------------------------------------------------------
+#- Author       : Ragu Manjegowda
+#- Github       : @ragu-manjegowda
+#------------------------------------------------------------------------------
+
+unused = "#002b36"
+
+[neosolarized]
+  base0   = "#839496" # gray3 = "#839496"
+  base1   = "#93a1a1" # gray4 = "#93a1a1"
+  base2   = "#eee8d5"
+  base3   = "#fdf6e3" # white = "#fdf6e3"
+  base00  = "#657b83" # gray2 = "#657b83"
+  base01  = "#586e75" # gray1 = "#586e75"
+  base02  = "#073642"
+  base03  = "#002b36" # black = "#002b36"
+  yellow  = "#b58900" # yellow = "#B58900"
+  orange  = "#cb4b16" # orange = "#cb4b16"
+  red     = "#dc322f" # red = "#dc322f"
+  magenta = "#d33682" # magenta = "#d33682"
+  violet  = "#6c71c4" # purple = "#6c71c4"
+  blue    = "#268bd2" # blue = "#268bd2"
+  cyan    = "#2aa198" # cyan = "#2aa198"
+  green   = "#859900" # green = "#859900"
+
+[dark]
+  button = ["neosolarized.base03","neosolarized.base0"]
+  button-focus = ["neosolarized.base3","neosolarized.magenta"]
+  button-selected = ["neosolarized.base3","neosolarized.base0"]
+  cmdline = ["neosolarized.base03","neosolarized.yellow"]
+  cmdline-button = ["neosolarized.yellow","neosolarized.base03"]
+  cmdline-border = ["neosolarized.base03","neosolarized.yellow"]
+  copy-mode = ["neosolarized.base03","neosolarized.yellow"]
+  copy-mode-alt = ["neosolarized.yellow","neosolarized.base03"]
+  copy-mode-label = ["neosolarized.base3","neosolarized.red"]
+  current-capture = ["neosolarized.base3","neosolarized.base02"]
+  dialog = ["neosolarized.base03","neosolarized.yellow"]
+  dialog-button = ["neosolarized.yellow","neosolarized.base03"]
+  default = ["neosolarized.base3","neosolarized.base03"]
+  filter-empty = ["neosolarized.base03","neosolarized.cyan"]
+  filter-intermediate = ["neosolarized.base03","neosolarized.orange"]
+  filter-invalid = ["neosolarized.base03","neosolarized.red"]
+  filter-menu = ["neosolarized.base3","neosolarized.base03"]
+  filter-valid = ["neosolarized.base03","neosolarized.green"]
+  hex-byte-selected = ["neosolarized.base3","neosolarized.violet"]
+  hex-byte-unselected = ["neosolarized.base3","neosolarized.base03"]
+  hex-field-selected = ["neosolarized.base03","neosolarized.cyan"]
+  hex-field-unselected = ["neosolarized.base03","neosolarized.base3"]
+  hex-interval-selected = ["neosolarized.base3","neosolarized.base00"]
+  hex-interval-unselected = ["neosolarized.base3","neosolarized.base01"]
+  hex-layer-selected = ["neosolarized.base3","neosolarized.base00"]
+  hex-layer-unselected = ["neosolarized.base3","neosolarized.base01"]
+  packet-list-cell-focus = ["neosolarized.base3","neosolarized.violet"]
+  packet-list-cell-selected = ["neosolarized.base3","neosolarized.base00"]
+  packet-list-row-focus = ["neosolarized.base3","neosolarized.cyan"]
+  packet-list-row-selected = ["neosolarized.base3","neosolarized.base01"]
+  packet-struct-focus = ["neosolarized.base03","neosolarized.cyan"]
+  packet-struct-selected = ["neosolarized.base03","neosolarized.base00"]
+  progress-complete = ["neosolarized.base3","neosolarized.violet"]
+  progress-default = ["neosolarized.base3","neosolarized.base03"]
+  progress-spinner = ["neosolarized.yellow","neosolarized.violet"]
+  spinner = ["neosolarized.yellow","neosolarized.base03"]
+  stream-client = ["neosolarized.base3","neosolarized.red"]
+  stream-match = ["neosolarized.base03","neosolarized.yellow"]
+  stream-search = ["neosolarized.base03","neosolarized.base3"]
+  stream-server = ["neosolarized.base3","neosolarized.blue"]
+  title = ["neosolarized.red","base02"]
+
+[light]
+  button = ["neosolarized.base03","neosolarized.base3"]
+  button-focus = ["neosolarized.base3","neosolarized.violet"]
+  button-selected = ["neosolarized.base03","neosolarized.base0"]
+  cmdline = ["neosolarized.base03","neosolarized.yellow"]
+  cmdline-button = ["neosolarized.yellow","neosolarized.base03"]
+  cmdline-border = ["neosolarized.base03","neosolarized.yellow"]
+  copy-mode = ["neosolarized.base3","neosolarized.yellow"]
+  copy-mode-alt = ["neosolarized.yellow","neosolarized.base3"]
+  copy-mode-label = ["neosolarized.base03","neosolarized.red"]
+  current-capture = ["neosolarized.base03","neosolarized.base2"]
+  dialog = ["neosolarized.base03","neosolarized.yellow"]
+  dialog-button = ["neosolarized.yellow","neosolarized.base03"]
+  default = ["neosolarized.base03","neosolarized.base3"]
+  filter-empty = ["neosolarized.base03","neosolarized.cyan"]
+  filter-intermediate = ["neosolarized.base03","neosolarized.orange"]
+  filter-invalid = ["neosolarized.base03","neosolarized.red"]
+  filter-menu = ["neosolarized.base03","neosolarized.base3"]
+  filter-valid = ["neosolarized.base03","neosolarized.green"]
+  hex-byte-selected = ["neosolarized.base3","neosolarized.violet"]
+  hex-byte-unselected = ["neosolarized.base03","neosolarized.base3"]
+  hex-field-selected = ["neosolarized.base03","neosolarized.cyan"]
+  hex-field-unselected = ["neosolarized.base03","neosolarized.base00"]
+  hex-interval-selected = ["neosolarized.base3","neosolarized.base00"]
+  hex-interval-unselected = ["neosolarized.base03","neosolarized.base1"]
+  hex-layer-selected = ["neosolarized.base3","neosolarized.base00"]
+  hex-layer-unselected = ["neosolarized.base03","neosolarized.base1"]
+  packet-list-cell-focus = ["neosolarized.base3","neosolarized.violet"]
+  packet-list-cell-selected = ["neosolarized.base03","neosolarized.base0"]
+  packet-list-row-focus = ["neosolarized.base3","neosolarized.cyan"]
+  packet-list-row-selected = ["neosolarized.base03","neosolarized.base1"]
+  packet-struct-focus = ["neosolarized.base03","neosolarized.cyan"]
+  packet-struct-selected = ["neosolarized.base03","neosolarized.base1"]
+  progress-complete = ["neosolarized.base3","neosolarized.violet"]
+  progress-default = ["neosolarized.base3","neosolarized.base03"]
+  progress-spinner = ["neosolarized.yellow","neosolarized.base03"]
+  spinner = ["neosolarized.yellow","neosolarized.base3"]
+  stream-client = ["neosolarized.base3","neosolarized.red"]
+  stream-match = ["neosolarized.base3","neosolarized.yellow"]
+  stream-search = ["neosolarized.base3","neosolarized.base03"]
+  stream-server = ["neosolarized.base3","neosolarized.blue"]
+  title = ["neosolarized.red","neosolarized.base2"]
