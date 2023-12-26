@@ -158,5 +158,6 @@ config update-index --assume-unchanged \
     .config/git/config \
     .config/nvim/lua/user/colorscheme.lua \
     .config/rofi/config.rasi \
+    .config/termshark/termshark.toml \
     .config/xsettingsd/xsettingsd.conf \
     .icons/default/index.theme
