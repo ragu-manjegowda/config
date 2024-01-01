@@ -3,7 +3,7 @@
 # Based on https://stackoverflow.com/a/21756612
 # following files are ignored for local changes
 config update-index --assume-unchanged \
-    .config/alacritty/colors.yml \
+    .config/alacritty/alacritty.toml \
     .config/awesome/configuration/rofi/appmenu/rofi.rasi \
     .config/awesome/configuration/rofi/calc/rofi.rasi \
     .config/awesome/configuration/rofi/emojimenu/rofi.rasi \

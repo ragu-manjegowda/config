@@ -115,12 +115,12 @@ ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 
 # function to toggle alacritty theme defined in colors.yml
 function toggle-alacritty-theme () {
-    if ! test -f ~/.config/alacritty/colors.yml; then
-        echo "file $HOME/.config/alacritty/colors.yml doesn't exist"
+    if ! test -r ~/.config/alacritty/themes; then
+        echo "Directory $HOME/.config/alacritty/themes doesn't exist"
         return
     fi
 
-    config_path="$HOME/.config/alacritty/colors.yml"
+    config_path="$HOME/.config/alacritty/alacritty.toml"
     git_config_path="$HOME/.config/git/config"
     broot_config_path="$HOME/.config/broot/conf.hjson"
     vim_config_path="$HOME/.config/nvim/lua/user/colorscheme.lua"
@@ -128,11 +128,11 @@ function toggle-alacritty-theme () {
     termshark_config_path="$HOME/.config/termshark/termshark.toml"
 
     # Get current mode
-    mode=$(awk 'sub(/colors:'\ '\*solarized-/,""){print $1}' $config_path)
+    mode=$(awk -F'/' '/solarized/ {gsub(/\[|"|\]|solarized_|.toml/,""); print $(NF)}' $config_path)
 
     case $mode in
         light)
-            sed -i -e "s#^colors: \*.*#colors: *solarized-dark#g" $config_path
+            sed -i -e "s#solarized_light#solarized_dark#g" $config_path
             export BAT_THEME="Solarized (dark)"
 
             sed -i -e "s#(light)#(dark)#g" $git_config_path
@@ -155,7 +155,7 @@ function toggle-alacritty-theme () {
             fi
             ;;
         dark)
-            sed -i -e "s#^colors: \*.*#colors: *solarized-light#g" $config_path
+            sed -i -e "s#solarized_dark#solarized_light#g" $config_path
             export BAT_THEME="Solarized (light)"
 
             sed -i -e "s#(dark)#(light)#g" $git_config_path
@@ -213,17 +213,18 @@ function toggle-gtk-theme () {
 
 # Set BAT theme for FZF on linux (in Mac it is set below)
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
-    if ! test -f ~/.config/alacritty/colors.yml; then
-        echo "file $HOME/.config/alacritty/colors.yml doesn't exist"
+    if ! test -r ~/.config/alacritty/themes; then
+        echo "Directory $HOME/.config/alacritty/themes doesn't exist"
     else
-        config_path="$HOME/.config/alacritty/colors.yml"
+        config_path="$HOME/.config/alacritty/alacritty.toml"
         git_config_path="$HOME/.config/git/config"
         broot_config_path="$HOME/.config/broot/conf.hjson"
         vim_config_path="$HOME/.config/nvim/lua/user/colorscheme.lua"
         zathura_config_path="$HOME/.config/zathura/zathurarc"
         termshark_config_path="$HOME/.config/termshark/termshark.toml"
 
-        if grep -Fxq "colors: *solarized-dark" "$config_path"; then
+        mode=$(awk -F'/' '/solarized/ {gsub(/\[|"|\]|solarized_|.toml/,""); print $(NF)}' $config_path)
+        if [[ "$mode" == "dark" ]]; then
             export BAT_THEME="Solarized (dark)"
 
             sed -i -e "s#(light)#(dark)#g" $git_config_path
@@ -263,10 +264,10 @@ fi
 
 # Set Alacritty theme (dark/light) on Mac
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    if ! test -f ~/.config/alacritty/colors.yml; then
-        echo "file $HOME/.config/alacritty/colors.yml doesn't exist"
+    if ! test -r ~/.config/alacritty/themes; then
+        echo "Directory $HOME/.config/alacritty/themes doesn't exist"
     else
-        config_path="$HOME/.config/alacritty/colors.yml"
+        config_path="$HOME/.config/alacritty/alacritty.toml"
         git_config_path="$HOME/.config/git/config"
         broot_config_path="$HOME/.config/broot/conf.hjson"
         vim_config_path="$HOME/.config/nvim/lua/user/colorscheme.lua"
@@ -278,7 +279,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
         case $mode in
             Dark)
-                sed -i -e "s#^colors: \*.*#colors: *solarized-dark#g" $config_path
+                sed -i -e "s#solarized_light#solarized_dark#g" $config_path
                 export BAT_THEME="Solarized (dark)"
 
                 sed -i -e "s#(light)#(dark)#g" $git_config_path
@@ -297,7 +298,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
                 eval `gdircolors ${dircolors_dark_path}`
                 ;;
             *)
-                sed -i -e "s#^colors: \*.*#colors: *solarized-light#g" $config_path
+                sed -i -e "s#solarized_dark#solarized_light#g" $config_path
                 export BAT_THEME="Solarized (light)"
 
                 sed -i -e "s#(dark)#(light)#g" $git_config_path
