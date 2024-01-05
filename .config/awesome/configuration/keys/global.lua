@@ -411,6 +411,15 @@ local global_keys = awful.util.table.join(
     ),
 
     awful.key(
+        { modkey, 'Control' },
+        'space',
+        function()
+            awful.client.floating.toggle()
+        end,
+        { description = 'toggle floating', group = 'awesome' }
+    ),
+
+    awful.key(
         { modkey },
         'space',
         function()
