@@ -92,7 +92,6 @@ rofi-calc
 rofi-emoji
 rsync
 rust-src
-slack-desktop
 sof-firmware
 solarized-colors-iconpack-git
 sync-pacman-hook-git
