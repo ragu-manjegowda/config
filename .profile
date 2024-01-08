@@ -84,6 +84,8 @@ case "$(command -v nvim)" in
         VIM="nvim"
         VISUAL="nvim --cmd 'let g:flatten_wait=1'"
         alias vim="nvim"
+        alias vimfast="nvim --cmd '+lua vim.g.blazing_fast=1'"
+        alias vimfastx="nvim --cmd '+lua vim.g.blazing_fast=2'"
         ;;
     *)
         case "$(command -v vim)" in
