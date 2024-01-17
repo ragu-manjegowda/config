@@ -17,28 +17,6 @@ local core_plugins = {
         end
     },
 
-    -- cmp plugins
-    {
-        "hrsh7th/nvim-cmp",
-        config = function()
-            require("user.nvim-cmp").config()
-        end,
-        dependencies = {
-            "alexander-born/cmp-bazel",
-            "L3MON4D3/LuaSnip",
-            "hrsh7th/cmp-buffer",
-            "hrsh7th/cmp-cmdline",
-            "hrsh7th/cmp-nvim-lsp",
-            "hrsh7th/cmp-nvim-lsp-document-symbol",
-            "hrsh7th/cmp-omni",
-            "hrsh7th/cmp-path",
-            "onsails/lspkind-nvim",
-            "rafamadriz/friendly-snippets",
-            "saadparwaiz1/cmp_luasnip",
-            "quangnguyen30192/cmp-nvim-tags"
-        }
-    },
-
     -- Codeium
     {
         "Exafunction/codeium.vim",
@@ -188,6 +166,28 @@ local core_plugins = {
 
 local extra_plugins = {
     core_plugins,
+
+    -- cmp plugins
+    {
+        "hrsh7th/nvim-cmp",
+        config = function()
+            require("user.nvim-cmp").config()
+        end,
+        dependencies = {
+            "alexander-born/cmp-bazel",
+            "L3MON4D3/LuaSnip",
+            "hrsh7th/cmp-buffer",
+            "hrsh7th/cmp-cmdline",
+            "hrsh7th/cmp-nvim-lsp",
+            "hrsh7th/cmp-nvim-lsp-document-symbol",
+            "hrsh7th/cmp-omni",
+            "hrsh7th/cmp-path",
+            "onsails/lspkind-nvim",
+            "rafamadriz/friendly-snippets",
+            "saadparwaiz1/cmp_luasnip",
+            "quangnguyen30192/cmp-nvim-tags"
+        }
+    },
 
     -- LSP
     {

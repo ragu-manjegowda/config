@@ -109,7 +109,7 @@ function M.config()
     map('n', '<leader>lrp', '<cmd>Lspsaga rename ++project<CR>',
         { silent = true, desc = 'LSP rename in project' })
 
-    map('n', '<leader>lsy', '<cmd>Lspsaga lsp_finder<CR>',
+    map('n', '<leader>lsy', '<cmd>Lspsaga finder<CR>',
         { silent = true, desc = 'LSP find symbols' })
 end
 
