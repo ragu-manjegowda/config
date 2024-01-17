@@ -65,7 +65,7 @@
 
 [merge]
     conflictstyle = diff3
-    tool = nvimdiff
+    tool = nvimdiff1
 
 [mergetool]
     hideResolved = true
