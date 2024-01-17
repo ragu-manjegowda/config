@@ -195,23 +195,23 @@ vim.api.nvim_create_autocmd('User', {
     end,
 })
 
--- Disable global status line for mergetool
--- Do it by simply counting the number of windows
-vim.api.nvim_create_autocmd('VimEnter', {
-    callback = function()
-        local windows = vim.api.nvim_tabpage_list_wins(0)
-        if #windows == 4 then
-            vim.opt.laststatus = 2
-            local buf_name = { '%=LOCAL%=', '%=BASE%=', '%=REMOTE%=' }
-            for i, win in ipairs(windows) do
-                if i == 4 then
-                    return
-                end
-                vim.api.nvim_win_set_option(win, "statusline", buf_name[i])
-            end
-        end
-    end,
-})
+-- -- Disable global status line for mergetool
+-- -- Do it by simply counting the number of windows
+-- vim.api.nvim_create_autocmd('VimEnter', {
+--     callback = function()
+--         local windows = vim.api.nvim_tabpage_list_wins(0)
+--         if #windows == 4 then
+--             vim.opt.laststatus = 2
+--             local buf_name = { '%=LOCAL%=', '%=BASE%=', '%=REMOTE%=' }
+--             for i, win in ipairs(windows) do
+--                 if i == 4 then
+--                     return
+--                 end
+--                 vim.api.nvim_win_set_option(win, "statusline", buf_name[i])
+--             end
+--         end
+--     end,
+-- })
 
 -- Toggle hlsearch b/w enter and exiting search mode
 local events = { 'CmdlineEnter', 'CmdlineLeave' }

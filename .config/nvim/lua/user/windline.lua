@@ -7,11 +7,7 @@ local M = {}
 
 M.config = function()
     local function getFunctionName()
-        local res, func = pcall(vim.fn["tagbar#currenttag"], "%s", "")
-        if not res then
-            return ""
-        end
-        return func
+        return ""
     end
 
     local res, windline = pcall(require, "windline")

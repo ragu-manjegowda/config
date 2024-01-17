@@ -19,7 +19,7 @@ local function restore_nvim_tree()
     end
 
     res, nvim_tree_change_dir = pcall(require,
-            "nvim-tree.actions.root.change-dir")
+        "nvim-tree.actions.root.change-dir")
 
     if not res then
         vim.notify("nvim-tree.actions.root.current-dir not found",
@@ -28,7 +28,10 @@ local function restore_nvim_tree()
         return
     end
 
-    nvim_tree_change_dir.fn(current_root_dir)
+    if current_root_dir ~= nil then
+        nvim_tree_change_dir.fn(current_root_dir)
+        return
+    end
 
     nvim_tree_api.tree.reload()
 end

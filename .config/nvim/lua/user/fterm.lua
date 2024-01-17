@@ -13,9 +13,11 @@ if not res then
     return
 end
 
+---@diagnostic disable-next-line: missing-fields
 local ftzsh = fterm:new({
     ft = 'fterm_zsh',
     cmd = "zsh",
+    ---@diagnostic disable-next-line: missing-fields
     dimensions = {
         height = 0.9,
         width = 0.9
@@ -58,8 +60,10 @@ function M.terminal_send(text)
 end
 
 function M.config()
+    ---@diagnostic disable-next-line: missing-fields
     fterm.setup({
         border     = 'double',
+        ---@diagnostic disable-next-line: missing-fields
         dimensions = {
             height = 0.9,
             width = 0.9,
