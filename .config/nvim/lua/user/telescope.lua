@@ -36,6 +36,7 @@ function M.grep_folder()
     local opts = {}
     opts.search_dirs = {}
     opts.search_dirs[1] = vim.fn.input("Grep in Directory > ",
+        ---@diagnostic disable-next-line: redundant-parameter
         vim.fn.getcwd() .. "/", "file")
     M.grep(opts)
 end

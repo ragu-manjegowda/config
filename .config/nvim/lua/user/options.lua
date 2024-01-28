@@ -86,3 +86,17 @@ vim.api.nvim_create_user_command(
         end
     end, {}
 )
+
+-- User defined function to reload colorscheme
+-- Naming `ToggleColorScheme` is intentional since it's intended to call only
+-- when colorscheme is toggled by OS (dark/light)
+vim.api.nvim_create_user_command(
+    'ToggleColorScheme',
+    function()
+        vim.cmd("source $HOME/.config/nvim/lua/user/colorscheme.lua")
+        -- Reload bufferline silently
+        vim.cmd("silent Lazy reload bufferline.nvim")
+        -- TODO: Debug why this is needed
+        vim.cmd("source $HOME/.config/nvim/lua/user/colorscheme.lua")
+    end, {}
+)
