@@ -62,6 +62,7 @@ neovim
 network-manager-applet
 networkmanager
 networkmanager-openconnect
+newsboat-git
 nfs-utils
 nomachine
 noto-fonts
@@ -86,6 +87,7 @@ playerctl
 pulseaudio-alsa
 python-pynvim
 ranger-git
+rdrview-git
 redshift
 refind
 reflector-pacman-hook-git

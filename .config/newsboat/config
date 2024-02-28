@@ -1,0 +1,66 @@
+#------------------------------------------------------------------------------
+#-- Author       : Ragu Manjegowda
+#-- Github       : @ragu-manjegowda
+#------------------------------------------------------------------------------
+
+# Options
+max-items 100
+notify-program "notify-send"
+reload-threads 100
+
+browser "firefox %u"
+macro o set browser "rdrview -B w3m %u"; open-in-browser ; set browser "firefox %u"
+
+# Ref: https://wiki.archlinux.org/title/Newsboat#Ignoring_articles
+ignore-article "regex:.*UCz8QaiQxApLq8sLNcszYyJw" "title !# \"Vantage\""
+ignore-article "regex:https?://www.youtube.com/.*" "title =~ \"#shorts\""
+ignore-mode "download" # Default: Delete them.
+ignore-mode "display"  # Do not show them.
+
+articlelist-format "%4i ║ %f ║ %D ║ %-60t"
+
+# Styling
+# Ref: github.com/NapoleonWils0n/ubuntu-dotfiles/blob/
+#    8d26c2401a3a9a2109acb9238133addd45ac1091/.config/newsboat/config
+highlight feedlist "[║│]" default default bold
+highlight feedlist "╠═.*" default default bold
+feedlist-format "%?T?║%4i %n %8u %t &╠%-16t════════════════════════════════════════?"
+
+# Key-bind
+bind-key j down                             # Go up one line
+bind-key k up                               # Go down one line
+bind-key j next articlelist                 # Jump to next list entry. (in articlelist)
+bind-key k prev articlelist                 # Jump to previous list entry. (in articlelist)
+bind-key J next-feed articlelist            # Go to the next feed. This only works from the article list.
+bind-key K prev-feed articlelist            # Go to the previous feed. This only works from the article list.
+bind-key G end                              # Go to the last item in the list.
+bind-key g home                             # Go to the first item in the list.
+bind-key u pageup                           # Go up one page in the list.
+bind-key d pagedown                         # Go down one page in the list.
+bind-key l open                             # Open the currently selected feed or article.
+bind-key h quit                             # Quit the program or return to the previous dialog (depending on the context).
+bind-key a toggle-article-read              # Toggle the read flag for the currently selected article, and clear the delete flag if set.
+bind-key n next-unread                      # Jump to the next unread article.
+bind-key N prev-unread                      # Jump to the previous unread article.
+bind-key U show-urls                        # Show all URLs in the article in a list (similar to urlview).
+bind-key o open-in-browser-and-mark-read    # Open the currently selected article in the browser and mark it as read.
+bind-key O open-in-browser                  # Open the currently selected article in the browser.
+
+unbind-key h feedlist                       # Unbind the 'h' key from the 'feedlist' dialog.
+
+# Highlights
+highlight article "^(Feed|Title|Link|Date|Author):.*$" color12 color8
+highlight article "https?://[^ ]+" color4 color8 protect
+
+highlight all "---.*---" color172
+highlight feedlist ".*(0/0))" black
+highlight article "^(Title):.*$" default default standout
+highlight article "(^Feed:.*|^Author:.*)" color238 default dim blink
+highlight article "(^Link:.*|^Date:.*)" color238 default blink
+highlight article "https?://[^ ]+" color214 default underline
+highlight article "\\[[0-9][0-9]*\\]" color197 default reverse
+highlight article "\\[image\\ [0-9]+\\]" green default bold
+highlight article "\\[embedded flash: [0-9][0-9]*\\]" green default bold
+highlight article " .*\\(link\\)$" color214 default blink
+highlight article " .*\\(image\\)$" blue default blink
+highlight article " .*\\(embedded flash\\)$" magenta default blink

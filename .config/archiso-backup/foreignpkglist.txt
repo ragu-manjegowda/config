@@ -16,6 +16,7 @@ mbsync-git
 mosh-git
 mu
 myxer
+newsboat-git
 nomachine
 numix-cursor-theme
 nvidia-container-toolkit
@@ -24,6 +25,7 @@ pam-fprint-grosshack
 paru
 picom-git
 ranger-git
+rdrview-git
 reflector-pacman-hook-git
 sioyek-git
 solarized-colors-iconpack-git
