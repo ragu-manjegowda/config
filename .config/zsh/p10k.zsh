@@ -49,18 +49,18 @@
     status                  # exit code of the last command
     command_execution_time  # duration of the last command
     background_jobs         # presence of background jobs
-    direnv                  # direnv status (https://direnv.net/)
+    # direnv                # direnv status (https://direnv.net/)
     # asdf                  # asdf version manager (https://github.com/asdf-vm/asdf)
     virtualenv              # python virtual environment (https://docs.python.org/3/library/venv.html)
     # anaconda              # conda environment (https://conda.io/)
-    pyenv                   # python environment (https://github.com/pyenv/pyenv)
-    goenv                   # go environment (https://github.com/syndbg/goenv)
+    # pyenv                 # python environment (https://github.com/pyenv/pyenv)
+    # goenv                 # go environment (https://github.com/syndbg/goenv)
     # nodenv                # node.js version from nodenv (https://github.com/nodenv/nodenv)
     # nvm                   # node.js version from nvm (https://github.com/nvm-sh/nvm)
     # nodeenv               # node.js environment (https://github.com/ekalinin/nodeenv)
     # node_version          # node.js version
-    go_version              # go version (https://golang.org)
-    rust_version            # rustc version (https://www.rust-lang.org)
+    # go_version            # go version (https://golang.org)
+    # rust_version          # rustc version (https://www.rust-lang.org)
     # dotnet_version        # .NET version (https://dotnet.microsoft.com)
     # php_version           # php version (https://www.php.net/)
     # laravel_version       # laravel php framework version (https://laravel.com/)
@@ -69,7 +69,7 @@
     # rbenv                 # ruby version from rbenv (https://github.com/rbenv/rbenv)
     # rvm                   # ruby version from rvm (https://rvm.io)
     # fvm                   # flutter version management (https://github.com/leoafarias/fvm)
-    luaenv                  # lua version from luaenv (https://github.com/cehoffman/luaenv)
+    # luaenv                # lua version from luaenv (https://github.com/cehoffman/luaenv)
     # jenv                  # java version from jenv (https://github.com/jenv/jenv)
     # plenv                 # perl version from plenv (https://github.com/tokuhirom/plenv)
     # perlbrew              # perl version from perlbrew (https://github.com/gugod/App-perlbrew)
