@@ -53,6 +53,7 @@ ly
 maim
 mbsync-git
 mosh-git
+mpv
 msmtp
 mu
 myxer
@@ -69,6 +70,7 @@ ntp
 numix-cursor-theme
 nvidia
 nvidia-container-toolkit
+nvidia-lts
 nvidia-utils
 okular
 openrazer-daemon
