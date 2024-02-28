@@ -25,6 +25,7 @@ paru
 picom-git
 ranger-git
 reflector-pacman-hook-git
+sioyek-git
 solarized-colors-iconpack-git
 sync-pacman-hook-git
 teams
