@@ -27,6 +27,7 @@ text = "CellBackground"
 
 [font]
 size = 20.0
+builtin_box_drawing = false
 
 [font.bold]
 family = "Hack Nerd Font"
