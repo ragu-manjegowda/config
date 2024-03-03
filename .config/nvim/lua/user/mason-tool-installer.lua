@@ -19,6 +19,7 @@ function M.config()
         -- start; they should be the names Mason uses for each tool
         ensure_installed = {
             "bash-language-server",
+            "bzl", -- starlark
             "clangd",
             "cpptools", -- c/cpp/rust debugging
             "cmake-language-server",
