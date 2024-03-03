@@ -15,7 +15,6 @@ lua-pam-git
 mbsync-git
 mosh-git
 mu
-myxer
 newsboat-git
 nomachine
 numix-cursor-theme

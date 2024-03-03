@@ -56,7 +56,6 @@ mosh-git
 mpv
 msmtp
 mu
-myxer
 neomutt
 neovim
 network-manager-applet
@@ -82,9 +81,9 @@ pam-fprint-grosshack
 paru
 pavucontrol
 picom-git
+pipewire-alsa
 pipewire-pulse
 playerctl
-pulseaudio-alsa
 python-pynvim
 ranger-git
 rdrview-git
