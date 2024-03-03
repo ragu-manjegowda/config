@@ -11,7 +11,6 @@ local hotkeys_popup = require('awful.hotkeys_popup').widget.new({
     width = 2500, height = 1350 })
 
 local modkey = require('configuration.keys.mod').mod_key
-local altkey = require('configuration.keys.mod').alt_key
 local apps = require('configuration.apps')
 local config = require('configuration.config')
 
@@ -578,7 +577,7 @@ local global_keys = awful.util.table.join(
         {},
         'XF86AudioRaiseVolume',
         function()
-            awful.spawn('amixer -D pulse sset Master 5%+', false)
+            awful.spawn('wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+', false)
             awesome.emit_signal('widget::volume')
             awesome.emit_signal('module::volume_osd:show', true)
         end,
@@ -589,7 +588,7 @@ local global_keys = awful.util.table.join(
         {},
         'XF86AudioLowerVolume',
         function()
-            awful.spawn('amixer -D pulse sset Master 5%-', false)
+            awful.spawn('wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-', false)
             awesome.emit_signal('widget::volume')
             awesome.emit_signal('module::volume_osd:show', true)
         end,
@@ -600,7 +599,7 @@ local global_keys = awful.util.table.join(
         {},
         'XF86AudioMute',
         function()
-            awful.spawn('amixer -D pulse set Master 1+ toggle', false)
+            awful.spawn('wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle', false)
             awesome.emit_signal('widget::volume')
             awesome.emit_signal('module::volume_osd:show', true)
         end,
@@ -639,7 +638,7 @@ local global_keys = awful.util.table.join(
         {},
         'XF86AudioMicMute',
         function()
-            awful.spawn('amixer set Capture toggle', false)
+            awful.spawn('wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle', false)
         end,
         { description = 'mute microphone', group = 'hotkeys' }
     ),
@@ -668,12 +667,11 @@ local global_keys = awful.util.table.join(
 -- This should map on the top row of your keyboard, usually 1 to 9.
 for i = 1, 9 do
     -- Hack to only show tags 1 and 9 in the shortcut window (mod+s)
-    local descr_view, descr_toggle, descr_move, descr_toggle_focus
+    local descr_view, descr_toggle, descr_move
     if i == 1 or i == 9 then
         descr_view = { description = 'view tag #', group = 'tag' }
         descr_toggle = { description = 'toggle tag #', group = 'tag' }
         descr_move = { description = 'move focused client to tag #', group = 'tag' }
-        descr_toggle_focus = { description = 'toggle focused client on tag #', group = 'tag' }
     end
     global_keys =
         awful.util.table.join(
