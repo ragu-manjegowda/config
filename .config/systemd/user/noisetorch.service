@@ -1,0 +1,19 @@
+# https://github.com/noisetorch/NoiseTorch/wiki/Start-automatically-with-Systemd
+[Unit]
+Description=Noisetorch Noise Cancelling
+Requires=sys-devices-pci0000:00-0000:00:1f.3-sof_sdw-sound-card1-controlC1.device
+After=sys-devices-pci0000:00-0000:00:1f.3-sof_sdw-sound-card1-controlC1.device
+# Depending on if you're using pulseaudio or pipewire, uncomment the correct line
+# After=pulseaudio.service
+After=pipewire.service
+
+[Service]
+Type=simple
+RemainAfterExit=yes
+ExecStart=noisetorch -i -s alsa_input.pci-0000_00_1f.3-platform-sof_sdw.pro-input-4 -t 95
+ExecStop=noisetorch -u
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target
