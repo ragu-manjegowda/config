@@ -11,7 +11,6 @@ bluez-utils
 broadcom-wl-dkms
 darkman
 docker
-efibootmgr
 ffmpeg
 firefox
 fprintd
@@ -21,9 +20,7 @@ goimapnotify
 gst-plugin-pipewire
 gst-plugins-good
 imagemagick
-imlib2
 iwd
-jack2
 libreoffice-still
 libsmbios
 libxcrypt-compat

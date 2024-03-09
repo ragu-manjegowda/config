@@ -16,7 +16,6 @@ check-broken-packages-pacman-hook-git
 cyrus-sasl-xoauth2-git
 darkman
 docker
-efibootmgr
 ffmpeg
 find-cursor
 firefox
@@ -30,16 +29,15 @@ gst-plugins-good
 gtk-theme-numix-solarized
 icamerasrc-git
 imagemagick
-imlib2
 intel-ipu6-dkms-git
 intel-ipu6ep-camera-bin-fix
 intel-ipu6ep-camera-hal-git-fix
+intel-ipu6ep-camera-hal-git-fix-debug
 iwd
-jack2
 libreoffice-still
 libsmbios
 libxcrypt-compat
-light-git
+light
 linux
 linux-firmware
 linux-headers
@@ -63,6 +61,7 @@ networkmanager
 networkmanager-openconnect
 newsboat-git
 nfs-utils
+noisetorch
 nomachine
 noto-fonts
 noto-fonts-emoji
@@ -98,6 +97,7 @@ rust-src
 sioyek-git
 sof-firmware
 solarized-colors-iconpack-git
+soundwire-dkms-git
 sync-pacman-hook-git
 teams
 thermald

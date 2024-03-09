@@ -10,12 +10,14 @@ icamerasrc-git
 intel-ipu6-dkms-git
 intel-ipu6ep-camera-bin-fix
 intel-ipu6ep-camera-hal-git-fix
-light-git
+intel-ipu6ep-camera-hal-git-fix-debug
+light
 lua-pam-git
 mbsync-git
 mosh-git
 mu
 newsboat-git
+noisetorch
 nomachine
 numix-cursor-theme
 nvidia-container-toolkit
@@ -28,6 +30,7 @@ rdrview-git
 reflector-pacman-hook-git
 sioyek-git
 solarized-colors-iconpack-git
+soundwire-dkms-git
 sync-pacman-hook-git
 teams
 v4l2-relayd
