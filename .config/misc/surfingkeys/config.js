@@ -78,6 +78,8 @@ settings.theme = `
 }
 `;
 
+settings.defaultSearchEngine = 'd';
+
 api.map('u', 'e');
 api.mapkey('p', "Open the clipboard's URL in the current tab", function() {
     Front.getContentFromClipboard(function(response) {
