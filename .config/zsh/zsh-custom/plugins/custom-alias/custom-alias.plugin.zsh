@@ -20,7 +20,13 @@ compdef _git _git_log_prettily=git-log
 #
 
 alias ga='git add'
-alias gb='git branch'
+alias gb='git branch --column'
+
+function gbb () {
+    eval "${ZDOTDIR}/better-git-branch.sh"
+}
+
+alias gbl='git blame -w -C -C -C'
 
 alias gc='git commit -s'
 alias gcan='git commit --amend --no-edit'
