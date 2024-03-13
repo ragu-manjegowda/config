@@ -1,3 +1,7 @@
+; show recent branch at the end of the list
+[branch]
+    sort = committerdate
+
 [color]
     ui = true
 
@@ -28,7 +32,7 @@
 [delta]
     plus-style = green bold
     features = unobtrusive-line-numbers decorations
-    syntax-theme = "Solarized (light)"
+    syntax-theme = "Solarized (dark)"
     whitespace-error-style = 22 reverse
 
 [delta "interactive"]
@@ -79,6 +83,11 @@
 
 [push]
     autoSetupRemote = true
+
+; https://www.youtube.com/watch?v=aolI_Rz0ZqY
+; Reuse Recorded Resolution during merge conflicts
+[rerere]
+    enabled = true
 
 [status]
     submodulesummary = false
