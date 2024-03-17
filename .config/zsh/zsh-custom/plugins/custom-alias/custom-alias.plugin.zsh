@@ -146,6 +146,12 @@ setopt PUSHD_IGNORE_DUPS
 ## This reverts the +/- operators.
 setopt PUSHD_MINUS
 
+###################### word navigation ########################################
+
+# Bash-like navigation
+autoload -U select-word-style
+select-word-style bash
+
 ###############################################################################
 
 # function to toggle alacritty theme defined in colors.yml
