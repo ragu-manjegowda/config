@@ -1,3 +1,5 @@
+################## Git aliases ################################################
+
 # Git version checking
 autoload -Uz is-at-least
 git_version="${${(As: :)$(git version 2>/dev/null)}[3]}"
@@ -9,7 +11,7 @@ git_version="${${(As: :)$(git version 2>/dev/null)}[3]}"
 # Pretty log messages
 function _git_log_prettily(){
   if ! [ -z $1 ]; then
-    git log --pretty=$1
+    git log --pretty=$1 "${@:2}"
   fi
 }
 compdef _git _git_log_prettily=git-log
@@ -43,7 +45,7 @@ is-at-least 2.8 "$git_version" \
   || alias gfa='git fetch --all --prune'
 
 
-alias glog='git log --oneline --decorate --graph'
+alias glog='git log --oneline --decorate'
 alias glogp="_git_log_prettily"
 
 alias gpush='git push origin "$(git_current_branch)"'
@@ -54,6 +56,38 @@ alias gstv='vim +Git +only'
 alias gsu='git submodule foreach git pull --recurse-submodules --rebase'
 
 unset git_version
+
+################## config aliases #############################################
+
+## Config alias
+alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
+alias cvim='GIT_DIR=$HOME/.config.git/ GIT_WORK_TREE=$HOME vim'
+
+# Pretty log messages
+function _config_log_prettily(){
+  if ! [ -z $1 ]; then
+    config log --pretty=$1 "${@:2}"
+  fi
+}
+compdef _git _config_log_prettily=git-log
+
+alias ca='config add'
+alias ccd='config diff'
+alias ccm='config commit -s'
+alias cco='config checkout'
+alias cfa='config fetch --all --prune'
+alias clog='config log --oneline --decorate'
+alias clogp="_config_log_prettily"
+alias cpulla='config pull --rebase --autostash'
+alias cpush='config push'
+alias cst='config status'
+alias cstv='cvim +Git +only'
+# alias csu='config submodule update --remote --rebase'
+alias csu='config submodule foreach git pull --recurse-submodules --rebase'
+
+compdef _git config
+
+#################### list alias ###############################################
 
 # Unset alias l
 unalias \l
@@ -67,6 +101,8 @@ function ldot() {
         ls -d $1/.*
     fi
 }
+
+####################### zsh history settings ##################################
 
 # Zsh-hist
 HISTSIZE=10000000
@@ -90,8 +126,6 @@ export PROMPT_EOL_MARK=""
 # Save command to history only if it is successful
 zshaddhistory() { whence ${${(z)1}[1]} >| /dev/null || return 1 }
 zstyle ":completion:*:commands" rehash 1
-
-###############################################################################
 
 ############# zsh-autocomplete specific #######################################
 

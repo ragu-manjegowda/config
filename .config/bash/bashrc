@@ -146,3 +146,29 @@ if [ -f "$BASH_DIR/fzf.bash" ] ; then
     source "$BASH_DIR/fzf.bash"
 fi
 
+################## config aliases #############################################
+
+## Config alias
+alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
+alias cvim='GIT_DIR=$HOME/.config.git/ GIT_WORK_TREE=$HOME vim'
+
+# Pretty log messages
+function _config_log_prettily(){
+  if ! [ -z $1 ]; then
+    config log --pretty=$1 "${@:2}"
+  fi
+}
+
+alias ca='config add'
+alias ccd='config diff'
+alias ccm='config commit -s'
+alias cco='config checkout'
+alias cfa='config fetch --all --prune'
+alias clog='config log --oneline --decorate'
+alias clogp="_config_log_prettily"
+alias cpulla='config pull --rebase --autostash'
+alias cpush='config push'
+alias cst='config status'
+alias cstv='cvim +Git +only'
+# alias csu='config submodule update --remote --rebase'
+alias csu='config submodule foreach git pull --recurse-submodules --rebase'

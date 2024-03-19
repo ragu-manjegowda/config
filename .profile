@@ -105,23 +105,6 @@ export EDITOR=$VIM
 export VISUAL=$VISUAL
 export FCEDIT=$EDITOR
 
-## Config alias
-alias config='git --git-dir=$HOME/.config.git/ --work-tree=$HOME'
-alias cvim='GIT_DIR=$HOME/.config.git/ GIT_WORK_TREE=$HOME vim'
-alias ca='config add'
-alias ccd='config diff'
-alias ccm='config commit -s'
-alias cco='config checkout'
-alias cfa='config fetch --all --prune'
-alias clog='config log --graph --oneline'
-alias clogp='config log --pretty=full -p'
-alias cpulla='config pull --rebase --autostash'
-alias cpush='config push'
-alias cst='config status'
-alias cstv='cvim +Git +only'
-# alias csu='config submodule update --remote --rebase'
-alias csu='config submodule foreach git pull --recurse-submodules --rebase'
-
 # alias bat to cat
 case "$(command -v bat)" in
     */bat)

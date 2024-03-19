@@ -40,6 +40,7 @@ local core_plugins = {
                     "WhoIsSethDaniel/mason-tool-installer.nvim",
                 }
             },
+            "nvim-neotest/nvim-nio",
             "theHamsta/nvim-dap-virtual-text",
         },
         config = function()
