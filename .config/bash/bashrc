@@ -125,8 +125,8 @@ HISTTIMEFORMAT='%F %T '
 shopt -s cmdhist
 PROMPT_COMMAND='history -a'
 
-if [ -f $BASH_DIR/bash_custom ]; then
-    . $BASH_DIR/bash_custom
+if [ -f "$BASH_DIR"/bash_custom ]; then
+    . "$BASH_DIR"/bash_custom
 fi
 
 # use nvim if installed, vi default
@@ -154,13 +154,15 @@ alias cvim='GIT_DIR=$HOME/.config.git/ GIT_WORK_TREE=$HOME vim'
 
 # Pretty log messages
 function _config_log_prettily(){
-  if ! [ -z $1 ]; then
-    config log --pretty=$1 "${@:2}"
+  if ! [ -z "$1" ]; then
+    config log --pretty="$1" "${@:2}"
   fi
 }
 
-alias ca='config add'
+alias ca="config add"
 alias ccd='config diff'
+alias ccds='config diff --cached'
+alias ccda='config diff HEAD'
 alias ccm='config commit -s'
 alias cco='config checkout'
 alias cfa='config fetch --all --prune'
