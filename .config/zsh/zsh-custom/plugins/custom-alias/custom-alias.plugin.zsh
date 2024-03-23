@@ -71,8 +71,9 @@ function _config_log_prettily(){
 }
 compdef _git _config_log_prettily=git-log
 
-alias ca='config add'
 alias ccd='config diff'
+alias ccds='config diff --cached'
+alias ccda='config diff HEAD'
 alias ccm='config commit -s'
 alias cco='config checkout'
 alias cfa='config fetch --all --prune'
@@ -558,20 +559,41 @@ PREFIX_BIND_OPTS3=",ctrl-w:toggle-preview-wrap,ctrl-f:jump"
 PREFIX_BIND_OPTS4=",ctrl-u:preview-top,ctrl-d:preview-bottom"
 PREFIX_BIND_OPTS="$PREFIX_BIND_OPTS1$PREFIX_BIND_OPTS2$PREFIX_BIND_OPTS3$PREFIX_BIND_OPTS4"
 
+function "config_add" () {
+  config add $(config -c color.status=always status --short |
+  fzf -m --ansi --nth 2..,.. \
+    --preview '(git --git-dir=$HOME/.config.git/ --work-tree=$HOME \
+    diff HEAD --color=always -- {-1} | delta)' \
+    --bind "${PREFIX_BIND_OPTS}" --layout=reverse |
+  cut -c4- | sed 's/.* -> //')
+}
+
+alias ca="config_add"
+
 function "${FZF_PREFIX}gt" () {
   config -c color.status=always status --short |
   fzf -m --ansi --nth 2..,.. \
-    --preview '(git --git-dir=$HOME/.config.git/ --work-tree=$HOME diff \
-    --color=always -- {-1} | delta)' \
+    --preview '(git --git-dir=$HOME/.config.git/ --work-tree=$HOME \
+    diff HEAD --color=always -- {-1} | delta)' \
     --bind "${PREFIX_BIND_OPTS}" --layout=reverse |
   cut -c4- | sed 's/.* -> //'
 }
+
+function "git_add" () {
+  git add $(git -c color.status=always status --short |
+  fzf -m --ansi --nth 2..,.. \
+    --preview '(git diff HEAD --color=always -- {-1} | delta)' \
+    --bind "${PREFIX_BIND_OPTS}" --layout=reverse |
+  cut -c4- | sed 's/.* -> //')
+}
+
+alias ga="git_add"
 
 function "${FZF_PREFIX}gn" () {
   is_in_git_repo || return
   git -c color.status=always status --short |
   fzf -m --ansi --nth 2..,.. \
-    --preview '(git diff --color=always -- {-1} | delta)' \
+    --preview '(git diff HEAD --color=always -- {-1} | delta)' \
     --bind "${PREFIX_BIND_OPTS}" --layout=reverse |
   cut -c4- | sed 's/.* -> //'
 }
