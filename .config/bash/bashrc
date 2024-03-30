@@ -166,11 +166,64 @@ alias ccda='config diff HEAD'
 alias ccm='config commit -s'
 alias cco='config checkout'
 alias cfa='config fetch --all --prune'
-alias clog='config log --oneline --decorate'
-alias clogp="_config_log_prettily"
 alias cpulla='config pull --rebase --autostash'
 alias cpush='config push'
 alias cst='config status'
 alias cstv='cvim +Git +only'
 # alias csu='config submodule update --remote --rebase'
 alias csu='config submodule foreach git pull --recurse-submodules --rebase'
+
+_fzf_git_fzf() {
+  fzf -- \
+    --layout=reverse --multi --border \
+    --border-label-pos=2 \
+    --color='header:italic:underline,label:blue' \
+    --preview-window='right,border-left' \
+    --bind='ctrl-/:change-preview-window(down,border-top|hidden|)' "$@"
+}
+
+_fzf_config_files() {
+  GIT_DIR="$HOME/.config.git" WORK_TREE="$HOME" _fzf_git_files
+}
+
+_fzf_config_branches() {
+  GIT_DIR="$HOME/.config.git" WORK_TREE="$HOME" _fzf_git_branches
+}
+
+_fzf_config_tags() {
+  GIT_DIR="$HOME/.config.git" WORK_TREE="$HOME" _fzf_git_tags
+}
+
+_fzf_config_hashes() {
+  GIT_DIR="$HOME/.config.git" WORK_TREE="$HOME" _fzf_git_hashes
+}
+
+_fzf_config_remotes() {
+  GIT_DIR="$HOME/.config.git" WORK_TREE="$HOME" _fzf_git_remotes
+}
+
+_fzf_config_stashes() {
+  GIT_DIR="$HOME/.config.git" WORK_TREE="$HOME" _fzf_git_stashes
+}
+
+_fzf_config_lreflogs() {
+  GIT_DIR="$HOME/.config.git" WORK_TREE="$HOME" _fzf_git_lreflogs
+}
+
+_fzf_config_each_ref() {
+  GIT_DIR="$HOME/.config.git" WORK_TREE="$HOME" _fzf_git_each_ref
+}
+
+_fzf_config_worktrees() {
+  GIT_DIR="$HOME/.config.git" WORK_TREE="$HOME" _fzf_git_worktrees
+}
+
+__fzf_config_init() {
+    bind '"\er": redraw-current-line'
+    local o
+    for o in "$@"; do
+      bind '"\eg'${o:0:1}'": "`_fzf_config_'$o'`\e\C-e\er"'
+    done
+  }
+
+__fzf_config_init files branches tags remotes hashes stashes lreflogs each_ref worktrees

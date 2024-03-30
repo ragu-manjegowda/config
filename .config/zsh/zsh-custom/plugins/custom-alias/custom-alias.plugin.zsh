@@ -45,9 +45,6 @@ is-at-least 2.8 "$git_version" \
   || alias gfa='git fetch --all --prune'
 
 
-alias glog='git log --oneline --decorate'
-alias glogp="_git_log_prettily"
-
 alias gpush='git push origin "$(git_current_branch)"'
 alias gpulla='git pull --rebase --autostash'
 
@@ -71,14 +68,13 @@ function _config_log_prettily(){
 }
 compdef _git _config_log_prettily=git-log
 
+alias ca='config add'
 alias ccd='config diff'
 alias ccds='config diff --cached'
 alias ccda='config diff HEAD'
 alias ccm='config commit -s'
 alias cco='config checkout'
 alias cfa='config fetch --all --prune'
-alias clog='config log --oneline --decorate'
-alias clogp="_config_log_prettily"
 alias cpulla='config pull --rebase --autostash'
 alias cpush='config push'
 alias cst='config status'
@@ -87,6 +83,80 @@ alias cstv='cvim +Git +only'
 alias csu='config submodule foreach git pull --recurse-submodules --rebase'
 
 compdef _git config
+
+######################   Git FZF Aliases   ####################################
+
+_fzf_git_fzf() {
+  fzf -- \
+    --layout=reverse --multi --border \
+    --border-label-pos=2 \
+    --color='header:italic:underline,label:blue' \
+    --preview-window='right,border-left' \
+    --bind='ctrl-/:change-preview-window(down,border-top|hidden|)' "$@"
+}
+
+_fzf_config_files() {
+  GIT_DIR="$HOME/.config.git" WORK_TREE="$HOME" _fzf_git_files
+}
+
+_fzf_config_branches() {
+  GIT_DIR="$HOME/.config.git" WORK_TREE="$HOME" _fzf_git_branches
+}
+
+_fzf_config_tags() {
+  GIT_DIR="$HOME/.config.git" WORK_TREE="$HOME" _fzf_git_tags
+}
+
+_fzf_config_hashes() {
+  GIT_DIR="$HOME/.config.git" WORK_TREE="$HOME" _fzf_git_hashes
+}
+
+_fzf_config_remotes() {
+  GIT_DIR="$HOME/.config.git" WORK_TREE="$HOME" _fzf_git_remotes
+}
+
+_fzf_config_stashes() {
+  GIT_DIR="$HOME/.config.git" WORK_TREE="$HOME" _fzf_git_stashes
+}
+
+_fzf_config_lreflogs() {
+  GIT_DIR="$HOME/.config.git" WORK_TREE="$HOME" _fzf_git_lreflogs
+}
+
+_fzf_config_each_ref() {
+  GIT_DIR="$HOME/.config.git" WORK_TREE="$HOME" _fzf_git_each_ref
+}
+
+_fzf_config_worktrees() {
+  GIT_DIR="$HOME/.config.git" WORK_TREE="$HOME" _fzf_git_worktrees
+}
+
+__fzf_config_join() {
+    local item
+    while read item; do
+        echo -n "${(q)item} "
+    done
+}
+
+__fzf_config_init() {
+    local m o
+    for o in "$@"; do
+    {
+        eval "fzf-config-$o-widget() { local result=\$(_fzf_config_$o | __fzf_config_join); \
+            zle reset-prompt; LBUFFER+=\$result }"
+
+        eval "zle -N fzf-config-$o-widget"
+
+        for m in emacs vicmd viins; do
+            eval "bindkey -M $m '^[g${o[1]}' fzf-config-$o-widget"
+        done
+    }
+    done
+}
+
+__fzf_config_init files branches tags remotes hashes stashes lreflogs each_ref worktrees
+
+unset -f __fzf_config_init
 
 #################### list alias ###############################################
 
@@ -542,81 +612,6 @@ function start-http-web-server () {
             ;;
     esac
 }
-
-###############################################################################
-#################################### FZF ######################################
-###############################################################################
-
-is_in_git_repo() {
-  git rev-parse HEAD > /dev/null 2>&1 || echo "This_is_not_a_git_repository"
-}
-
-FZF_PREFIX="fzf-git"
-
-PREFIX_BIND_OPTS1="alt-j:preview-page-down,alt-k:preview-page-up"
-PREFIX_BIND_OPTS2=",ctrl-j:down,ctrl-k:up"
-PREFIX_BIND_OPTS3=",ctrl-w:toggle-preview-wrap,ctrl-f:jump"
-PREFIX_BIND_OPTS4=",ctrl-u:preview-top,ctrl-d:preview-bottom"
-PREFIX_BIND_OPTS="$PREFIX_BIND_OPTS1$PREFIX_BIND_OPTS2$PREFIX_BIND_OPTS3$PREFIX_BIND_OPTS4"
-
-function "config_add" () {
-  config add $(config -c color.status=always status --short |
-  fzf -m --ansi --nth 2..,.. \
-    --preview '(git --git-dir=$HOME/.config.git/ --work-tree=$HOME \
-    diff HEAD --color=always -- {-1} | delta)' \
-    --bind "${PREFIX_BIND_OPTS}" --layout=reverse |
-  cut -c4- | sed 's/.* -> //')
-}
-
-alias ca="config_add"
-
-function "${FZF_PREFIX}gt" () {
-  config -c color.status=always status --short |
-  fzf -m --ansi --nth 2..,.. \
-    --preview '(git --git-dir=$HOME/.config.git/ --work-tree=$HOME \
-    diff HEAD --color=always -- {-1} | delta)' \
-    --bind "${PREFIX_BIND_OPTS}" --layout=reverse |
-  cut -c4- | sed 's/.* -> //'
-}
-
-function "git_add" () {
-  git add $(git -c color.status=always status --short |
-  fzf -m --ansi --nth 2..,.. \
-    --preview '(git diff HEAD --color=always -- {-1} | delta)' \
-    --bind "${PREFIX_BIND_OPTS}" --layout=reverse |
-  cut -c4- | sed 's/.* -> //')
-}
-
-alias ga="git_add"
-
-function "${FZF_PREFIX}gn" () {
-  is_in_git_repo || return
-  git -c color.status=always status --short |
-  fzf -m --ansi --nth 2..,.. \
-    --preview '(git diff HEAD --color=always -- {-1} | delta)' \
-    --bind "${PREFIX_BIND_OPTS}" --layout=reverse |
-  cut -c4- | sed 's/.* -> //'
-}
-
-join-lines() {
-  local item
-  while read item; do
-    echo -n "${(q)item} "
-  done
-}
-
-bind-git-helper() {
-  local char
-  for c in $@; do
-    eval "fzf-g$c-widget() { local result=\$(${FZF_PREFIX}g$c | join-lines); \
-        zle reset-prompt; LBUFFER+=\$result }"
-    eval "zle -N fzf-g$c-widget"
-    eval "bindkey '^[$c' fzf-g$c-widget"
-  done
-}
-
-bind-git-helper t n
-unset -f bind-git-helper
 
 ###############################################################################
 ########################### ZSH History merge #################################

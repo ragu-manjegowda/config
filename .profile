@@ -118,6 +118,11 @@ esac
 ########################             FZF                      #################
 ###############################################################################
 
+########################           Git FZF                      ###############
+if [ -f "$HOME/.config/fzf-git/fzf-git.sh" ]; then
+    source "$HOME/.config/fzf-git/fzf-git.sh"
+fi
+
 ########################             Defaults                 #################
 FZF_DEFAULT_OPTS1="--no-height --cycle --color=bg+:#343d46,gutter:-1"
 FZF_DEFAULT_OPTS2=",pointer:#ff3c3c,info:#0dbc79,hl:#0dbc79,hl+:#23d18b"

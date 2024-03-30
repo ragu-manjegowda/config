@@ -71,3 +71,10 @@
 [submodule ".config/zsh/zsh-custom/plugins/fzf-tab-source"]
 	path = .config/zsh/zsh-custom/plugins/fzf-tab-source
 	url = https://github.com/Freed-Wu/fzf-tab-source.git
+	update = rebase
+	branch = master
+[submodule ".config/fzf-git"]
+	path = .config/fzf-git
+	url = https://github.com/junegunn/fzf-git.sh.git
+	update = rebase
+	branch = master
