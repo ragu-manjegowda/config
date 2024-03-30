@@ -1,5 +1,4 @@
-# This is done is zsh
-# PS1="\u:\w$ "
+# vi: ft=sh
 
 ##########################################################################################
 ################                Mac basic ENV exports             ########################
@@ -20,7 +19,7 @@ if [ -n "$BASH_VERSION" ]; then
   fi
 elif [ -n "$ZSH_VERSION" ]; then
   if [ -r "$HOMEBREW_PATH/share/zsh/site-functions" ]; then
-    fpath=($HOMEBREW_PATH/share/zsh/site-functions $fpath)
+    fpath=("$HOMEBREW_PATH"/share/zsh/site-functions "$fpath")
   fi
 fi
 
