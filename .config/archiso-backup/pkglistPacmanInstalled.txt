@@ -20,6 +20,7 @@ goimapnotify
 gst-plugin-pipewire
 gst-plugins-good
 imagemagick
+intel-ucode
 iwd
 libreoffice-still
 libsmbios
@@ -46,6 +47,7 @@ noto-fonts
 noto-fonts-emoji
 ntp
 nvidia
+nvidia-container-toolkit
 nvidia-lts
 nvidia-utils
 okular
