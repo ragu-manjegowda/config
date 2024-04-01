@@ -68,9 +68,6 @@ function M.config()
             row = 0,
             col = 1
         },
-        yadm                              = {
-            enable = false
-        },
         on_attach                         = function(bufnr)
             local gs = package.loaded.gitsigns
 

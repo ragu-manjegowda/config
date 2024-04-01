@@ -33,6 +33,7 @@ intel-ipu6-dkms-git
 intel-ipu6ep-camera-bin-fix
 intel-ipu6ep-camera-hal-git-fix
 intel-ipu6ep-camera-hal-git-fix-debug
+intel-ucode
 iwd
 libreoffice-still
 libsmbios
