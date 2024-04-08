@@ -49,18 +49,23 @@ bind-key O open-in-browser                  # Open the currently selected articl
 unbind-key h feedlist                       # Unbind the 'h' key from the 'feedlist' dialog.
 
 # Highlights
-highlight article "^(Feed|Title|Link|Date|Author):.*$" color12 color8
-highlight article "https?://[^ ]+" color4 color8 protect
-
-highlight all "---.*---" color172
-highlight feedlist ".*(0/0))" black
-highlight article "^(Title):.*$" default default standout
-highlight article "(^Feed:.*|^Author:.*)" color238 default dim blink
-highlight article "(^Link:.*|^Date:.*)" color238 default blink
-highlight article "https?://[^ ]+" color214 default underline
-highlight article "\\[[0-9][0-9]*\\]" color197 default reverse
+highlight all "---.*---" cyan
+highlight feedlist ".*(0/0))" default
+highlight article "^(Title):.*$" red default bold
+highlight article "(^Feed:.*|^Author:.*)" magenta default dim blink
+highlight article "(^Link:.*|^Date:.*)" magenta default blink
+highlight article "https?://[^ ]+" yellow default underline bold
+highlight article "\\[[0-9][0-9]*\\]" red default reverse
 highlight article "\\[image\\ [0-9]+\\]" green default bold
 highlight article "\\[embedded flash: [0-9][0-9]*\\]" green default bold
-highlight article " .*\\(link\\)$" color214 default blink
+highlight article " .*\\(link\\)$" yellow default blink bold
 highlight article " .*\\(image\\)$" blue default blink
 highlight article " .*\\(embedded flash\\)$" magenta default blink
+
+# Color
+color listnormal         blue   default
+color listnormal_unread  blue   default bold
+color listfocus          white  black
+color listfocus_unread   white  black bold
+color info               white  cyan
+color article            blue   default
