@@ -82,7 +82,7 @@ return {
         'xrdb -merge ~/.Xresources',
         -- Audio equalizer
         -- Enable blue light filter
-        'redshift &>/dev/null &',
+        'killall -9 redshift &>/dev/null; redshift &>/dev/null &',
         -- Auto screen look
         'systemctl --user reload-or-restart --now xidlehook.service',
         -- Darkman
@@ -97,7 +97,7 @@ return {
         -- 'xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Tapping Enabled" 1',
         -- Start imapnotify
         --'systemctl --user reload-or-restart goimapnotify.service',
-        'killall -9 goimapnotify; ' ..
+        'killall -9 goimapnotify &>/dev/null; ' ..
         'goimapnotify -conf ~/.config/imapnotify/imapnotify.conf ' ..
         '> ~/.cache/awesome/imapnotify.log 2>&1 &',
         '~/.config/imapnotify/notify.sh',
