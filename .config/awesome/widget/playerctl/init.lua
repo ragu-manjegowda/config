@@ -9,7 +9,6 @@ local beautiful = require("beautiful")
 local xresources = require("beautiful.xresources")
 local dpi = xresources.apply_dpi
 local playerctl_daemon = require("library.bling").signal.playerctl.cli()
-local naughty = require("naughty")
 
 local function rounded_shape(size)
     return function(cr, width, height)
@@ -38,7 +37,6 @@ local get_time_from_minutes = function(minutes)
             hour = math.floor(min / 60)
             min = math.floor(min % 60)
         end
-
     end
     seconds = math.floor(minutes % 60)
 
@@ -73,8 +71,9 @@ local get_time_from_minutes = function(minutes)
     return time
 end
 
-local create_button = function(symbol, color, command, playpause)
+local old_cursor, old_wibox
 
+local create_button = function(symbol, color, command, playpause)
     local icon = wibox.widget {
         markup = "<span foreground='" .. color .. "'>" .. symbol .. "</span>",
         font = "Hack Nerd Font Mono 20",
@@ -91,30 +90,29 @@ local create_button = function(symbol, color, command, playpause)
     }
 
     playerctl_daemon:connect_signal(
-        "playback_status", function(_, playing, player_name)
-
-        if playpause then
-            if playing then
-                icon.markup = "<span foreground='" .. color .. "'>" .. "" .. "</span>"
-            else
-                icon.markup = "<span foreground='" .. color .. "'>" .. "" .. "</span>"
+        "playback_status", function(_, playing, _)
+            if playpause then
+                if playing then
+                    icon.markup = "<span foreground='" .. color .. "'>" .. "󰏤" .. "</span>"
+                else
+                    icon.markup = "<span foreground='" .. color .. "'>" .. "󰐊" .. "</span>"
+                end
             end
-        end
-    end)
+        end)
 
     button:buttons(gears.table.join(
-                       awful.button({}, 1, function() command() end)))
+        awful.button({}, 1, function() command() end)))
 
     button:connect_signal(
         "mouse::enter",
         function()
             icon.markup = "<span foreground='" .. beautiful.fg_normal
-                          .. "'>" .. icon.text .. "</span>"
+                .. "'>" .. icon.text .. "</span>"
 
             local w = mouse.current_wibox
             if w then
-              old_cursor, old_wibox = w.cursor, w
-              w.cursor = 'hand1'
+                old_cursor, old_wibox = w.cursor, w
+                w.cursor = 'hand1'
             end
         end
     )
@@ -123,11 +121,11 @@ local create_button = function(symbol, color, command, playpause)
         "mouse::leave",
         function()
             icon.markup = "<span foreground='" .. color .. "'>"
-                          .. icon.text .. "</span>"
+                .. icon.text .. "</span>"
 
             if old_wibox then
-              old_wibox.cursor = old_cursor
-              old_wibox = nil
+                old_wibox.cursor = old_cursor
+                old_wibox = nil
             end
         end
     )
@@ -192,39 +190,39 @@ local seek_slider = slider.blur_strength_slider
 
 -- Get Song Info
 playerctl_daemon:connect_signal("metadata",
-                       function(_, title, artist, album_path, album, new, player_name)
+    function(_, title, artist, album_path, _, _, _)
+        if title == "" then
+            title = "Nothing Playing"
+        end
+        if artist == "" then
+            artist = "Nothing Playing"
+        end
+        if album_path == "" then
+            album_path = gears.filesystem.get_configuration_dir() .. "widget/playerctl/icons/default.png"
+        end
 
-    if title == "" then
-        title = "Nothing Playing"
-    end
-    if artist == "" then
-        artist = "Nothing Playing"
-    end
-    if album_path == "" then
-        album_path = gears.filesystem.get_configuration_dir() .. "widget/playerctl/icons/default.png"
-    end
+        -- Set art widget
+        art:set_image(gears.surface.load_uncached(album_path))
 
-    -- Set art widget
-    art:set_image(gears.surface.load_uncached(album_path))
+        -- Set, title and artist widgets
+        title_widget:set_markup_silently(
+            '<span foreground="' .. beautiful.accent .. '">' .. title .. '</span>')
+        artist_widget:set_markup_silently(
+            '<span foreground="' .. beautiful.accent .. '">' .. artist .. '</span>')
 
-    -- Set, title and artist widgets
-    title_widget:set_markup_silently(
-        '<span foreground="' .. beautiful.accent .. '">' .. title .. '</span>')
-    artist_widget:set_markup_silently(
-        '<span foreground="' .. beautiful.accent .. '">' .. artist .. '</span>')
-
-    seek_slider.value = 0
-    current_time:set_text("00:00")
-    end_time:set_text("00:00")
-end)
+        seek_slider.value = 0
+        current_time:set_text("00:00")
+        end_time:set_text("00:00")
+    end)
 
 playerctl_daemon:connect_signal("no_players", function(_)
-
     local title = "Nothing Playing"
     local artist = "Nothing Playing"
     local album_path = gears.filesystem.get_configuration_dir() .. "widget/playerctl/icons/default.png"
 
     -- Set art widget
+    -- Strings are assumed to be file names and get loaded
+    ---@diagnostic disable-next-line: param-type-mismatch
     art:set_image(gears.surface.load_uncached(album_path))
 
     -- Set, title and artist widgets
@@ -250,13 +248,13 @@ local next_command = function()
     playerctl_daemon:next()
 end
 
-local playerctl_play_symbol = create_button("", beautiful.fg_normal,
-                                            play_command, true)
+local playerctl_play_symbol = create_button("󰐊", beautiful.fg_normal,
+    play_command, true)
 
-local playerctl_prev_symbol = create_button("玲", beautiful.fg_normal,
-                                            prev_command, false)
-local playerctl_next_symbol = create_button("怜", beautiful.fg_normal,
-                                            next_command, false)
+local playerctl_prev_symbol = create_button("󰒮", beautiful.fg_normal,
+    prev_command, false)
+local playerctl_next_symbol = create_button("󰒭", beautiful.fg_normal,
+    next_command, false)
 
 local time_info = wibox.widget {
     layout = wibox.layout.align.horizontal,
@@ -268,7 +266,7 @@ local time_info = wibox.widget {
 local total_length_in_sec = 0
 
 playerctl_daemon:connect_signal(
-    "position", function(_, interval_sec, length_sec, player_name)
+    "position", function(_, interval_sec, length_sec, _)
         seek_slider.value = (interval_sec / length_sec) * 100
         current_time:set_text(get_time_from_minutes(interval_sec))
         end_time:set_text(get_time_from_minutes(length_sec))
@@ -299,7 +297,7 @@ seek_slider:connect_signal(
 
 seek_slider:connect_signal(
     "button::press",
-    function(_, lx, _, button, _, w)
+    function(_, lx, _, _, _, w)
         local seek_value = math.ceil(lx * 100 / w.width)
         local seek_position = (seek_value / 100) * total_length_in_sec
         playerctl_daemon:set_position(seek_position)
@@ -315,7 +313,7 @@ local scroll_container = function(widget)
         expand = true,
         direction = 'h',
         step_function = wibox.container.scroll
-                        .step_functions.waiting_nonlinear_back_and_forth,
+            .step_functions.waiting_nonlinear_back_and_forth,
         fps = 30,
         layout = wibox.container.scroll.horizontal,
     }
