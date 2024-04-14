@@ -156,7 +156,7 @@ local global_keys = awful.util.table.join(
         { modkey },
         'd',
         function()
-            naughty.destroy_all_notifications()
+            naughty.destroy_all_notifications(nil, -1)
         end,
         { description = 'destroy all notifications', group = 'launcher' }
     ),

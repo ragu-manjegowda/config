@@ -8,6 +8,7 @@ local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 local clickable_container = require('widget.clickable-container')
 local animation = require("library.tween")
+local cst = require("naughty.constants")
 
 -- Defaults
 naughty.config.defaults.ontop = true
@@ -133,6 +134,30 @@ naughty.connect_signal(
 --- Use XDG icon
 naughty.connect_signal("request::action_icon", function(a, _, hints)
     a.icon = menubar.utils.lookup_icon(hints.id)
+end)
+
+-- Raise client, if destroyed by user
+-- https://github.com/awesomeWM/awesome/issues/3182#issuecomment-1753211773
+naughty.connect_signal("destroyed", function(n, reason)
+    if not n.clients then
+        return
+    end
+
+    if reason == cst.notification_closed_reason.dismissed_by_user then
+        -- If we clicked on a notification, we get a new urgent client to jump to
+        client.connect_signal("property::urgent", function(c)
+            -- We don't use notification_client because it's not reliable
+            -- (Ex: If we have two different instances of chrome)
+            -- cf: https://awesomewm.org/apidoc/core_components/naughty.notification.html#clients
+            -- So we just check if the client name of our notification is
+            -- the same as the last urgent client and jump to this one.
+            for _, notification_client in ipairs(n.clients) do
+                if c.name == notification_client.name then
+                    c:jump_to()
+                end
+            end
+        end)
+    end
 end)
 
 -- Connect to naughty on display signal
@@ -313,7 +338,7 @@ naughty.connect_signal(
         })
 
         anim:connect_signal("ended", function()
-            n:destroy()
+            naughty.destroy(n, -1)
         end)
 
         widget:connect_signal("mouse::enter", function()
@@ -330,7 +355,7 @@ naughty.connect_signal(
         -- Or if the info_center is visible
         local focused = awful.screen.focused()
         if _G.dont_disturb_state or (focused.info_center and focused.info_center.visible) then
-            naughty.destroy_all_notifications(nil, 1)
+            naughty.destroy_all_notifications(nil, -1)
         end
     end
 )
