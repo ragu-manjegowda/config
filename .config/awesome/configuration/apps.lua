@@ -57,7 +57,7 @@ return {
         rofi_calc = 'rofi -dpi ' .. screen.primary.dpi ..
             ' -theme ' .. config_dir ..
             'configuration/rofi/calc/rofi.rasi' ..
-            ' -show calc -modi calc -no-show-match -no-sort' ..
+            ' -normal-window -show calc -modi calc -no-show-match -no-sort' ..
             ' -calc-command "echo -n \'{result}\' | xclip -sel clip"'
         -- You can add more default applications here
     },
