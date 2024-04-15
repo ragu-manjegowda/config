@@ -26,8 +26,6 @@ export BASH_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/bash"
 export GPG_TTY=$TTY
 export GNUPGHOME="${XDG_CONFIG_HOME:-$HOME/.config}/gnupg"
 
-export RANGER_LOAD_DEFAULT_RC=FALSE
-
 # Not thoroughly tested for all side effectes
 export COLORTERM="truecolor"
 

@@ -78,3 +78,8 @@
 	url = https://github.com/junegunn/fzf-git.sh.git
 	update = rebase
 	branch = master
+[submodule "/home/ragu/.config/ranger/plugins/ranger_devicons"]
+	path = .config/ranger/plugins/ranger_devicons
+	url = https://github.com/alexanderjeurissen/ranger_devicons.git
+	update = rebase
+	branch = main
