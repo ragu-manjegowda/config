@@ -117,6 +117,10 @@
 .config/monitors-v1-backup.xml
 .config/monitors.xml
 .config/monitors.xml~
+.config/mpv/fonts
+.config/mpv/log
+.config/mpv/script-opts
+.config/mpv/scripts
 .config/nautilus
 .config/neofetch/config.conf
 .config/neomutt/accounts/*/TOKEN_FILENAME*
@@ -185,6 +189,7 @@
 .eggs
 .emacs.d
 .esd_auth
+.fastai
 .fonts
 .gazebo
 .gconf
@@ -193,8 +198,10 @@
 .gnome
 .httpie
 .ignition
+.ipython
 .java
 .jfrog
+.jupyter
 .lbcookie
 .leetcode
 .lesshst
