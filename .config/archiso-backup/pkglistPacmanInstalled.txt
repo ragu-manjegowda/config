@@ -49,7 +49,6 @@ ntp
 nvidia
 nvidia-container-toolkit
 nvidia-lts
-nvidia-utils
 okular
 openrazer-daemon
 openssh
@@ -81,20 +80,22 @@ w3m
 webkit2gtk
 webkit2gtk-4.1
 xclip
-xf86-video-vesa
 xorg-bdftopcf
 xorg-docs
 xorg-font-util
 xorg-fonts-100dpi
 xorg-fonts-75dpi
+xorg-fonts-encodings
 xorg-iceauth
 xorg-mkfontscale
 xorg-server
+xorg-server-common
 xorg-server-devel
 xorg-server-xephyr
 xorg-server-xnest
 xorg-server-xvfb
 xorg-sessreg
+xorg-setxkbmap
 xorg-smproxy
 xorg-x11perf
 xorg-xauth
@@ -106,6 +107,7 @@ xorg-xev
 xorg-xgamma
 xorg-xhost
 xorg-xinput
+xorg-xkbcomp
 xorg-xkbevd
 xorg-xkbutils
 xorg-xkill
@@ -113,7 +115,6 @@ xorg-xlsatoms
 xorg-xlsclients
 xorg-xmodmap
 xorg-xpr
-xorg-xprop
 xorg-xrandr
 xorg-xrdb
 xorg-xrefresh
