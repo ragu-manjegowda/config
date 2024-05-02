@@ -24,7 +24,7 @@ python -m venv --system-site-packages venv
 source venv/bin/activate
 
 if [ ! -d "$VOLCTL_PATH/build" ]; then
-    pip3 install $VOLCTL_PATH --install-option=develop
+    pip3 install $VOLCTL_PATH
 fi
 
 if [ ! -d "$VOLCTL_PATH/venv/share/glib-2.0/schemas" ]; then
@@ -34,4 +34,6 @@ fi
 cp $VOLCTL_PATH/data/apps.volctl.gschema.xml $VOLCTL_PATH/venv/share/glib-2.0/schemas
 glib-compile-schemas $VOLCTL_PATH/venv/share/glib-2.0/schemas/
 
-$VOLCTL_PATH/venv/bin/volctl
+if ! $VOLCTL_PATH/venv/bin/volctl; then
+    echo "Likely installation error, run rm -rf build venv and re-run script"
+fi
