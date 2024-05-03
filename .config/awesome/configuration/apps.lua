@@ -65,7 +65,7 @@ return {
     -- List of apps to start once on start-up
     run_on_start_up = {
         -- Compositor
-        'killall picom; picom -b --dbus --config ' ..
+        'killall picom &>/dev/null; picom -b --dbus --config ' ..
         config_dir .. 'configuration/picom.conf',
         -- Network applet
         'nm-applet',

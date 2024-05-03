@@ -9,10 +9,16 @@ git checkout master
 cd ~/.config/awesome/library/revelation
 git checkout master
 
+cd ~/.config/fzf-git
+git checkout main
+
 cd ~/.config/rEFInd/refind-theme-regular
 git checkout master
 
 cd ~/.config/ranger/plugins/ranger_fzf_filter
+git checkout main
+
+cd ~/.config/ranger/plugins/ranger_devicons
 git checkout main
 
 cd ~/.config/tmux/plugins/tmux-continuum
