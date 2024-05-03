@@ -24,7 +24,6 @@ rdrview-git
 reflector-pacman-hook-git
 sioyek-git
 solarized-colors-iconpack-git
-soundwire-dkms-git
 sync-pacman-hook-git
 teams
 w3m-imgcat
