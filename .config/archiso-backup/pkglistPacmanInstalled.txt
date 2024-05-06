@@ -37,7 +37,6 @@ ly
 maim
 mpv
 msmtp
-neomutt
 neovim
 network-manager-applet
 networkmanager

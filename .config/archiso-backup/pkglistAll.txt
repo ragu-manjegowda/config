@@ -50,7 +50,7 @@ mosh-git
 mpv
 msmtp
 mu
-neomutt
+neomutt-git
 neovim
 network-manager-applet
 networkmanager

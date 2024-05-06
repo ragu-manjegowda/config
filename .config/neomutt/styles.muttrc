@@ -13,11 +13,11 @@ set pager_format="%n %T %s%*  %{!%d %b · %H:%M} %?X?
 
 set forward_format = "Fwd: %s"
 
-set attach_format = "%u%D  %T%-75.75d %?T?%&   ? %5s · %m/%M"
+set attach_format = "%u%D  %T%-75.75d %<T?&   > %5s · %m/%M"
 
 set date_format="!%a %b %d, %Y at %I:%M:%S%p %Z"
 
-set sidebar_format = '%D%?F? [%F]?%* %?N?%N/? %?S?%S?'
+set sidebar_format = '%D%<F? [%F]>%* %<N?%N/> %<S?%S>'
 
 set compose_format="-- NeoMutt: Compose  [Approx. msg size: %l   Atts: %a]%>-"
 

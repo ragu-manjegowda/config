@@ -11,6 +11,7 @@ lua-pam-git
 mbsync-git
 mosh-git
 mu
+neomutt-git
 newsboat-git
 noisetorch
 nomachine
