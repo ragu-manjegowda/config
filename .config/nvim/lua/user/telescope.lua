@@ -259,10 +259,11 @@ function M.config()
             file_ignore_patterns = ignore_these,
             prompt_prefix = " ",
             selection_caret = " ",
-            path_display = { "truncate" },
+            path_display = { "filename_first" },
 
             layout_config = {
                 preview_cutoff = 1,
+                width = 0.95
             },
 
             vimgrep_arguments = {
