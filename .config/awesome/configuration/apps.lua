@@ -83,6 +83,8 @@ return {
         -- Audio equalizer
         -- Enable blue light filter
         'killall -9 redshift &>/dev/null; redshift &>/dev/null &',
+        -- Reload user configs
+        'systemctl --user daemon-reload',
         -- Auto screen look
         'systemctl --user reload-or-restart --now xidlehook.service',
         -- Darkman
