@@ -11,7 +11,7 @@ return {
     },
 
     widget = {
-        email  = {
+        email           = {
             -- Email address
             address = '',
             -- App password
@@ -22,7 +22,7 @@ return {
             port = '993'
         },
 
-        weather = {
+        weather         = {
             -- API Key
             key = '25bc90a1196e6f153eece0bc0b0fc9eb',
             -- City ID
@@ -33,14 +33,14 @@ return {
             update_interval = 1200
         },
 
-        network = {
+        network         = {
             -- Wired interface
             wired_interface = 'enp0s31f6',
             -- Wireless interface
             wireless_interface = 'wlan0'
         },
 
-        clock = {
+        clock           = {
             -- Clock widget format
             military_mode = false
         },
@@ -71,7 +71,7 @@ return {
             -- Will look for wallpapers here
             wall_dir = 'theme/wallpapers/',
             -- Image formats
-            valid_picture_formats = {'jpg', 'png', 'jpeg'},
+            valid_picture_formats = { 'jpg', 'png', 'jpeg' },
             -- Leave this table empty for full auto scheduling
             wallpaper_schedule = {
                 ['00:00:00'] = 'am_12.jpg',

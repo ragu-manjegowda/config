@@ -24,26 +24,25 @@ return function()
 
     local widget_button = wibox.widget {
         {
-                clock,
-                margins = dpi(5),
-                widget = wibox.container.margin
+            clock,
+            margins = dpi(5),
+            widget = wibox.container.margin
         },
-		widget = clickable_container
+        widget = clickable_container
     }
 
-	widget_button:buttons(
-		gears.table.join(
-			awful.button(
-				{},
-				1,
-				nil,
-				function()
-					awful.screen.focused().calendar_center:toggle()
-				end
-			)
-		)
-	)
+    widget_button:buttons(
+        gears.table.join(
+            awful.button(
+                {},
+                1,
+                nil,
+                function()
+                    awful.screen.focused().calendar_center:toggle()
+                end
+            )
+        )
+    )
 
     return widget_button
 end
-

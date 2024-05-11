@@ -1,18 +1,17 @@
-local awful      = require('awful')
-local wibox      = require('wibox')
-local gears      = require('gears')
-local beautiful  = require('beautiful')
-local dpi        = beautiful.xresources.apply_dpi
-local vseparator = require('widget.vseparator')
-panel_visible    = false
+local awful            = require('awful')
+local wibox            = require('wibox')
+local gears            = require('gears')
+local beautiful        = require('beautiful')
+local dpi              = beautiful.xresources.apply_dpi
+
+PANEL_VISIBLE          = false
 
 local playerctl_center = function(s)
     -- Set the playerctl center geometry
-    local panel_width   = s.geometry.width / 6
-    local panel_margins = dpi(5)
+    local panel_width = s.geometry.width / 6
 
-    local panel = awful.popup {
-        widget = {
+    local panel       = awful.popup {
+        widget         = {
             {
                 {
                     {
@@ -57,15 +56,15 @@ local playerctl_center = function(s)
     }
 
     awful.placement.top_right(
-    panel,
-    {
-        honor_workarea = true,
-        parent         = s,
-        margins        = {
-            top = (s.geometry.height / 22) + 10,
-            right = dpi(10)
+        panel,
+        {
+            honor_workarea = true,
+            parent         = s,
+            margins        = {
+                top = (s.geometry.height / 22) + 10,
+                right = dpi(10)
+            }
         }
-    }
     )
 
     panel.opened = false
@@ -82,8 +81,8 @@ local playerctl_center = function(s)
     }
 
     local open_panel = function()
-        local focused = awful.screen.focused()
-        panel_visible = true
+        local focused                             = awful.screen.focused()
+        PANEL_VISIBLE                             = true
 
         focused.backdrop_playerctl_center.visible = true
         focused.playerctl_center.visible          = true
@@ -92,8 +91,8 @@ local playerctl_center = function(s)
     end
 
     local close_panel = function()
-        local focused = awful.screen.focused()
-        panel_visible = false
+        local focused                             = awful.screen.focused()
+        PANEL_VISIBLE                             = false
 
         focused.playerctl_center.visible          = false
         focused.backdrop_playerctl_center.visible = false

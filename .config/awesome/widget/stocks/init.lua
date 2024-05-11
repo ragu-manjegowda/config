@@ -1,7 +1,6 @@
 local awful = require('awful')
 local wibox = require('wibox')
 local gears = require('gears')
-local naughty = require('naughty')
 local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 
@@ -39,13 +38,13 @@ local stocks_to_fetch = {
 local update_stocks = function()
     local fetch_stock_price_command = " "
 
-    for i, stock in ipairs(stocks_to_fetch) do
-
+    for _, stock in ipairs(stocks_to_fetch) do
         --naughty.notify({text = stock})
 
         fetch_stock_price_command = [[
             curl --silent \
-            https://www.alphavantage.co/query\?function\=GLOBAL_QUOTE\&symbol\=]] .. stock .. [[\&apikey\=]] .. secrets.api_key .. [[ | \
+            https://www.alphavantage.co/query\?function\=GLOBAL_QUOTE\&symbol\=]] ..
+            stock .. [[\&apikey\=]] .. secrets.api_key .. [[ | \
             python3 -c 'import sys, json; print(json.load(sys.stdin)["Global Quote"]["05. price"])'
         ]]
 
@@ -57,14 +56,13 @@ local update_stocks = function()
                 stock_price:set_text(tostring(stdout))
             end
         )
-
     end
 end
 
 -- Update on startup
 update_stocks()
 
-local stocks_template =  wibox.widget {
+local stocks_template = wibox.widget {
     expand = 'none',
     {
         {

@@ -1,5 +1,4 @@
 local awful = require('awful')
-local gears = require('gears')
 local ruled = require('ruled')
 local beautiful = require('beautiful')
 local client_keys = require('configuration.client.keys')
@@ -407,12 +406,12 @@ client.connect_signal(
             end
 
             -- Check if Spotify is already open
-            local app = function(c)
+            local app = function(_)
                 return ruled.client.match(c, { class = 'Spotify' })
             end
 
             local app_count = 0
-            for c in awful.client.iterate(app) do
+            for _ in awful.client.iterate(app) do
                 app_count = app_count + 1
             end
 
@@ -420,8 +419,8 @@ client.connect_signal(
             if app_count > 1 then
                 c:kill()
                 -- Switch to previous instance
-                for c in awful.client.iterate(app) do
-                    c:jump_to(false)
+                for client in awful.client.iterate(app) do
+                    client:jump_to(false)
                 end
             else
                 -- Move the instance to specified tag on this screen

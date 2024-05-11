@@ -1,7 +1,5 @@
-local wibox = require('wibox')
 local awful = require('awful')
 local gears = require('gears')
-local naughty = require('naughty')
 local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 local config_dir = gears.filesystem.get_configuration_dir()
@@ -164,12 +162,12 @@ end
 local settings_updater = awful.keygrabber {
     auto_start          = true,
     stop_event          = 'release',
-    keypressed_callback = function(self, mod, key, command)
+    keypressed_callback = function(_, _, key, _)
         if key == 'BackSpace' then
             delete_key()
         end
     end,
-    keyreleased_callback = function(self, mod, key, command)
+    keyreleased_callback = function(self, _, key, _)
         if key == 'Return' then
             apply_new_settings()
             self:stop()
@@ -343,10 +341,10 @@ sr_toggle_button:buttons(
 local sr_recording_start = function()
     status_countdown = false
     status_recording = true
-    local sr_screen = awful.screen.focused().recorder_screen
+    local record_screen = awful.screen.focused().recorder_screen
 
     -- Hide recorder screen
-    sr_screen.visible = false
+    record_screen.visible = false
 
     -- Manipulate UIs
     sr_toggle_imgbox:set_image(widget_icon_dir .. 'recording-button' .. '.svg')
@@ -375,6 +373,7 @@ awesome.connect_signal(
 
 -- Countdown timer functions
 local countdown_timer = nil
+
 local counter_timer = function()
     status_countdown = true
     local seconds = 3
@@ -402,7 +401,9 @@ end
 
 -- Stop Countdown timer
 local sr_countdown_stop = function()
-    countdown_timer:stop()
+    if countdown_timer ~= nil then
+        countdown_timer:stop()
+    end
     status_countdown = false
     sr_main_imgbox:set_image(widget_icon_dir .. 'recorder-off' .. '.svg')
     sr_countdown_text.opacity = 0.0

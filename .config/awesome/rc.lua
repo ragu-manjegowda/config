@@ -15,7 +15,7 @@ local revelation = require("library.revelation")
 if awesome.startup_errors then
     naughty.notification {
         urgency = "critical",
-        title   = "Oops, an error happened"..(startup and " during startup!" or "!"),
+        title   = "Oops, an error happened" .. (startup and " during startup!" or "!"),
         message = message
     }
 end
@@ -56,7 +56,6 @@ root.keys(require('configuration.keys.global'))
 require('module.notifications')
 require('module.auto-start')
 require('module.exit-screen')
-require('module.titlebar')
 require('module.brightness-osd')
 require('module.kbd-brightness-osd')
 require('module.volume-osd')
@@ -68,26 +67,24 @@ require('module.dynamic-wallpaper')
 -- ░▀░▀░▀░▀░▀▀▀░▀▀▀░▀░░░▀░▀░▀░░░▀▀▀░▀░▀
 
 screen.connect_signal(
-	'request::wallpaper',
-	function(s)
-		-- If wallpaper is a function, call it with the screen
-		if beautiful.wallpaper then
-			if type(beautiful.wallpaper) == 'string' then
-
-				-- Check if beautiful.wallpaper is color/image
-				if beautiful.wallpaper:sub(1, #'#') == '#' then
-					-- If beautiful.wallpaper is color
-					gears.wallpaper.set(beautiful.wallpaper)
-
-				elseif beautiful.wallpaper:sub(1, #'/') == '/' then
-					-- If beautiful.wallpaper is path/image
-					gears.wallpaper.maximized(beautiful.wallpaper, s)
-				end
-			else
-				beautiful.wallpaper(s)
-			end
-		end
-	end
+    'request::wallpaper',
+    function(s)
+        -- If wallpaper is a function, call it with the screen
+        if beautiful.wallpaper then
+            if type(beautiful.wallpaper) == 'string' then
+                -- Check if beautiful.wallpaper is color/image
+                if beautiful.wallpaper:sub(1, #'#') == '#' then
+                    -- If beautiful.wallpaper is color
+                    gears.wallpaper.set(beautiful.wallpaper)
+                elseif beautiful.wallpaper:sub(1, #'/') == '/' then
+                    -- If beautiful.wallpaper is path/image
+                    gears.wallpaper.maximized(beautiful.wallpaper, s)
+                end
+            else
+                beautiful.wallpaper(s)
+            end
+        end
+    end
 )
 
 -- ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
@@ -96,12 +93,14 @@ screen.connect_signal(
 -- ██ ▀▀▄█▄██▄█▄█▄▄█▄▄▄▄█▄██▄█▄▄▄▄█▄▄▄████ ▀▀▄██▄▄██▄▄█▄▄█▄▄▄██▄███▄███▄▄██▄█▄▄
 -- ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
+---@diagnostic disable-next-line: param-type-mismatch
 collectgarbage("setpause", 160)
+---@diagnostic disable-next-line: param-type-mismatch
 collectgarbage("setstepmul", 400)
 
 gears.timer.start_new(10, function()
-  collectgarbage("step", 20000)
-  return true
+    collectgarbage("step", 20000)
+    return true
 end)
 
 
@@ -118,29 +117,29 @@ local filesystem = require('gears.filesystem')
 local config_dir = filesystem.get_configuration_dir()
 local utils_dir = config_dir .. 'utilities/'
 
-ws_fname = utils_dir .. "/awesome-last-ws"
+_G.ws_fname = utils_dir .. "/awesome-last-ws"
 
-function save_current_tag()
-  local f = assert(io.open(ws_fname, "w"))
-  local t = client.focus and client.focus.first_tag or nil
-  if t ~= nil then
-    f:write(t.name, "\n")
-  end
-  f:close()
+local save_current_tag = function()
+    local f = assert(io.open(ws_fname, "w"))
+    local t = client.focus and client.focus.first_tag or nil
+    if t ~= nil then
+        f:write(t.name, "\n")
+    end
+    f:close()
 end
 
-function load_last_active_tag()
-local f = assert(io.open(ws_fname, "r"))
-tag_name = f:read("*line")
-f:close()
-local t = awful.tag.find_by_name(nil, tag_name)
-  if t ~= nil then
-    awful.tag.viewnone()
-    awful.tag.viewtoggle(t)
-  end
+local load_last_active_tag = function()
+    local f = assert(io.open(ws_fname, "r"))
+    local tag_name = f:read("*line")
+    f:close()
+    local t = awful.tag.find_by_name(nil, tag_name)
+    if t ~= nil then
+        awful.tag.viewnone()
+        awful.tag.viewtoggle(t)
+    end
 end
 
-awesome.connect_signal("exit", function (c)
+awesome.connect_signal("exit", function(c)
     if c == true then
         -- We are about to restart awesome, save our last used tag
         save_current_tag()
