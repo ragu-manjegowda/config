@@ -9,7 +9,6 @@ local dpi = beautiful.xresources.apply_dpi
 local apps = require('configuration.apps')
 local widget_icon_dir = config_dir .. 'configuration/user-profile/'
 local config = require('configuration.config')
-local utils_dir = config_dir .. 'utilities/'
 
 require('module.dynamic-wallpaper')
 require('module.auto-start')
@@ -835,6 +834,7 @@ awesome.connect_signal(
     'module::change_background_wallpaper',
     function()
         -- Update lockscreen wallpaper
+        -- Defined in dynamic-wallpaper.lua
         apply_ls_bg_image(get_wallpaper_name())
     end
 )
@@ -844,6 +844,7 @@ screen.connect_signal(
     'request::desktop_decoration',
     function(s)
         create_lock_screens(s)
+        -- Defined in dynamic-wallpaper.lua
         apply_ls_bg_image(get_wallpaper_name())
     end
 )
@@ -853,6 +854,7 @@ screen.connect_signal(
     'removed',
     function(s)
         create_lock_screens(s)
+        -- Defined in dynamic-wallpaper.lua
         apply_ls_bg_image(get_wallpaper_name())
     end
 )

@@ -1,9 +1,7 @@
 local awful = require('awful')
-local gears = require('gears')
 local dpi = require('beautiful').xresources.apply_dpi
 require('awful.autofocus')
 local modkey = require('configuration.keys.mod').mod_key
-local altkey = require('configuration.keys.mod').alt_key
 
 -- Resize client in given direction
 local floating_resize_amount = dpi(20)
@@ -62,8 +60,6 @@ local client_keys = awful.util.table.join(
         { modkey, 'Control' },
         'c',
         function(c)
-            local focused = awful.screen.focused()
-
             awful.placement.centered(c, {
                 honor_workarea = true
             })
@@ -233,7 +229,7 @@ local client_keys = awful.util.table.join(
     awful.key(
         { modkey, 'Shift' },
         'Up',
-        function(c)
+        function(_)
             resize_client(client.focus, "Shift", "up")
         end,
         { description = 'increase client size vertically by 20 px up', group = 'client' }
@@ -241,7 +237,7 @@ local client_keys = awful.util.table.join(
     awful.key(
         { modkey, 'Shift' },
         'Down',
-        function(c)
+        function(_)
             resize_client(client.focus, "Shift", "down")
         end,
         { description = 'increase client size vertically by 20 px down', group = 'client' }
@@ -249,7 +245,7 @@ local client_keys = awful.util.table.join(
     awful.key(
         { modkey, 'Shift' },
         'Left',
-        function(c)
+        function(_)
             resize_client(client.focus, "Shift", "left")
         end,
         { description = 'increase client size horizontally by 20 px left', group = 'client' }
@@ -257,7 +253,7 @@ local client_keys = awful.util.table.join(
     awful.key(
         { modkey, 'Shift' },
         'Right',
-        function(c)
+        function(_)
             resize_client(client.focus, "Shift", "right")
         end,
         { description = 'increase client size horizontally by 20 px right', group = 'client' }
@@ -265,7 +261,7 @@ local client_keys = awful.util.table.join(
     awful.key(
         { modkey, 'Control' },
         'Up',
-        function(c)
+        function(_)
             resize_client(client.focus, "Control", "up")
         end,
         { description = 'decrease client size vertically by 20 px up', group = 'client' }
@@ -273,7 +269,7 @@ local client_keys = awful.util.table.join(
     awful.key(
         { modkey, 'Control' },
         'Down',
-        function(c)
+        function(_)
             resize_client(client.focus, "Control", "down")
         end,
         { description = 'decrease client size vertically by 20 px down', group = 'client' }
@@ -281,7 +277,7 @@ local client_keys = awful.util.table.join(
     awful.key(
         { modkey, 'Control' },
         'Left',
-        function(c)
+        function(_)
             resize_client(client.focus, "Control", "left")
         end,
         { description = 'decrease client size horizontally by 20 px left', group = 'client' }
@@ -289,7 +285,7 @@ local client_keys = awful.util.table.join(
     awful.key(
         { modkey, 'Control' },
         'Right',
-        function(c)
+        function(_)
             resize_client(client.focus, "Control", "right")
         end,
         { description = 'decrease client size horizontally by 20 px right', group = 'client' }

@@ -18,17 +18,17 @@ local function get_taglist(s)
         else
             -- this can also be s.clients if only visible client needs to be included
             for _, c in ipairs(screen_for_taglist.all_clients) do
-              for _, t in ipairs(c:tags()) do
-                if c3 == t  and c.urgent then
-                    self:get_children_by_id("indicator_id")[1].bg = beautiful.taglist_bg_urgent
-                    self.anim.target = 34
-                    return
-                elseif c3 == t then
-                    self:get_children_by_id("indicator_id")[1].bg = beautiful.taglist_bg_occupied
-                    self.anim.target = 25
-                    return
+                for _, t in ipairs(c:tags()) do
+                    if c3 == t and c.urgent then
+                        self:get_children_by_id("indicator_id")[1].bg = beautiful.taglist_bg_urgent
+                        self.anim.target = 34
+                        return
+                    elseif c3 == t then
+                        self:get_children_by_id("indicator_id")[1].bg = beautiful.taglist_bg_occupied
+                        self.anim.target = 25
+                        return
+                    end
                 end
-              end
             end
 
             self:get_children_by_id("indicator_id")[1].bg = beautiful.taglist_bg_empty
@@ -39,7 +39,7 @@ local function get_taglist(s)
     local taglist = awful.widget.taglist({
         screen = screen_for_taglist,
         filter = awful.widget.taglist.filter.all,
-        layout = {spacing = dpi(10), layout = wibox.layout.fixed.horizontal},
+        layout = { spacing = dpi(10), layout = wibox.layout.fixed.horizontal },
         widget_template = {
             valign = "center",
             {
@@ -55,8 +55,8 @@ local function get_taglist(s)
                     margins = 2,
                     widget  = wibox.container.margin,
                 },
-	            shape = gears.shape.rounded_rect,
-	            widget = wibox.container.background,
+                shape = gears.shape.rounded_rect,
+                widget = wibox.container.background,
             },
             id = "place_id",
             widget = wibox.container.place,
@@ -87,5 +87,3 @@ local function get_taglist(s)
 end
 
 return get_taglist
-
-

@@ -31,16 +31,16 @@ local run_once = function(cmd)
 end
 
 awesome.connect_signal(
-	'module::spawn_apps',
-	function()
+    'module::spawn_apps',
+    function()
         -- Need the following when we come back from sleep
         -- run_once('systemctl reload-or-restart --now geoclue.service')
         -- run_once('killall darkman; ' ..
         -- 'XDG_DATA_DIRS=~/.config/darkman ' ..
         -- 'darkman run > ~/.cache/awesome/darkman.log 2>&1 &')
         run_once('killall -9 goimapnotify; ' ..
-        'goimapnotify -conf ~/.config/imapnotify/imapnotify.conf ' ..
-        '> ~/.cache/awesome/imapnotify.log 2>&1 &')
+            'goimapnotify -conf ~/.config/imapnotify/imapnotify.conf ' ..
+            '> ~/.cache/awesome/imapnotify.log 2>&1 &')
 
         -- No need for this since they are now part of start-up apps
         -- Just a fail safe mechanism in case user services fails
@@ -49,7 +49,7 @@ awesome.connect_signal(
 
         -- Update email's list when we come back from sleep
         run_once('~/.config/imapnotify/notify.sh')
-	end
+    end
 )
 
 for _, app in ipairs(apps.run_on_start_up) do
