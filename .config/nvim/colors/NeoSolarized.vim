@@ -941,6 +941,12 @@ exe "hi! NormalFloat"                   .s:fg_none      .s:bg_base03
 exe "hi! LspSignatureActiveParameter"   .s:fg_base03    .s:bg_green
 " }}}"
 
+" LSP Highlight "{{{
+" https://neovim.io/doc/user/lsp.html#lsp-highlight
+" ---------------------------------------------------------------------
+exe "hi! LspInlayHint"        .s:fmt_ital   .s:fg_base01 .s:bg_none
+" }}}"
+
 " Telescope "{{{
 " ---------------------------------------------------------------------
 exe "hi! TelescopeMatching"         .s:fmt_revr   .s:fg_yellow .s:bg_none
