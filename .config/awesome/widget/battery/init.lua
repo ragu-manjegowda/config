@@ -149,29 +149,27 @@ local return_button = function()
                     return
                 end
 
-                -- Critical level warning message
-                if (battery_percentage > 0 and battery_percentage < 20) and
-                    status == 'discharging' then
-                    icon_name = icon_name .. '-' .. 'alert-red'
+                if (battery_percentage > 0 and battery_percentage < 20) then
+                    -- Critical level warning message
+                    if status == 'discharging' then
+                        icon_name = icon_name .. '-' .. 'alert-red'
 
-                    if os.difftime(os.time(), last_battery_check) > 300 or
-                        notify_critcal_battery then
-                        last_battery_check = os.time()
-                        notify_critcal_battery = false
-                        show_battery_warning()
+                        if os.difftime(os.time(), last_battery_check) > 300 or
+                            notify_critcal_battery then
+                            last_battery_check = os.time()
+                            notify_critcal_battery = false
+                            show_battery_warning()
+                        end
+                        battery_imagebox.icon:set_image(
+                            gears.surface.load_uncached(
+                            ---@diagnostic disable-next-line: param-type-mismatch
+                                widget_icon_dir .. icon_name .. '.svg'))
+                        return
+                    else
+                        icon_name = icon_name .. '-' .. status .. '-' .. '10'
                     end
-                    battery_imagebox.icon:set_image(
-                        gears.surface.load_uncached(
-                        ---@diagnostic disable-next-line: param-type-mismatch
-                            widget_icon_dir .. icon_name .. '.svg'))
-                    return
                 end
 
-                -- Discharging
-                --if battery_percentage > 0 and battery_percentage < 20 then
-                --  icon_name = icon_name .. '-' .. status .. '-' .. '10'
-
-                --else
                 if battery_percentage >= 20 and battery_percentage < 30 then
                     icon_name = icon_name .. '-' .. status .. '-' .. '20'
                 elseif battery_percentage >= 30 and battery_percentage < 50 then
@@ -184,6 +182,8 @@ local return_button = function()
                     icon_name = icon_name .. '-' .. status .. '-' .. '80'
                 elseif battery_percentage >= 90 and battery_percentage < 100 then
                     icon_name = icon_name .. '-' .. status .. '-' .. '90'
+                elseif battery_percentage == 100 then
+                    icon_name = icon_name .. '-' .. status .. '-' .. '100'
                 end
 
                 battery_imagebox.icon:set_image(
