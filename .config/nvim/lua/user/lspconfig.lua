@@ -124,7 +124,7 @@ vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
 )
 
 function M.config()
-    local nvim_lsp, cmp_nvim_lsp
+    local nvim_lsp, cmp_nvim_lsp, lsp_windows
     res, nvim_lsp = pcall(require, "lspconfig")
     if not res then
         vim.notify("lspconfig not found", vim.log.levels.ERROR)
@@ -136,6 +136,14 @@ function M.config()
         vim.notify("cmp_nvim_lsp not found", vim.log.levels.ERROR)
         return
     end
+
+    res, lsp_windows = pcall(require, "lspconfig.ui.windows")
+    if not res then
+        vim.notify("lspconfig.ui.windows not found", vim.log.levels.ERROR)
+        return
+    end
+
+    lsp_windows.default_options.border = "rounded"
 
     local lsp_defaults = nvim_lsp.util.default_config
 
