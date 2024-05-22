@@ -112,11 +112,26 @@ end
 -- Updating the current working directory
 local events = { 'LspAttach', 'VimEnter' }
 
+-- Lsp is started after filetype, however, Lazy plugin manager doesn't seem to
+-- have relevant event to trigger loading lspconfig hence this hack to
+-- explicitly call `LspStart` via autocmd
+local vim_enter_lsp_status = nil
+
 vim.api.nvim_create_autocmd(events, {
     pattern = "*",
     callback = function(_)
         -- update the current working directory
         M.set_cwd()
+        -- Do it just once, if vim is started with argument
+        if vim_enter_lsp_status == nil then
+            -- Get list of attached clients
+            local lsp = vim.lsp.get_clients()
+            -- If there is no client attached, call `LspStart`
+            if next(lsp) == nil then
+                vim.cmd("LspStart")
+                vim_enter_lsp_status = true
+            end
+        end
     end,
 })
 
