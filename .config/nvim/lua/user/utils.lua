@@ -59,7 +59,7 @@ function M.set_cwd()
     -- if not git then active lsp client root
     if vim.v.shell_error ~= 0 then
         -- check if lsp is attached
-        local lsp = vim.lsp.get_active_clients()
+        local lsp = vim.lsp.get_clients()
         if next(lsp) ~= nil then
             -- get the configured root directory of the first attached lsp.
             -- this gets messed up if we have multiple attached lsp's

@@ -262,16 +262,6 @@ vim.api.nvim_create_autocmd('VimResized', {
     command = "tabdo wincmd ="
 })
 
--- Enable miniindentscope for files where indent-blankline is disabled
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "NvimTree", "tagbar" },
-    callback = function()
-        vim.b.miniindentscope_config = {
-            symbol = "╎"
-        }
-    end
-})
-
 -- Disable displaying leading spaces for certain filetypes
 vim.api.nvim_create_autocmd("FileType", {
     pattern = { "checkhealth", "fugitive", "gitcommit", "text" },
