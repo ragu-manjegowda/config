@@ -197,7 +197,7 @@ local extra_plugins = {
         config = function()
             require("user.lspconfig").config()
         end,
-        event = "BufReadPre"
+        event = "VimEnter"
     },
 
     -- LSP Saga
@@ -210,7 +210,7 @@ local extra_plugins = {
         config = function()
             require("user.lspsaga").config()
         end,
-        event = "BufRead"
+        event = "VimEnter"
     },
 
     {
