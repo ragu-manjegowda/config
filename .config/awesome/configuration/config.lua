@@ -26,7 +26,10 @@ return {
             -- API Key
             key = '25bc90a1196e6f153eece0bc0b0fc9eb',
             -- City ID
+            -- SJ
             city_id = '5392171',
+            -- -- Mys
+            -- city_id = '1262321',
             -- Units
             units = 'metric',
             -- Update in N seconds
