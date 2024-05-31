@@ -315,7 +315,7 @@ local locker = function(s)
         )
     end
 
-    check_webcam()
+    -- check_webcam()
 
     -- Snap an image of the intruder
     local intruder_capture = function()
@@ -364,9 +364,9 @@ local locker = function(s)
     -- Login failed
     local stoprightthereyoucriminalscum = function()
         circle_container.bg = red
-        if capture_now then
-            intruder_capture()
-        else
+        -- if capture_now then
+        --     intruder_capture()
+        -- else
             gears.timer.start_new(
                 1,
                 function()
@@ -374,7 +374,7 @@ local locker = function(s)
                     type_again = true
                 end
             )
-        end
+        -- end
     end
 
     -- Login successful
@@ -639,7 +639,7 @@ local locker = function(s)
             check_caps()
 
             -- Check webcam status
-            check_webcam()
+            -- check_webcam()
 
             -- Show all the lockscreen on each screen
             ---@diagnostic disable-next-line: redefined-local
