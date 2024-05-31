@@ -44,18 +44,6 @@ local function on_attach(client, bufnr)
         rc.rename = false
     end
 
-    if rc.inlayHintProvider then
-        vim.lsp.inlay_hint.enable()
-
-        vim.api.nvim_create_user_command(
-            'ToggleInlayHints',
-            function()
-                ---@diagnostic disable-next-line: missing-parameter
-                vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
-            end, {}
-        )
-    end
-
     local lsp_signature
     res, lsp_signature = pcall(require, "lsp_signature")
     if not res then
@@ -70,6 +58,14 @@ local function on_attach(client, bufnr)
         map({ 'n', 'i' }, '<C-k>',
             '<cmd>lua require("lsp_signature").toggle_float_win()<CR>',
             { silent = true, desc = 'Toggle LSP signature' })
+    end
+
+    local lsp_inlayhints
+    res, lsp_inlayhints = pcall(require, "lsp-inlayhints")
+    if not res then
+        vim.notify("lsp-inlayhints not found", vim.log.levels.WARN)
+    else
+        lsp_inlayhints.on_attach(client, bufnr)
     end
 
     --protocol.SymbolKind = { }
@@ -135,6 +131,19 @@ function M.config()
     if not res then
         vim.notify("cmp_nvim_lsp not found", vim.log.levels.ERROR)
         return
+    end
+
+    local lsp_inlayhints
+    res, lsp_inlayhints = pcall(require, "lsp-inlayhints")
+    if not res then
+        vim.notify("lsp-inlayhints not found", vim.log.levels.WARN)
+    else
+        vim.api.nvim_create_user_command(
+            'ToggleInlayHints',
+            function()
+                lsp_inlayhints.toggle()
+            end, {}
+        )
     end
 
     res, lsp_windows = pcall(require, "lspconfig.ui.windows")
