@@ -92,6 +92,7 @@ rust-src
 sioyek-git
 sof-firmware
 solarized-colors-iconpack-git
+subliminal
 sync-pacman-hook-git
 teams
 thermald
