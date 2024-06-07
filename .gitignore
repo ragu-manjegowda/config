@@ -8,12 +8,6 @@
 .config/zim/*
 !.config/zim/style.conf
 
-.config/mpv/scripts/*
-!.config/mpv/scripts/autosub.lua
-!.config/mpv/scripts/clean-playlist.lua
-!.config/mpv/scripts/cut-video.lua
-!.config/mpv/scripts/next-file.lua
-
 # !.local
 #
 # .local/*
@@ -126,6 +120,7 @@
 .config/mpv/fonts
 .config/mpv/log
 .config/mpv/script-opts
+.config/mpv/scripts/uosc
 .config/nautilus
 .config/neofetch/config.conf
 .config/neomutt/accounts/*/TOKEN_FILENAME*
