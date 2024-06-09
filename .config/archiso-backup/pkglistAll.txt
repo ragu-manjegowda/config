@@ -12,6 +12,7 @@ base-devel
 blueman
 bluez-utils
 broadcom-wl-dkms
+ca-certificates-mozilla
 check-broken-packages-pacman-hook-git
 cyrus-sasl-xoauth2-git
 darkman
@@ -20,6 +21,7 @@ ffmpeg
 find-cursor
 firefox
 fprintd
+fribidi
 gcr
 git
 goimapnotify
@@ -30,6 +32,10 @@ gtk-theme-numix-solarized
 imagemagick
 intel-ucode
 iwd
+libev
+libinput
+libmupdf
+libogg
 libreoffice-still
 libsmbios
 libxcrypt-compat
@@ -61,6 +67,8 @@ noisetorch
 nomachine
 noto-fonts
 noto-fonts-emoji
+nspr
+nss
 ntp
 numix-cursor-theme
 nvidia
@@ -79,6 +87,7 @@ pipewire-alsa
 pipewire-pulse
 playerctl
 python-pynvim
+python-typing_extensions
 ranger-git
 rdrview-git
 redshift
@@ -109,8 +118,11 @@ w3m
 w3m-imgcat
 webkit2gtk
 webkit2gtk-4.1
+woff2
+x264
 xclip
 xidlehook
+xkeyboard-config
 xorg-bdftopcf
 xorg-docs
 xorg-font-util
