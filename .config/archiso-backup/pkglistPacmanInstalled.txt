@@ -9,11 +9,13 @@ base-devel
 blueman
 bluez-utils
 broadcom-wl-dkms
+ca-certificates-mozilla
 darkman
 docker
 ffmpeg
 firefox
 fprintd
+fribidi
 gcr
 git
 goimapnotify
@@ -22,6 +24,10 @@ gst-plugins-good
 imagemagick
 intel-ucode
 iwd
+libev
+libinput
+libmupdf
+libogg
 libreoffice-still
 libsmbios
 libxcrypt-compat
@@ -44,6 +50,8 @@ networkmanager-openconnect
 nfs-utils
 noto-fonts
 noto-fonts-emoji
+nspr
+nss
 ntp
 nvidia
 nvidia-container-toolkit
@@ -57,6 +65,7 @@ pipewire-alsa
 pipewire-pulse
 playerctl
 python-pynvim
+python-typing_extensions
 redshift
 refind
 rofi
@@ -78,7 +87,10 @@ vlc
 w3m
 webkit2gtk
 webkit2gtk-4.1
+woff2
+x264
 xclip
+xkeyboard-config
 xorg-bdftopcf
 xorg-docs
 xorg-font-util
