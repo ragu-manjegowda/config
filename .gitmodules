@@ -83,3 +83,8 @@
 	url = https://github.com/alexanderjeurissen/ranger_devicons.git
 	update = rebase
 	branch = main
+[submodule "/home/ragu/.config/mpv/scripts/autosubsync"]
+	path = .config/mpv/scripts/autosubsync
+	url = https://github.com/Ajatt-Tools/autosubsync-mpv
+	update = rebase
+	branch = main
