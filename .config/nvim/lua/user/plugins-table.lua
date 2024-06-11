@@ -210,7 +210,7 @@ local extra_plugins = {
 
     -- LSP Saga
     {
-        "glepnir/lspsaga.nvim",
+        "nvimdev/lspsaga.nvim",
         branch = "main",
         dependencies = {
             "neovim/nvim-lspconfig"
