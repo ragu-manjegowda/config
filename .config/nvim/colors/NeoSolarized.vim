@@ -952,6 +952,11 @@ exe "hi! LspInlayHint"        .s:fmt_ital   .s:fg_base01 .s:bg_none
 exe "hi! TelescopeMatching"         .s:fmt_revr   .s:fg_yellow .s:bg_none
 " }}}"
 
+" Winbar "{{{
+" ---------------------------------------------------------------------
+hi! link WinBar Normal
+" }}}"
+
 " NeoVim terminal buffer colours "{{{
 " ---------------------------------------------------------------------
 let g:terminal_color_0 = s:gui_base03
