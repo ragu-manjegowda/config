@@ -954,7 +954,8 @@ exe "hi! TelescopeMatching"         .s:fmt_revr   .s:fg_yellow .s:bg_none
 
 " Winbar "{{{
 " ---------------------------------------------------------------------
-hi! link WinBar Normal
+hi! link WinBar     Normal
+hi! link WinBarNC   Normal
 " }}}"
 
 " NeoVim terminal buffer colours "{{{
