@@ -32,7 +32,7 @@ local function gen_tab_name(tabid)
 
     -- check if buffer is modified
     local buid = vim.api.nvim_win_get_buf(focus)
-    local is_modified = vim.api.nvim_buf_get_option(buid, 'modified')
+    local is_modified = vim.api.nvim_get_option_value('modified', { buf = buid })
     local modifiedIcon = is_modified and ' ' or ''
 
     -- return final output

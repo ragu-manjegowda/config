@@ -10,7 +10,9 @@ function M.init()
     local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
     -- Install lazy if not installed yet.
-    if not vim.loop.fs_stat(lazypath) then
+    -- https://neovim.io/doc/user/luvref.html#uv.fs_stat()
+    ---@diagnostic disable-next-line: undefined-field
+    if not vim.uv.fs_stat(lazypath) then
         vim.fn.system({
             "git",
             "clone",

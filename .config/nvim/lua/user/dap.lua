@@ -90,6 +90,7 @@ function M.config()
         id = "cppdbg",
         type = "executable",
         command = path.concat {
+            ---@diagnostic disable-next-line: assign-type-mismatch
             vim.fn.stdpath "data",
             "mason",
             "bin",
@@ -156,7 +157,9 @@ function M.config()
     -- Go adapters
     ---@diagnostic disable-next-line: undefined-field
     dap.adapters.go = function(callback, config)
-        local stdout = vim.loop.new_pipe(false)
+        -- https://neovim.io/doc/user/luvref.html#uv.new_pipe()
+        ---@diagnostic disable-next-line: undefined-field
+        local stdout = vim.uv.new_pipe(false)
         local handle
         local pid_or_err
         local host = config.host or "127.0.0.1"
@@ -167,6 +170,8 @@ function M.config()
             args = { "dap", "-l", addr },
             detached = true
         }
+        -- https://neovim.io/doc/user/luvref.html#uv.spawn()
+        ---@diagnostic disable-next-line: undefined-field
         handle, pid_or_err = vim.loop.spawn("dlv", opts, function(code)
             stdout:close()
             handle:close()
@@ -290,6 +295,7 @@ function M.config()
         type = "executable",
         command = path.concat
             {
+                ---@diagnostic disable-next-line: assign-type-mismatch
                 vim.fn.stdpath "data",
                 "mason",
                 "packages",
