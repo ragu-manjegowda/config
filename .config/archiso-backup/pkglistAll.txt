@@ -3,6 +3,7 @@ alacritty
 alsa-firmware
 alsa-utils
 anydesk-bin
+archlinux-keyring
 aspell-en
 avidemux-qt
 awesome-luajit-git
