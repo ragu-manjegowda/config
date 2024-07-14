@@ -29,6 +29,7 @@ function M.config()
     end
 
     whichkey.setup {
+        delay = 500,
         plugins = {
             marks = true, -- shows a list of your marks on ' and `
             -- shows your registers on " in NORMAL or <C-r> in INSERT mode
