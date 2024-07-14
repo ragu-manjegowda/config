@@ -39,19 +39,17 @@ function M.config()
     end
 
     -- Register mappings description with which-key
-    whichkey.register({
-        g = {
-            name = "Git",
-            co = "Git commits in telescope float window",
-            dv = "Git diff view in new tab",
-            log = "Git log commits in new quick fix tab",
-            logf = "Git log current file in telescope float window",
-            logp = "Git log pretty in new tab",
-            pf = "Git merge apply left diff",
-            pj = "Git merge apply right diff",
-            stash = "Git stash list in telescope float window"
-        },
-    }, { prefix = "<leader>" })
+    whichkey.add({
+        { "<leader>g",      group = "Git" },
+        { "<leader>gco",    desc = "Git commits in telescope float window" },
+        { "<leader>gdv",    desc = "Git diff view in new tab" },
+        { "<leader>glog",   desc = "Git log commits in new quick fix tab" },
+        { "<leader>glogf",  desc = "Git log current file in telescope float window" },
+        { "<leader>glogp",  desc = "Git log pretty in new tab" },
+        { "<leader>gpf",    desc = "Git merge apply left diff" },
+        { "<leader>gpj",    desc = "Git merge apply right diff" },
+        { "<leader>gstash", desc = "Git stash list in telescope float window" },
+    })
 end
 
 return M

@@ -60,17 +60,15 @@ function M.config()
     end
 
     -- Register mappings description with which-key
-    whichkey.register({
-        g = {
-            name = "Gscope",
-            sy = "Gscope find symbols",
-            d = "Gscope find definitions",
-            c = "Gscope called by this function",
-            C = "Gscope calling this function",
-            i = "Gscope files including this file",
-            a = "Gscope symbol assigned value"
-        },
-    }, { prefix = "<leader>" })
+    whichkey.add({
+        { "<leader>g",   group = "Gscope" },
+        { "<leader>gsy", desc = "Gscope find symbols" },
+        { "<leader>gd",  desc = "Gscope find definitions" },
+        { "<leader>gc",  desc = "Gscope called by this function" },
+        { "<leader>gC",  desc = "Gscope calling this function" },
+        { "<leader>gi",  desc = "Gscope files including this file" },
+        { "<leader>ga",  desc = "Gscope symbol assigned value" }
+    })
 end
 
 return M
