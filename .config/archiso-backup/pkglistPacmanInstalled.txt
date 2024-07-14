@@ -26,6 +26,7 @@ imagemagick
 intel-ucode
 iwd
 libev
+libfido2
 libinput
 libmupdf
 libogg
@@ -138,6 +139,7 @@ xorg-xwd
 xorg-xwininfo
 xorg-xwud
 xsettingsd
+yubikey-personalization-gui
 zathura
 zathura-pdf-mupdf
 zim
