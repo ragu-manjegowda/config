@@ -82,18 +82,28 @@ M.config = function()
 
     local width_breakpoint = 100
 
+    local modes = {
+        ['Normal'] = { icon = '' },
+        ['Insert'] = { icon = '' },
+        ['Visual'] = { icon = '' },
+        ['Command'] = { icon = '󰘳' },
+        ['Replace'] = { icon = '' }
+    }
+
     basic.section_a = {
         hl_colors = airline_colors.a,
         text = function(_, _, width)
             if width > width_breakpoint then
                 return {
-                    { ' ' .. state.mode[1] .. ' ', state.mode[2] },
-                    { sep.right_filled, state.mode[2] .. 'Sep' },
+                    { ' ' .. modes[state.mode[2]].icon .. ' ' .. state.mode[1] .. ' ',
+                        state.mode[2] },
+                    { sep.right_filled,
+                        state.mode[2] .. 'Sep' },
                 }
             end
             return {
                 { ' ' .. state.mode[1]:sub(1, 1) .. ' ', state.mode[2] },
-                { sep.right_filled, state.mode[2] .. 'Sep' },
+                { sep.right_filled,                      state.mode[2] .. 'Sep' },
             }
         end,
     }
@@ -105,8 +115,8 @@ M.config = function()
             if width > width_breakpoint and git_comps.is_git(bufnr) then
                 return {
                     { git_comps.git_branch(), state.mode[2] },
-                    { ' ', '' },
-                    { sep.right_filled, state.mode[2] .. 'Sep' },
+                    { ' ',                    '' },
+                    { sep.right_filled,       state.mode[2] .. 'Sep' },
                 }
             end
             return { { sep.right_filled, state.mode[2] .. 'Sep' } }
@@ -119,9 +129,9 @@ M.config = function()
             local function_name = getFunctionName()
             if width > width_breakpoint and #function_name > 1 then
                 return {
-                    { ' fn: ', state.mode[2] },
-                    { function_name, '' },
-                    { ' ', '' },
+                    { ' fn: ',          state.mode[2] },
+                    { function_name,    '' },
+                    { ' ',              '' },
                     { sep.right_filled, state.mode[2] .. 'Sep' },
                 }
             end
@@ -134,8 +144,8 @@ M.config = function()
         text = function(_, _, width)
             if width > width_breakpoint then
                 return {
-                    { sep.left_filled, state.mode[2] .. 'Sep' },
-                    { ' ', state.mode[2] },
+                    { sep.left_filled,                          state.mode[2] .. 'Sep' },
+                    { ' ',                                      state.mode[2] },
                     { b_components.file_encoding() },
                     { ' ' },
                     { b_components.file_format({ icon = true }) },
@@ -153,7 +163,7 @@ M.config = function()
         text = function(_, _, width)
             if width > width_breakpoint then
                 return {
-                    { sep.left_filled, state.mode[2] .. 'Sep' },
+                    { sep.left_filled,                               state.mode[2] .. 'Sep' },
                     { b_components.cache_file_type({ icon = true }), state.mode[2] },
                     { ' ' },
                 }
@@ -232,9 +242,9 @@ M.config = function()
                 end,
                 { 'cyan', 'black_light' },
             },
-            { ' Total : %L ', { 'cyan', 'black_light' } },
+            { ' Total : %L ',                { 'cyan', 'black_light' } },
             { helper.separators.slant_right, { 'black_light', 'InactiveBg' } },
-            { ' ', { 'InactiveFg', 'InactiveBg' } },
+            { ' ',                           { 'InactiveFg', 'InactiveBg' } },
             basic.divider,
             { helper.separators.slant_right, { 'InactiveBg', 'black' } },
             { '🧛 ', { 'white', 'black' } },
@@ -259,9 +269,9 @@ M.config = function()
         },
         inactive = {
             { b_components.full_file_name, hl_list.Inactive },
-            { b_components.divider, hl_list.Inactive },
-            { b_components.line_col, hl_list.Inactive },
-            { b_components.progress, hl_list.Inactive },
+            { b_components.divider,        hl_list.Inactive },
+            { b_components.line_col,       hl_list.Inactive },
+            { b_components.progress,       hl_list.Inactive },
         },
     }
 
