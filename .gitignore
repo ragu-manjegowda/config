@@ -53,6 +53,7 @@
 .config/QtProject.conf
 .config/Slack
 .config/Thunar
+.config/Yubico
 .config/advanced-rest-client
 .config/alacritty/colors.yml-e
 .config/autostart
@@ -153,8 +154,8 @@
 .config/systemd/user/graphical-session.target.wants
 .config/systemd/user/pipewire-session-manager.service
 .config/systemd/user/pipewire.service.wants
-.config/systemd/user/sockets.target.wants
 .config/systemd/user/sleep.target.wants
+.config/systemd/user/sockets.target.wants
 .config/systemd/user/xorg@.service
 .config/teams
 .config/termshark/termshark.toml-e
@@ -239,6 +240,7 @@
 .rviz
 .sdformat
 .smbcredentials
+.spotdl
 .ssh/authorized_keys
 .ssh/id_ed25519
 .ssh/id_ed25519.pub
