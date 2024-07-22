@@ -27,6 +27,7 @@ intel-ucode
 iwd
 libev
 libfido2
+libgit2
 libinput
 libmupdf
 libogg
@@ -75,7 +76,10 @@ rofi-calc
 rofi-emoji
 rsync
 rust-src
+skanpage
 sof-firmware
+system-config-printer
+termshark
 thermald
 thunar
 tigervnc

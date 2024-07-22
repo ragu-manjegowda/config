@@ -150,6 +150,7 @@
 .config/redshift.conf
 .config/remmina
 .config/rustup
+.config/skanpagerc
 .config/systemd/user/default.target.wants
 .config/systemd/user/graphical-session.target.wants
 .config/systemd/user/pipewire-session-manager.service
@@ -209,6 +210,7 @@
 .lbcookie
 .leetcode
 .lesshst
+.librewolf
 .lldb
 .local
 .lyxauth

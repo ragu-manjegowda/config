@@ -35,10 +35,12 @@ intel-ucode
 iwd
 libev
 libfido2
+libgit2
 libinput
 libmupdf
 libogg
 libreoffice-still
+librewolf-bin
 libsmbios
 libxcrypt-compat
 light
@@ -101,11 +103,14 @@ rofi-emoji
 rsync
 rust-src
 sioyek-git
+skanpage
 sof-firmware
 solarized-colors-iconpack-git
 subliminal
 sync-pacman-hook-git
+system-config-printer
 teams
+termshark
 thermald
 thunar
 tigervnc
