@@ -1,4 +1,4 @@
-import = ["/home/ragu/.config/alacritty/themes/solarized_dark.toml"]
+import = ["~/.config/alacritty/themes/solarized_dark.toml"]
 live_config_reload = true
 
 [bell]
