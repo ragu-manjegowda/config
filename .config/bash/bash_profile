@@ -17,10 +17,6 @@ if [ -n "$BASH_VERSION" ]; then
   if [ -r "$HOMEBREW_PATH/etc/profile.d/bash_completion.sh" ]; then
       source "$HOMEBREW_PATH/etc/profile.d/bash_completion.sh"
   fi
-elif [ -n "$ZSH_VERSION" ]; then
-  if [ -r "$HOMEBREW_PATH/share/zsh/site-functions" ]; then
-    fpath=("$HOMEBREW_PATH"/share/zsh/site-functions "$fpath")
-  fi
 fi
 
 ##########################################################################################
@@ -70,7 +66,7 @@ export CPPFLAGS="-I$HOMEBREW_PATH/opt/libffi/include:$CPPFLAGS"
 # GCC linker warning fix
 # ld: warning: text-based stub file /System/Library/Frameworks//Cocoa.framework/Cocoa.tbd
 # and library file /System/Library/Frameworks//Cocoa.framework/Cocoa are out of sync.
-export SDKROOT="/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
+export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
 
 # Gettext exports
 export PATH="$HOMEBREW_PATH/opt/gettext/bin:$PATH"
