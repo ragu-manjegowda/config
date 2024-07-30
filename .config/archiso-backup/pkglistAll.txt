@@ -15,6 +15,7 @@ bluez-utils
 broadcom-wl-dkms
 ca-certificates-mozilla
 check-broken-packages-pacman-hook-git
+cups
 cyrus-sasl-xoauth2-git
 darkman
 docker
