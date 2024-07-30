@@ -110,6 +110,9 @@ keymap("n", "gs", ":%s///gic<Left><Left><Left><Left><Left><Left><Left>", { norem
 keymap("i", "<A-j>", "<ESC>:m .+1<CR>==i", opts)
 keymap("i", "<A-k>", "<ESC>:m .-2<CR>==i", opts)
 
+-- Forward delete characters
+keymap("i", "<C-d>", "<Del>", opts)
+
 -------------------------------------------------------------------------------
 -- Visual Mode
 -------------------------------------------------------------------------------
