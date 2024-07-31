@@ -287,39 +287,47 @@ local set_empty_inbox_msg = function()
 end
 
 local fetch_email_data = function()
-    local open = io.open
-    file = open(tostring(mails_path), "rb") -- r read mode and b binary mode
+    -- Create a shell command to read the file
+    local command = string.format('cat %s', tostring(mails_path))
 
-    if not file then return end
+    -- Execute the command asynchronously
+    awful.spawn.easy_async(command, function(stdout, stderr, _, exitcode)
+        if exitcode == 0 then
+            -- Successfully read the file, 'stdout' contains the file content
+            if stdout:match('Temporary failure in name resolution') then
+                set_no_connection_msg()
+                return
+            elseif stdout:match('Invalid credentials') then
+                set_invalid_credentials_msg()
+                return
+            elseif stdout:match('Unread Count: 0') then
+                email_icon_widget.icon:set_image(widget_icon_dir .. 'email.svg')
+                set_empty_inbox_msg()
+                return
+            elseif not stdout:match('Unread Count: (.-)From:') then
+                return
+            elseif not stdout or stdout == '' then
+                return
+            end
 
-    local content = file:read "*a" -- *a or *all reads the whole file
-    file:close()
+            set_latest_email_data(stdout)
+            set_email_data_tooltip(stdout)
 
-    local stdout = content
-
-    if stdout:match('Temporary failure in name resolution') then
-        set_no_connection_msg()
-        return
-    elseif stdout:match('Invalid credentials') then
-        set_invalid_credentials_msg()
-        return
-    elseif stdout:match('Unread Count: 0') then
-        email_icon_widget.icon:set_image(widget_icon_dir .. 'email.svg')
-        set_empty_inbox_msg()
-        return
-    elseif not stdout:match('Unread Count: (.-)From:') then
-        return
-    elseif not stdout or stdout == '' then
-        return
-    end
-
-    set_latest_email_data(stdout)
-    set_email_data_tooltip(stdout)
-
-    if startup_show then
-        notify_all_unread_email(stdout)
-        startup_show = false
-    end
+            if startup_show then
+                notify_all_unread_email(stdout)
+                startup_show = false
+            end
+        else
+            -- Handle the error
+            naughty.notification({
+                app_name = 'Email',
+                title = 'Read error',
+                message = stderr,
+                icon = widget_icon_dir .. 'email-unread.svg'
+            })
+            return
+        end
+    end)
 end
 
 -- email_report:connect_signal(
