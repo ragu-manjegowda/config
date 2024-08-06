@@ -68,7 +68,6 @@ networkmanager
 networkmanager-openconnect
 newsboat-git
 nfs-utils
-noisetorch
 nomachine
 noto-fonts
 noto-fonts-emoji

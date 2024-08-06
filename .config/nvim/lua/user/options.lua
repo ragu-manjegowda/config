@@ -47,7 +47,7 @@ local options = {
     syntax = "enable",
     tabstop = 4,           -- insert 4 spaces for a tab
     termguicolors = true,  -- set term gui colors (most terminals support this)
-    timeoutlen = 300,     -- time to wait for a mapped sequence to complete (in milliseconds)
+    timeoutlen = 300,      -- time to wait for a mapped sequence to complete (in milliseconds)
     undodir = vim.fn.expand("~/.cache/nvim/undodir"),
     undofile = true,
     undolevels = 10000,
@@ -68,6 +68,20 @@ vim.opt.shortmess:append "c" -- Show search preview in split
 for k, v in pairs(options) do
     vim.opt[k] = v
 end
+
+-- Enable build-in OSC52 clipboard provider
+-- have to explicitly copy to '+' if needed in system clipboard
+vim.g.clipboard = {
+    name = "OSC 52",
+    copy = {
+        ["+"] = require("vim.ui.clipboard.osc52").copy "+",
+        ["*"] = require("vim.ui.clipboard.osc52").copy "*",
+    },
+    paste = {
+        ["+"] = require("vim.ui.clipboard.osc52").paste "+",
+        ["*"] = require("vim.ui.clipboard.osc52").paste "*",
+    },
+}
 
 -- Set shell to bash since zsh has noglob issues with gtests in dap
 vim.env.SHELL = "bash"

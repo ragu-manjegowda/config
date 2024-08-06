@@ -9,14 +9,6 @@ local core_plugins = {
         tag = "stable"
     },
 
-    -- Clipboard
-    {
-        "ojroques/nvim-osc52",
-        config = function()
-            require("user.nvim-osc52").config()
-        end
-    },
-
     -- Codeium
     {
         "Exafunction/codeium.vim",
