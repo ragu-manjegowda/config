@@ -19,6 +19,7 @@ cups
 cyrus-sasl-xoauth2-git
 darkman
 docker
+docker-buildx
 ffmpeg
 find-cursor
 firefox
@@ -41,7 +42,7 @@ libinput
 libmupdf
 libogg
 libreoffice-still
-librewolf-bin
+librewolf
 libsmbios
 libxcrypt-compat
 light
