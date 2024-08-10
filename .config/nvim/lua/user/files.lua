@@ -17,6 +17,13 @@ function M.config()
     files.setup()
 
     vim.api.nvim_create_user_command(
+        'MiniFilesOpen',
+        function()
+            files.open()
+        end, {}
+    )
+
+    vim.api.nvim_create_user_command(
         'ToggleMiniFiles',
         function()
             if vim.g.minifiles_disable then

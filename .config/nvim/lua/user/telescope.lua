@@ -37,7 +37,7 @@ function M.grep_folder()
     opts.search_dirs = {}
     opts.search_dirs[1] = vim.fn.input("Grep in Directory > ",
         ---@diagnostic disable-next-line: redundant-parameter
-        vim.fn.getcwd() .. "/", "file")
+        vim.fn.expand("%:p:h") .. "/", "file")
     M.grep(opts)
 end
 
@@ -67,8 +67,8 @@ function M.current_buffer_fuzzy_find()
     require('telescope.builtin').current_buffer_fuzzy_find(opts)
 end
 
-function M.live_grep()
-    local opts = {}
+function M.live_grep(options)
+    local opts = options or {}
 
     local text = M.getVisualSelection()
     if text ~= '' then
@@ -77,7 +77,18 @@ function M.live_grep()
         opts.default_text = nil
     end
 
+    if opts.folder_path ~= nil then
+        opts.default_text = '"' .. (opts.default_text or '') .. '" ' .. opts.folder_path
+    end
+
     require("telescope").extensions.live_grep_args.live_grep_args(opts)
+end
+
+function M.live_grep_current_buffer_folder()
+    local opts = {}
+    opts.folder_path = vim.fn.expand("%:p:h")
+
+    M.live_grep(opts)
 end
 
 function M.find_files()
@@ -107,6 +118,10 @@ function M.before()
     map({ 'n', 'v' }, '<leader>fg',
         '<cmd>lua require("user.telescope").live_grep()<CR>',
         { silent = true, desc = 'Telescope live grep with regex' })
+
+    map({ 'n', 'v' }, '<leader>fgp',
+        '<cmd>lua require("user.telescope").live_grep_current_buffer_folder()<CR>',
+        { silent = true, desc = 'Telescope live grep current buffer folder with regex' })
 
     map('n', '<leader>pb', '<cmd>lua require("telescope.builtin").buffers()<CR>',
         { silent = true, desc = 'Telescope list project buffers' })

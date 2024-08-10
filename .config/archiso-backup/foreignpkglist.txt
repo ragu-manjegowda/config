@@ -6,7 +6,7 @@ cyrus-sasl-xoauth2-git
 find-cursor
 google-chrome
 gtk-theme-numix-solarized
-librewolf-bin
+librewolf
 light
 lua-pam-git
 mbsync-git
