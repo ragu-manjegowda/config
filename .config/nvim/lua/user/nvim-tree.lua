@@ -29,7 +29,7 @@ function M.on_attach(_)
         local map = vim.keymap.set
         local opts = function(desc)
             return {
-                desc = 'nvim-tree: ' .. desc, noremap = true, silent = true
+                desc = "nvim-tree: " .. desc, noremap = true, silent = true
             }
         end
 
