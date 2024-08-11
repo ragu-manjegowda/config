@@ -333,6 +333,15 @@ local all_plugins = {
         event = "VeryLazy"
     },
 
+    -- Quickfix util
+    {
+        'stevearc/quicker.nvim',
+        config = function()
+            require("user.quicker").config()
+        end,
+        event = "FileType qf"
+    },
+
     -- Treesitter
     {
         "nvim-treesitter/nvim-treesitter",
