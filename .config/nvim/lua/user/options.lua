@@ -95,8 +95,10 @@ vim.api.nvim_create_user_command(
     function()
         if vim.g.u_list_chars_set then
             vim.opt.listchars:remove "lead"
+            vim.g.u_list_chars_set = false
         else
             vim.opt.listchars:append "lead:⋅"
+            vim.g.u_list_chars_set = true
         end
     end, {}
 )

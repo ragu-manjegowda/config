@@ -32,16 +32,23 @@ local function on_attach(client, bufnr)
     map({ 'n', 'v' }, '<leader>lf', '<cmd>lua vim.lsp.buf.format()<CR>',
         { silent = true, desc = 'LSP formatting' })
 
-    -- Pyright is pretty much useless, disabling most of the stuff and keeping
-    -- around for now.
     local rc = client.server_capabilities
 
+    -- Pyright is pretty much useless, disabling most of the stuff and keeping
+    -- around for now.
     if client.name == 'pyright' then
-        rc.hover = false
-        rc.definitions = false
-        rc.signature_help = false
+        rc.callHierarchyProvider = false
         rc.completion = false
+        rc.completionProvider = false
+        rc.declarationProvider = false
+        rc.definitionProvider = false
+        rc.definitions = false
+        rc.hover = false
+        rc.hoverProvider = false
         rc.rename = false
+        rc.renameProvider = false
+        rc.signatureHelpProvider = false
+        rc.signature_help = false
     end
 
     local lsp_signature
