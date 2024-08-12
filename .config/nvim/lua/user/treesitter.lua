@@ -25,6 +25,7 @@ M.config = function()
             "markdown",
             "markdown_inline",
             "python",
+            "regex",
             "rust",
             "vim",
             "yaml"

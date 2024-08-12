@@ -320,6 +320,18 @@ local all_plugins = {
         event = "VeryLazy"
     },
 
+    {
+        "folke/noice.nvim",
+        config = function()
+            require("user.noice").config()
+        end,
+        event = "VeryLazy",
+        dependencies = {
+            "MunifTanjim/nui.nvim",
+            "rcarriga/nvim-notify",
+        }
+    },
+
     -- Leetcode in Vim
     {
         "Dhanus3133/LeetBuddy.nvim",
