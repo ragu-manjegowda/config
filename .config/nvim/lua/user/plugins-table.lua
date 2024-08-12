@@ -332,6 +332,19 @@ local all_plugins = {
         }
     },
 
+    -- Markdown preview
+    {
+        "OXY2DEV/markview.nvim",
+        config = function()
+            require("user.markview").config()
+        end,
+        dependencies = {
+            "nvim-treesitter/nvim-treesitter",
+            "nvim-tree/nvim-web-devicons"
+        },
+        ft = "markdown"
+    },
+
     -- Leetcode in Vim
     {
         "Dhanus3133/LeetBuddy.nvim",

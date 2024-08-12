@@ -20,6 +20,7 @@ M.config = function()
             "cmake",
             "cpp",
             "go",
+            "html",
             "json",
             "lua",
             "markdown",

@@ -5,6 +5,7 @@
 
 2. Open Nvim
 
-   ```
-   :PackerSync
+   ```vim
+   :Lazy sync
+   :MasonToolsInstall 
    ```
