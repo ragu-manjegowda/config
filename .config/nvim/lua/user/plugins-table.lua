@@ -9,16 +9,6 @@ local core_plugins = {
         tag = "stable"
     },
 
-    -- Codeium
-    {
-        "Exafunction/codeium.vim",
-        init = function()
-            require("user.codeium").before()
-        end,
-        event = { "InsertEnter" },
-    },
-
-
     -- Debugging
     {
         "rcarriga/nvim-dap-ui",
@@ -141,24 +131,20 @@ local core_plugins = {
             require("user.telescope").config()
         end,
         event = "UIEnter"
-    },
-
-    -- Vim Session
-    {
-        "xolox/vim-session",
-        dependencies = {
-            "xolox/vim-misc",
-            event = "VeryLazy"
-        },
-        init = function()
-            require("user.vim-session").before()
-        end,
-        event = "VeryLazy"
     }
 }
 
 local extra_plugins = {
     core_plugins,
+
+    -- Codeium
+    {
+        "Exafunction/codeium.vim",
+        init = function()
+            require("user.codeium").before()
+        end,
+        event = { "InsertEnter" },
+    },
 
     -- cmp plugins
     {
@@ -218,6 +204,19 @@ local extra_plugins = {
         config = function()
             require("trld").setup()
         end
+    },
+
+    -- Vim Session
+    {
+        "xolox/vim-session",
+        dependencies = {
+            "xolox/vim-misc",
+            event = "VeryLazy"
+        },
+        init = function()
+            require("user.vim-session").before()
+        end,
+        event = "VeryLazy"
     }
 }
 
@@ -310,13 +309,6 @@ local all_plugins = {
 
     {
         "sindrets/diffview.nvim",
-        event = "VeryLazy"
-    },
-
-    {
-        "fredeeb/tardis.nvim",
-        config = true,
-        dependencies = { "nvim-lua/plenary.nvim" },
         event = "VeryLazy"
     },
 
