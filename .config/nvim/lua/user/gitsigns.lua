@@ -72,15 +72,27 @@ function M.config()
             -- Navigation
             map('n', ']h', function()
                 if vim.wo.diff then return ']c' end
-                vim.schedule(function() gs.next_hunk() end)
+                vim.schedule(function() gs.nav_hunk("next", { target = "unstaged" }) end)
                 return '<Ignore>'
-            end, { expr = true })
+            end, { expr = true, desc = "Navigate to next unstaged hunk" })
 
             map('n', '[h', function()
                 if vim.wo.diff then return '[c' end
-                vim.schedule(function() gs.prev_hunk() end)
+                vim.schedule(function() gs.nav_hunk("prev", { target = "unstaged" }) end)
                 return '<Ignore>'
-            end, { expr = true })
+            end, { expr = true, desc = "Navigate to prev unstaged hunk" })
+
+            map('n', ']hs', function()
+                if vim.wo.diff then return ']c' end
+                vim.schedule(function() gs.nav_hunk("next", { target = "staged" }) end)
+                return '<Ignore>'
+            end, { expr = true, desc = "Navigate to next staged hunk" })
+
+            map('n', '[hs', function()
+                if vim.wo.diff then return '[c' end
+                vim.schedule(function() gs.nav_hunk("prev", { target = "staged" }) end)
+                return '<Ignore>'
+            end, { expr = true, desc = "Navigate to prev staged hunk" })
 
             -- Actions
             map('n', '<leader>hp', gs.preview_hunk)
