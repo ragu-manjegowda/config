@@ -8,7 +8,7 @@ PANEL_VISIBLE = false
 
 local info_center = function(s)
     -- Set the info center geometry
-    local panel_width = s.geometry.width / 6
+    local panel_width = s.geometry.width / 4.5
 
     local panel = awful.popup {
         widget = {
