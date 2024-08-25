@@ -176,7 +176,7 @@ local monitor_control_row_progressbars = wibox.widget {
 
 local control_center = function(s)
     -- Set the control center geometry
-    local panel_width = s.geometry.width / 6
+    local panel_width = s.geometry.width / 4.5
 
     local panel = awful.popup {
         widget = {

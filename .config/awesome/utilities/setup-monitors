@@ -4,11 +4,27 @@
 # This makes cursor movement smooth across displays
 # Configuration is read from config.lua via read-display-config
 
+<<<<<<< HEAD
 # Source the configuration from config.lua
 source <("$HOME/.config/awesome/utilities/read-display-config")
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+# make everything on highDPI monitor not look teeny-tiny
+xrandr --dpi 192
+=======
+# make everything on highDPI monitor not look teeny-tiny
+xrandr --dpi 92
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 
+<<<<<<< HEAD
 # Set DPI based on configuration
 xrandr --dpi "$DISPLAY_DPI"
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+# set up high DPI monitor
+xrandr --output eDP-1 --mode 3840x2400 --pos 0x0
+=======
+# set up high DPI monitor
+xrandr --output eDP1 --mode 2560x1440 --pos 0x0
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 
 # Set laptop display (primary)
 xrandr --output "$PRIMARY_NAME" --primary --mode "$PRIMARY_MODE" --pos "$PRIMARY_POS"
