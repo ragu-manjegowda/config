@@ -1,4 +1,3 @@
-anydesk-bin
 awesome-luajit-git
 awmtt
 check-broken-packages-pacman-hook-git
@@ -7,9 +6,9 @@ find-cursor
 goimapnotify-git
 google-chrome
 gtk-theme-numix-solarized
-librewolf
 light
 lua-pam-git
+luajit-lgi
 mbsync-git
 mosh-git
 mu
@@ -18,7 +17,6 @@ newsboat-git
 nomachine
 numix-cursor-theme
 pacman-cleanup-hook
-pam-fprint-grosshack
 paru
 picom-git
 ranger-git
@@ -29,7 +27,8 @@ solarized-colors-iconpack-git
 subliminal
 sync-pacman-hook-git
 teams
-tgpt-git
-xdg-desktop-portal-termfilechooser-git
+touche
+vdhcoapp
+w3m-imgcat
 xidlehook
 zoom

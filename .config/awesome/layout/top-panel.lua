@@ -12,7 +12,7 @@ local top_panel = function(s)
             ontop = true,
             screen = s,
             type = 'desktop',
-            height = s.geometry.height / 26,
+            height = s.geometry.height / 22,
             width = s.geometry.width,
             x = s.geometry.x,
             y = s.geometry.y,
@@ -23,7 +23,7 @@ local top_panel = function(s)
 
     panel:struts
     {
-        top = s.geometry.height / 26
+        top = s.geometry.height / 22
     }
 
     panel:connect_signal(

@@ -5,9 +5,9 @@ local utils_dir = config_dir .. 'utilities/'
 return {
     keyboard = {
         script = utils_dir .. 'kbd-bkl',
-        file = '/sys/class/leds/dell::kbd_backlight/brightness'
+        -- file = '/sys/class/leds/dell::kbd_backlight/brightness'
         -- file = '/sys/class/leds/smc::kbd_backlight/brightness'
-        -- file = '/sys/class/leds/tpacpi::kbd_backlight/brightness'
+        file = '/sys/class/leds/tpacpi::kbd_backlight/brightness'
     },
 
     widget = {
