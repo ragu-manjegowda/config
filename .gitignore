@@ -123,7 +123,6 @@
 /.config/awesome/library/volctl/volctl/__pycache__
 /.config/awesome/theme/icons/sedpHNNtT
 /.config/awesome/theme/icons/titlebar/win10/sedDwqIEQ
-/.config/awesome/utilities/**/__pycache__/
 /.config/awesome/widget/email/icons/sedVulxFl
 /.config/awesome/widget/email/mails.txt
 /.config/bash/.bash_history
@@ -194,7 +193,6 @@
 /.config/monitors-v1-backup.xml
 /.config/monitors.xml
 /.config/monitors.xml~
-/.config/mozilla/
 /.config/mpv/fonts
 /.config/mpv/log
 /.config/mpv/script-opts
@@ -365,3 +363,40 @@
 /Videos
 /snap
 /wiki
+
+
+########### Lenovo ####################
+
+/.cert/
+/.config/.gsd-keyboard.settings-ported
+/.config/.libinput-gestures-is-service
+/.config/Code/
+/.config/DL: language lessons
+/.config/Trolltech.conf
+/.config/baloofilerc
+/.config/duolingo-desktop-flags.conf
+/.config/google/
+/.config/gtk-4.0/settings.ini
+/.config/gtkrc
+/.config/gtkrc-2.0
+/.config/kactivitymanagerdrc
+/.config/kcminputrc
+/.config/kconf_updaterc
+/.config/kded5rc
+/.config/kdedefaults/
+/.config/kdeglobals
+/.config/kglobalshortcutsrc
+/.config/knfsshare
+/.config/ksmserverrc
+/.config/ktimezonedrc
+/.config/kwinoutputconfig.json
+/.config/kwinrc
+/.config/libinput-gestures.conf
+/.config/misc/etc/mkinitcpio.conf.d/
+/.config/plasma-localerc
+/.config/plasma-org.kde.plasma.desktop-appletsrc
+/.config/plasmashellrc
+/.config/powermanagementprofilesrc
+/.config/touchegg/
+/.config/trashrc
+/.config/whatscli/
