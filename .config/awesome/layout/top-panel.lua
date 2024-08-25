@@ -16,7 +16,13 @@ local top_panel = function(s)
             ontop = true,
             screen = s,
             type = 'desktop',
+<<<<<<< HEAD
             height = panel_height,
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+            height = s.geometry.height / 26,
+=======
+            height = s.geometry.height / 22,
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
             width = s.geometry.width,
             x = s.geometry.x,
             y = s.geometry.y,
@@ -27,7 +33,13 @@ local top_panel = function(s)
 
     panel:struts
     {
+<<<<<<< HEAD
         top = panel_height
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+        top = s.geometry.height / 26
+=======
+        top = s.geometry.height / 22
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
     }
 
     panel:connect_signal(

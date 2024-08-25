@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 acpilight
 android-sdk-platform-tools
 anydesk-bin
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+anydesk-bin
+=======
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 awesome-luajit-git
 awmtt
 check-broken-packages-pacman-hook-git
@@ -15,7 +20,12 @@ google-chrome
 gtk-theme-numix-solarized
 light
 lua-pam-git
+<<<<<<< HEAD
 masterpdfeditor-free
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+=======
+luajit-lgi
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 mbsync-git
 mu
 neomutt-git
@@ -25,7 +35,6 @@ numix-cursor-theme
 openconnect-gp-git
 openconnect-gp-git-debug
 pacman-cleanup-hook
-pam-fprint-grosshack
 paru
 pavucontrol-gtk3
 picom-git
@@ -36,7 +45,16 @@ sioyek-git
 solarized-colors-iconpack-git
 sync-pacman-hook-git
 teams
+<<<<<<< HEAD
 warpd
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+tgpt-git
+xdg-desktop-portal-termfilechooser-git
+=======
+touche
+vdhcoapp
+w3m-imgcat
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 xidlehook
 zoom
 zram-hibernate-git

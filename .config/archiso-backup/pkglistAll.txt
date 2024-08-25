@@ -2,9 +2,15 @@ acpilight
 alacritty
 alsa-firmware
 alsa-utils
+<<<<<<< HEAD
 android-sdk-platform-tools
 anydesk-bin
 arch-install-scripts
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+anydesk-bin
+archlinux-keyring
+=======
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 aspell-en
 avidemux-qt
 awesome-luajit-git
@@ -14,43 +20,68 @@ base-devel
 blueman
 bluez-utils
 broadcom-wl-dkms
-ca-certificates-mozilla
-calibre
 check-broken-packages-pacman-hook-git
+<<<<<<< HEAD
 claude-code
 cppreference
 cups
 cursor-bin
 cursor-cli
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+cups
+=======
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 cyrus-sasl-xoauth2-git
 darkman
 docker
 docker-buildx
+<<<<<<< HEAD
 docker-compose
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+ffmpeg
+=======
+efibootmgr
+ffmpeg
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 find-cursor
 firefox
+<<<<<<< HEAD
 fprintd
 freecad
 fuse2
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+fprintd
+fribidi
+fuse2
+=======
+gcc
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 gcr
 git
 go
 goimapnotify-git
 google-chrome
+groff
 gst-plugin-pipewire
 gst-plugins-good
 gtk-theme-numix-solarized
 imagemagick
 intel-ucode
 iwd
-libev
-libfido2
 libgit2
+<<<<<<< HEAD
 libinput
 libmupdf
 librecad
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+libinput
+libmupdf
+libogg
+=======
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 libreoffice-still
 libsmbios
+libtool
 libxcrypt-compat
 light
 lighttpd
@@ -61,10 +92,16 @@ linux-lts
 linux-lts-headers
 lld
 lua-pam-git
+luajit-lgi
 lxqt-policykit
 ly
 maim
+<<<<<<< HEAD
 masterpdfeditor-free
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+=======
+make
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 mbsync-git
 mpv
 msmtp
@@ -81,25 +118,39 @@ noto-fonts
 noto-fonts-emoji
 ntp
 numix-cursor-theme
+<<<<<<< HEAD
 nvidia
 nvidia-container-toolkit
 nvidia-lts
 openconnect-gp-git
 openconnect-gp-git-debug
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+nvidia
+nvidia-container-toolkit
+nvidia-lts
+okular
+=======
+okular
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 openrazer-daemon
-openssh
 openssl-1.1
 pacman-cleanup-hook
-pam-fprint-grosshack
 paru
+<<<<<<< HEAD
 pavucontrol-gtk3
 perl-cgi
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+pavucontrol-gtk3
+=======
+patch
+pavucontrol
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 picom-git
 pipewire-alsa
 pipewire-pulse
 playerctl
-python-typing_extensions
-ranger
+python-pynvim
+ranger-git
 rdrview-git
 redshift
 refind
@@ -115,9 +166,15 @@ sioyek-git
 skanpage
 sof-firmware
 solarized-colors-iconpack-git
+<<<<<<< HEAD
 swig
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+subliminal-git
+=======
+subliminal-git
+sudo
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 sync-pacman-hook-git
-system-config-printer
 teams
 termshark
 thermald
@@ -128,30 +185,44 @@ ttf-dejavu
 ttf-hack-nerd
 ueberzugpp
 upower
+urlscan
+vdhcoapp
 vlc
 warpd
 webkit2gtk
 webkit2gtk-4.1
+<<<<<<< HEAD
 woff2
 xcalib
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+woff2
+x264
+xcalib
+=======
+which
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 xclip
+<<<<<<< HEAD
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+xdg-desktop-portal-termfilechooser-git
+=======
+xf86-video-intel
+xf86-video-vesa
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 xidlehook
 xorg-bdftopcf
 xorg-docs
 xorg-font-util
 xorg-fonts-100dpi
 xorg-fonts-75dpi
-xorg-fonts-encodings
 xorg-iceauth
 xorg-mkfontscale
 xorg-server
-xorg-server-common
 xorg-server-devel
 xorg-server-xephyr
 xorg-server-xnest
 xorg-server-xvfb
 xorg-sessreg
-xorg-setxkbmap
 xorg-smproxy
 xorg-x11perf
 xorg-xauth
@@ -163,7 +234,6 @@ xorg-xev
 xorg-xgamma
 xorg-xhost
 xorg-xinput
-xorg-xkbcomp
 xorg-xkbevd
 xorg-xkbutils
 xorg-xkill
@@ -171,6 +241,7 @@ xorg-xlsatoms
 xorg-xlsclients
 xorg-xmodmap
 xorg-xpr
+xorg-xprop
 xorg-xrandr
 xorg-xrdb
 xorg-xrefresh

@@ -1,7 +1,12 @@
 alacritty
 alsa-firmware
 alsa-utils
+<<<<<<< HEAD
 arch-install-scripts
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+archlinux-keyring
+=======
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 aspell-en
 avidemux-qt
 base
@@ -9,33 +14,57 @@ base-devel
 blueman
 bluez-utils
 broadcom-wl-dkms
-ca-certificates-mozilla
-calibre
-cups
 darkman
 docker
 docker-buildx
+<<<<<<< HEAD
 docker-compose
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+ffmpeg
+=======
+efibootmgr
+ffmpeg
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 firefox
+<<<<<<< HEAD
 fprintd
 freecad
 fuse2
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+fprintd
+fribidi
+fuse2
+=======
+gcc
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 gcr
 git
+<<<<<<< HEAD
 go
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+=======
+goimapnotify
+groff
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 gst-plugin-pipewire
 gst-plugins-good
 imagemagick
 intel-ucode
 iwd
-libev
-libfido2
 libgit2
+<<<<<<< HEAD
 libinput
 libmupdf
 librecad
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+libinput
+libmupdf
+libogg
+=======
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 libreoffice-still
 libsmbios
+libtool
 libxcrypt-compat
 lighttpd
 linux
@@ -47,6 +76,7 @@ lld
 lxqt-policykit
 ly
 maim
+make
 mpv
 msmtp
 neovim
@@ -57,30 +87,48 @@ nfs-utils
 noto-fonts
 noto-fonts-emoji
 ntp
+<<<<<<< HEAD
 nvidia
 nvidia-container-toolkit
 nvidia-lts
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+nvidia
+nvidia-container-toolkit
+nvidia-lts
+okular
+=======
+okular
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 openrazer-daemon
-openssh
 openssl-1.1
+<<<<<<< HEAD
 perl-cgi
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+=======
+patch
+pavucontrol
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 pipewire-alsa
 pipewire-pulse
 playerctl
-python-typing_extensions
-ranger
+python-pynvim
 redshift
 refind
 rofi
 rofi-calc
 rofi-emoji
-rsync
-ruby-erb
+rust
 rust-src
 skanpage
 sof-firmware
+<<<<<<< HEAD
 swig
 system-config-printer
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+system-config-printer
+=======
+sudo
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 termshark
 thermald
 thunar
@@ -93,25 +141,37 @@ upower
 vlc
 webkit2gtk
 webkit2gtk-4.1
+<<<<<<< HEAD
 woff2
 xcalib
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+woff2
+x264
+xcalib
+=======
+which
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 xclip
+<<<<<<< HEAD
+||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
+xkeyboard-config
+=======
+xf86-video-intel
+xf86-video-vesa
+>>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 xorg-bdftopcf
 xorg-docs
 xorg-font-util
 xorg-fonts-100dpi
 xorg-fonts-75dpi
-xorg-fonts-encodings
 xorg-iceauth
 xorg-mkfontscale
 xorg-server
-xorg-server-common
 xorg-server-devel
 xorg-server-xephyr
 xorg-server-xnest
 xorg-server-xvfb
 xorg-sessreg
-xorg-setxkbmap
 xorg-smproxy
 xorg-x11perf
 xorg-xauth
@@ -123,7 +183,6 @@ xorg-xev
 xorg-xgamma
 xorg-xhost
 xorg-xinput
-xorg-xkbcomp
 xorg-xkbevd
 xorg-xkbutils
 xorg-xkill
@@ -131,6 +190,7 @@ xorg-xlsatoms
 xorg-xlsclients
 xorg-xmodmap
 xorg-xpr
+xorg-xprop
 xorg-xrandr
 xorg-xrdb
 xorg-xrefresh
