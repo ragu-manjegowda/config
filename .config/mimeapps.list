@@ -1,11 +1,16 @@
 [Default Applications]
 text/plain=nvim-usercreated.desktop
-text/html=firefox.desktop;google-chrome.desktop;
-x-scheme-handler/http=firefox.desktop
-x-scheme-handler/https=firefox.desktop
+text/html=com.google.Chrome.desktop
+x-scheme-handler/http=com.google.Chrome.desktop
+x-scheme-handler/https=com.google.Chrome.desktop
 video/mp4=firefox.desktop
 application/pdf=firefox.desktop
 x-scheme-handler/codex=codex-app-linux.desktop
+application/xhtml+xml=com.google.Chrome.desktop
 
 [Added Associations]
 text/plain=nvim-usercreated.desktop
+x-scheme-handler/http=com.google.Chrome.desktop;
+application/xhtml+xml=com.google.Chrome.desktop;
+text/html=com.google.Chrome.desktop;
+x-scheme-handler/https=com.google.Chrome.desktop;
