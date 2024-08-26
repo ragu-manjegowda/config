@@ -13,11 +13,11 @@ function M.config()
     end
 
     markview.setup({
-        hybrid_modes = { "n", "v", "s", "i", "c" },
+        modes = { "c", "n", "no", "v" },
         callbacks = {
             on_enable = function(_, win)
                 vim.wo[win].conceallevel = 2;
-                vim.wo[win].concealcursor = "";
+                vim.wo[win].concealcursor = "n";
             end
         }
     })
