@@ -1,14 +1,9 @@
 alacritty
 alsa-firmware
 alsa-utils
-<<<<<<< HEAD
-arch-install-scripts
-||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
-archlinux-keyring
-=======
->>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 aspell-en
 avidemux-qt
+baobab
 base
 base-devel
 blueman
@@ -17,148 +12,143 @@ broadcom-wl-dkms
 darkman
 docker
 docker-buildx
-<<<<<<< HEAD
-docker-compose
-||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
-ffmpeg
-=======
 efibootmgr
+epiphany
+evince
 ffmpeg
->>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 firefox
-<<<<<<< HEAD
-fprintd
-freecad
-fuse2
-||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
-fprintd
-fribidi
-fuse2
-=======
 gcc
->>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 gcr
+gdm
 git
-<<<<<<< HEAD
-go
-||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
-=======
-goimapnotify
+gnome-backgrounds
+gnome-browser-connector
+gnome-calculator
+gnome-calendar
+gnome-characters
+gnome-clocks
+gnome-color-manager
+gnome-connections
+gnome-console
+gnome-contacts
+gnome-control-center
+gnome-disk-utility
+gnome-font-viewer
+gnome-keyring
+gnome-logs
+gnome-maps
+gnome-menus
+gnome-music
+gnome-remote-desktop
+gnome-session
+gnome-settings-daemon
+gnome-shell
+gnome-shell-extensions
+gnome-software
+gnome-system-monitor
+gnome-text-editor
+gnome-tour
+gnome-tweaks
+gnome-user-docs
+gnome-user-share
+gnome-weather
+grilo-plugins
 groff
->>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 gst-plugin-pipewire
 gst-plugins-good
+gvfs
+gvfs-afc
+gvfs-dnssd
+gvfs-goa
+gvfs-google
+gvfs-gphoto2
+gvfs-mtp
+gvfs-nfs
+gvfs-onedrive
+gvfs-smb
+gvfs-wsdd
 imagemagick
 intel-ucode
 iwd
 libgit2
-<<<<<<< HEAD
-libinput
-libmupdf
-librecad
-||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
-libinput
-libmupdf
-libogg
-=======
->>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 libreoffice-still
 libsmbios
 libtool
 libxcrypt-compat
-lighttpd
 linux
 linux-firmware
 linux-headers
 linux-lts
 linux-lts-headers
 lld
+localsearch
+loupe
+lua-lgi
 lxqt-policykit
 ly
 maim
 make
+malcontent
 mpv
 msmtp
+nautilus
 neovim
 network-manager-applet
 networkmanager
 networkmanager-openconnect
+networkmanager-openvpn
 nfs-utils
 noto-fonts
 noto-fonts-emoji
 ntp
-<<<<<<< HEAD
-nvidia
-nvidia-container-toolkit
-nvidia-lts
-||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
-nvidia
-nvidia-container-toolkit
-nvidia-lts
 okular
-=======
-okular
->>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 openrazer-daemon
+openresolv
 openssl-1.1
-<<<<<<< HEAD
-perl-cgi
-||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
-=======
+orca
 patch
-pavucontrol
->>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 pipewire-alsa
 pipewire-pulse
 playerctl
 python-pynvim
+ranger
 redshift
 refind
 rofi
 rofi-calc
 rofi-emoji
+ruby-erb
 rust
 rust-src
+rygel
+simple-scan
 skanpage
+snapshot
 sof-firmware
-<<<<<<< HEAD
-swig
-system-config-printer
-||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
-system-config-printer
-=======
 sudo
->>>>>>> 2867fad ([update]: awesomewm, lenovo config)
+sushi
+tecla
 termshark
 thermald
 thunar
 tigervnc
 tmux
+totem
+touchegg
 ttf-dejavu
 ttf-hack-nerd
 ueberzugpp
 upower
+urlscan
 vlc
 webkit2gtk
 webkit2gtk-4.1
-<<<<<<< HEAD
-woff2
-xcalib
-||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
-woff2
-x264
-xcalib
-=======
 which
->>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 xclip
-<<<<<<< HEAD
-||||||| parent of 2867fad ([update]: awesomewm, lenovo config)
-xkeyboard-config
-=======
+xdg-desktop-portal-gnome
+xdg-user-dirs-gtk
 xf86-video-intel
 xf86-video-vesa
->>>>>>> 2867fad ([update]: awesomewm, lenovo config)
 xorg-bdftopcf
 xorg-docs
 xorg-font-util
@@ -202,7 +192,9 @@ xorg-xwd
 xorg-xwininfo
 xorg-xwud
 xsettingsd
+yelp
 yubikey-manager
 zathura
 zathura-pdf-mupdf
+zim
 zsh

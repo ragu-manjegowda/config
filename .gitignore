@@ -35,6 +35,7 @@
 /.bundle
 /.cache
 /.ccache
+/.cert
 /.cgdb
 /.cisco
 /.claude
@@ -45,7 +46,10 @@
 /.compiz
 /.conda
 /.config.git
+/.config/.gsd-keyboard.settings-ported
+/.config/.libinput-gestures-is-service
 /.config/Atom
+/.config/Code
 /.config/Cursor
 /.config/Epic
 /.config/Fonts/.uuid
@@ -61,6 +65,7 @@
 /.config/QtProject.conf
 /.config/Slack
 /.config/Thunar
+/.config/Trolltech.conf
 /.config/Yubico
 /.config/advanced-rest-client
 /.config/alacritty/alacritty.toml-e
@@ -76,6 +81,7 @@
 /.config/awesome/theme/icons/titlebar/win10/sedDwqIEQ
 /.config/awesome/widget/email/icons/sedVulxFl
 /.config/awesome/widget/email/mails.txt
+/.config/baloofilerc
 /.config/bash/.bash_history
 /.config/bash/bash_custom_homebrew_first
 /.config/bash/bash_extras
@@ -117,16 +123,33 @@
 /.config/gnupg/tofu.db
 /.config/gnupg/trustdb.gpg
 /.config/go
+/.config/google
 /.config/google-chrome
 /.config/gtk-2.0
+/.config/gtk-4.0
+/.config/gtkrc
+/.config/gtkrc-2.0
 /.config/ibus
 /.config/imapnotify
 /.config/indicator-stickynotes
+/.config/kactivitymanagerdrc
 /.config/karabiner/automatic_backups
 /.config/karabiner/karabiner.json
 /.config/kazam
+/.config/kcminputrc
+/.config/kconf_updaterc
 /.config/kde.org
+/.config/kded5rc
+/.config/kdedefaults
+/.config/kdeglobals
+/.config/kglobalshortcutsrc
+/.config/knfsshare
+/.config/ksmserverrc
+/.config/ktimezonedrc
+/.config/kwinoutputconfig.json
+/.config/kwinrc
 /.config/libaccounts-glib
+/.config/libinput-gestures.conf
 /.config/libreoffice
 /.config/lxqt
 /.config/maglev
@@ -161,6 +184,10 @@
 /.config/openrazer
 /.config/pavucontrol.ini
 /.config/pip
+/.config/plasma-localerc
+/.config/plasma-org.kde.plasma.desktop-appletsrc
+/.config/plasmashellrc
+/.config/powermanagementprofilesrc
 /.config/qalculate
 /.config/ranger/colorschemes/__init__.py
 /.config/ranger/colorschemes/__pycache__
@@ -172,6 +199,7 @@
 /.config/redshift.conf
 /.config/remmina
 /.config/rustup
+/.config/session
 /.config/skanpagerc
 /.config/systemd/user/default.target.wants
 /.config/systemd/user/graphical-session.target.wants
@@ -186,6 +214,8 @@
 /.config/tmux/session-restore
 /.config/tmux/tmux.conf-e
 /.config/totem
+/.config/touchegg
+/.config/trashrc
 /.config/unity
 /.config/unity-monitors-v1-backup.xml
 /.config/unity-monitors.xml
@@ -274,6 +304,8 @@
 /.ssh/id_ed25519_gerrit.pub
 /.ssh/id_ed25519_github
 /.ssh/id_ed25519_github.pub
+/.ssh/id_ed25519_github_sindu
+/.ssh/id_ed25519_github_sindu.pub
 /.ssh/id_ed25519_gitlab
 /.ssh/id_ed25519_gitlab.pub
 /.ssh/id_ed25519_imac
@@ -319,3 +351,11 @@
 /snap
 /syncWiki.sh
 /wiki
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> a9a6422 ([temp]: config, Gnome desktop support)
+>>>>>>> a9a6422 ([temp]: config, Gnome desktop support)
+||||||| parent of a9a6422 ([temp]: config, Gnome desktop support)
+||||||| parent of a9a6422 ([temp]: config, Gnome desktop support)
