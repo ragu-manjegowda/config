@@ -28,7 +28,6 @@ sioyek-git
 solarized-colors-iconpack-git
 sync-pacman-hook-git
 teams
-touche
 vdhcoapp
 visual-studio-code-bin
 xidlehook

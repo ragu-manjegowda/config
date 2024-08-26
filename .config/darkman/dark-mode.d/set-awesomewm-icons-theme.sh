@@ -19,5 +19,5 @@ done
 config_path="$HOME/.config/awesome/theme/init.lua"
 sed -i -e "s/-light-/-dark-/" $config_path
 
-notify-send -u critical -a awesome \
-    -i ~/.config/awesome/theme/icons/awesome.svg "Reload awesome to load dark theme"
+# notify-send -u critical -a awesome \
+#     -i ~/.config/awesome/theme/icons/awesome.svg "Reload awesome to load dark theme"

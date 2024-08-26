@@ -12,7 +12,6 @@ base-devel
 betterlockscreen
 blueman
 bluez-utils
-broadcom-wl-dkms
 check-broken-packages-pacman-hook-git
 cursor-bin
 cyrus-sasl-xoauth2-git
@@ -62,8 +61,6 @@ gnome-user-docs
 gnome-user-share
 gnome-weather
 google-chrome
-greetd
-greetd-tuigreet
 grilo-plugins
 groff
 gst-plugin-pipewire
@@ -119,8 +116,6 @@ noto-fonts
 noto-fonts-emoji
 ntp
 numix-cursor-theme
-nvidia-container-toolkit
-nvidia-open-dkms
 openconnect-gp-git
 openrazer-daemon
 openresolv
@@ -163,11 +158,7 @@ tecla
 termshark
 thermald
 thunar
-tigervnc
 tmux
-totem
-touche
-touchegg
 ttf-dejavu
 ttf-hack-nerd
 ueberzugpp
@@ -231,8 +222,5 @@ xppenlinux-v3
 xsettingsd
 yelp
 yubikey-manager
-zathura
-zathura-pdf-mupdf
-zim
 zoom
 zsh

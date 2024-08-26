@@ -8,7 +8,6 @@ base
 base-devel
 blueman
 bluez-utils
-broadcom-wl-dkms
 darkman
 docker
 docker-buildx
@@ -21,9 +20,6 @@ gcc
 gcr
 gdm
 git
-go
-greetd
-greetd-tuigreet
 gnome-backgrounds
 gnome-browser-connector
 gnome-calculator
@@ -103,8 +99,6 @@ nfs-utils
 noto-fonts
 noto-fonts-emoji
 ntp
-nvidia-container-toolkit
-nvidia-open-dkms
 openrazer-daemon
 openresolv
 openssl-1.1
@@ -134,10 +128,7 @@ tecla
 termshark
 thermald
 thunar
-tigervnc
 tmux
-totem
-touchegg
 ttf-dejavu
 ttf-hack-nerd
 ueberzugpp
@@ -197,7 +188,4 @@ xorg-xwud
 xsettingsd
 yelp
 yubikey-manager
-zathura
-zathura-pdf-mupdf
-zim
 zsh
