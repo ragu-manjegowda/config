@@ -29,6 +29,9 @@ function M.config()
             hover = { enabled = false },
             signature = { enabled = false }
         },
+        messages = {
+            view_search = false,
+        },
         notify = {
             replace = true
         },
@@ -40,6 +43,7 @@ function M.config()
             lsp_doc_border = false,       -- add a border to hover docs and signature help
         },
         routes = {
+            -- hide notification after writing to file
             {
                 filter = {
                     event = "msg_show",
@@ -58,6 +62,31 @@ function M.config()
 
     map('n', '<leader>nm', '<cmd>Noice<CR><C-W>T',
         { silent = true, desc = 'Noice messages' })
+
+    -- show messages while recording macro
+    -- https://github.com/folke/noice.nvim/issues/922#issuecomment-2254401041
+    vim.api.nvim_create_autocmd("RecordingEnter", {
+        callback = function()
+            local msg = string.format("Register:  %s", vim.fn.reg_recording())
+            _MACRO_RECORDING_STATUS = true
+            vim.notify(msg, vim.log.levels.INFO, {
+                title = "Macro Recording",
+                keep = function() return _MACRO_RECORDING_STATUS end,
+            })
+        end,
+        group = vim.api.nvim_create_augroup("NoiceMacroNotfication", { clear = true })
+    })
+
+    vim.api.nvim_create_autocmd("RecordingLeave", {
+        callback = function()
+            _MACRO_RECORDING_STATUS = false
+            vim.notify("Success!", vim.log.levels.INFO, {
+                title = "Macro Recording End",
+                timeout = 2000,
+            })
+        end,
+        group = vim.api.nvim_create_augroup("NoiceMacroNotficationDismiss", { clear = true })
+    })
 end
 
 return M
