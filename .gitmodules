@@ -30,7 +30,7 @@
 	branch = master
 [submodule ".config/rEFInd/refind-theme-regular"]
 	path = .config/rEFInd/refind-theme-regular
-	url = https://github.com/munlik/refind-theme-regular.git
+	url = https://github.com/bobafetthotmail/refind-theme-regular.git
 	update = rebase
 	branch = master
 [submodule ".config/awesome/library/revelation"]
