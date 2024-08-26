@@ -10,6 +10,30 @@ M.config = function()
         return ""
     end
 
+    local function getCommand()
+        -- Check if noice plugin is loaded
+        local noice_exists, noice = pcall(require, "noice")
+
+        if noice_exists then
+            if noice.api.status.command.has then
+                return noice.api.status.command.get
+            end
+        end
+        return ""
+    end
+
+    local function getSearchCount()
+        -- Check if noice plugin is loaded
+        local noice_exists, noice = pcall(require, "noice")
+
+        if noice_exists then
+            if noice.api.status.search.has then
+                return noice.api.status.search.get
+            end
+        end
+        return ""
+    end
+
     local res, windline = pcall(require, "windline")
     if not res then
         vim.notify("windline not found", vim.log.levels.ERROR)
@@ -260,7 +284,10 @@ M.config = function()
             basic.section_b,
             basic.section_c,
             basic.lsp_diagnos,
-            { vim_components.search_count(), { 'cyan', 'NormalBg' } },
+            { " ", { 'NormalFg', 'NormalBg' } },
+            { getSearchCount(), { 'cyan', 'NormalBg' } },
+            { " ", { 'NormalFg', 'NormalBg' } },
+            { getCommand(),     { 'cyan', 'NormalBg' } },
             basic.divider,
             basic.git,
             basic.section_x,
