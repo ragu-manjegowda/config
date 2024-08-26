@@ -1,10 +1,10 @@
 awesome-luajit-git
 awmtt
+betterlockscreen
 check-broken-packages-pacman-hook-git
 cyrus-sasl-xoauth2-git
 find-cursor
-globalprotect-openconnect-git
-goimapnotify-git
+gnome-screensaver
 google-chrome
 gtk-theme-numix-solarized
 librewolf-bin
@@ -16,7 +16,6 @@ mosh-git
 mu
 neomutt-git
 newsboat-git
-nomachine
 numix-cursor-theme
 pacman-cleanup-hook
 paru
@@ -32,6 +31,7 @@ sync-pacman-hook-git
 teams
 touche
 vdhcoapp
-w3m-imgcat
+visual-studio-code-bin
 xidlehook
+xppenlinux-v3
 zoom
