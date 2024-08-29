@@ -18,6 +18,10 @@ function M.before()
         return vim.fn['codeium#Accept']()
     end, { expr = true, silent = true, desc = 'Codeium accept suggestion' })
 
+    vim.keymap.set('i', '<M-f>', function()
+        return vim.fn['codeium#AcceptNextWord']()
+    end, { expr = true, silent = true, desc = 'Codeium accept next word' })
+
     vim.keymap.set('i', '<C-;>', function()
         return vim.fn['codeium#CycleCompletions'](1)
     end, { expr = true, silent = true, desc = 'Codeium next suggestion' })

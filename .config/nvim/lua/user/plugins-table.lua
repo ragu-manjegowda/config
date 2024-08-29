@@ -143,7 +143,7 @@ local extra_plugins = {
         init = function()
             require("user.codeium").before()
         end,
-        event = { "InsertEnter" },
+        event = { "InsertEnter" }
     },
 
     -- cmp plugins
@@ -376,8 +376,8 @@ local all_plugins = {
     {
         "amitds1997/remote-nvim.nvim",
         dependencies = {
-            "nvim-lua/plenary.nvim",    -- For standard functions
-            "MunifTanjim/nui.nvim",     -- To build the plugin UI
+            "nvim-lua/plenary.nvim",         -- For standard functions
+            "MunifTanjim/nui.nvim",          -- To build the plugin UI
             "nvim-telescope/telescope.nvim", -- For picking b/w different remote methods
         },
         config = true
