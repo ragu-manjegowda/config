@@ -209,13 +209,14 @@ local extra_plugins = {
 
     -- Vim Session
     {
-        "xolox/vim-session",
+
+        "Shatur/neovim-session-manager",
         dependencies = {
-            "xolox/vim-misc",
+            "nvim-lua/plenary.nvim",
             event = "VeryLazy"
         },
         init = function()
-            require("user.vim-session").before()
+            require("user.neovim-session-manager").config()
         end,
         event = "VeryLazy"
     }
