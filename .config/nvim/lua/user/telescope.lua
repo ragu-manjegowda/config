@@ -96,6 +96,13 @@ function M.find_files()
 
     opts.find_command = { "rg", "--files", "--hidden", "-g", "!.git" }
 
+    local text = M.getVisualSelection()
+    if text ~= '' then
+        opts.default_text = text
+    else
+        opts.default_text = nil
+    end
+
     require("telescope.builtin").find_files(opts)
 end
 
@@ -129,7 +136,7 @@ function M.before()
     map('n', '<leader>pc', '<cmd>lua require("telescope.builtin").command_history()<CR>',
         { silent = true, desc = 'Telescope command_history' })
 
-    map('n', '<leader>pf',
+    map({ 'n', 'v' }, '<leader>pf',
         '<cmd>lua require("user.telescope").find_files()<CR>',
         { silent = true, desc = 'Telescope find_files' })
 
@@ -248,9 +255,21 @@ function M.config()
 
             mappings = {
                 i = {
+                    ["<C-a>"] = { "<Home>", type = "command" },
+                    ["<C-e>"] = actions.edit_command_line,
                     ["<C-f>"] = actions.to_fuzzy_refine,
                     ["<C-j>"] = actions.move_selection_next,
                     ["<C-k>"] = actions.move_selection_previous,
+                    ["<C-l>"] = actions.results_scrolling_right,
+                    ["<C-h>"] = actions.results_scrolling_left,
+                    ["<C-d>"] = actions.results_scrolling_down,
+                    ["<C-u>"] = actions.results_scrolling_up,
+                    ["<M-b>"] = { "<S-Left>", type = "command" },
+                    ["<M-f>"] = { "<S-Right>", type = "command" },
+                    ["<M-j>"] = actions.preview_scrolling_down,
+                    ["<M-k>"] = actions.preview_scrolling_up,
+                    ["<M-l>"] = actions.preview_scrolling_right,
+                    ["<M-h>"] = actions.preview_scrolling_left,
                     ["<C-q>"] = actions.send_to_qflist,
                     ["<C-space>"] = R "telescope".extensions.hop.hop,
                     ["<C-y>"] = yank_entry,
@@ -258,8 +277,20 @@ function M.config()
                     ["<leader>v"] = actions.select_vertical,
                 },
                 n = {
+                    ["<C-a>"] = { "<Home>", type = "command" },
+                    ["<C-e>"] = actions.edit_command_line,
                     ["<C-f>"] = actions.to_fuzzy_refine,
                     ["<C-q>"] = actions.send_to_qflist,
+                    ["<C-l>"] = actions.results_scrolling_right,
+                    ["<C-h>"] = actions.results_scrolling_left,
+                    ["<C-d>"] = actions.results_scrolling_down,
+                    ["<C-u>"] = actions.results_scrolling_up,
+                    ["<M-b>"] = { "<S-Left>", type = "command" },
+                    ["<M-f>"] = { "<S-Right>", type = "command" },
+                    ["<M-j>"] = actions.preview_scrolling_down,
+                    ["<M-k>"] = actions.preview_scrolling_up,
+                    ["<M-l>"] = actions.preview_scrolling_right,
+                    ["<M-h>"] = actions.preview_scrolling_left,
                     ["<C-space>"] = R "telescope".extensions.hop.hop,
                     ["<C-y>"] = yank_entry,
                     ["q"] = actions.close,
