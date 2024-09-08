@@ -46,7 +46,6 @@ M.config = function()
 
     ---@diagnostic disable-next-line: undefined-field
     local state = _G.WindLine.state
-    local vim_components = require('windline.components.vim')
     local HSL = require('wlanimation.utils')
 
     local lsp_comps = require('windline.components.lsp')
@@ -284,9 +283,9 @@ M.config = function()
             basic.section_b,
             basic.section_c,
             basic.lsp_diagnos,
-            { " ", { 'NormalFg', 'NormalBg' } },
+            { " ",              { 'NormalFg', 'NormalBg' } },
             { getSearchCount(), { 'cyan', 'NormalBg' } },
-            { " ", { 'NormalFg', 'NormalBg' } },
+            { " ",              { 'NormalFg', 'NormalBg' } },
             { getCommand(),     { 'cyan', 'NormalBg' } },
             basic.divider,
             basic.git,
