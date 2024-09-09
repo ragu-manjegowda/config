@@ -140,11 +140,11 @@ local extra_plugins = {
 
     -- Codeium
     {
-        "Exafunction/codeium.vim",
-        init = function()
-            require("user.codeium").before()
+        "monkoose/neocodeium",
+        config = function()
+            require("user.neocodeium").config()
         end,
-        event = { "InsertEnter" }
+        event = { "VeryLazy" }
     },
 
     -- cmp plugins
