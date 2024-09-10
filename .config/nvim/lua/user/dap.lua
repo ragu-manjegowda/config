@@ -60,14 +60,11 @@ function M.config()
     res, dap_virtual_text = pcall(require, "nvim-dap-virtual-text")
     if not res then
         vim.notify("nvim-dap-virtual-text not found", vim.log.levels.ERROR)
-        return
+    else
+        dap_virtual_text.setup({
+            virt_text_pos = "eol"
+        })
     end
-
-    ---@diagnostic disable-next-line: missing-parameter
-    dap_virtual_text.setup()
-
-    -- nvim-dap-virtual-text. Show virtual text for current frame
-    vim.g.dap_virtual_text = true
 
     -- Shift the focus to terminal, avoid focusing buffer in insert mode
     -- because of TermOpen autocmd

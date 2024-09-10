@@ -59,7 +59,7 @@ function M.config()
     end
 
     -- Set DAPUI keymaps
-    local map = vim.api.nvim_set_keymap
+    local map                                             = vim.api.nvim_set_keymap
 
     map("n", "<leader>dex",
         '<cmd>lua require("dapui").eval()<CR>',
