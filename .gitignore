@@ -55,6 +55,7 @@
 .config/Thunar
 .config/Yubico
 .config/advanced-rest-client
+.config/alacritty/alacritty.toml-e
 .config/alacritty/colors.yml-e
 .config/autostart
 .config/awesome/configuration/api_keys.lua

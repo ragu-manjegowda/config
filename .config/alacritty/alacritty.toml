@@ -1,291 +1,75 @@
-import = ["~/.config/alacritty/themes/solarized_dark.toml"]
+import = ["~/.config/alacritty/themes/solarized_light.toml"]
 live_config_reload = true
 
 [bell]
 animation = "EaseOutExpo"
 duration = 100
 
-[colors.line_indicator]
-background = "None"
-foreground = "None"
+[colors]
+line_indicator = { background = "None", foreground = "None" }
+selection = { background = "CellForeground", text = "CellBackground" }
+vi_mode_cursor = { cursor = "CellForeground", text = "CellBackground" }
 
-[colors.search.focused_match]
-background = "#000000"
-foreground = "#ffffff"
-
-[colors.search.matches]
-background = "#ffffff"
-foreground = "#000000"
-
-[colors.selection]
-background = "CellForeground"
-text = "CellBackground"
-
-[colors.vi_mode_cursor]
-cursor = "CellForeground"
-text = "CellBackground"
+[colors.search]
+focused_match = { background = "#000000", foreground = "#ffffff" }
+matches = { background = "#ffffff", foreground = "#000000" }
 
 [font]
 size = 20.0
 builtin_box_drawing = false
+bold = { family = "Hack Nerd Font", style = "Bold" }
+bold_italic = { family = "Hack Nerd Font", style = "Bold Italic" }
+italic = { family = "Hack Nerd Font", style = "Italic" }
+normal = { family = "Hack Nerd Font", style = "Regular" }
 
-[font.bold]
-family = "Hack Nerd Font"
-style = "Bold"
-
-[font.bold_italic]
-family = "Hack Nerd Font"
-style = "Bold Italic"
-
-[font.italic]
-family = "Hack Nerd Font"
-style = "Italic"
-
-[font.normal]
-family = "Hack Nerd Font"
-style = "Regular"
-
-[[keyboard.bindings]]
-action = "Paste"
-key = "Paste"
-
-[[keyboard.bindings]]
-action = "Copy"
-key = "Copy"
-
-[[keyboard.bindings]]
-action = "ScrollPageUp"
-key = "PageUp"
-mode = "~Alt"
-mods = "Shift"
-
-[[keyboard.bindings]]
-action = "ScrollPageDown"
-key = "PageDown"
-mode = "~Alt"
-mods = "Shift"
-
-[[keyboard.bindings]]
-chars = "\u001BF"
-key = "Right"
-mods = "Alt"
-
-[[keyboard.bindings]]
-chars = "\u001BB"
-key = "Left"
-mods = "Alt"
-
-[[keyboard.bindings]]
-action = "ToggleViMode"
-key = "Space"
-mode = "~Search"
-mods = "Shift|Control"
-
-[[keyboard.bindings]]
-action = "ToggleViMode"
-key = "I"
-mode = "Vi|~Search"
-
-[[keyboard.bindings]]
-action = "ScrollToTop"
-key = "G"
-mode = "Vi|~Search"
-
-[[keyboard.bindings]]
-action = "ScrollToBottom"
-key = "G"
-mode = "Vi|~Search"
-mods = "Shift"
-
-[[keyboard.bindings]]
-action = "ScrollPageUp"
-key = "B"
-mode = "Vi|~Search"
-mods = "Control"
-
-[[keyboard.bindings]]
-action = "ScrollPageDown"
-key = "F"
-mode = "Vi|~Search"
-mods = "Control"
-
-[[keyboard.bindings]]
-action = "ScrollHalfPageUp"
-key = "U"
-mode = "Vi|~Search"
-mods = "Control"
-
-[[keyboard.bindings]]
-action = "ScrollHalfPageDown"
-key = "D"
-mode = "Vi|~Search"
-mods = "Control"
-
-[[keyboard.bindings]]
-action = "Copy"
-key = "Y"
-mode = "Vi|~Search"
-
-[[keyboard.bindings]]
-action = "ToggleNormalSelection"
-key = "V"
-mode = "Vi|~Search"
-
-[[keyboard.bindings]]
-action = "ToggleLineSelection"
-key = "V"
-mode = "Vi|~Search"
-mods = "Shift"
-
-[[keyboard.bindings]]
-action = "ToggleBlockSelection"
-key = "V"
-mode = "Vi|~Search"
-mods = "Control"
-
-[[keyboard.bindings]]
-action = "ToggleSemanticSelection"
-key = "V"
-mode = "Vi|~Search"
-mods = "Alt"
-
-[[keyboard.bindings]]
-action = "Open"
-key = "Return"
-mode = "Vi|~Search"
-
-[[keyboard.bindings]]
-action = "Up"
-key = "K"
-mode = "Vi|~Search"
-
-[[keyboard.bindings]]
-action = "Down"
-key = "J"
-mode = "Vi|~Search"
-
-[[keyboard.bindings]]
-action = "Left"
-key = "H"
-mode = "Vi|~Search"
-
-[[keyboard.bindings]]
-action = "Right"
-key = "L"
-mode = "Vi|~Search"
-
-[[keyboard.bindings]]
-action = "First"
-key = "Key0"
-mode = "Vi|~Search"
-
-[[keyboard.bindings]]
-action = "Last"
-key = "Key4"
-mode = "Vi|~Search"
-
-[[keyboard.bindings]]
-action = "FirstOccupied"
-key = "Key6"
-mode = "Vi|~Search"
-
-[[keyboard.bindings]]
-action = "SemanticLeft"
-key = "B"
-mode = "Vi|~Search"
-
-[[keyboard.bindings]]
-action = "SemanticRight"
-key = "W"
-mode = "Vi|~Search"
-
-[[keyboard.bindings]]
-action = "SemanticRightEnd"
-key = "E"
-mode = "Vi|~Search"
-
-[[keyboard.bindings]]
-action = "WordLeft"
-key = "B"
-mode = "Vi|~Search"
-mods = "Shift"
-
-[[keyboard.bindings]]
-action = "WordRight"
-key = "W"
-mode = "Vi|~Search"
-mods = "Shift"
-
-[[keyboard.bindings]]
-action = "WordRightEnd"
-key = "E"
-mode = "Vi|~Search"
-mods = "Shift"
-
-[[keyboard.bindings]]
-action = "Bracket"
-key = "Key5"
-mode = "Vi|~Search"
-mods = "Shift"
-
-[[keyboard.bindings]]
-action = "SearchForward"
-key = "Slash"
-mode = "Vi|~Search"
-
-[[keyboard.bindings]]
-action = "SearchNext"
-key = "N"
-mode = "Vi|~Search"
-
-[[keyboard.bindings]]
-action = "SearchPrevious"
-key = "N"
-mode = "Vi|~Search"
-mods = "Shift"
-
-[[keyboard.bindings]]
-action = "SearchConfirm"
-key = "Return"
-mode = "Search|Vi"
-
-[[keyboard.bindings]]
-action = "SearchCancel"
-key = "Escape"
-mode = "Search"
-
-[[keyboard.bindings]]
-action = "SearchClear"
-key = "U"
-mode = "Search"
-mods = "Control"
-
-[[keyboard.bindings]]
-action = "SearchDeleteWord"
-key = "W"
-mode = "Search"
-mods = "Control"
-
-[[keyboard.bindings]]
-action = "Paste"
-key = "V"
-mode = "~Vi"
-mods = "Control|Shift"
-
-[[keyboard.bindings]]
-action = "Copy"
-key = "C"
-mods = "Control|Shift"
-
-[[keyboard.bindings]]
-chars = "\u001F"
-key = "Slash"
-mods = "Control"
-
-[[keyboard.bindings]]
-action = "SpawnNewInstance"
-key = "N"
-mods = "Command"
+[keyboard]
+bindings = [
+    { action = "Paste", key = "Paste" },
+    { action = "Copy", key = "Copy" },
+    { action = "ScrollPageUp", key = "PageUp", mode = "~Alt", mods = "Shift" },
+    { action = "ScrollPageDown", key = "PageDown", mode = "~Alt", mods = "Shift" },
+    { chars = "\u001BF", key = "Right", mods = "Alt" },
+    { chars = "\u001BB", key = "Left", mods = "Alt" },
+    { action = "ToggleViMode", key = "Space", mode = "~Search", mods = "Shift|Control" },
+    { action = "ToggleViMode", key = "I", mode = "Vi|~Search" },
+    { action = "ScrollToTop", key = "G", mode = "Vi|~Search" },
+    { action = "ScrollToBottom", key = "G", mode = "Vi|~Search", mods = "Shift" },
+    { action = "ScrollPageUp", key = "B", mode = "Vi|~Search", mods = "Control" },
+    { action = "ScrollPageDown", key = "F", mode = "Vi|~Search", mods = "Control" },
+    { action = "ScrollHalfPageUp", key = "U", mode = "Vi|~Search", mods = "Control" },
+    { action = "ScrollHalfPageDown", key = "D", mode = "Vi|~Search", mods = "Control" },
+    { action = "Copy", key = "Y", mode = "Vi|~Search" },
+    { action = "ToggleNormalSelection", key = "V", mode = "Vi|~Search" },
+    { action = "ToggleLineSelection", key = "V", mode = "Vi|~Search", mods = "Shift" },
+    { action = "ToggleBlockSelection", key = "V", mode = "Vi|~Search", mods = "Control" },
+    { action = "ToggleSemanticSelection", key = "V", mode = "Vi|~Search", mods = "Alt" },
+    { action = "Open", key = "Return", mode = "Vi|~Search" },
+    { action = "Up", key = "K", mode = "Vi|~Search" },
+    { action = "Down", key = "J", mode = "Vi|~Search" },
+    { action = "Left", key = "H", mode = "Vi|~Search" },
+    { action = "Right", key = "L", mode = "Vi|~Search" },
+    { action = "First", key = "Key0", mode = "Vi|~Search" },
+    { action = "Last", key = "Key4", mode = "Vi|~Search" },
+    { action = "FirstOccupied", key = "Key6", mode = "Vi|~Search" },
+    { action = "SemanticLeft", key = "B", mode = "Vi|~Search" },
+    { action = "SemanticRight", key = "W", mode = "Vi|~Search" },
+    { action = "SemanticRightEnd", key = "E", mode = "Vi|~Search" },
+    { action = "WordLeft", key = "B", mode = "Vi|~Search", mods = "Shift" },
+    { action = "WordRight", key = "W", mode = "Vi|~Search", mods = "Shift" },
+    { action = "WordRightEnd", key = "E", mode = "Vi|~Search", mods = "Shift" },
+    { action = "Bracket", key = "Key5", mode = "Vi|~Search", mods = "Shift" },
+    { action = "SearchForward", key = "Slash", mode = "Vi|~Search" },
+    { action = "SearchNext", key = "N", mode = "Vi|~Search" },
+    { action = "SearchPrevious", key = "N", mode = "Vi|~Search", mods = "Shift" },
+    { action = "SearchConfirm", key = "Return", mode = "Search|Vi" },
+    { action = "SearchCancel", key = "Escape", mode = "Search" },
+    { action = "SearchClear", key = "U", mode = "Search", mods = "Control" },
+    { action = "SearchDeleteWord", key = "W", mode = "Search", mods = "Control" },
+    { action = "Paste", key = "V", mode = "~Vi", mods = "Control|Shift" },
+    { action = "Copy", key = "C", mods = "Control|Shift" },
+    { chars = "\u001F", key = "Slash", mods = "Control" },
+    { action = "SpawnNewInstance", key = "N", mods = "Command" }
+]
 
 [mouse]
 hide_when_typing = false
@@ -297,6 +81,7 @@ multiplier = 3
 [selection]
 save_to_clipboard = false
 
-[window.padding]
-x = 5
-y = 5
+[window]
+padding = { x = 5, y = 5}
+option_as_alt = "Both"
+startup_mode = "Fullscreen"
