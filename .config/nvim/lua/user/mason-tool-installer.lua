@@ -32,6 +32,7 @@ function M.config()
             "python-lsp-server",
             "shellcheck", -- sh linting
             "rust-analyzer",
+            "taplo",
             "vim-language-server",
             "yaml-language-server"
         },

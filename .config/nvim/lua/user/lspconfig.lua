@@ -188,11 +188,14 @@ function M.config()
         "--completion-style=detailed",
         "--function-arg-placeholders",
         "--header-insertion=never",
+        -- "--include-directory=include/**",
         "-j=4",
         "--pch-storage=memory",
         "--use-dirty-headers",
         -- You MUST set this arg ↓ to your clangd executable location (if not included)!
         -- "--query-driver=/usr/bin/clang++,/usr/bin/**/clang-*,/bin/clang,/bin/clang++,/usr/bin/gcc,/usr/bin/g++",
+        -- "--std=c++17",
+        -- "--std=c11",
     }
 
     if not vim.fn.has("macunix") then
@@ -400,6 +403,13 @@ function M.config()
                 },
             }
         }
+    }
+
+    ---------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
+    -- Toml
+    nvim_lsp.taplo.setup {
+        on_attach = on_attach,
     }
 
     ---------------------------------------------------------------------------
