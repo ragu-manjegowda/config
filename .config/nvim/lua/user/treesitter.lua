@@ -28,6 +28,8 @@ M.config = function()
             "python",
             "regex",
             "rust",
+            "toml",
+            "usd",
             "vim",
             "yaml"
         },
