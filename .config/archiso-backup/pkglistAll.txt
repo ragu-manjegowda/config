@@ -112,6 +112,7 @@ sync-pacman-hook-git
 system-config-printer
 teams
 termshark
+tgpt-git
 thermald
 thunar
 tigervnc

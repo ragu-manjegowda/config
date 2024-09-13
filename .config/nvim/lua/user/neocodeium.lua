@@ -17,8 +17,9 @@ function M.config()
     neocodeium.setup({
         filetypes = {
             TelescopePrompt = false,
-            ["dap-repl"] = false,
+            ["dap-repl"] = false
         },
+        silent = true
     })
 
     local map = vim.keymap.set
