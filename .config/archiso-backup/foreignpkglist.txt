@@ -28,6 +28,7 @@ solarized-colors-iconpack-git
 subliminal
 sync-pacman-hook-git
 teams
+tgpt-git
 w3m-imgcat
 xidlehook
 zoom
