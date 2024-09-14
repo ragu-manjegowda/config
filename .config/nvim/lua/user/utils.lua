@@ -128,7 +128,7 @@ vim.api.nvim_create_autocmd(events, {
             local lsp = vim.lsp.get_clients()
             -- If there is no client attached, call `LspStart`
             if next(lsp) == nil then
-                vim.cmd("LspStart")
+                vim.api.nvim_command("silent! LspStart")
                 vim_enter_lsp_status = true
             end
         end
