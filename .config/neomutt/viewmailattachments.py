@@ -1,5 +1,3 @@
-#! /usr/bin/env python
-
 # Take an mbox HTML message (e.g. from mutt), split it
 # and rewrite it so it can be viewed in an external browser.
 # Can be run from within a mailer like mutt, or independently
@@ -60,7 +58,7 @@ BROWSERS = OrderedDict([
                         "--basedir", "/tmp/mailattachments",
                         "-s", "content.dns_prefetch", "false",
                         "-s", "content.javascript.enabled", "false" ],
-        # If using PDFJS, add: "-s", "content.javascript.enabled", "false" 
+        # If using PDFJS, add: "-s", "content.javascript.enabled", "false"
         'ARGS': [ "--target", "tab-bg",
                   "--basedir", "/tmp/mailattachments",
                   # Don't need to specify privacy, prefetch or JS

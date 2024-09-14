@@ -122,5 +122,5 @@ macro attach ,of \
 macro index,pager ,of \
 "\
 <enter-command>unset wait_key<enter>\
-<pipe-message>~/.config/neomutt/viewmailattachments.py 2> /dev/null\n &<enter>\
+<pipe-message>~/.local/share/venv/bin/python ~/.config/neomutt/viewmailattachments.py 2> /dev/null\n &<enter>\
 " "View HTML email in browser"
