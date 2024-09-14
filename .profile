@@ -59,11 +59,6 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
         source "$BASH_DIR/bash_custom"
     fi
 
-    if [ -e "$HOME"/.nix-profile/etc/profile.d/nix.sh ]; then
-        # shellcheck disable=SC1091
-        source "$HOME"/.nix-profile/etc/profile.d/nix.sh;
-    fi
-
 elif [[ "$OSTYPE" == "darwin"* ]]; then
 
     # include .bash_profile if it exists
@@ -72,6 +67,17 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
   	    source "$BASH_DIR/bash_profile"
     fi
 
+fi
+
+## Export local bin folder
+if [ -d "$HOME"/.local/bin ]; then
+    # shellcheck disable=SC1091
+    export PATH="$HOME"/.local/bin:"$PATH"
+fi
+
+if [ -d "$HOME"/.local/share/venv/bin ]; then
+    # shellcheck disable=SC1091
+    export PATH="$HOME"/.local/share/venv/bin:"$PATH"
 fi
 
 # use nvim if installed,

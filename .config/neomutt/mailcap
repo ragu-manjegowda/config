@@ -51,8 +51,8 @@ application/pdf; zathura 2> /dev/null '%s'
 # Calendar invites ===================== {{{
 
 # show calendar invites
-text/calendar; $(brew --prefix)/bin/python3 $XDG_CONFIG_HOME/neomutt/render-calendar-attachment.py %s; copiousoutput;
-application/ics; $(brew --prefix)/bin/python3 $XDG_CONFIG_HOME/neomutt/render-calendar-attachment.py %s; copiousoutput;
+text/calendar; "$HOME"/.local/share/venv/bin/python $XDG_CONFIG_HOME/neomutt/render-calendar-attachment.py %s; copiousoutput;
+application/ics; "$HOME"/.local/share/venv/bin/python $XDG_CONFIG_HOME/neomutt/render-calendar-attachment.py %s; copiousoutput;
 
 
 # }}}
