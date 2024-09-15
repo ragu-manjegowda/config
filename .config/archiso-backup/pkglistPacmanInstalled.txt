@@ -69,7 +69,6 @@ pavucontrol
 pipewire-alsa
 pipewire-pulse
 playerctl
-python-pynvim
 python-typing_extensions
 redshift
 refind
@@ -90,7 +89,6 @@ tmux
 ttf-dejavu
 ttf-hack-nerd
 upower
-urlscan
 vlc
 w3m
 webkit2gtk
