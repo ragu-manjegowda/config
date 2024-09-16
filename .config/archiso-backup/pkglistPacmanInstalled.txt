@@ -90,7 +90,6 @@ ttf-dejavu
 ttf-hack-nerd
 upower
 vlc
-w3m
 webkit2gtk
 webkit2gtk-4.1
 woff2

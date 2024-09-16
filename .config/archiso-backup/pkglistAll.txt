@@ -93,7 +93,6 @@ pipewire-pulse
 playerctl
 python-typing_extensions
 ranger-git
-rdrview-git
 redshift
 refind
 reflector-pacman-hook-git
@@ -121,8 +120,6 @@ ttf-dejavu
 ttf-hack-nerd
 upower
 vlc
-w3m
-w3m-imgcat
 webkit2gtk
 webkit2gtk-4.1
 woff2
