@@ -28,6 +28,7 @@ function M.config()
             "gopls",
             "json-lsp",
             "lua-language-server",
+            "marksman",
             "pyright",
             "python-lsp-server",
             "shellcheck", -- sh linting

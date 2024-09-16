@@ -339,6 +339,17 @@ local all_plugins = {
         ft = "markdown"
     },
 
+    -- Image preview
+    {
+        "3rd/image.nvim",
+        config = function()
+            require("user.image").config()
+        end,
+        dependencies = {
+            'leafo/magick',
+        }
+    },
+
     -- Leetcode in Vim
     {
         "Dhanus3133/LeetBuddy.nvim",
