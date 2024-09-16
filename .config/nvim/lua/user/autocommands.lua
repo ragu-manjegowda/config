@@ -6,7 +6,7 @@
 vim.cmd [[
 
 " Zoom / Restore window
-function! s:ZoomToggle() abort
+function! s:ToggleZoom() abort
     if exists('t:zoomed') && t:zoomed
         execute t:zoom_winrestcmd
         let t:zoomed = 0
@@ -17,8 +17,8 @@ function! s:ZoomToggle() abort
         let t:zoomed = 1
     endif
 endfunction
-command! ZoomToggle call s:ZoomToggle()
-nnoremap <silent> <leader>z :ZoomToggle<CR>
+command! ToggleZoom call s:ToggleZoom()
+nnoremap <silent> <leader>z :ToggleZoom<CR>
 
 
 " Disable creating new file if doesn't exist

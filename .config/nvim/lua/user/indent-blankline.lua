@@ -32,8 +32,10 @@ function M.config()
         function()
             if vim.g.u_indent_blankline_enabled then
                 indent_blankline.update { enabled = false }
+                vim.g.u_indent_blankline_enabled = false
             else
                 indent_blankline.update { enabled = true }
+                vim.g.u_indent_blankline_enabled = true
             end
         end, {}
     )
