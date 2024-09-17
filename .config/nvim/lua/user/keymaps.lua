@@ -56,10 +56,6 @@ keymap("n", "n", "nzzzv", opts)
 keymap("n", "N", "Nzzzv", opts)
 keymap("n", "J", "mzJ`z", opts)
 
--- Move text up and down
-keymap("n", "<A-j>", "<Esc>:m .+1<CR>==gi", opts)
-keymap("n", "<A-k>", "<Esc>:m .-2<CR>==gi", opts)
-
 -- Add empty lines before and after cursor line
 keymap('n', 'gO',
     "<Cmd>call append(line('.') - 1, repeat([''], v:count1))<CR>",
@@ -80,9 +76,6 @@ keymap("n", "<leader>co", ":tabonly<CR>", opts)
 keymap("n", "<leader>zsh", ":tabnew term://zsh<CR>", opts)
 keymap("n", "<leader>bash", ":tabnew term://bash -l<CR>", opts)
 
--- Open file under cursor in new tab
-keymap("n", "<leader>of", "<C-w>gF", opts)
-
 -- Write
 keymap("n", "<leader>w", ":w<CR>", { noremap = true })
 
@@ -90,8 +83,12 @@ keymap("n", "<leader>w", ":w<CR>", { noremap = true })
 keymap("n", "<leader>q", ":q<CR>", opts)
 keymap("n", "<leader>qa", ":LspStop<CR>:qa<CR>", opts)
 
--- Map to navigate QuickFix list
+-- Map to open QuickFix list
 keymap("n", "<leader>oq", ":copen<CR><C-w>T", opts)
+
+-- Map to navigate QuickFix list
+keymap("n", "<A-j>", "<cmd>cnext<CR>zz", opts)
+keymap("n", "<A-k>", "<cmd>cprev<CR>zz", opts)
 
 -- Map to navigate QuickFix list after error from Dispatch
 keymap("n", "<leader>od", ":Copen<CR><C-w>T", opts)
