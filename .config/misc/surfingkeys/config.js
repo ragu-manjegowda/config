@@ -78,7 +78,7 @@ settings.theme = `
 }
 `;
 
-settings.defaultSearchEngine = 'd';
+settings.defaultSearchEngine = 's';
 
 api.map('u', 'e');
 api.mapkey('p', "Open the clipboard's URL in the current tab", function() {
@@ -112,11 +112,11 @@ api.removeSearchAlias('b');
 api.removeSearchAlias('e');
 api.removeSearchAlias('h');
 api.removeSearchAlias('w');
-api.addSearchAlias('m', 'maps', 'http://maps.google.com/?q=', 's', 'https://www.google.com/complete/search?client=chrome-omni&gs_ri=chrome-ext&oit=1&cp=1&pgcl=7&q=', function(response) {
-        var res = JSON.parse(response.text);
-        return res[1];
+api.addSearchAlias('h', 'github', 'https://github.com/search?q=', 's');
+api.addSearchAlias('m', 'maps', 'http://maps.google.com/?q=', 's');
+api.addSearchAlias('s', 'Searx', 'https://search.inetol.net/?q=', 's', 'https://www.google.com/complete/search?client=chrome-omni&gs_ri=chrome-ext&oit=1&cp=1&pgcl=7&q=', function(response) {
+        return JSON.parse(response.text)[1];
     });
 api.addSearchAlias('w', 'wikipedia', 'https://en.wikipedia.org/wiki/', 's', 'https://en.wikipedia.org/w/api.php?action=opensearch&format=json&formatversion=2&namespace=0&limit=40&search=', function(response) {
         return JSON.parse(response.text)[1];
     });
-api.addSearchAlias('h', 'github', 'https://github.com/search?q=', 's');
