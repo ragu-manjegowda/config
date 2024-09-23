@@ -25,6 +25,7 @@ find-cursor
 firefox
 fprintd
 fribidi
+fuse2
 gcr
 git
 goimapnotify
