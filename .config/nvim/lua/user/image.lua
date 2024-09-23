@@ -82,7 +82,7 @@ function M.config()
         end
     end, {
         silent = true,
-        desc = "Open image under cursor in Preview"
+        desc = "xdg-open image under cursor"
     })
 end
 
