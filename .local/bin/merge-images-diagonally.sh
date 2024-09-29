@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #This script will merge two jpg images into one using imageMagick.
 #The final result will be a picture that is split diagonally.
