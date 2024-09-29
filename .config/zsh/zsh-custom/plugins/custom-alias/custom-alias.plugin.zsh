@@ -25,7 +25,7 @@ alias ga='git add'
 alias gb='git branch --column'
 
 function gbb () {
-    eval "${ZDOTDIR}/better-git-branch.sh"
+    eval better-git-branch.sh
 }
 
 alias gbl='git blame -w -C -C -C'
@@ -617,17 +617,23 @@ function start-http-web-server () {
 ########################### ZSH History merge #################################
 ###############################################################################
 
-function merge-zsh-history () {
-    eval "${ZDOTDIR}/merge_zsh_histories.rb ${ZDOTDIR}/.zsh_history_*.bak \
+function merge-curr-zsh-history () {
+    eval "merge_zsh_histories.rb ${ZDOTDIR}/.zsh_history_*.bak \
           ${ZDOTDIR}/.zsh_history > ${HOME}/zsh_history_merged"
 }
+
+function merge-zsh-history () {
+    eval "merge_zsh_histories.rb $@ \
+          ${ZDOTDIR}/.zsh_history > ${HOME}/zsh_history_merged"
+}
+
 
 ###############################################################################
 ################################  ytfzf #######################################
 ###############################################################################
 
 function ytfzf() {
-    eval "${ZDOTDIR}/ytfzf $@"
+    eval "ytfzf $@"
 }
 
 
@@ -671,7 +677,7 @@ function kill-process() {
 ###############################################################################
 
 function nocorrect grep-word() {
-    eval "${ZDOTDIR}/rgfzf $@"
+    eval "rgfzf $@"
 }
 
 ###############################################################################
@@ -679,7 +685,7 @@ function nocorrect grep-word() {
 ###############################################################################
 
 function merge-images-diagonally() {
-    eval "${ZDOTDIR}/merge-images-diagonally.sh $@"
+    eval "merge-images-diagonally.sh $@"
 }
 
 ###############################################################################

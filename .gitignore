@@ -8,11 +8,11 @@
 .config/zim/*
 !.config/zim/style.conf
 
-# !.local
-#
-# .local/*
-# !.local/share
-#
+!.local
+
+.local/*
+!.local/bin
+
 # .local/share/*
 # !.local/share/applications
 
@@ -213,7 +213,6 @@
 .lesshst
 .librewolf
 .lldb
-.local
 .lyxauth
 .minirc.dfl
 .mozilla
