@@ -28,16 +28,10 @@ bindings = [
     { action = "Copy", key = "Copy" },
     { action = "ScrollPageUp", key = "PageUp", mode = "~Alt", mods = "Shift" },
     { action = "ScrollPageDown", key = "PageDown", mode = "~Alt", mods = "Shift" },
-    { chars = "\u001BF", key = "Right", mods = "Alt" },
-    { chars = "\u001BB", key = "Left", mods = "Alt" },
     { action = "ToggleViMode", key = "Space", mode = "~Search", mods = "Shift|Control" },
-    { action = "ToggleViMode", key = "I", mode = "Vi|~Search" },
+    { action = "ToggleViMode", key = "Q", mode = "Vi|~Search" },
     { action = "ScrollToTop", key = "G", mode = "Vi|~Search" },
     { action = "ScrollToBottom", key = "G", mode = "Vi|~Search", mods = "Shift" },
-    { action = "ScrollPageUp", key = "B", mode = "Vi|~Search", mods = "Control" },
-    { action = "ScrollPageDown", key = "F", mode = "Vi|~Search", mods = "Control" },
-    { action = "ScrollHalfPageUp", key = "U", mode = "Vi|~Search", mods = "Control" },
-    { action = "ScrollHalfPageDown", key = "D", mode = "Vi|~Search", mods = "Control" },
     { action = "Copy", key = "Y", mode = "Vi|~Search" },
     { action = "ToggleNormalSelection", key = "V", mode = "Vi|~Search" },
     { action = "ToggleLineSelection", key = "V", mode = "Vi|~Search", mods = "Shift" },
@@ -67,12 +61,13 @@ bindings = [
     { action = "SearchDeleteWord", key = "W", mode = "Search", mods = "Control" },
     { action = "Paste", key = "V", mode = "~Vi", mods = "Control|Shift" },
     { action = "Copy", key = "C", mods = "Control|Shift" },
+    # Needed for MacOS
     { chars = "\u001F", key = "Slash", mods = "Control" },
-    # https://github.com/alacritty/alacritty/issues/7342#issuecomment-1892611131
-    # https://stackoverflow.com/a/75030219
-    { chars = "\u0000", key = "`", mods = "Control" },
     { chars = "\u001C", key = "Backslash", mods = "Control" },
-    { action = "SpawnNewInstance", key = "N", mods = "Command" }
+    { chars = "\u001B\\", key = "Backslash", mods = "Alt" },
+    { chars = "\u001BF", key = "Right", mods = "Alt" },
+    { chars = "\u001BB", key = "Left", mods = "Alt" },
+    { action = "SpawnNewInstance", key = "N", mods = "Command" },
 ]
 
 [mouse]

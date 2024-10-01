@@ -222,7 +222,7 @@ zstyle ':fzf-tab:complete:*' fzf-bindings 'tab:toggle+down,shift-tab:toggle-all'
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=yellow,bold,underline"
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
-bindkey '^ ' autosuggest-fetch
+bindkey '^[/' autosuggest-fetch
 
 ######################### dirstack ############################################
 
