@@ -6,7 +6,6 @@
 local M = {}
 
 function M.config()
-
     local res, mason_tool_installer = pcall(require, "mason-tool-installer")
     if not res then
         vim.notify("mason-tool-installer not found", vim.log.levels.ERROR)
@@ -19,13 +18,14 @@ function M.config()
         -- start; they should be the names Mason uses for each tool
         ensure_installed = {
             "bash-language-server",
-            "bzl", -- starlark
+            "bzl",      -- starlark
             "clangd",
             "cpptools", -- c/cpp/rust debugging
             "cmake-language-server",
-            "debugpy", -- python debugging
-            "delve", -- golang debugging
+            "debugpy",  -- python debugging
+            "delve",    -- golang debugging
             "gopls",
+            "harper-ls",
             "json-lsp",
             "lua-language-server",
             "marksman",
@@ -33,7 +33,6 @@ function M.config()
             "python-lsp-server",
             "shellcheck", -- sh linting
             "rust-analyzer",
-            "taplo",
             "vim-language-server",
             "yaml-language-server"
         },
@@ -44,7 +43,6 @@ function M.config()
         -- Default: true
         run_on_start = false,
     }
-
 end
 
 return M
