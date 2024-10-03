@@ -415,8 +415,16 @@ function M.config()
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
     -- Toml
-    nvim_lsp.taplo.setup {
+    nvim_lsp.harper_ls.setup {
         on_attach = on_attach,
+        filetypes = { "html", "markdown", "ruby", "toml" },
+        settings = {
+            ["harper-ls"] = {
+                linters = {
+                    spell_check = false
+                },
+            }
+        }
     }
 
     ---------------------------------------------------------------------------
