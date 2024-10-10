@@ -417,7 +417,7 @@ function M.config()
     -- Toml
     nvim_lsp.harper_ls.setup {
         on_attach = on_attach,
-        filetypes = { "html", "markdown", "ruby", "toml" },
+        filetypes = { "html", "ruby", "toml" },
         settings = {
             ["harper-ls"] = {
                 linters = {
