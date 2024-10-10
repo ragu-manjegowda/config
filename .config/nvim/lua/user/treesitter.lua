@@ -50,6 +50,15 @@ M.config = function()
             additional_vim_regex_highlighting = false,
         },
         ignore_install = {},
+        incremental_selection = {
+            enable = true,
+            keymaps = {
+                init_selection = "<M-/>",
+                node_incremental = "<M-/>",
+                scope_incremental = false,
+                node_decremental = "<bs>",
+            },
+        },
         indent = {
             enable = false,
             disable = {},

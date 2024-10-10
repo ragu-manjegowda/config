@@ -75,7 +75,6 @@ function M.config()
     local opts = { noremap = true, silent = true }
 
     map('n', '<leader>ts', '<CMD>lua require("user.fterm").__fterm_zsh()<CR>', opts)
-    map('t', '<leader>ts', '<C-\\><C-n><CMD>lua require("user.fterm").__fterm_zsh()<CR>', opts)
     map('n', '<leader>ss', '<CMD>lua require("user.fterm").terminal_send(vim.fn.input("> ") .. "\\n")<CR>', opts)
 end
 
