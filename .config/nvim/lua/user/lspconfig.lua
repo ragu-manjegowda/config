@@ -161,6 +161,7 @@ function M.config()
 
     lsp_windows.default_options.border = "rounded"
 
+    -- Add cmp_nvim_lsp capabilities to default capabilities
     local lsp_defaults = nvim_lsp.util.default_config
 
     lsp_defaults.capabilities =
@@ -168,6 +169,8 @@ function M.config()
             'force',
             lsp_defaults.capabilities,
             cmp_nvim_lsp.default_capabilities())
+
+    nvim_lsp.util.default_config = lsp_defaults
 
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
@@ -309,7 +312,23 @@ function M.config()
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
     -- Markdown
+
+    -- Ensure that dynamicRegistration is enabled! This allows the LS to take into account actions like the
+    -- Create Unresolved File code action, resolving completions for unindexed code blocks, ...
+    local watch_capabilities = vim.tbl_deep_extend(
+        'force',
+        lsp_defaults.capabilities,
+        {
+            workspace = {
+                didChangeWatchedFiles = {
+                    dynamicRegistration = true,
+                },
+            },
+        }
+    )
+
     nvim_lsp.marksman.setup {
+        capabilities = watch_capabilities,
         on_attach = on_attach
     }
 
