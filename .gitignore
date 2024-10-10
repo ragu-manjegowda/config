@@ -285,7 +285,6 @@ GNUstep
 Library
 Movies
 Music
-MyWiki
 NVIDIA-Linux-x86_64-430.17.run
 NVIDIA-Linux-x86_64-440.95.01.run
 NX
@@ -307,3 +306,4 @@ rig.json
 sessions.csv
 snap
 syncWiki.sh
+wiki
