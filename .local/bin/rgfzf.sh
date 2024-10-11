@@ -5,11 +5,11 @@ RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case "
 
 INITIAL_QUERY="${*:-}"
 
-LAST="${@: -1}"
+LAST="${*: -1}"
 if [[ -d $LAST ]]; then
-  INITIAL_QUERY="${@:1:$#-1}";
+  INITIAL_QUERY="${*:1:$#-1}";
   DIR=$LAST
-  echo $INITIAL_QUERY
+  echo "$INITIAL_QUERY"
 fi
 
 IFS=: read -ra selected < <(

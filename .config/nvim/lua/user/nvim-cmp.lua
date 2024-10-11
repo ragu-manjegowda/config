@@ -222,7 +222,7 @@ function M.config()
     })
 
     vim.api.nvim_create_autocmd('FileType', {
-        pattern = { 'text', 'mail', 'markdown', 'rmd', 'rst' },
+        pattern = { 'text', 'mail', 'rmd', 'rst' },
         callback = function()
             cmp.setup.buffer {
                 sources = {
