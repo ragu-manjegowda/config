@@ -26,13 +26,13 @@ export GOPATH="$HOME/.cache/go"
 export GOBIN="$HOME/.local/bin"
 
 # Java
-export PATH="$HOMEBREW_PATH/opt/openjdk@11/bin:$PATH"
+export PATH="$PATH:$HOMEBREW_PATH/opt/openjdk@11/bin"
 export CPPFLAGS="-I$HOMEBREW_PATH/opt/openjdk@11/include:$CPPFLAGS"
 export JAVA_HOME="$HOMEBREW_PATH/opt/openjdk@11"
 
 # Python
-export PYTHONPATH="$HOMEBREW_PATH/bin:$PYTHONPATH"
-export PYTHONPATH="$HOMEBREW_PATH/etc:$PYTHONPATH"
+export PYTHONPATH="$PYTHONPATH:$HOMEBREW_PATH/bin"
+export PYTHONPATH="$PYTHONPATH:$HOMEBREW_PATH/etc"
 
 # Rust
 export RUSTUP_HOME="$HOME/.config/rustup"
