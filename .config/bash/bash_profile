@@ -9,8 +9,8 @@ export HOMEBREW_PATH="/usr/local"
 if [ -r "/opt/homebrew" ]; then
     export HOMEBREW_PATH="/opt/homebrew"
 fi
-export PATH="$HOMEBREW_PATH/bin:$PATH"
-export PATH="$HOMEBREW_PATH/sbin:$PATH"
+export PATH="$PATH:$HOMEBREW_PATH/bin"
+export PATH="$PATH:$HOMEBREW_PATH/sbin"
 
 # Completion
 if [ -n "$BASH_VERSION" ]; then
@@ -27,7 +27,7 @@ fi
 export XML_CATALOG_FILES="$HOMEBREW_PATH/etc/xml/catalog:$XML_CATALOG_FILES"
 
 # Bison
-export PATH="$HOMEBREW_PATH/opt/bison/bin:$PATH"
+export PATH="$PATH:$HOMEBREW_PATH/opt/bison/bin"
 export LDFLAGS="-L$HOMEBREW_PATH/opt/bison/lib:$LDFLAGS"
 
 # Broot
@@ -50,7 +50,7 @@ else
     if [ -f "$HOMEBREW_PATH/Caskroom/miniconda/base/etc/profile.d/conda.sh" ]; then
         . "$HOMEBREW_PATH/Caskroom/miniconda/base/etc/profile.d/conda.sh"
     else
-        export PATH="$HOMEBREW_PATH/Caskroom/miniconda/base/bin:$PATH"
+        export PATH="$PATH:$HOMEBREW_PATH/Caskroom/miniconda/base/bin"
     fi
 fi
 unset __conda_setup
@@ -69,12 +69,12 @@ export CPPFLAGS="-I$HOMEBREW_PATH/opt/libffi/include:$CPPFLAGS"
 export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
 
 # Gettext exports
-export PATH="$HOMEBREW_PATH/opt/gettext/bin:$PATH"
+export PATH="$PATH:$HOMEBREW_PATH/opt/gettext/bin"
 export LDFLAGS="-L$HOMEBREW_PATH/opt/gettext/lib:$LDFLAGS"
 export CPPFLAGS="-I$HOMEBREW_PATH/opt/gettext/include:$CPPFLAGS"
 
 # GNU-getopt
-export PATH="$HOMEBREW_PATH/opt/gnu-getopt/bin:$PATH"
+export PATH="$PATH:$HOMEBREW_PATH/opt/gnu-getopt/bin"
 
 # Gnutls
 export GUILE_TLS_CERTIFICATE_DIRECTORY="$HOMEBREW_PATH/etc/gnutls"
@@ -88,18 +88,18 @@ export GUILE_LOAD_COMPILED_PATH="$HOMEBREW_PATH/lib/guile/3.0/site-ccache"
 export GUILE_SYSTEM_EXTENSIONS_PATH="$HOMEBREW_PATH/lib/guile/3.0/extensions"
 
 # ICU4C
-export PATH="$HOMEBREW_PATH/opt/icu4c/bin:$PATH"
-export PATH="$HOMEBREW_PATH/opt/icu4c/sbin:$PATH"
+export PATH="$PATH:$HOMEBREW_PATH/opt/icu4c/bin"
+export PATH="$PATH:$HOMEBREW_PATH/opt/icu4c/sbin"
 export LDFLAGS="-L$HOMEBREW_PATH/opt/icu4c/lib:$LDFLAGS"
 export CPPFLAGS="-I$HOMEBREW_PATH/opt/icu4c/include:$CPPFLAGS"
 export PKG_CONFIG_PATH="$HOMEBREW_PATH/opt/icu4c/lib/pkgconfig:$PKG_CONFIG_PATH"
 
 # Java
-export PATH="$HOMEBREW_PATH/opt/openjdk@11/bin:$PATH"
+export PATH="$PATH:$HOMEBREW_PATH/opt/openjdk@11/bin"
 export CPPFLAGS="-I$HOMEBREW_PATH/opt/openjdk@11/include:$CPPFLAGS"
 
 # Jekyll
-export PATH="$HOMEBREW_PATH/lib/ruby/gems/2.6.0/bin/:$PATH"
+export PATH="$PATH:$HOMEBREW_PATH/lib/ruby/gems/2.6.0/bin/"
 
 # LibPcap
 export PATH="$PATH:$HOMEBREW_PATH/opt/libpcap/bin"
@@ -107,23 +107,23 @@ export LDFLAGS="-L$HOMEBREW_PATH/opt/libpcap/lib:$LDFLAGS"
 export CPPFLAGS="-I$HOMEBREW_PATH/opt/libpcap/include:$CPPFLAGS"
 
 # Libxml2
-export PATH="$HOMEBREW_PATH/opt/libxml2/bin:$PATH"
+export PATH="$PATH:$HOMEBREW_PATH/opt/libxml2/bin"
 export LDFLAGS="-L$HOMEBREW_PATH/opt/libxml2/lib:$LDFLAGS"
 export CPPFLAGS="-I$HOMEBREW_PATH/opt/libxml2/include:$CPPFLAGS"
 export PKG_CONFIG_PATH="$HOMEBREW_PATH/opt/libxml2/lib/pkgconfig:$PKG_CONFIG_PATH"
 
 # Ncurses
-export PATH="$HOMEBREW_PATH/opt/ncurses/bin:$PATH"
+export PATH="$PATH:$HOMEBREW_PATH/opt/ncurses/bin"
 export LDFLAGS="-L$HOMEBREW_PATH/opt/ncurses/lib:$LDFLAGS"
 export CPPFLAGS="-I$HOMEBREW_PATH/opt/ncurses/include:$CPPFLAGS"
 
 # Openssl
-export PATH="$HOMEBREW_PATH/opt/openssl/bin:$PATH"
+export PATH="$PATH:$HOMEBREW_PATH/opt/openssl/bin"
 export LDFLAGS="-L$HOMEBREW_PATH/opt/openssl/lib:$LDFLAGS"
 export CPPFLAGS="-I$HOMEBREW_PATH/opt/openssl/include:$CPPFLAGS"
 
 # Openssl@1.1
-export PATH="$HOMEBREW_PATH/opt/openssl@1.1/bin:$PATH"
+export PATH="$PATH:$HOMEBREW_PATH/opt/openssl@1.1/bin"
 export LDFLAGS="-L$HOMEBREW_PATH/opt/openssl@1.1/lib:$LDFLAGS"
 export CPPFLAGS="-I$HOMEBREW_PATH/opt/openssl@1.1/include:$CPPFLAGS"
 export PKG_CONFIG_PATH="$HOMEBREW_PATH/opt/openssl@1.1/lib/pkgconfig:$PKG_CONFIG_PATH"
@@ -137,13 +137,13 @@ export PATH="$PATH:$HOMEBREW_PATH/opt/python@3.8/bin"
 export LDFLAGS="-L$HOMEBREW_PATH/opt/python@3.8/lib:$LDFLAGS"
 
 # Qt
-export PATH="$HOMEBREW_PATH/opt/qt/bin:$PATH"
+export PATH="$PATH:$HOMEBREW_PATH/opt/qt/bin"
 export LDFLAGS="-L$HOMEBREW_PATH/opt/qt/lib:$LDFLAGS"
 export CPPFLAGS="-I$HOMEBREW_PATH/opt/qt/include:$CPPFLAGS"
 export PKG_CONFIG_PATH="$HOMEBREW_PATH/opt/qt/lib/pkgconfig:$PKG_CONFIG_PATH"
 
 # Qt@5
-export PATH="$HOMEBREW_PATH/opt/qt@5/bin:$PATH"
+export PATH="$PATH:$HOMEBREW_PATH/opt/qt@5/bin"
 export LDFLAGS="-L$HOMEBREW_PATH/opt/qt@5/lib"
 export CPPFLAGS="-I$HOMEBREW_PATH/opt/qt@5/include"
 
@@ -153,7 +153,7 @@ export CPPFLAGS="-I$HOMEBREW_PATH/opt/readline/include:$CPPFLAGS"
 export PKG_CONFIG_PATH="$HOMEBREW_PATH/opt/readline/lib/pkgconfig:$PKG_CONFIG_PATH"
 
 # Ruby
-export PATH="$HOMEBREW_PATH/opt/ruby/bin:$PATH"
+export PATH="$PATH:$HOMEBREW_PATH/opt/ruby/bin"
 export LDFLAGS="-L$HOMEBREW_PATH/opt/ruby/lib:$LDFLAGS"
 export CPPFLAGS="-I$HOMEBREW_PATH/opt/ruby/include:$CPPFLAGS"
 export PKG_CONFIG_PATH="$HOMEBREW_PATH/opt/ruby/lib/pkgconfig:$PKG_CONFIG_PATH"
@@ -167,10 +167,10 @@ export CARGO_HOME="$HOME/.config/cargo"
 export PATH="$PATH:$CARGO_HOME/bin"
 
 # Sphinx-doc
-export PATH="$HOMEBREW_PATH/opt/sphinx-doc/bin:$PATH"
+export PATH="$PATH:$HOMEBREW_PATH/opt/sphinx-doc/bin"
 
 # Sqlite
-export PATH="$HOMEBREW_PATH/opt/sqlite/bin:$PATH"
+export PATH="$PATH:$HOMEBREW_PATH/opt/sqlite/bin"
 export LDFLAGS="-L$HOMEBREW_PATH/opt/sqlite/lib:$LDFLAGS"
 export CPPFLAGS="-I$HOMEBREW_PATH/opt/sqlite/include:$CPPFLAGS"
 export PKG_CONFIG_PATH="$HOMEBREW_PATH/opt/sqlite/lib/pkgconfig:$PKG_CONFIG_PATH"
@@ -183,12 +183,12 @@ export CPPFLAGS="-I$HOMEBREW_PATH/opt/tclap/include:$CPPFLAGS"
 export PKG_CONFIG_PATH="$HOMEBREW_PATH/opt/tclap/lib/pkgconfig:$PKG_CONFIG_PATH"
 
 # Tcl-tk
-export PATH="$HOMEBREW_PATH/opt/tcl-tk/bin:$PATH"
+export PATH="$PATH:$HOMEBREW_PATH/opt/tcl-tk/bin"
 export LDFLAGS="-L$HOMEBREW_PATH/opt/tcl-tk/lib:$LDFLAGS"
 export CPPFLAGS="-I$HOMEBREW_PATH/opt/tcl-tk/include:$CPPFLAGS"
 
 # Vtk
-export PATH="$HOMEBREW_PATH/opt/vtk@8.2/bin:$PATH"
+export PATH="$PATH:$HOMEBREW_PATH/opt/vtk@8.2/bin"
 export LDFLAGS="-L$HOMEBREW_PATH/opt/vtk@8.2/lib:$LDFLAGS"
 export CPPFLAGS="-I$HOMEBREW_PATH/opt/vtk@8.2/include:$CPPFLAGS"
 
