@@ -161,4 +161,5 @@ config update-index --assume-unchanged \
     .config/sioyek/prefs_user.config \
     .config/termshark/termshark.toml \
     .config/xsettingsd/xsettingsd.conf \
-    .icons/default/index.theme
+    .icons/default/index.theme \
+    .local/bin/render-wiki.sh

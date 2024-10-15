@@ -10,6 +10,7 @@ brew tap brewsci/science
 brew tap homebrew/bundle
 brew tap homebrew/services
 brew tap jstkdng/programs
+brew tap nikitabobko/tap
 brew tap zegervdv/zathura
 install_package abseil ''
 install_package adwaita-icon-theme ''
@@ -225,6 +226,7 @@ install_package libyaml ''
 install_package little-cms2 ''
 install_package llvm ''
 install_package llvm@13 ''
+install_package llvm@18 ''
 install_package lmdb ''
 install_package lpeg ''
 install_package lua ''
@@ -280,6 +282,7 @@ install_package openssl@1.1 ''
 install_package openssl@3 ''
 install_package opus ''
 install_package p11-kit ''
+install_package pandoc ''
 install_package pango ''
 install_package pcre ''
 install_package pcre2 ''
