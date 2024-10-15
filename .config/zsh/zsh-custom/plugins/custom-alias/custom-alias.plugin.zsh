@@ -273,6 +273,7 @@ function toggle-alacritty-theme () {
     vim_config_path="$HOME/.config/nvim/lua/user/colorscheme.lua"
     zathura_config_path="$HOME/.config/zathura/zathurarc"
     termshark_config_path="$HOME/.config/termshark/termshark.toml"
+    wiki_script_path="$HOME/.local/bin/render-wiki.sh"
 
     # Get current mode
     mode=$(awk -F'/' '/solarized/ {gsub(/\[|"|\]|solarized_|.toml/,""); print $(NF)}' $config_path)
@@ -293,6 +294,9 @@ function toggle-alacritty-theme () {
             cp $zathura_config_dark_path $zathura_config_path
 
             sed -i -e "s#^dark-mode = false#dark-mode = true#g" $termshark_config_path
+
+            sed -i -e "s#solarized-light#solarized-dark#g" $wiki_script_path
+            sed -i -e "s#favicon-light#favicon-dark#g" $wiki_script_path
 
             dircolors_dark_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-dark"
             if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -316,6 +320,9 @@ function toggle-alacritty-theme () {
             cp $zathura_config_light_path $zathura_config_path
 
             sed -i -e "s#^dark-mode = true#dark-mode = false#g" $termshark_config_path
+
+            sed -i -e "s#solarized-dark#solarized-light#g" $wiki_script_path
+            sed -i -e "s#favicon-dark#favicon-light#g" $wiki_script_path
 
             dircolors_light_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-light"
             if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -358,7 +365,7 @@ function toggle-gtk-theme () {
     echo "switched away from $mode."
 }
 
-# Set BAT theme for FZF on linux (in Mac it is set below)
+# Set BAT theme for FZF on linux (for Mac it is set below)
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     if ! test -r ~/.config/alacritty/themes; then
         echo "Directory $HOME/.config/alacritty/themes doesn't exist"
@@ -369,6 +376,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
         vim_config_path="$HOME/.config/nvim/lua/user/colorscheme.lua"
         zathura_config_path="$HOME/.config/zathura/zathurarc"
         termshark_config_path="$HOME/.config/termshark/termshark.toml"
+        wiki_script_path="$HOME/.local/bin/render-wiki.sh"
 
         mode=$(awk -F'/' '/solarized/ {gsub(/\[|"|\]|solarized_|.toml/,""); print $(NF)}' $config_path)
         if [[ "$mode" == "dark" ]]; then
@@ -385,6 +393,9 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
             cp $zathura_config_dark_path $zathura_config_path
 
             sed -i -e "s#^dark-mode = false#dark-mode = true#g" $termshark_config_path
+
+            sed -i -e "s#solarized-light#solarized-dark#g" $wiki_script_path
+            sed -i -e "s#favicon-light#favicon-dark#g" $wiki_script_path
 
             dircolors_dark_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-dark"
             eval `dircolors ${dircolors_dark_path}`
@@ -403,6 +414,9 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 
             sed -i -e "s#^dark-mode = true#dark-mode = false#g" $termshark_config_path
 
+            sed -i -e "s#solarized-dark#solarized-light#g" $wiki_script_path
+            sed -i -e "s#favicon-dark#favicon-light#g" $wiki_script_path
+
             dircolors_light_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-light"
             eval `dircolors ${dircolors_light_path}`
         fi
@@ -420,6 +434,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         vim_config_path="$HOME/.config/nvim/lua/user/colorscheme.lua"
         zathura_config_path="$HOME/.config/zathura/zathurarc"
         termshark_config_path="$HOME/.config/termshark/termshark.toml"
+        wiki_script_path="$HOME/.local/bin/render-wiki.sh"
 
         # Get current mode
         mode=$(defaults read -g AppleInterfaceStyle 2>/dev/null)
@@ -441,6 +456,9 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
                 sed -i -e "s#^dark-mode = false#dark-mode = true#g" $termshark_config_path
 
+                sed -i -e "s#solarized-light#solarized-dark#g" $wiki_script_path
+                sed -i -e "s#favicon-light#favicon-dark#g" $wiki_script_path
+
                 dircolors_dark_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-dark"
                 eval `gdircolors ${dircolors_dark_path}`
                 ;;
@@ -459,6 +477,9 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
                 cp $zathura_config_light_path $zathura_config_path
 
                 sed -i -e "s#^dark-mode = true#dark-mode = false#g" $termshark_config_path
+
+                sed -i -e "s#solarized-dark#solarized-light#g" $wiki_script_path
+                sed -i -e "s#favicon-dark#favicon-light#g" $wiki_script_path
 
                 dircolors_light_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-light"
                 eval `gdircolors ${dircolors_light_path}`
