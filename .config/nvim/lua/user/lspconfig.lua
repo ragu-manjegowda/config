@@ -441,7 +441,7 @@ function M.config()
             ["harper-ls"] = {
                 linters = {
                     spell_check = false,
-                    sentence_capitalization = true,
+                    sentence_capitalization = false,
                 },
             }
         }
