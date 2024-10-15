@@ -3,6 +3,11 @@
 -- Github       : @ragu-manjegowda
 -------------------------------------------------------------------------------
 
+local opts = { buffer = true, silent = true }
+local keymap = vim.keymap.set
+
+local vim = vim
+
 vim.cmd [[
 
 " Zoom / Restore window
@@ -94,10 +99,8 @@ vim.api.nvim_create_autocmd(
         group    = "bufcheck",
         pattern  = { "qf" },
         callback = function()
-            vim.keymap.set("n", "<leader>v", "<C-w><CR><C-w>L",
-                { buffer = true })
-            vim.keymap.set("n", "<leader><Tab>", "<C-w><CR><C-w>T",
-                { buffer = true })
+            keymap("n", "<leader>v", "<C-w><CR><C-w>L", opts)
+            keymap("n", "<leader><Tab>", "<C-w><CR><C-w>T", opts)
         end
     }
 )
@@ -110,7 +113,7 @@ vim.api.nvim_create_autocmd(
         pattern  = '*',
         callback = function()
             local ft = vim.bo.filetype
-            if ft == "mail" or ft == "markdown" or ft == "rmd" or ft == "text"
+            if ft == "mail" or ft == "rmd" or ft == "text"
                 or ft == "rst" then
                 return
             end
@@ -145,21 +148,6 @@ vim.api.nvim_create_autocmd(
     }
 )
 
--- start terminal in insert mode
-vim.api.nvim_create_autocmd(
-    { "TermOpen" },
-    {
-        group    = "bufcheck",
-        pattern  = "*",
-        callback = function()
-            if string.find(vim.bo.filetype, "dapui") ~= nil then
-                return
-            end
-            vim.cmd("startinsert | set winfixheight")
-        end
-    }
-)
-
 -- pager mappings for Manual
 vim.api.nvim_create_autocmd(
     { "FileType" },
@@ -167,23 +155,11 @@ vim.api.nvim_create_autocmd(
         group    = "bufcheck",
         pattern  = { "man", "help" },
         callback = function()
-            vim.keymap.set("n", "<enter>", "K", { buffer = true })
-            vim.keymap.set("n", "<backspace>", "<c-o>", { buffer = true })
+            keymap("n", "<enter>", "K", opts)
+            keymap("n", "<backspace>", "<c-o>", opts)
         end
     }
 )
-
--- Return to last edit position when opening files
--- vim.api.nvim_create_autocmd("BufReadPost",  {
---     group    = "bufcheck",
---     pattern  = "*",
---     callback = function()
---       if vim.fn.line("'\"") > 0 and vim.fn.line("'\"") <= vim.fn.line("$") then
---             vim.fn.setpos(".", vim.fn.getpos("'\""))
---             vim.api.nvim_feedkeys('zz', 'n', true)
---         end
---     end
--- })
 
 -- Mason update
 vim.api.nvim_create_autocmd('User', {
@@ -194,24 +170,6 @@ vim.api.nvim_create_autocmd('User', {
         end)
     end,
 })
-
--- -- Disable global status line for mergetool
--- -- Do it by simply counting the number of windows
--- vim.api.nvim_create_autocmd('VimEnter', {
---     callback = function()
---         local windows = vim.api.nvim_tabpage_list_wins(0)
---         if #windows == 4 then
---             vim.opt.laststatus = 2
---             local buf_name = { '%=LOCAL%=', '%=BASE%=', '%=REMOTE%=' }
---             for i, win in ipairs(windows) do
---                 if i == 4 then
---                     return
---                 end
---                 vim.api.nvim_win_set_option(win, "statusline", buf_name[i])
---             end
---         end
---     end,
--- })
 
 -- Toggle hlsearch b/w enter and exiting search mode
 local events = { 'CmdlineEnter', 'CmdlineLeave' }
@@ -268,5 +226,6 @@ vim.api.nvim_create_autocmd("FileType", {
     callback = function()
         vim.opt.list = false
         vim.opt.listchars:remove "lead"
+        vim.opt_local.textwidth = 72
     end
 })
