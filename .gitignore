@@ -12,6 +12,7 @@
 
 /.local/*
 !/.local/bin
+/.local/bin/render-wiki.sh-e
 
 # .local/share/*
 # !.local/share/applications
