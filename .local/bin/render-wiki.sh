@@ -45,18 +45,49 @@ echo "$lua_script" > html_output/links-to-html.lua
 css_dir=html_output/css
 hl_dir=html_output/highlight
 
-# Check if the script is newer than .last_run
-if [[ "$0" -nt html_output/.last_run ]]; then
-    cp "${HOME}/.config/misc/wiki/css/solarized-dark.css" "${css_dir}/solarized.css"
-    cp "${HOME}/.config/misc/wiki/highlight/solarized-dark.theme" "${hl_dir}/solarized.theme"
-    cp "${HOME}/.config/misc/wiki/assets/favicon-dark.ico" html_output/favicon.ico
+# Define paths to the current and previous theme files
+previous_theme_file="html_output/.last_run_theme"
 
+# Check if .last_run exists and read the previous theme
+if [[ -f "$previous_theme_file" ]]; then
+    previous_theme=$(cat "$previous_theme_file")
+else
+    previous_theme="N/A"
+fi
+
+# Get the current theme (you may want to change this if the format is different)
+current_theme="solarized-light"
+
+# Check if themes are different
+if [[ "$previous_theme" != "$current_theme" ]]; then
     echo "==================================================================="
-    echo "Themes have been updated, reprocessing all files..."
+    echo "Themes have been updated"
+    echo "Current wiki theme: $previous_theme"
+    echo "To be updated wiki theme: $current_theme"
     echo "==================================================================="
 
-    # Touch .last_run with the reference time in the past to reprocess all files
-    touch -t 197001010000 html_output/.last_run
+    read -r -p "Themes are different. Do you want to regenerate? (y/n, default: y): " choice
+    choice=${choice:-y}  # Default to 'y' if no input is provided
+    if [[ "$choice" == "y" ]]; then
+        echo "Reprocessing all files..."
+
+        cp "${HOME}/.config/misc/wiki/css/solarized-light.css" "${css_dir}/solarized.css"
+        cp "${HOME}/.config/misc/wiki/highlight/solarized-light.theme" "${hl_dir}/solarized.theme"
+        cp "${HOME}/.config/misc/wiki/assets/favicon-light.ico" html_output/favicon.ico
+
+        # Touch .last_run with the reference time in the past to reprocess all files
+        # Note: ideally we can update just the html files but trying to keep it simple
+        touch -t 197001010000 html_output/.last_run
+
+        # Save the current theme as the previous theme for the next run
+        echo "$current_theme" > "$previous_theme_file"
+    else
+        echo "Skipping regeneration."
+    fi
+else
+    # Themes are the same. No need to regenerate.
+    # Just update the .last_run file without reprocessing
+    touch html_output/.last_run
 fi
 
 

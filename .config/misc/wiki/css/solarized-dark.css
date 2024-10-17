@@ -2,7 +2,10 @@
 /*
  https://github.com/alphapapa/solarized-everything-css
 
- Modified with styling from ./github.css
+ Modified with styling from https://github.com/davidgranstrom/nvim-markdown-preview/blob/master/css/github.css
+
+ Modified by Ragu Manjegowda
+ Github: @ragu-manjegowda
 
  License GPL3
 
@@ -310,17 +313,17 @@ body h3 {
 }
 
 body h4 {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 600;
 }
 
 body h5 {
-  font-size: 14px;
+  font-size: 20px;
   font-weight: 600;
 }
 
 body h6 {
-  font-size: 12px;
+  font-size: 20px;
   font-weight: 600;
 }
 
@@ -551,6 +554,64 @@ body h6 {
   font-size: 0.85em;
   color: #6a737d;
 }
+
+body h1::before,
+body h2::before,
+body h3::before,
+body h4::before,
+body h5::before {
+  font-family: 'Hack Nerd Font Mono';
+  padding-right: 8px;
+}
+
+/* Heading Icons and colors */
+
+body h1 {
+  color: #dc322f; /* red */
+  background-color: #073642; /* base02 */
+}
+
+body h1::before {
+  content: "󰎥 ";
+}
+
+body h2 {
+  color: #719e07; /* green */
+  background-color: #073642; /* base02 */
+}
+
+body h2::before {
+  content: "󰎨 ";
+}
+
+body h3 {
+  color: #b58900; /* yellow */
+  background-color: #073642; /* base02 */
+}
+
+body h3::before {
+  content: "󰎫 ";
+}
+
+body h4 {
+  color: #cb4b16; /* orange */
+  background-color: #073642; /* base02 */
+}
+
+body h4::before {
+  content: "󰎲 ";
+}
+
+body h5 {
+  color: #2aa198; /* cyan */
+  background-color: #073642; /* base02 */
+}
+
+body h5::before {
+  content: "󰎯 ";
+}
+
+/* Heading Icons and colors end */
 
 body ul,
 body ol {
