@@ -84,10 +84,6 @@ if [[ "$previous_theme" != "$current_theme" ]]; then
     else
         echo "Skipping regeneration."
     fi
-else
-    # Themes are the same. No need to regenerate.
-    # Just update the .last_run file without reprocessing
-    touch html_output/.last_run
 fi
 
 

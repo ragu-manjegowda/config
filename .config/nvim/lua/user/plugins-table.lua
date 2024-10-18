@@ -333,6 +333,7 @@ local all_plugins = {
             require("user.markview").config()
         end,
         dependencies = {
+            "3rd/image.nvim",
             "nvim-treesitter/nvim-treesitter",
             "nvim-tree/nvim-web-devicons"
         },
@@ -347,7 +348,8 @@ local all_plugins = {
         end,
         dependencies = {
             'leafo/magick',
-        }
+        },
+        lazy = true
     },
 
     -- Leetcode in Vim
