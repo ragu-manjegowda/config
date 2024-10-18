@@ -113,7 +113,7 @@ vim.api.nvim_create_autocmd(
         pattern  = '*',
         callback = function()
             local ft = vim.bo.filetype
-            if ft == "mail" or ft == "rmd" or ft == "text"
+            if ft == "mail" or ft == "markdown" or ft == "rmd" or ft == "text"
                 or ft == "rst" then
                 return
             end
