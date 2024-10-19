@@ -77,6 +77,7 @@ rofi
 rofi-calc
 rofi-emoji
 rsync
+ruby-erb
 rust-src
 skanpage
 sof-firmware
