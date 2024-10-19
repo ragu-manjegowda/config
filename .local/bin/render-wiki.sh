@@ -16,29 +16,9 @@ echo "Linking modified markdown files in ~/wiki/ to HTML"
 
 
 ###############################################################################
-### Create a lua script to convert markdown links to HTML
-lua_script=$(cat <<'EOF'
-function Link(el)
-    if el.target:match("%.md") then
-        -- Make links relative to the root
-        el.target = "/" .. el.target
-
-        -- Replace .md with .html
-        el.target = string.gsub(el.target, "%.md$", ".html")
-    end
-
-    return el
-end
-EOF
-)
-
-
-###############################################################################
 ### Convert all markdown files to HTML
 mkdir -p html_output/css
 mkdir -p html_output/highlight
-
-echo "$lua_script" > html_output/links-to-html.lua
 
 
 ### Copy Style
@@ -66,14 +46,15 @@ if [[ "$previous_theme" != "$current_theme" ]]; then
     echo "To be updated wiki theme: $current_theme"
     echo "==================================================================="
 
-    read -r -p "Themes are different. Do you want to regenerate? (y/n, default: y): " choice
-    choice=${choice:-y}  # Default to 'y' if no input is provided
+    read -r -p "Themes are different. Do you want to regenerate? (y/N): " choice
+    choice=${choice:-n}  # Default to 'y' if no input is provided
     if [[ "$choice" == "y" ]]; then
         echo "Reprocessing all files..."
 
         cp "${HOME}/.config/misc/wiki/css/solarized-light.css" "${css_dir}/solarized.css"
         cp "${HOME}/.config/misc/wiki/highlight/solarized-light.theme" "${hl_dir}/solarized.theme"
         cp "${HOME}/.config/misc/wiki/assets/favicon-light.ico" html_output/favicon.ico
+        cp "${HOME}/.config/misc/wiki/lua-filters/filters.lua" html_output/filters.lua
 
         # Touch .last_run with the reference time in the past to reprocess all files
         # Note: ideally we can update just the html files but trying to keep it simple
@@ -117,7 +98,7 @@ find . -path ./html_output -prune -o -type f -newer html_output/.last_run -print
         # Convert to HTML with Pandoc, generating a fresh TOC
         pandoc --from=gfm --to=html5 --standalone --embed-resources "$file" \
             --output="$output_dir/$(basename "${file%.md}.html")" \
-            --lua-filter=html_output/links-to-html.lua --metadata=base_path:/ \
+            --lua-filter=html_output/filters.lua --metadata=base_path:/ \
             --highlight-style="${hl_dir}/solarized.theme" \
             --css="${css_dir}/solarized.css" --metadata pagetitle="$title"
     else
