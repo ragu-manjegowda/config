@@ -3,26 +3,22 @@
 
 ## Backup existing homebrew formulas
 
-```
-$ ./backup-homebrew.sh > restore-homebrew_{OS}.sh
-$ chmod u+x restore-homebrew_{OS}.sh
+```sh
+brew bundle dump --force --file Brewfile_{OS}
+
+./backup-homebrew.sh > restore-homebrew_{OS}.sh
+chmod u+x restore-homebrew_{OS}.sh
 ```
 
 ## Install homebrew on new machine
 
 ### Mac OS
 
-Prefer keeping them in custom location (usually ~/Documents)
-
-```
-$ mkdir homebrew && \
-  curl -L https://github.com/Homebrew/brew/tarball/master | \
-  tar xz --strip 1 -C homebrew
+```sh
+$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
 ### Ubuntu
-
-Prefer installing to default location `/home/linuxbrew/.linuxbrew` as bottles does not work for other install locations.
 
 ```sh
 $ sudo apt-get install build-essential procps curl file git
@@ -39,6 +35,7 @@ $ brew install gcc
 ## Restore homebrew formulas
 
 ```sh
+brew bundle install --file Brewfile_{OS}
 ./restore-homebrew_{OS}.sh
 ```
 
