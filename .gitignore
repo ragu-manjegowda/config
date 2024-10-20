@@ -73,6 +73,7 @@
 /.config/broot/launcher
 /.config/buildauth
 /.config/cairo-dock
+/.config/calibre
 /.config/cargo
 /.config/catt
 /.config/coc
