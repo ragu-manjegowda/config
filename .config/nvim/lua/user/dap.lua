@@ -71,9 +71,6 @@ function M.config()
     ---@diagnostic disable-next-line: undefined-field
     dap.defaults.fallback.focus_terminal = true
 
-    -- Configure language adapaters
-
-    -- C++ adapters
     local path
     res, path = pcall(require, "mason-core.path")
     if not res then
@@ -81,6 +78,24 @@ function M.config()
         return
     end
 
+    ---------------------------------------------------------------------------
+    -- Configure language adapaters
+    ---------------------------------------------------------------------------
+
+    ---------------------------------------------------------------------------
+    -- C++ adapters
+    ---------------------------------------------------------------------------
+
+    --- GDB adapter
+
+    -- On Linux gdb is at /home/linuxbrew/.linuxbrew/bin
+    local gdb_debugger_path = "/home/linuxbrew/.linuxbrew/bin/gdb"
+
+    ---@diagnostic disable-next-line: undefined-field
+    if vim.loop.os_uname().sysname == "Darwin" then
+        -- On Mac gdb is at /usr/bin
+        gdb_debugger_path = "/usr/bin/gdb"
+    end
 
     ---@diagnostic disable-next-line: undefined-field
     dap.adapters.cppdbg = {
@@ -95,53 +110,110 @@ function M.config()
         },
     }
 
+    --- LLDB adapter
+
+    -- On Linux lldb is at /home/linuxbrew/.linuxbrew/bin
+    local lldb_debugger_path = "/home/linuxbrew/.linuxbrew/bin/lldb"
+
+    ---@diagnostic disable-next-line: undefined-field
+    if vim.loop.os_uname().sysname == "Darwin" then
+        -- On Mac gdb is at /usr/bin
+        lldb_debugger_path = "/usr/bin/lldb"
+    end
+
+    ---@diagnostic disable-next-line: undefined-field
+    dap.adapters.cppdbglldb = {
+        id = "cppdbglldb",
+        type = "executable",
+        command = "lldb-dap",
+    }
+
+    -- Create a config for cppdbg
+    local cppdbg_config = {
+        name          = "Launch file (gdb)",
+        type          = "cppdbg",
+        request       = "launch",
+        program       = function()
+            local s = vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+            -- remove tailing space
+            return s:gsub("%s+$", "")
+        end,
+        args          = function()
+            local argument_string = vim.fn.input("Program arguments: ")
+            return vim.fn.split(argument_string, " ", true)
+        end,
+        cwd           = function()
+            local s = vim.fn.input("Program working directory: ", vim.fn.getcwd() .. "/", "file")
+            -- remove tailing space
+            return s:gsub("%s+$", "")
+        end,
+        setupCommands = {
+            {
+                text = "-enable-pretty-printing",
+                description = "enable pretty printing",
+                ignoreFailures = false
+            },
+        },
+        stopAtEntry   = true
+    }
+
+    -- Create a shallow copy of cppdbg_config modified for lldb
+    local cppdbg_lldb_config = vim.tbl_extend(
+        "force",
+        cppdbg_config,
+        {
+            name = "Launch file (lldb)",
+            type = "cppdbglldb"
+        }
+    )
+
+    -- Create a config for cppdbg remote
+    -- Use this to start server `gdbserver localhost:1234 test`
+    local cppdbg_remote_config = {
+        name = "Attach to gdbserver :1234",
+        type = "cppdbg",
+        request = "launch",
+        MIMode = "gdb",
+        miDebuggerServerAddress = "localhost:1234",
+        miDebuggerPath = gdb_debugger_path,
+        cwd = function()
+            local s = vim.fn.input("Program working directory: ", vim.fn.getcwd() .. "/", "file")
+            -- remove tailing space
+            return s:gsub("%s+$", "")
+        end,
+        program = function()
+            local s = vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+            -- remove tailing space
+            return s:gsub("%s+$", "")
+        end,
+        setupCommands = {
+            {
+                text = "-enable-pretty-printing",
+                description = "enable pretty printing",
+                ignoreFailures = false
+            },
+        },
+    }
+
+    -- Create a shallow copy of cppdbg_remote_config modified for lldb
+    -- Use this to start server `lldb-server gdbserver localhost:1234 test`
+    local cppdbg_lldb_remote_config = vim.tbl_extend(
+        "force",
+        cppdbg_remote_config,
+        {
+            name = "Attach to lldbserver :1234",
+            type = "cppdbglldb",
+            MIMode = "lldb",
+            miDebuggerPath = lldb_debugger_path,
+        }
+    )
+
     ---@diagnostic disable-next-line: undefined-field
     dap.configurations.cpp = {
-        {
-            name          = "Launch file",
-            type          = "cppdbg",
-            request       = "launch",
-            program       = function()
-                return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
-            end,
-            args          = function()
-                local argument_string = vim.fn.input("Program arguments: ")
-                return vim.fn.split(argument_string, " ", true)
-            end,
-            cwd           = function()
-                return vim.fn.input("Program working directory: ", vim.fn.getcwd() .. "/", "file")
-            end,
-            setupCommands = {
-                {
-                    text = "-enable-pretty-printing",
-                    description = "enable pretty printing",
-                    ignoreFailures = false
-                },
-            },
-
-            stopAtEntry   = true,
-        },
-        {
-            name = "Attach to gdbserver :1234",
-            type = "cppdbg",
-            request = "launch",
-            MIMode = "gdb",
-            miDebuggerServerAddress = "localhost:1234",
-            miDebuggerPath = "/usr/bin/gdb",
-            cwd = function()
-                return vim.fn.input("Program working directory: ", vim.fn.getcwd() .. "/", "file")
-            end,
-            program = function()
-                return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
-            end,
-            setupCommands = {
-                {
-                    text = "-enable-pretty-printing",
-                    description = "enable pretty printing",
-                    ignoreFailures = false
-                },
-            },
-        },
+        cppdbg_config,
+        cppdbg_lldb_config,
+        cppdbg_remote_config,
+        cppdbg_lldb_remote_config
     }
 
     -- Re-use this for C and Rust
@@ -151,7 +223,10 @@ function M.config()
     dap.configurations.rust = dap.configurations.cpp
 
 
+    ---------------------------------------------------------------------------
     -- Go adapters
+    ---------------------------------------------------------------------------
+
     ---@diagnostic disable-next-line: undefined-field
     dap.adapters.go = function(callback, config)
         -- https://neovim.io/doc/user/luvref.html#uv.new_pipe()
@@ -286,7 +361,10 @@ function M.config()
         }
     }
 
+    ---------------------------------------------------------------------------
     -- Python adapters
+    ---------------------------------------------------------------------------
+
     ---@diagnostic disable-next-line: undefined-field
     dap.adapters.python = {
         type = "executable",
@@ -321,8 +399,10 @@ function M.config()
             name        = "Launch file",
 
             program     = function()
-                return vim.fn.input("Path to file: ",
+                local s = vim.fn.input("Path to file: ",
                     vim.fn.expand("%"), "file")
+                -- remove tailing space
+                return s:gsub("%s+$", "")
             end,
             args        = function()
                 local argument_string = vim.fn.input("Program arguments: ")
@@ -330,8 +410,10 @@ function M.config()
             end,
 
             cwd         = function()
-                return vim.fn.input("Program working directory: ",
+                local s = vim.fn.input("Program working directory: ",
                     vim.fn.getcwd() .. "/", "file")
+                -- remove tailing space
+                return s:gsub("%s+$", "")
             end,
 
             stopAtEntry = true

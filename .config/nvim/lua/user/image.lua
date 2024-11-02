@@ -59,7 +59,8 @@ function M.config()
                 -- Construct command to open image in Preview
                 local command
 
-                if not vim.fn.has("macunix") then
+                ---@diagnostic disable-next-line: undefined-field
+                if not vim.loop.os_uname().sysname == "Darwin" then
                     command = "open "
                 else
                     command = "xdg-open "
