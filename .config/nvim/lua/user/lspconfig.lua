@@ -201,8 +201,9 @@ function M.config()
         -- "--std=c11",
     }
 
-    if not vim.fn.has("macunix") then
-        -- Linux specific exclude this on macunix
+    ---@diagnostic disable-next-line: undefined-field
+    if not vim.loop.os_uname().sysname == "Darwin" then
+        -- Linux specific exclude this on Mac
         table.insert(clangd_cmd, "--enable-config")
         table.insert(clangd_cmd, "--malloc-trim")
     end
@@ -338,8 +339,9 @@ function M.config()
     -- https://www.reddit.com/r/neovim/comments/sazbw6/comment/hw1s6qg/?utm_source=share&utm_medium=web2x&context=3
 
     -- Set heap size to 4GB - https://github.com/microsoft/pyright/issues/3239
-    -- exclude this on macunix, we know it's 4GB, issue is mostly on Ubuntu
-    if not vim.fn.has("macunix") then
+    -- exclude this on Mac, we know it's 4GB, issue is mostly on Ubuntu
+    ---@diagnostic disable-next-line: undefined-field
+    if not vim.loop.os_uname().sysname == "Darwin" then
         local cmd = "node -e 'console.log(v8.getHeapStatistics().total_available_size / 1024 / 1024)'"
         local f = assert(io.popen(cmd, 'r'))
         local s = assert(f:read('*a'))
