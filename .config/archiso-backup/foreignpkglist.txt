@@ -21,6 +21,7 @@ pam-fprint-grosshack
 paru
 picom-git
 ranger-git
+rdrview
 reflector-pacman-hook-git
 sioyek-git
 solarized-colors-iconpack-git
