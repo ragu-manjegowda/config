@@ -36,9 +36,7 @@ function M.config()
             enable = false
         },
         outline = {
-            keys = {
-                expand_collaspe = '<CR>',
-            }
+            layout = "float"
         },
         symbol_in_winbar = {
             show_file = false,
