@@ -3,7 +3,7 @@
 ## Backup
 
 ```shell
-pip freeze > requirements.txt
+pip list --not-required --format=freeze > requirements.txt
 ```
 
 ## Restore
@@ -15,5 +15,5 @@ pip install -r requirements.txt
 ## Upgrade
 
 ```shell
-pip list --outdated --format=columns | awk 'NR>2 {print $1}' | xargs -n1 pip install -U
+pip list --not-required --format=freeze | cut -d= -f1 | xargs -n 1 pip install --upgrade
 ```

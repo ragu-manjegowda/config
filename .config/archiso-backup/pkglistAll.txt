@@ -95,7 +95,7 @@ pipewire-pulse
 playerctl
 python-typing_extensions
 ranger-git
-rdrview
+rdrview-git
 redshift
 refind
 reflector-pacman-hook-git
