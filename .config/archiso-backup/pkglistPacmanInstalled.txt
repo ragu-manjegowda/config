@@ -91,6 +91,7 @@ timeshift
 tmux
 ttf-dejavu
 ttf-hack-nerd
+ueberzugpp
 upower
 vlc
 webkit2gtk

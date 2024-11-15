@@ -29,5 +29,6 @@ subliminal
 sync-pacman-hook-git
 teams
 tgpt-git
+xdg-desktop-portal-termfilechooser-git
 xidlehook
 zoom
