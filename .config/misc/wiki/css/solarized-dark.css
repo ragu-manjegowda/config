@@ -635,6 +635,21 @@ body h5::before {
   font-size: 1em;
 }
 
+.reference-icon {
+  color: #b58900; /* yellow */
+  font-size: 1em;
+}
+
+.resources-icon {
+  color: #719e07; /* green */
+  font-size: 1em;
+}
+
+.important-icon {
+  color: #dc322f; /* red */
+  font-size: 1em;
+}
+
 /* Heading Icons and colors end */
 
 body ul,
