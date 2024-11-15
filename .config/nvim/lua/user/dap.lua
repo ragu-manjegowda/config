@@ -114,18 +114,19 @@ function M.config()
 
     -- On Linux lldb is at /home/linuxbrew/.linuxbrew/bin
     local lldb_debugger_path = "/home/linuxbrew/.linuxbrew/bin/lldb"
+    local lldb_dap_debugger_path = "lldb-dap"
 
     ---@diagnostic disable-next-line: undefined-field
     if vim.loop.os_uname().sysname == "Darwin" then
-        -- On Mac gdb is at /usr/bin
-        lldb_debugger_path = "/usr/bin/lldb"
+        lldb_debugger_path = "/usr/local/opt/llvm/bin/lldb"
+        lldb_dap_debugger_path = "/usr/local/opt/llvm/bin/lldb-dap"
     end
 
     ---@diagnostic disable-next-line: undefined-field
     dap.adapters.cppdbglldb = {
         id = "cppdbglldb",
         type = "executable",
-        command = "lldb-dap",
+        command = lldb_dap_debugger_path,
     }
 
     -- Create a config for cppdbg
@@ -134,6 +135,7 @@ function M.config()
         type          = "cppdbg",
         request       = "launch",
         program       = function()
+            ---@diagnostic disable-next-line: redundant-parameter
             local s = vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
             -- remove tailing space
             return s:gsub("%s+$", "")
@@ -143,6 +145,7 @@ function M.config()
             return vim.fn.split(argument_string, " ", true)
         end,
         cwd           = function()
+            ---@diagnostic disable-next-line: redundant-parameter
             local s = vim.fn.input("Program working directory: ", vim.fn.getcwd() .. "/", "file")
             -- remove tailing space
             return s:gsub("%s+$", "")
@@ -163,7 +166,10 @@ function M.config()
         cppdbg_config,
         {
             name = "Launch file (lldb)",
-            type = "cppdbglldb"
+            type = "cppdbglldb",
+            -- https://github.com/vadimcn/codelldb/issues/258#issuecomment-1296347970
+            initCommands = { "breakpoint set -n main -N entry" },
+            exitCommands = { "breakpoint delete entry" }
         }
     )
 
@@ -177,11 +183,13 @@ function M.config()
         miDebuggerServerAddress = "localhost:1234",
         miDebuggerPath = gdb_debugger_path,
         cwd = function()
+            ---@diagnostic disable-next-line: redundant-parameter
             local s = vim.fn.input("Program working directory: ", vim.fn.getcwd() .. "/", "file")
             -- remove tailing space
             return s:gsub("%s+$", "")
         end,
         program = function()
+            ---@diagnostic disable-next-line: redundant-parameter
             local s = vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
             -- remove tailing space
             return s:gsub("%s+$", "")
@@ -201,20 +209,35 @@ function M.config()
         "force",
         cppdbg_remote_config,
         {
-            name = "Attach to lldbserver :1234",
-            type = "cppdbglldb",
-            MIMode = "lldb",
+            name           = "Attach to lldbserver :1234",
+            type           = "cppdbglldb",
+            MIMode         = "lldb",
             miDebuggerPath = lldb_debugger_path,
+            -- lldb-server expects argument to be passed in
+            args           = function()
+                local argument_string = vim.fn.input("Program arguments: ")
+                return vim.fn.split(argument_string, " ", true)
+            end,
+            -- https://github.com/vadimcn/codelldb/issues/258#issuecomment-1296347970
+            initCommands   = { "breakpoint set -n main -N entry" },
+            exitCommands   = { "breakpoint delete entry" }
         }
     )
 
     ---@diagnostic disable-next-line: undefined-field
     dap.configurations.cpp = {
-        cppdbg_config,
         cppdbg_lldb_config,
-        cppdbg_remote_config,
         cppdbg_lldb_remote_config
     }
+
+    -- GDB needs code signing on mac, stick to lldb
+    ---@diagnostic disable-next-line: undefined-field
+    if vim.loop.os_uname().sysname ~= "Darwin" then
+        ---@diagnostic disable-next-line: undefined-field
+        table.insert(dap.configurations.cpp, cppdbg_config)
+        ---@diagnostic disable-next-line: undefined-field
+        table.insert(dap.configurations.cpp, cppdbg_remote_config)
+    end
 
     -- Re-use this for C and Rust
     ---@diagnostic disable-next-line: undefined-field
@@ -400,6 +423,7 @@ function M.config()
 
             program     = function()
                 local s = vim.fn.input("Path to file: ",
+                    ---@diagnostic disable-next-line: redundant-parameter
                     vim.fn.expand("%"), "file")
                 -- remove tailing space
                 return s:gsub("%s+$", "")
@@ -411,6 +435,7 @@ function M.config()
 
             cwd         = function()
                 local s = vim.fn.input("Program working directory: ",
+                    ---@diagnostic disable-next-line: redundant-parameter
                     vim.fn.getcwd() .. "/", "file")
                 -- remove tailing space
                 return s:gsub("%s+$", "")
