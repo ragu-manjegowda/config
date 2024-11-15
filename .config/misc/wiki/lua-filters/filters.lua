@@ -26,11 +26,12 @@ end
 --
 -------------------------------------------------------------------------------
 
--- Pandoc somehow does not add blockquote for [!Note] and [!Tip]
+-- Pandoc somehow does not add blockquote for [!Note], [!Tip] and [!Important]
 -- Fix it and add icon to Note and then convert to BlockQuote
 function Div(el)
     -- Check if the Div has the class "note"
-    if el.classes:includes("note") or el.classes:includes("tip") then
+    if el.classes:includes("note") or el.classes:includes("tip") or
+        el.classes:includes("important") then
         -- Check if the Div has the class "title"
         -- [Div ("",["title"],[]) [Para [Str "Note"]],Para [Str "..."]]
 
@@ -44,20 +45,35 @@ function Div(el)
                     if block.t == "Para" and
                         #block.content == 1 and
                         block.content[1].t == "Str" then
+                        local text = ""
+                        local assignModified = false
+
                         if block.content[1].text == "Note" then
                             -- Prepend the icon to the "Note" text
-                            local note_text = pandoc.Span(pandoc.Str("  Note"), { class = "note-icon" })
-                            block.content[1] = note_text
-
-                            -- Assign the modified block to the Div
-                            innerBlock.content[i] = block
+                            text = pandoc.Span(
+                                pandoc.Str("  Note"),
+                                { class = "note-icon" })
+                            assignModified = true
                         end
 
                         if block.content[1].text == "Tip" then
                             -- Prepend the icon to the "Tip" text
-                            local tip_text = pandoc.Span(pandoc.Str("  Tip"), { class = "tip-icon" })
-                            block.content[1] = tip_text
+                            text = pandoc.Span(
+                                pandoc.Str("  Tip"),
+                                { class = "tip-icon" })
+                            assignModified = true
+                        end
 
+                        if block.content[1].text == "Important" then
+                            -- Prepend the icon to the "Tip" text
+                            text = pandoc.Span(
+                                pandoc.Str("󰨄  Important"),
+                                { class = "important-icon" })
+                            assignModified = true
+                        end
+
+                        if assignModified then
+                            block.content[1] = text
                             -- Assign the modified block to the Div
                             innerBlock.content[i] = block
                         end
@@ -80,52 +96,70 @@ function Div(el)
     return el
 end
 
--- Add icon to [!Info], [!Check], [!Help]
+-- Add icon to [!Info], [!Check], [!Help], [!Reference], [!Resource]
 function BlockQuote(el)
     for _, block in ipairs(el.content) do
         -- Check if the block is a Para (paragraph)
         if block.t == "Para" then
             local firstElem = block.content[1]
 
+            local addLineBreak = false
+            local text = ""
+
             -- Check if the first element is a Str (string) that matches "[!Info]"
             if firstElem and firstElem.t == "Str" then
                 if firstElem.text == "[!Info]" then
                     -- Replace the text with "Info" and prepend an icon
-                    local info_text = pandoc.Span(pandoc.Str("  Info"), { class = "info-icon" })
-                    block.content[1] = info_text
+                    text = pandoc.Span(
+                        pandoc.Str("  Info"),
+                        { class = "info-icon" })
 
-                    -- Insert a line break after "Info"
-                    table.insert(block.content, 2, pandoc.LineBreak())
-
-                    -- Remove any extra space that may follow "[!Info]"
-                    if block.content[3] and block.content[3].t == "Space" then
-                        table.remove(block.content, 3)
-                    end
+                    addLineBreak = true
                 end
 
                 if firstElem.text == "[!Check]" then
                     -- Replace the text with "Check" and prepend an icon
-                    local check_text = pandoc.Span(pandoc.Str("  Check"), { class = "check-icon" })
-                    block.content[1] = check_text
+                    text = pandoc.Span(
+                        pandoc.Str("  Check"),
+                        { class = "check-icon" })
 
-                    -- Insert a line break after "Check"
-                    table.insert(block.content, 2, pandoc.LineBreak())
-
-                    -- Remove any extra space that may follow "[!Check]"
-                    if block.content[3] and block.content[3].t == "Space" then
-                        table.remove(block.content, 3)
-                    end
+                    addLineBreak = true
                 end
 
                 if firstElem.text == "[!Help]" then
                     -- Replace the text with "Help" and prepend an icon
-                    local help_text = pandoc.Span(pandoc.Str("  Help"), { class = "help-icon" })
-                    block.content[1] = help_text
+                    text = pandoc.Span(
+                        pandoc.Str("  Help"),
+                        { class = "help-icon" })
 
-                    -- Insert a line break after "Help"
+                    addLineBreak = true
+                end
+
+                if firstElem.text == "[!Reference]" or firstElem.text == "[!References]" then
+                    -- Replace the text with "Reference" and prepend an icon
+                    text = pandoc.Span(
+                        pandoc.Str("  Reference"),
+                        { class = "reference-icon" })
+
+                    addLineBreak = true
+                end
+
+                if firstElem.text == "[!Resources]" or firstElem.text == "[!Resources]" then
+                    -- Replace the text with "Resource" and prepend an icon
+                    text = pandoc.Span(
+                        pandoc.Str("  Resources"),
+                        { class = "resources-icon" })
+
+                    addLineBreak = true
+                end
+
+                if addLineBreak then
+                    block.content[1] = text
+
+                    -- Insert a line break after "Tag"
                     table.insert(block.content, 2, pandoc.LineBreak())
 
-                    -- Remove any extra space that may follow "[!Help]"
+                    -- Remove any extra space that may follow "[!Tag]"
                     if block.content[3] and block.content[3].t == "Space" then
                         table.remove(block.content, 3)
                     end
