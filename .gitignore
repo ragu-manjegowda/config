@@ -8,14 +8,14 @@
 /.config/zim/*
 !/.config/zim/style.conf
 
-!/.local
-
 /.local/*
 !/.local/bin
 /.local/bin/render-wiki.sh-e
-
-# .local/share/*
-# !.local/share/applications
+!/.local/share
+/.local/share/*
+!/.local/share/applications
+/.local/share/applications/*
+!/.local/share/applications/nvim-usercreated.desktop
 
 ################################################################################
 ################## Regular ignores #############################################
@@ -117,7 +117,6 @@
 /.config/lxqt
 /.config/maglev
 /.config/menus
-/.config/mimeapps.list
 /.config/monitors-v1-backup.xml
 /.config/monitors.xml
 /.config/monitors.xml~

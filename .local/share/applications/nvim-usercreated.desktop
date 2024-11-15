@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+GenericName=
+Name=nvim
+Comment=
+Exec=nvim
+TryExec=
+Icon=
+MimeType=text/plain
+Terminal=false
+NoDisplay=true
+
