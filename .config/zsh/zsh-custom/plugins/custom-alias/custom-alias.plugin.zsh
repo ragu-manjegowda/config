@@ -718,7 +718,7 @@ function watch-email() {
     killall notify.sh 2>/dev/null
 
     # Start goimapnotify
-    goimapnotify -conf ~/.config/imapnotify/imapnotify.conf > \
+    goimapnotify -conf ~/.config/imapnotify/imapnotify.yaml > \
         ~/.cache/awesome/imapnotify.log 2>&1 &
     disown %goimapnotify
 

@@ -4,6 +4,7 @@ awmtt
 check-broken-packages-pacman-hook-git
 cyrus-sasl-xoauth2-git
 find-cursor
+goimapnotify-git
 google-chrome
 gtk-theme-numix-solarized
 librewolf

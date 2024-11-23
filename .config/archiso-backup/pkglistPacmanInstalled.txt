@@ -23,7 +23,6 @@ fribidi
 fuse2
 gcr
 git
-goimapnotify
 gst-plugin-pipewire
 gst-plugins-good
 imagemagick

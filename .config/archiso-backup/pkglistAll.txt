@@ -29,7 +29,7 @@ fribidi
 fuse2
 gcr
 git
-goimapnotify
+goimapnotify-git
 google-chrome
 gst-plugin-pipewire
 gst-plugins-good
