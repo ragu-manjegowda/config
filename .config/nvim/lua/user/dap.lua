@@ -107,13 +107,13 @@ function M.config()
             "mason",
             "bin",
             "OpenDebugAD7"
-        },
+        }
     }
 
     --- LLDB adapter
 
     -- On Linux lldb is at /home/linuxbrew/.linuxbrew/bin
-    local lldb_debugger_path = "/home/linuxbrew/.linuxbrew/bin/lldb"
+    local lldb_debugger_path
     local lldb_dap_debugger_path = "lldb-dap"
 
     ---@diagnostic disable-next-line: undefined-field
@@ -123,14 +123,19 @@ function M.config()
     end
 
     ---@diagnostic disable-next-line: undefined-field
-    dap.adapters.cppdbglldb = {
+    dap.adapters.cppdbglldb             = {
         id = "cppdbglldb",
         type = "executable",
         command = lldb_dap_debugger_path,
     }
 
+    local display_env                   = {
+        -- export DISPLAY=:0.0
+        DISPLAY = os.getenv "DISPLAY",
+    }
+
     -- Create a config for cppdbg
-    local cppdbg_config = {
+    local cppdbg_config                 = {
         name          = "Launch file (gdb)",
         type          = "cppdbg",
         request       = "launch",
@@ -157,25 +162,27 @@ function M.config()
                 ignoreFailures = false
             },
         },
+        env           = display_env,
         stopAtEntry   = true
     }
 
     -- Create a shallow copy of cppdbg_config modified for lldb
-    local cppdbg_lldb_config = vim.tbl_extend(
+    local cppdbg_lldb_config            = vim.tbl_extend(
         "force",
         cppdbg_config,
         {
-            name = "Launch file (lldb)",
-            type = "cppdbglldb",
+            name         = "Launch file (lldb)",
+            type         = "cppdbglldb",
             -- https://github.com/vadimcn/codelldb/issues/258#issuecomment-1296347970
             initCommands = { "breakpoint set -n main -N entry" },
-            exitCommands = { "breakpoint delete entry" }
+            exitCommands = { "breakpoint delete entry" },
+            stopOnEntry  = false
         }
     )
 
     -- Create a config for cppdbg remote
     -- Use this to start server `gdbserver localhost:1234 test`
-    local cppdbg_remote_config = {
+    local cppdbg_remote_config          = {
         name = "Attach to gdbserver :1234",
         type = "cppdbg",
         request = "launch",
@@ -201,11 +208,12 @@ function M.config()
                 ignoreFailures = false
             },
         },
+        stopAtEntry = true
     }
 
-    -- Create a shallow copy of cppdbg_remote_config modified for lldb
-    -- Use this to start server `lldb-server gdbserver localhost:1234 test`
-    local cppdbg_lldb_remote_config = vim.tbl_extend(
+    -- Create a shallow copy of cppdbg_remote_config modified for lldb (MacOS)
+    -- Use this to start server `/usr/local/opt/llvm/bin/lldb-server platform --listen localhost:1234`
+    local cppdbg_lldb_remote_config_mac = vim.tbl_extend(
         "force",
         cppdbg_remote_config,
         {
@@ -213,21 +221,39 @@ function M.config()
             type           = "cppdbglldb",
             MIMode         = "lldb",
             miDebuggerPath = lldb_debugger_path,
-            -- lldb-server expects argument to be passed in
             args           = function()
                 local argument_string = vim.fn.input("Program arguments: ")
                 return vim.fn.split(argument_string, " ", true)
             end,
             -- https://github.com/vadimcn/codelldb/issues/258#issuecomment-1296347970
             initCommands   = { "breakpoint set -n main -N entry" },
-            exitCommands   = { "breakpoint delete entry" }
+            exitCommands   = { "breakpoint delete entry" },
+            stopOnEntry    = false
+        }
+    )
+
+    -- Create a shallow copy of cppdbg_remote_config modified for lldb
+    -- Use this to start server `lldb-server gdbserver localhost:1234 test`
+    local cppdbg_lldb_remote_config     = vim.tbl_extend(
+        "force",
+        cppdbg_remote_config,
+        {
+            name           = "Attach to lldbserver :1234",
+            type           = "cppdbglldb",
+            request        = "attach",
+            cwd            = "",
+            args           = "",
+            attachCommands = { "gdb-remote 1234" },
+            -- https://github.com/vadimcn/codelldb/issues/258#issuecomment-1296347970
+            initCommands   = { "breakpoint set -n main -N entry" },
+            exitCommands   = { "breakpoint delete entry" },
+            stopOnEntry    = false
         }
     )
 
     ---@diagnostic disable-next-line: undefined-field
-    dap.configurations.cpp = {
+    dap.configurations.cpp              = {
         cppdbg_lldb_config,
-        cppdbg_lldb_remote_config
     }
 
     -- GDB needs code signing on mac, stick to lldb
@@ -237,6 +263,11 @@ function M.config()
         table.insert(dap.configurations.cpp, cppdbg_config)
         ---@diagnostic disable-next-line: undefined-field
         table.insert(dap.configurations.cpp, cppdbg_remote_config)
+        ---@diagnostic disable-next-line: undefined-field
+        table.insert(dap.configurations.cpp, cppdbg_lldb_remote_config)
+    else
+        ---@diagnostic disable-next-line: undefined-field
+        table.insert(dap.configurations.cpp, cppdbg_lldb_remote_config_mac)
     end
 
     -- Re-use this for C and Rust
