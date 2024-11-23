@@ -18,6 +18,9 @@ function M.config()
             on_enable = function(_, win)
                 vim.wo[win].conceallevel = 2;
                 vim.wo[win].concealcursor = "n";
+                vim.wo[win].foldmethod = "expr";
+                vim.wo[win].foldexpr = "nvim_treesitter#foldexpr()";
+                vim.wo[win].foldlevel = 2
             end
         },
         --- Configuration for custom block quotes
@@ -102,6 +105,20 @@ function M.config()
                 value = {
                     fg = vim.g.gui_cyan,
                     bg = vim.g.gui_base02
+                }
+            }
+        },
+        injections = {
+            languages = {
+                markdown = {
+                    --- This disables other
+                    --- injected queries!
+                    overwrite = true,
+                    query = [[
+                    (section
+                        (atx_headng) @injections.mkv.fold
+                        (#set! @fold))
+                ]]
                 }
             }
         }
