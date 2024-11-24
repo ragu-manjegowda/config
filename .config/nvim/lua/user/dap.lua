@@ -102,14 +102,7 @@ function M.config()
 
     --- GDB adapter
 
-    -- On Linux gdb is at /home/linuxbrew/.linuxbrew/bin
-    local gdb_debugger_path = "/home/linuxbrew/.linuxbrew/bin/gdb"
-
-    ---@diagnostic disable-next-line: undefined-field
-    if vim.loop.os_uname().sysname == "Darwin" then
-        -- On Mac gdb is at /usr/bin
-        gdb_debugger_path = "/usr/bin/gdb"
-    end
+    local gdb_debugger_path = "gdb"
 
     ---@diagnostic disable-next-line: undefined-field
     dap.adapters.cppdbg = {
@@ -126,12 +119,12 @@ function M.config()
 
     --- LLDB adapter
 
-    -- On Linux lldb is at /home/linuxbrew/.linuxbrew/bin
     local lldb_debugger_path
     local lldb_dap_debugger_path = "lldb-dap"
 
     ---@diagnostic disable-next-line: undefined-field
     if vim.loop.os_uname().sysname == "Darwin" then
+        -- On Mac lldb is at `/usr/local/opt/llvm/bin`
         lldb_debugger_path = "/usr/local/opt/llvm/bin/lldb"
         lldb_dap_debugger_path = "/usr/local/opt/llvm/bin/lldb-dap"
     end
@@ -163,7 +156,7 @@ function M.config()
         local executables = opts.executables == nil and true or opts.executables
         local directories = opts.dir == nil and true or opts.dir
 
-        if utils.isBazelProject() then
+        if utils.is_bazel_project() then
             -- Bazel puts sandbox under folder named `*.runfiles`
             filter = function(filepath)
                 return string.find(filepath, "runfiles") ~= nil

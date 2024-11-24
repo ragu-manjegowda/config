@@ -100,7 +100,7 @@ return {
         -- Start imapnotify
         --'systemctl --user reload-or-restart goimapnotify.service',
         'killall -9 goimapnotify &>/dev/null; ' ..
-        'goimapnotify -conf ~/.config/imapnotify/imapnotify.conf ' ..
+        'goimapnotify -conf ~/.config/imapnotify/imapnotify.yaml ' ..
         '> ~/.cache/awesome/imapnotify.log 2>&1 &',
         '~/.config/imapnotify/notify.sh',
         -- Sleep hook to update wallpaper when coming back from sleep
