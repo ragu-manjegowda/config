@@ -144,4 +144,138 @@ vim.api.nvim_create_autocmd('DirChanged', {
     end,
 })
 
+-- Check if the current directory is a Bazel project
+---@return boolean
+function M.isBazelProject()
+    -- Check if either BUILD or WORKSPACE files exist in the project directory
+    -- Define patterns for Bazel files (BUILD and WORKSPACE)
+    local cwd = vim.fn.getcwd()
+    local build_file_pattern = cwd .. '/BUILD'
+    local workspace_file_pattern = cwd .. '/WORKSPACE'
+
+    local has_build_file = vim.fn.filereadable(build_file_pattern) == 1
+    local has_workspace_file = vim.fn.filereadable(workspace_file_pattern) == 1
+
+    if has_build_file or has_workspace_file then
+        return true
+    else
+        return false
+    end
+end
+
+-- Reference
+-- github.com/mfussenegger/nvim-dap/blob/6bf4de67dbe90271608e1c81797e5edc79ec6335/lua/dap/ui.lua#L42
+function M.pick_one_sync(items, prompt, label_fn)
+    local choices = { prompt }
+    for i, item in ipairs(items) do
+        table.insert(choices, string.format('%d: %s', i, label_fn(item)))
+    end
+    local choice = vim.fn.inputlist(choices)
+    if choice < 1 or choice > #items then
+        return nil
+    end
+    return items[choice]
+end
+
+function M.pick_one(items, prompt, label_fn, cb)
+    local co
+    if not cb then
+        co = coroutine.running()
+        if co then
+            cb = function(item)
+                coroutine.resume(co, item)
+            end
+        end
+    end
+    cb = vim.schedule_wrap(cb)
+    if vim.ui then
+        vim.ui.select(items, {
+            prompt = prompt,
+            format_item = label_fn,
+        }, cb)
+    else
+        local result = M.pick_one_sync(items, prompt, label_fn)
+        cb(result)
+    end
+    if co then
+        return coroutine.yield()
+    end
+end
+
+-- Utility functions to pick a file or directory using ui select
+--
+-- Reference:
+-- github.com/mfussenegger/nvim-dap/blob/7bf34e0917d5daa6a397a9ba51f3d13d67cacb48/lua/dap/utils.lua#L278
+--
+-- Modified to fit needs
+
+---@param opts {
+---filter?: string|(fun(name: string):boolean),
+---executables?: boolean, directories?: boolean}
+---@return string[]
+local function get_files(path, opts)
+    local filter = function(_) return true end
+    if opts.filter then
+        if type(opts.filter) == "string" then
+            filter = function(filepath)
+                return filepath:find(opts.filter)
+            end
+        elseif type(opts.filter) == "function" then
+            filter = function(filepath)
+                return opts.filter(filepath)
+            end
+        else
+            error('opts.filter must be a string or a function')
+        end
+    end
+
+    local cmd
+    if opts.directories then
+        cmd = { "find", path, "-type", "d" }
+    else
+        cmd = { "find", path, "-type", "f" }
+        if opts.executables then
+            -- The order of options matters!
+            table.insert(cmd, "-executable")
+        end
+    end
+    table.insert(cmd, "-follow")
+
+    local output = vim.fn.system(cmd)
+    return vim.tbl_filter(filter, vim.split(output, '\n'))
+end
+
+---@param opts? {
+---filter?: string|(fun(name: string): boolean),
+---executables?: boolean, directories?: boolean,
+---prompt?: string, path?: string }
+---@return string|nil
+function M.pick_file(opts)
+    opts = opts or {}
+    local executables = opts.executables == nil and true or opts.executables
+    local directories = opts.directories == nil and true or opts.directories
+    local prompt = opts.prompt or "Pick a file:"
+    local path = opts.path or vim.fn.getcwd()
+    local files = get_files(path, {
+        filter = opts.filter,
+        executables = executables,
+        directories = directories
+    })
+
+    local co, ismain = coroutine.running()
+    local pick = (co and not ismain) and M.pick_one or M.pick_one_sync
+
+    if not vim.endswith(path, "/") then
+        path = path .. "/"
+    end
+
+    ---@param abspath string
+    ---@return string
+    local function relpath(abspath)
+        local _, end_ = abspath:find(path)
+        return end_ and abspath:sub(end_ + 1) or abspath
+    end
+    return pick(files, prompt, relpath)
+end
+
 return M

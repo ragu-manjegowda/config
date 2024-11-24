@@ -233,15 +233,14 @@ function M.config()
     local bazel_workspace_dir = ""
     local goroot = ""
 
-    -- Define patterns for Bazel files (BUILD and WORKSPACE)
-    local build_file_pattern = cwd .. '/BUILD'
-    local workspace_file_pattern = cwd .. '/WORKSPACE'
+    local utils
+    res, utils = pcall(require, "user.utils")
+    if not res then
+        vim.notify("user.utils not found", vim.log.levels.ERROR)
+        return
+    end
 
-    -- Check if either BUILD or WORKSPACE files exist in the project directory
-    local has_build_file = vim.fn.filereadable(build_file_pattern) == 1
-    local has_workspace_file = vim.fn.filereadable(workspace_file_pattern) == 1
-
-    if has_build_file or has_workspace_file then
+    if utils.isBazelProject() then
         gopackagesdriver = cwd .. "/scripts/gopackagesdriver.sh"
         if vim.fn.filereadable(gopackagesdriver) ~= 1 then
             gopackagesdriver = ""
