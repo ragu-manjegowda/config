@@ -66,6 +66,20 @@ function M.config()
         })
     end
 
+    local utils
+    res, utils = pcall(require, "user.utils")
+    if not res then
+        vim.notify("user.utils not found", vim.log.levels.ERROR)
+        return
+    end
+
+    local dap_utils
+    res, dap_utils = pcall(require, "dap.utils")
+    if not res then
+        vim.notify("dap.utils not found", vim.log.levels.ERROR)
+        return
+    end
+
     -- Shift the focus to terminal, avoid focusing buffer in insert mode
     -- because of TermOpen autocmd
     ---@diagnostic disable-next-line: undefined-field
@@ -134,27 +148,86 @@ function M.config()
         DISPLAY = os.getenv "DISPLAY",
     }
 
+    -- DAP Pick file filter for bazel projects
+    -- Choose only from runfiles sandbox under bazel-bin
+    ---@param opts? { dir: boolean, executables?: boolean }
+    ---@return {
+    ---path?: string, filter?: string|(fun(name: string): boolean),
+    ---executables?: boolean, directories?: boolean, prompt?: string }
+    local bazel_filter                  = function(opts)
+        local filter = nil
+        local file_path = nil
+        local prompt = nil
+
+        opts = opts or {}
+        local executables = opts.executables == nil and true or opts.executables
+        local directories = opts.dir == nil and true or opts.dir
+
+        if utils.isBazelProject() then
+            -- Bazel puts sandbox under folder named `*.runfiles`
+            filter = function(filepath)
+                return string.find(filepath, "runfiles") ~= nil
+            end
+
+            file_path = vim.fn.getcwd() .. "/bazel-bin"
+            executables = false
+        else
+            -- For non interpreted projects (python) do not look for executables
+            -- opts.executables is set to false explicitly
+            if opts.executables == nil then
+                executables = true
+            end
+        end
+
+        if directories == true then
+            prompt = "Pick a directory:"
+        else
+            if executables == true then
+                prompt = "Pick an executable:"
+            else
+                prompt = "Pick a file:"
+            end
+        end
+
+        return {
+            path = file_path,
+            filter = filter,
+            executables = executables,
+            directories = directories,
+            prompt = prompt
+        }
+    end
+
+    ---@param directory boolean
+    ---@return string|thread
+    local pick_file_or_directory        = function(directory)
+        local opts = bazel_filter({ dir = directory })
+        local filepath = utils.pick_file(opts)
+        ---@diagnostic disable-next-line: undefined-field
+        return filepath or dap.ABORT
+    end
+
+    ---@return string|thread
+    local pick_program                  = function()
+        return pick_file_or_directory(false)
+    end
+
+    ---@return string|thread
+    local pick_cwd                      = function()
+        return pick_file_or_directory(true)
+    end
+
     -- Create a config for cppdbg
     local cppdbg_config                 = {
         name          = "Launch file (gdb)",
         type          = "cppdbg",
         request       = "launch",
-        program       = function()
-            ---@diagnostic disable-next-line: redundant-parameter
-            local s = vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
-            -- remove tailing space
-            return s:gsub("%s+$", "")
-        end,
+        program       = pick_program,
         args          = function()
             local argument_string = vim.fn.input("Program arguments: ")
             return vim.fn.split(argument_string, " ", true)
         end,
-        cwd           = function()
-            ---@diagnostic disable-next-line: redundant-parameter
-            local s = vim.fn.input("Program working directory: ", vim.fn.getcwd() .. "/", "file")
-            -- remove tailing space
-            return s:gsub("%s+$", "")
-        end,
+        cwd           = pick_cwd,
         setupCommands = {
             {
                 text = "-enable-pretty-printing",
@@ -189,18 +262,8 @@ function M.config()
         MIMode = "gdb",
         miDebuggerServerAddress = "localhost:1234",
         miDebuggerPath = gdb_debugger_path,
-        cwd = function()
-            ---@diagnostic disable-next-line: redundant-parameter
-            local s = vim.fn.input("Program working directory: ", vim.fn.getcwd() .. "/", "file")
-            -- remove tailing space
-            return s:gsub("%s+$", "")
-        end,
-        program = function()
-            ---@diagnostic disable-next-line: redundant-parameter
-            local s = vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
-            -- remove tailing space
-            return s:gsub("%s+$", "")
-        end,
+        cwd = cppdbg_config.cwd,
+        program = cppdbg_config.program,
         setupCommands = {
             {
                 text = "-enable-pretty-printing",
@@ -221,10 +284,7 @@ function M.config()
             type           = "cppdbglldb",
             MIMode         = "lldb",
             miDebuggerPath = lldb_debugger_path,
-            args           = function()
-                local argument_string = vim.fn.input("Program arguments: ")
-                return vim.fn.split(argument_string, " ", true)
-            end,
+            args           = cppdbg_config.args,
             -- https://github.com/vadimcn/codelldb/issues/258#issuecomment-1296347970
             initCommands   = { "breakpoint set -n main -N entry" },
             exitCommands   = { "breakpoint delete entry" },
@@ -352,13 +412,13 @@ function M.config()
             -- Compile with
             --      * `go build -gcflags="all=-N -l" -o target_name`
             --      * `bazel build -c dbg //path_to_target`
-            -- dlv exec --headless -l=:38697 ./goimapnotify -- -conf /home/ragu/.config/imapnotify/imapnotify.conf
+            -- dlv exec --headless -l=:1234 ./goimapnotify -- -conf /home/ragu/.config/imapnotify/imapnotify.conf
             type           = "go",
             name           = "Attach",
             mode           = "remote",
             request        = "attach",
-            port           = "38697",
-            processId      = require("dap.utils").pick_process,
+            port           = "1234",
+            processId      = dap_utils.pick_process,
             trace          = "log",
             logOutput      = "rpc",
             substitutePath = {
@@ -440,8 +500,8 @@ function M.config()
     dap.adapters.remote_python = function(callback)
         callback({
             type = "server",
-            host = "localhost",
-            port = 3000,
+            host = "127.0.0.1",
+            port = 1234,
         })
     end
 
@@ -451,38 +511,29 @@ function M.config()
             type        = "python",
             request     = "launch",
             name        = "Launch file",
-
-            program     = function()
-                local s = vim.fn.input("Path to file: ",
-                    ---@diagnostic disable-next-line: redundant-parameter
-                    vim.fn.expand("%"), "file")
-                -- remove tailing space
-                return s:gsub("%s+$", "")
-            end,
+            program     = pick_program,
             args        = function()
                 local argument_string = vim.fn.input("Program arguments: ")
                 return vim.fn.split(argument_string, " ", true)
             end,
-
-            cwd         = function()
-                local s = vim.fn.input("Program working directory: ",
-                    ---@diagnostic disable-next-line: redundant-parameter
-                    vim.fn.getcwd() .. "/", "file")
-                -- remove tailing space
-                return s:gsub("%s+$", "")
-            end,
-
-            stopAtEntry = true
+            cwd         = pick_cwd,
+            stopOnEntry = true
         },
+        -- Use the following to start a server
+        -- `python -m debugpy --listen 1234 --wait-for-client target.py`
+        -- Within Neovim, set breakpoint and run `lua require('dap').continue()`
+        --
+        -- For Address already in use error, use the following
+        -- `fuser -k 1234/tcp`
         {
             type = "remote_python",
             request = "attach",
             name = "Remote attach",
-            port = 3000,
-            host = "localhost",
-
-            stopAtEntry = true
-        },
+            port = 1234,
+            host = "127.0.0.1",
+            redirectOutput = true,
+            stopOnEntry = true
+        }
     }
 end
 
