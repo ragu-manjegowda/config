@@ -240,7 +240,7 @@ function M.config()
         return
     end
 
-    if utils.isBazelProject() then
+    if utils.is_bazel_project() then
         gopackagesdriver = cwd .. "/scripts/gopackagesdriver.sh"
         if vim.fn.filereadable(gopackagesdriver) ~= 1 then
             gopackagesdriver = ""

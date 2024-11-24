@@ -146,7 +146,7 @@ vim.api.nvim_create_autocmd('DirChanged', {
 
 -- Check if the current directory is a Bazel project
 ---@return boolean
-function M.isBazelProject()
+function M.is_bazel_project()
     -- Check if either BUILD or WORKSPACE files exist in the project directory
     -- Define patterns for Bazel files (BUILD and WORKSPACE)
     local cwd = vim.fn.getcwd()
