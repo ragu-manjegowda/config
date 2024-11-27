@@ -29,6 +29,9 @@ local function on_attach(client, bufnr)
     -- buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
     vim.opt.omnifunc = "v:lua.vim.lsp.omnifunc"
 
+    map({ 'n', 'v' }, '<leader>lD', '<cmd>lua vim.lsp.buf.declaration()<CR>',
+        { silent = true, desc = 'LSP goto declaration' })
+
     map({ 'n', 'v' }, '<leader>lf', '<cmd>lua vim.lsp.buf.format()<CR>',
         { silent = true, desc = 'LSP formatting' })
 
