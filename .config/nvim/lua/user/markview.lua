@@ -14,15 +14,6 @@ function M.config()
 
     markview.setup({
         modes = { "c", "n", "no", "v" },
-        callbacks = {
-            on_enable = function(_, win)
-                vim.wo[win].conceallevel = 2;
-                vim.wo[win].concealcursor = "n";
-                vim.wo[win].foldmethod = "expr";
-                vim.wo[win].foldexpr = "nvim_treesitter#foldexpr()";
-                vim.wo[win].foldlevel = 2
-            end
-        },
         --- Configuration for custom block quotes
         block_quotes = {
             callouts = {
