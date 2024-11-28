@@ -24,7 +24,13 @@ screen.connect_signal(
 function UPDATE_BARS_VISIBILITY()
     for s in screen do
         if s.selected_tag then
-            local fullscreen = s.selected_tag.fullscreen_mode
+            local fullscreen = false
+            for _, client in ipairs(s.selected_tag:clients()) do
+                if client.fullscreen then
+                    fullscreen = true
+                    break -- Exit loop if any client is fullscreen
+                end
+            end
             -- Order matter here for shadow
             s.top_panel.visible = not fullscreen
             if s.control_center then
