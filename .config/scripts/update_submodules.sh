@@ -9,6 +9,9 @@ git checkout master
 cd ~/.config/awesome/library/revelation || exit
 git checkout master
 
+cd ~/.config/firefox/potatofox || exit
+git checkout main
+
 cd ~/.config/fzf-git || exit
 git checkout main
 
