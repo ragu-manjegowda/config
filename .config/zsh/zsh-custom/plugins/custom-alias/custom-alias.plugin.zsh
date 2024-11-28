@@ -80,7 +80,7 @@ alias cpush='config push'
 alias cst='config status'
 alias cstv='cvim +Git +only'
 # alias csu='config submodule update --remote --rebase'
-alias csu='config submodule foreach git pull --recurse-submodules --rebase'
+alias csu='config submodule foreach git pull --recurse-submodules --rebase --autostash'
 
 compdef _git config
 

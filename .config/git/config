@@ -84,6 +84,12 @@
 [push]
     autoSetupRemote = true
 
+[pull]
+    rebase = true
+
+[rebase]
+    autoStash = true
+
 ; https://www.youtube.com/watch?v=aolI_Rz0ZqY
 ; Reuse Recorded Resolution during merge conflicts
 [rerere]
