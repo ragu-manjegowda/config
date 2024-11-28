@@ -88,3 +88,8 @@
 	url = https://github.com/Ajatt-Tools/autosubsync-mpv
 	update = rebase
 	branch = main
+[submodule ".config/firefox/potatofox"]
+	path = .config/firefox/potatofox
+	url = https://codeberg.org/awwpotato/potatofox.git
+	update = rebase
+	branch = main
