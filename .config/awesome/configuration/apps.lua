@@ -67,6 +67,8 @@ return {
         -- Compositor
         'picom -b --dbus --config ' .. config_dir ..
         'configuration/picom.conf',
+        -- Color profile
+        'xcalib -d :0 ' .. config_dir .. 'configuration/sRGB-v2-magic.icc',
         -- Network applet
         'nm-applet',
         -- Blueman applet

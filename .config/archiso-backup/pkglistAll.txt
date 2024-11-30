@@ -129,6 +129,7 @@ webkit2gtk
 webkit2gtk-4.1
 woff2
 x264
+xcalib
 xclip
 xdg-desktop-portal-termfilechooser-git
 xidlehook
