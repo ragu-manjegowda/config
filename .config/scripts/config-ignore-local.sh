@@ -156,10 +156,12 @@ config update-index --assume-unchanged \
     .config/awesome/widget/xdg-folders/icons/yes.svg \
     .config/chrome-flags.conf \
     .config/git/config \
+    .config/gtk-3.0/settings.ini \
     .config/nvim/lua/user/colorscheme.lua \
     .config/rofi/config.rasi \
     .config/sioyek/prefs_user.config \
     .config/termshark/termshark.toml \
     .config/xsettingsd/xsettingsd.conf \
+    .gtkrc-2.0 \
     .icons/default/index.theme \
     .local/bin/render-wiki.sh
