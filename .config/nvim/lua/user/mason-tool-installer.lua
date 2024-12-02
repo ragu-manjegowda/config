@@ -18,6 +18,7 @@ function M.config()
         -- start; they should be the names Mason uses for each tool
         ensure_installed = {
             "bash-language-server",
+            "biome",
             "bzl",      -- starlark
             "clangd",
             "cpptools", -- c/cpp/rust debugging
