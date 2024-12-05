@@ -234,9 +234,16 @@ local function get_files(path, opts)
         cmd = { "find", path, "-type", "d" }
     else
         cmd = { "find", path, "-type", "f" }
+        -- The order of options matters!
         if opts.executables then
-            -- The order of options matters!
-            table.insert(cmd, "-executable")
+            -- On MacOS, use permissions to filter out non-executable files
+            -- https://apple.stackexchange.com/a/116370
+            if vim.loop.os_uname().sysname == "Darwin" then
+                table.insert(cmd, "-perm")
+                table.insert(cmd, "+ugo+x")
+            else
+                table.insert(cmd, "-executable")
+            end
         end
     end
     table.insert(cmd, "-follow")
