@@ -101,6 +101,7 @@ return {
         -- 'xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Tapping Enabled" 1',
         -- Start imapnotify
         --'systemctl --user reload-or-restart goimapnotify.service',
+        -- Remember to edit ~/.config/awesome/module/auto-start.lua
         'killall -9 goimapnotify &>/dev/null; ' ..
         'goimapnotify -conf ~/.config/imapnotify/imapnotify.yaml ' ..
         '> ~/.cache/awesome/imapnotify.log 2>&1 &',

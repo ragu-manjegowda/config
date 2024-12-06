@@ -38,8 +38,8 @@ awesome.connect_signal(
         -- run_once('killall darkman; ' ..
         -- 'XDG_DATA_DIRS=~/.config/darkman ' ..
         -- 'darkman run > ~/.cache/awesome/darkman.log 2>&1 &')
-        run_once('killall -9 goimapnotify; ' ..
-            'goimapnotify -conf ~/.config/imapnotify/imapnotify.conf ' ..
+        run_once('killall -9 goimapnotify &>/dev/null; ' ..
+            'goimapnotify -conf ~/.config/imapnotify/imapnotify.yaml ' ..
             '> ~/.cache/awesome/imapnotify.log 2>&1 &')
 
         -- No need for this since they are now part of start-up apps
