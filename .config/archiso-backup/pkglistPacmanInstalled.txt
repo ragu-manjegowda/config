@@ -86,7 +86,6 @@ termshark
 thermald
 thunar
 tigervnc
-timeshift
 tmux
 ttf-dejavu
 ttf-hack-nerd
@@ -146,7 +145,7 @@ xorg-xwd
 xorg-xwininfo
 xorg-xwud
 xsettingsd
-yubikey-personalization-gui
+yubikey-manager
 zathura
 zathura-pdf-mupdf
 zim

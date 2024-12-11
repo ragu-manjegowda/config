@@ -24,6 +24,7 @@ picom-git
 ranger-git
 rdrview-git
 reflector-pacman-hook-git
+ruby-neovim
 sioyek-git
 solarized-colors-iconpack-git
 subliminal
