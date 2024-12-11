@@ -23,7 +23,7 @@ def main(zsh_history_file)
       command = $2.strip
 
       # Output the command in Bash history format
-      puts "#{command}"
+      puts command
     end
   end
 end
@@ -33,4 +33,3 @@ if ARGV.empty?
 else
   main(ARGV[0])
 end
-

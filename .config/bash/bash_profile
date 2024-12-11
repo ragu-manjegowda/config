@@ -149,7 +149,7 @@ export CPPFLAGS="-I$HOMEBREW_PATH/opt/readline/include:$CPPFLAGS"
 export PKG_CONFIG_PATH="$HOMEBREW_PATH/opt/readline/lib/pkgconfig:$PKG_CONFIG_PATH"
 
 # Ruby
-export PATH="$PATH:$HOMEBREW_PATH/opt/ruby/bin"
+export PATH="$HOMEBREW_PATH/opt/ruby/bin:$PATH"
 export LDFLAGS="-L$HOMEBREW_PATH/opt/ruby/lib:$LDFLAGS"
 export CPPFLAGS="-I$HOMEBREW_PATH/opt/ruby/include:$CPPFLAGS"
 export PKG_CONFIG_PATH="$HOMEBREW_PATH/opt/ruby/lib/pkgconfig:$PKG_CONFIG_PATH"
