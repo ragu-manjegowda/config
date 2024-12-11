@@ -33,7 +33,9 @@ function M.config()
             "pyright",
             "python-lsp-server",
             "shellcheck", -- sh linting
+            "ruby-lsp",
             "rust-analyzer",
+            "standardrb", -- ruby linting / formatting
             "vim-language-server",
             "yaml-language-server"
         },
