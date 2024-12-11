@@ -19,11 +19,11 @@
 
 MULTILINE_COMMAND = "TO_BE_REMOVED_#{Time.now.to_i}"
 
-commands = Hash.new([0,0])
+commands = Hash.new([0, 0])
 seen_commands = Set.new
 
 ARGV.sort.each do |hist|
-  $stderr.puts "Parsing '#{hist}'"
+  warn "Parsing '#{hist}'"
 
   # Read the file in binary mode and handle encoding issues
   content = File.open(hist, "rb") do |file|
@@ -35,8 +35,8 @@ ARGV.sort.each do |hist|
   should_be_empty = content.each_line.grep_v(/^:/) + content.each_line.grep(/(?<!^): \d{10,}/)
   raise "Problem with those lines : #{should_be_empty}" unless should_be_empty.empty?
   content.each_line do |line|
-    description, command = line.split(';', 2)
-    _, time, duration = description.split(':').map(&:to_i)
+    description, command = line.split(";", 2)
+    _, time, duration = description.split(":").map(&:to_i)
 
     # Check if the command has already been processed
     next if seen_commands.include?(command)
@@ -49,6 +49,6 @@ ARGV.sort.each do |hist|
   end
 end
 
-commands.sort_by{|_, time_duration| time_duration}.each{|command, (time, duration)|
-  puts ':%11d:%d;%s' % [time, duration, command.gsub(MULTILINE_COMMAND, "\\\n")]
+commands.sort_by { |_, time_duration| time_duration }.each { |command, (time, duration)|
+  puts ":%11d:%d;%s" % [time, duration, command.gsub(MULTILINE_COMMAND, "\\\n")]
 }

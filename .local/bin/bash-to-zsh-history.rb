@@ -11,7 +11,7 @@
 # This is how you would use it:
 # $ ruby bash-to-zsh-hist.rb ~/.bash_history >> ~/.zsh_history
 
-require 'time'
+require "time"
 
 def main(bash_history_file)
   timestamp = nil
@@ -33,8 +33,8 @@ def main(bash_history_file)
 
     unique_commands.add(line)
 
-    if line.start_with?('#') && timestamp.nil?
-      t = line[1..-1]
+    if line.start_with?("#") && timestamp.nil?
+      t = line[1..]
       if t.match?(/^\d+$/)
         timestamp = t
         next

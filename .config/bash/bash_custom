@@ -44,6 +44,10 @@ export PATH="$PATH:$CARGO_HOME/bin"
 # Sphinx-doc
 export PATH="$PATH:$HOMEBREW_PATH/opt/sphinx-doc/bin"
 
+# Ruby
+export GEM_HOME="$(gem env user_gemhome)"
+export PATH="$PATH:$GEM_HOME/bin"
+
 if [ -f "$BASH_DIR/bash_extras" ]; then
     source "$BASH_DIR/bash_extras"
 fi
