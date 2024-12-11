@@ -406,6 +406,23 @@ function M.config()
 
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
+    -- Ruby
+    nvim_lsp.ruby_lsp.setup {
+        on_attach = on_attach,
+        init_options = {
+            formatter = 'standard',
+            linters = { 'standard' }
+        }
+    }
+    -- Need this for formatting
+    -- https://github.com/standardrb/standard/wiki/IDE:-neovim
+    nvim_lsp.standardrb.setup {
+        on_attach = on_attach,
+        single_file_support = true
+    }
+
+    ---------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
     -- Rust
     nvim_lsp.rust_analyzer.setup {
         on_attach = on_attach,
@@ -440,7 +457,7 @@ function M.config()
     -- Toml
     nvim_lsp.harper_ls.setup {
         on_attach = on_attach,
-        filetypes = { "html", "ruby", "toml" },
+        filetypes = { "html", "toml" },
         settings = {
             ["harper-ls"] = {
                 linters = {
