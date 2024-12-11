@@ -30,7 +30,8 @@ ARGV.sort.each do |hist|
     file.read.encode("ASCII", "UTF-8", invalid: :replace, undef: :replace, replace: '\\\\x%02x')
   end
 
-  content = File.read(hist).gsub(/\\\n(?!:\s*\d{10,})/, MULTILINE_COMMAND)
+  content = content.gsub(/\\\n(?!:\s*\d{10,})/, MULTILINE_COMMAND)
+
   should_be_empty = content.each_line.grep_v(/^:/) + content.each_line.grep(/(?<!^): \d{10,}/)
   raise "Problem with those lines : #{should_be_empty}" unless should_be_empty.empty?
   content.each_line do |line|
