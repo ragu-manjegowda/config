@@ -274,6 +274,7 @@ function toggle-alacritty-theme () {
     zathura_config_path="$HOME/.config/zathura/zathurarc"
     termshark_config_path="$HOME/.config/termshark/termshark.toml"
     wiki_script_path="$HOME/.local/bin/render-wiki.sh"
+    ranger_colors_path="$HOME/.config/ranger/colorschemes/neosolarized.py"
 
     # Get current mode
     mode=$(awk -F'/' '/solarized/ {gsub(/\[|"|\]|solarized_|.toml/,""); print $(NF)}' $config_path)
@@ -297,6 +298,8 @@ function toggle-alacritty-theme () {
 
             sed -i -e "s#solarized-light#solarized-dark#g" $wiki_script_path
             sed -i -e "s#favicon-light#favicon-dark#g" $wiki_script_path
+
+            sed -i -e "s#solarized_light#solarized_dark#g" $ranger_colors_path
 
             dircolors_dark_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-dark"
             if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -323,6 +326,8 @@ function toggle-alacritty-theme () {
 
             sed -i -e "s#solarized-dark#solarized-light#g" $wiki_script_path
             sed -i -e "s#favicon-dark#favicon-light#g" $wiki_script_path
+
+            sed -i -e "s#solarized_dark#solarized_light#g" $ranger_colors_path
 
             dircolors_light_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-light"
             if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -377,6 +382,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
         zathura_config_path="$HOME/.config/zathura/zathurarc"
         termshark_config_path="$HOME/.config/termshark/termshark.toml"
         wiki_script_path="$HOME/.local/bin/render-wiki.sh"
+        ranger_colors_path="$HOME/.config/ranger/colorschemes/neosolarized.py"
 
         mode=$(awk -F'/' '/solarized/ {gsub(/\[|"|\]|solarized_|.toml/,""); print $(NF)}' $config_path)
         if [[ "$mode" == "dark" ]]; then
@@ -396,6 +402,8 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 
             sed -i -e "s#solarized-light#solarized-dark#g" $wiki_script_path
             sed -i -e "s#favicon-light#favicon-dark#g" $wiki_script_path
+
+            sed -i -e "s#solarized_light#solarized_dark#g" $ranger_colors_path
 
             dircolors_dark_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-dark"
             eval `dircolors ${dircolors_dark_path}`
@@ -417,6 +425,8 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
             sed -i -e "s#solarized-dark#solarized-light#g" $wiki_script_path
             sed -i -e "s#favicon-dark#favicon-light#g" $wiki_script_path
 
+            sed -i -e "s#solarized_dark#solarized_light#g" $ranger_colors_path
+
             dircolors_light_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-light"
             eval `dircolors ${dircolors_light_path}`
         fi
@@ -435,6 +445,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         zathura_config_path="$HOME/.config/zathura/zathurarc"
         termshark_config_path="$HOME/.config/termshark/termshark.toml"
         wiki_script_path="$HOME/.local/bin/render-wiki.sh"
+        ranger_colors_path="$HOME/.config/ranger/colorschemes/neosolarized.py"
 
         # Get current mode
         mode=$(defaults read -g AppleInterfaceStyle 2>/dev/null)
@@ -459,6 +470,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
                 sed -i -e "s#solarized-light#solarized-dark#g" $wiki_script_path
                 sed -i -e "s#favicon-light#favicon-dark#g" $wiki_script_path
 
+                sed -i -e "s#solarized_light#solarized_dark#g" $ranger_colors_path
+
                 dircolors_dark_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-dark"
                 eval `gdircolors ${dircolors_dark_path}`
                 ;;
@@ -480,6 +493,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
                 sed -i -e "s#solarized-dark#solarized-light#g" $wiki_script_path
                 sed -i -e "s#favicon-dark#favicon-light#g" $wiki_script_path
+
+                sed -i -e "s#solarized_dark#solarized_light#g" $ranger_colors_path
 
                 dircolors_light_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-light"
                 eval `gdircolors ${dircolors_light_path}`
