@@ -23,7 +23,6 @@
 
 #urlbar {
   z-index: 9999 !important;
-  margin: auto !important;
 }
 
 #urlbar-background {
@@ -33,7 +32,7 @@
 }
 
 #urlbar[breakout-extend] #urlbar-background {
-  --urlbar-bg: var(--toolbar-field-background-color);
+  --urlbar-bg: var(--toolbar-field-focus-background-color);
   @media (-moz-platform: linux) {
     --urlbar-bg: Field;
   }
@@ -62,10 +61,14 @@
       800px
     );
 
+    #urlbar,
+    #urlbar-container {
+      margin: auto !important;
+    }
+
     #urlbar-container {
       flex: 1;
       max-width: 1000px;
-      margin: auto !important;
     }
 
     #urlbar[breakout-extend] {
