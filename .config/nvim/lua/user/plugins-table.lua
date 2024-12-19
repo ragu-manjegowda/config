@@ -389,6 +389,13 @@ local all_plugins = {
         config = function()
             require("user.remote-nvim").config()
         end,
+    },
+
+    -- lazy.nvim
+    {
+        "m4xshen/hardtime.nvim",
+        dependencies = { "MunifTanjim/nui.nvim" },
+        opts = {}
     }
 }
 
