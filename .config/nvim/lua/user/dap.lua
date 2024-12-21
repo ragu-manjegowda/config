@@ -210,6 +210,24 @@ function M.config()
         return pick_file_or_directory(true)
     end
 
+    -- Pretty printing setup
+    -- Ref: https://github.com/microsoft/vscode-cpptools/issues/8485#issuecomment-1912764586
+    local setup_commands                = {
+        {
+            text = "-enable-pretty-printing",
+            description = "enable pretty printing",
+            ignoreFailures = true
+        },
+        {
+            description = "Without this, gdb won't load the scripts from this dir",
+            text = "add-auto-load-safe-path /usr/share/gdb/auto-load"
+        },
+        {
+            description = "Without this, things like pretty-printing will not work",
+            text = "add-auto-load-scripts-directory /usr/share/gdb/auto-load"
+        }
+    }
+
     -- Create a config for cppdbg
     local cppdbg_config                 = {
         name          = "Launch file (gdb)",
@@ -221,13 +239,7 @@ function M.config()
             return vim.fn.split(argument_string, " ", true)
         end,
         cwd           = pick_cwd,
-        setupCommands = {
-            {
-                text = "-enable-pretty-printing",
-                description = "enable pretty printing",
-                ignoreFailures = false
-            },
-        },
+        setupCommands = setup_commands,
         env           = display_env,
         stopAtEntry   = true
     }
@@ -257,13 +269,7 @@ function M.config()
         miDebuggerPath = gdb_debugger_path,
         cwd = cppdbg_config.cwd,
         program = cppdbg_config.program,
-        setupCommands = {
-            {
-                text = "-enable-pretty-printing",
-                description = "enable pretty printing",
-                ignoreFailures = false
-            },
-        },
+        setupCommands = setup_commands,
         stopAtEntry = true
     }
 
