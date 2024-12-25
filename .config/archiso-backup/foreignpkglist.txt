@@ -7,7 +7,7 @@ find-cursor
 goimapnotify-git
 google-chrome
 gtk-theme-numix-solarized
-librewolf
+librewolf-bin
 light
 lua-pam-git
 mbsync-git
@@ -27,7 +27,7 @@ reflector-pacman-hook-git
 ruby-neovim
 sioyek-git
 solarized-colors-iconpack-git
-subliminal
+subliminal-git
 sync-pacman-hook-git
 teams
 tgpt-git

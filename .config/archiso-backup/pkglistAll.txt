@@ -44,7 +44,7 @@ libinput
 libmupdf
 libogg
 libreoffice-still
-librewolf
+librewolf-bin
 libsmbios
 libxcrypt-compat
 light
@@ -110,7 +110,7 @@ sioyek-git
 skanpage
 sof-firmware
 solarized-colors-iconpack-git
-subliminal
+subliminal-git
 sync-pacman-hook-git
 system-config-printer
 teams
