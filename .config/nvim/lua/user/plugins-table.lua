@@ -64,7 +64,7 @@ local core_plugins = {
         -- from terminal
         lazy = false,
         opts = require("user.flatten").opts(),
-        priority = 1001,
+        priority = 1001
     },
 
     { "lambdalisue/suda.vim" },
@@ -349,19 +349,6 @@ local all_plugins = {
         dependencies = {
             'leafo/magick',
         },
-        lazy = true
-    },
-
-    -- Leetcode in Vim
-    {
-        "Dhanus3133/LeetBuddy.nvim",
-        config = function()
-            require("user.leetbuddy").config()
-        end,
-        dependencies = {
-            "nvim-lua/plenary.nvim",
-            "nvim-telescope/telescope.nvim",
-        },
         event = "VeryLazy"
     },
 
@@ -369,16 +356,26 @@ local all_plugins = {
     {
         "nvim-treesitter/nvim-treesitter",
         dependencies = {
-            "nvim-treesitter/nvim-treesitter-textobjects",
-            lazy = true,
+            "nvim-treesitter/nvim-treesitter-textobjects"
         },
         build = ":TSUpdate",
         config = function()
             require("user.treesitter").config()
-        end,
-        event = "BufRead"
+        end
     },
 
+    {
+        "HiPhish/rainbow-delimiters.nvim",
+        config = function()
+            require("user.rainbow-delimiters").config()
+        end,
+        dependencies = {
+            "nvim-treesitter/nvim-treesitter"
+        },
+        priority = 1001
+    },
+
+    -- Copy/setup nvim on remote machine as appimage
     {
         "amitds1997/remote-nvim.nvim",
         dependencies = {
@@ -391,10 +388,17 @@ local all_plugins = {
         end,
     },
 
-    -- lazy.nvim
+    -- Use vim efficiently
     {
         "m4xshen/hardtime.nvim",
         dependencies = { "MunifTanjim/nui.nvim" },
+        opts = {}
+    },
+
+    -- Peek before jump
+    {
+        "nacro90/numb.nvim",
+        event = "CmdlineEnter",
         opts = {}
     }
 }
