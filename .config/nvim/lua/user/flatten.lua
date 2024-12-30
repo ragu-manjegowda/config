@@ -7,10 +7,6 @@ local M = {}
 
 function M.opts()
     return {
-        callbacks = {
-            post_open = function(_, _, _, _)
-            end
-        },
         window = {
             open = "tab"
         }
