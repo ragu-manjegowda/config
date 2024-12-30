@@ -4,36 +4,52 @@
 # Written by  : Ragu Manjegowda
 # Github      : @ragu-manjegowda
 
+# Enable exit on error
+set -e
+
+# Function to handle errors
+handle_error() {
+    echo "Likely installation error, run \
+        'cd ~/.config/awesome/library/volctl && rm -rf build venv' \
+        and re-run script"
+}
+
+# Trap the ERR signal to call handle_error on any error
+trap 'handle_error $LINENO' ERR
+
 # Check if this is already running, if so exit
 pCount=$(pgrep -f volctl | wc -l)
 
 # Check for length 2 as current instance of process creates a PID as well
 # and wc -l above counts extra '\n' from pgrep output.
-if [ $pCount -ne 2 ]; then
+if [ "$pCount" -ne 2 ]; then
     exit
 fi
 
 VOLCTL_PATH=$HOME/.config/awesome/library/volctl
 
-cd $VOLCTL_PATH
+cd "$VOLCTL_PATH"
 
 export GSETTINGS_SCHEMA_DIR=$VOLCTL_PATH/venv/share/glib-2.0/schemas
 export XDG_DATA_DIRS=/usr/local/share:/usr/share
 
 python -m venv --system-site-packages venv
+# shellcheck disable=SC1091
 source venv/bin/activate
 
 if [ ! -d "$VOLCTL_PATH/build" ]; then
-    pip3 install $VOLCTL_PATH
+    pip3 install "$VOLCTL_PATH"
 fi
 
 if [ ! -d "$VOLCTL_PATH/venv/share/glib-2.0/schemas" ]; then
-    mkdir $VOLCTL_PATH/venv/share/glib-2.0/schemas
+    mkdir "$VOLCTL_PATH/venv/share/glib-2.0/schemas"
 fi
 
-cp $VOLCTL_PATH/data/apps.volctl.gschema.xml $VOLCTL_PATH/venv/share/glib-2.0/schemas
-glib-compile-schemas $VOLCTL_PATH/venv/share/glib-2.0/schemas/
+cp "$VOLCTL_PATH/data/apps.volctl.gschema.xml" "$VOLCTL_PATH/venv/share/glib-2.0/schemas"
+glib-compile-schemas "$VOLCTL_PATH/venv/share/glib-2.0/schemas/"
 
-if ! $VOLCTL_PATH/venv/bin/volctl; then
-    echo "Likely installation error, run rm -rf build venv and re-run script"
+if ! "$VOLCTL_PATH/venv/bin/volctl"; then
+    echo "Likely installation error, run \
+        'cd ~/.config/awesome/library/volctl && rm -rf build venv' \
+        and re-run script"
 fi
