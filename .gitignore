@@ -276,6 +276,7 @@
 /.vnc
 /.vscode
 /.w3m
+/.wget-hsts
 /.xsession-errors
 /.yarnrc
 /.yarnrc.yml
