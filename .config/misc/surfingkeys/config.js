@@ -5,79 +5,81 @@
 
 // Custom themes, neosolarized-(dark|light)
 solarizedDark = `
-  .sk_theme {
-    font-family: Hack Nerd Font Mono;
-    font-size: 12pt;
-    background: #002b36;
-    color: #268bd2;
-  }
-  .sk_theme tbody {
-    color: #073642;
-  }
-  .sk_theme input {
-    color: #839496;
-  }
-  .sk_theme .url {
-    color: #859900;
-  }
-  .sk_theme .annotation {
-    color: #d33682;
-  }
-  .sk_theme .omnibar_highlight {
-    color: #002b36;
-    background: #b58900;
-  }
-  .sk_theme #sk_omnibarSearchResult ul li:nth-child(odd) {
-    background: #073642;
-  }
-  .sk_theme #sk_omnibarSearchResult ul li.focused {
-    background: #eee8d5;
-  }
-  .sk_theme #sk_omnibarSearchResult .omnibar_folder {
-    color: #cb4b16;
-  }
+    .sk_theme {
+        font-family: Hack Nerd Font Mono;
+        font-size: 12pt;
+        background: #002b36;
+        color: #268bd2;
+    }
+    .sk_theme tbody {
+        color: #073642;
+    }
+    .sk_theme input {
+        color: #839496;
+    }
+    .sk_theme .url {
+        color: #859900;
+    }
+    .sk_theme .annotation {
+        color: #d33682;
+    }
+    .sk_theme .omnibar_highlight {
+        color: #002b36;
+        background: #b58900;
+    }
+    .sk_theme #sk_omnibarSearchResult ul li:nth-child(odd) {
+        background: #073642;
+    }
+    .sk_theme #sk_omnibarSearchResult ul li.focused {
+        color: #fdf6e3;
+        background: #586e75;
+    }
+    .sk_theme #sk_omnibarSearchResult .omnibar_folder {
+        color: #cb4b16;
+    }
 `
 
 solarizedLight = `
-  .sk_theme {
-    font-family: Hack Nerd Font Mono;
-    font-size: 12pt;
-    background: #fdf6e3;
-    color: #268bd2;
-  }
-  .sk_theme tbody {
-    color: #eee8d5;
-  }
-  .sk_theme input {
-    color: #657b83;
-  }
-  .sk_theme .url {
-    color: #859900;
-  }
-  .sk_theme .annotation {
-    color: #d33682;
-  }
-  .sk_theme .omnibar_highlight {
-    color: #fdf6e3;
-    background: #b58900;
-  }
-  .sk_theme #sk_omnibarSearchResult ul li:nth-child(odd) {
-    background: #fdf6e3;
-  }
-  .sk_theme #sk_omnibarSearchResult ul li.focused {
-    background: #073642;
-  }
-  .sk_theme #sk_omnibarSearchResult .omnibar_folder {
-    color: #cb4b16;
-  }
+    .sk_theme {
+        font-family: Hack Nerd Font Mono;
+        font-size: 12pt;
+        background: #fdf6e3;
+        color: #268bd2;
+    }
+    .sk_theme tbody {
+        color: #eee8d5;
+    }
+    .sk_theme input {
+        color: #657b83;
+    }
+    .sk_theme .url {
+        color: #859900;
+    }
+    .sk_theme .annotation {
+        color: #d33682;
+    }
+    .sk_theme .omnibar_highlight {
+        color: #fdf6e3;
+        background: #b58900;
+    }
+    .sk_theme #sk_omnibarSearchResult ul li:nth-child(odd) {
+        background: #eee8d5;
+    }
+    .sk_theme #sk_omnibarSearchResult ul li.focused {
+        color: #002b36;
+        background: #93a1a1;
+    }
+    .sk_theme #sk_omnibarSearchResult .omnibar_folder {
+        color: #cb4b16;
+    }
 `
 
 const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
 
 if (isDarkMode) {
-  settings.theme = `${solarizedDark}`
+    settings.theme = `${solarizedDark}`
 } else {
-  settings.theme = `${solarizedLight}`
+    settings.theme = `${solarizedLight}`
 }
 
 settings.defaultSearchEngine = 's'
@@ -85,9 +87,9 @@ settings.defaultSearchEngine = 's'
 api.map('u', 'e')
 
 api.mapkey('p', "Open the clipboard's URL in the current tab", () => {
-  Front.getContentFromClipboard((response) => {
-    window.location.href = response.data
-  })
+    Front.getContentFromClipboard((response) => {
+        window.location.href = response.data
+    })
 })
 
 api.map('P', 'cc')
@@ -119,18 +121,18 @@ api.removeSearchAlias('w')
 api.addSearchAlias('h', 'github', 'https://github.com/search?q=', 's')
 api.addSearchAlias('m', 'maps', 'http://maps.google.com/?q=', 's')
 api.addSearchAlias(
-  's',
-  'Searx',
-  'https://search.inetol.net/?q=',
-  's',
-  'https://www.google.com/complete/search?client=chrome-omni&gs_ri=chrome-ext&oit=1&cp=1&pgcl=7&q=',
-  (response) => JSON.parse(response.text)[1]
+    's',
+    'Searx',
+    'https://search.inetol.net/?q=',
+    's',
+    'https://www.google.com/complete/search?client=chrome-omni&gs_ri=chrome-ext&oit=1&cp=1&pgcl=7&q=',
+    (response) => JSON.parse(response.text)[1]
 )
 api.addSearchAlias(
-  'w',
-  'wikipedia',
-  'https://en.wikipedia.org/wiki/',
-  's',
-  'https://en.wikipedia.org/w/api.php?action=opensearch&format=json&formatversion=2&namespace=0&limit=40&search=',
-  (response) => JSON.parse(response.text)[1]
+    'w',
+    'wikipedia',
+    'https://en.wikipedia.org/wiki/',
+    's',
+    'https://en.wikipedia.org/w/api.php?action=opensearch&format=json&formatversion=2&namespace=0&limit=40&search=',
+    (response) => JSON.parse(response.text)[1]
 )
