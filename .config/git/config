@@ -21,6 +21,13 @@
     old = red bold
     whitespace = red reverse
 
+[color "status"]
+    added = "#268bd2 bold" # blue
+    changed = "#b58900 bold" # yellow
+    conflict = "#dc322f bold" # red
+    deleted = "#dc322f bold ul" # red
+    untracked = "#d33682 bold" # magenta
+
 [commit]
     gpgsign = true
     template = ~/.config/git/gitmessage.txt
