@@ -20,6 +20,7 @@ numix-cursor-theme
 pacman-cleanup-hook
 pam-fprint-grosshack
 paru
+pavucontrol-gtk3
 picom-git
 ranger-git
 rdrview-git

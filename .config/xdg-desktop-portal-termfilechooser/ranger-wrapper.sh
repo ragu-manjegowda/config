@@ -25,7 +25,7 @@ save="$3"
 path="$4"
 out="$5"
 
-cmd="/sbin/ranger"
+cmd="/home/ragu/.local/share/venv/bin/ranger"
 termcmd="${TERMCMD:-/sbin/alacritty}"
 
 if [ "$save" = "1" ]; then

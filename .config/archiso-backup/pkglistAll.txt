@@ -88,7 +88,7 @@ openssl-1.1
 pacman-cleanup-hook
 pam-fprint-grosshack
 paru
-pavucontrol
+pavucontrol-gtk3
 picom-git
 pipewire-alsa
 pipewire-pulse
