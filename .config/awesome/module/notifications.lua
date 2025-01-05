@@ -152,6 +152,11 @@ naughty.connect_signal("destroyed", function(n, reason)
             -- So we just check if the client name of our notification is
             -- the same as the last urgent client and jump to this one.
             for _, notification_client in ipairs(n.clients) do
+                -- For whatever reason, `c` can be nil
+                if c == nil then
+                    return
+                end
+
                 if c.name == notification_client.name then
                     c:jump_to()
                 end
