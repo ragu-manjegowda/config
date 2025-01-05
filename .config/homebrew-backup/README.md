@@ -1,11 +1,32 @@
 # Migrate homebrew
 
+<!--toc:start-->
+- [Migrate homebrew](#migrate-homebrew)
+  - [Backup existing homebrew formulas](#backup-existing-homebrew-formulas)
+  - [Install homebrew on new machine](#install-homebrew-on-new-machine)
+    - [Mac OS](#mac-os)
+    - [Ubuntu](#ubuntu)
+  - [Restore homebrew formulas](#restore-homebrew-formulas)
+  - [Install Alacritty and Zsh](#install-alacritty-and-zsh)
+    - [Mac OS](#mac-os)
+    - [Ubuntu](#ubuntu)
+  - [Change default shell](#change-default-shell)
+<!--toc:end-->
+
 
 ## Backup existing homebrew formulas
 
 ```sh
 brew bundle dump --force --file Brewfile_{OS}
 
+# Example:
+brew bundle dump --file ~/.config/homebrew-backup/Brewfile_linux --force
+
+# Install backup formulas
+brew bundle install --file ~/.config/homebrew-backup/Brewfile_linux
+
+
+# Custom script
 ./backup-homebrew.sh > restore-homebrew_{OS}.sh
 chmod u+x restore-homebrew_{OS}.sh
 ```
