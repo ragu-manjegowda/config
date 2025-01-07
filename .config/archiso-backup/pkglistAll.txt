@@ -29,6 +29,7 @@ fribidi
 fuse2
 gcr
 git
+globalprotect-openconnect-git
 goimapnotify-git
 google-chrome
 gst-plugin-pipewire
