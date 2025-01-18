@@ -1,6 +1,5 @@
 [Default Applications]
 text/plain=nvim-usercreated.desktop
-inode/directory=ranger.desktop
 
 [Added Associations]
 text/plain=nvim-usercreated.desktop
