@@ -132,7 +132,6 @@ woff2
 x264
 xcalib
 xclip
-xdg-desktop-portal-termfilechooser-git
 xidlehook
 xkeyboard-config
 xorg-bdftopcf

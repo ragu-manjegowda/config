@@ -49,10 +49,9 @@ user_pref("uc.tweak.no-custom-icons", true);
 user_pref("uc.tweak.no-window-controls", true);
 user_pref("uc.tweak.sidebar.wide", true);
 user_pref("uc.tweak.sidebar.header", false);
-user_pref("uc.tweak.translucency", true);
+user_pref("uc.tweak.translucency", false);
 
 user_pref("cookiebanners.service.mode", 2);
 user_pref("cookiebanners.service.mode.privateBrowsing", 2);
 user_pref("browser.quitShortcut.disabled", true);
 user_pref("browser.fullscreen.exit_on_escape", false);
-user_pref("widget.use-xdg-desktop-portal.file-picker", 1);
