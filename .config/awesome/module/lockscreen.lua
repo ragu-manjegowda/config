@@ -617,7 +617,7 @@ local locker = function(s)
         nil
     }
 
-    -- Exit screen sends this signal when sleep is requested
+    -- Exit screen sends this signal when sleep is resumed
     awesome.connect_signal(
         'module::sleep_resumed',
         function()
