@@ -144,7 +144,7 @@ local extra_plugins = {
         config = function()
             require("user.neocodeium").config()
         end,
-        event = { "VeryLazy" }
+        event = "VeryLazy"
     },
 
     -- cmp plugins
@@ -400,6 +400,29 @@ local all_plugins = {
         "nacro90/numb.nvim",
         event = "CmdlineEnter",
         opts = {}
+    },
+
+    -- Avante (Custom Model)
+    {
+        "yetone/avante.nvim",
+        version = "*",
+        event = "VeryLazy",
+        build = "make",
+        dependencies = {
+            "stevearc/dressing.nvim",
+            "nvim-lua/plenary.nvim",
+            "MunifTanjim/nui.nvim",
+            "nvim-telescope/telescope.nvim",
+            "hrsh7th/nvim-cmp",
+            "nvim-tree/nvim-web-devicons",
+            {
+                -- support for image pasting
+                "HakonHarnes/img-clip.nvim",
+                event = "VeryLazy",
+                opts = require("user.avante").img_clip_opts()
+            }
+        },
+        opts = require("user.avante").opts()
     }
 }
 
