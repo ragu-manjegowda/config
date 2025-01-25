@@ -1,11 +1,14 @@
 #!/bin/bash
 
-case "$2" in
-	up)
-		      systemctl start ntpd.service
-	;;
-	down)
-		      systemctl stop ntpd.service
-	;;
-esac
+iface=$1
 
+if [[ $iface != lo ]]; then
+    case "$2" in
+        up)
+            systemctl start ntpd.service
+        ;;
+        down)
+            systemctl stop ntpd.service
+        ;;
+    esac
+fi
