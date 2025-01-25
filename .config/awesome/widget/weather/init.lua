@@ -351,19 +351,6 @@ awesome.connect_signal(
 )
 
 awesome.connect_signal(
-    'system::network_connected',
-    function()
-        gears.timer.start_new(
-            5,
-            function()
-                awesome.emit_signal('widget::weather_fetch')
-                awesome.emit_signal('widget::forecast_fetch')
-            end
-        )
-    end
-)
-
-awesome.connect_signal(
     'widget::weather_update',
     function(code, desc, location, sunrise, sunset, data_receive)
         local widget_icon_name = 'weather-error'
@@ -403,9 +390,12 @@ awesome.connect_signal(
     end
 )
 
--- Try to generate once
--- (helpful when reloaded, where network_connected signal is not triggered)
-awesome.emit_signal('widget::weather_fetch')
-awesome.emit_signal('widget::forecast_fetch')
+gears.timer.start_new(
+    5,
+    function()
+        awesome.emit_signal('widget::weather_fetch')
+        awesome.emit_signal('widget::forecast_fetch')
+    end
+)
 
 return weather_report
