@@ -16,6 +16,7 @@ cups
 darkman
 docker
 docker-buildx
+docker-compose
 ffmpeg
 firefox
 fprintd
