@@ -11,8 +11,8 @@ function M.opts()
         provider = "openai",
         openai = {
             endpoint = "https://integrate.api.nvidia.com/v1",
-            model = "meta/llama-3.1-405b-instruct"
             -- model = "nvdev/nvidia/llama-3.1-nemotron-70b-instruct"
+            model = "nvdev/meta/llama-3.1-405b-instruct"
         },
         azure = {}
     }

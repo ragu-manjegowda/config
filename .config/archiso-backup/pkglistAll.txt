@@ -21,6 +21,7 @@ cyrus-sasl-xoauth2-git
 darkman
 docker
 docker-buildx
+docker-compose
 ffmpeg
 find-cursor
 firefox
