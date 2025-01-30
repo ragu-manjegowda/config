@@ -219,14 +219,3 @@ vim.api.nvim_create_autocmd("FileType", {
         vim.opt_local.textwidth = 72
     end
 })
-
--- Set custom fold options for Markdown files
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "markdown", "rmd", "rst" },
-    callback = function()
-        vim.opt_local.conceallevel = 2;
-        vim.opt_local.concealcursor = "n";
-        vim.opt_local.foldmethod = "expr"
-        vim.opt_local.foldlevel = 2
-    end
-})
