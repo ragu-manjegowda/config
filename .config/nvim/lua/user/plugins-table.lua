@@ -212,8 +212,7 @@ local extra_plugins = {
 
         "Shatur/neovim-session-manager",
         dependencies = {
-            "nvim-lua/plenary.nvim",
-            event = "VeryLazy"
+            "nvim-lua/plenary.nvim"
         },
         init = function()
             require("user.neovim-session-manager").config()
@@ -402,27 +401,16 @@ local all_plugins = {
         opts = {}
     },
 
-    -- Avante (Custom Model)
     {
-        "yetone/avante.nvim",
-        version = "*",
-        event = "VeryLazy",
-        build = "make",
+        "olimorris/codecompanion.nvim",
         dependencies = {
-            "stevearc/dressing.nvim",
-            "nvim-lua/plenary.nvim",
-            "MunifTanjim/nui.nvim",
-            "nvim-telescope/telescope.nvim",
-            "hrsh7th/nvim-cmp",
             "nvim-tree/nvim-web-devicons",
             {
-                -- support for image pasting
-                "HakonHarnes/img-clip.nvim",
-                event = "VeryLazy",
-                opts = require("user.avante").img_clip_opts()
+                "nvim-lua/plenary.nvim"
             }
         },
-        opts = require("user.avante").opts()
+        event = "VeryLazy",
+        opts = require("user.codecompanion").opts()
     }
 }
 
