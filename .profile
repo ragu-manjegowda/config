@@ -149,7 +149,7 @@ FZF_DEFAULT_BIND_OPTS1="--bind 'alt-j:preview-page-down,alt-k:preview-page-up'"
 FZF_DEFAULT_BIND_OPTS2="',ctrl-j:down,ctrl-k:up,ctrl-/:toggle-preview'"
 FZF_DEFAULT_BIND_OPTS3="',ctrl-w:toggle-preview-wrap,alt-/:jump'"
 FZF_DEFAULT_BIND_OPTS4="',ctrl-u:preview-top,ctrl-d:preview-bottom'"
-FZF_DEFAULT_BIND_OPTS5="',ctrl-g:last,ctrl-a:select-all,shift-tab:toggle-all'"
+FZF_DEFAULT_BIND_OPTS5="',ctrl-g:last,ctrl-a:select-all,ctrl-x:deselect-all'"
 
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     FZF_DEFAULT_BIND_OPTS6="',ctrl-y:execute-silent(echo -n {} | xclip -sel clip)'"
