@@ -37,22 +37,22 @@ local function on_attach(client, bufnr)
 
     local rc = client.server_capabilities
 
-    -- Pyright is pretty much useless, disabling most of the stuff and keeping
-    -- around for now.
-    if client.name == 'pyright' then
-        rc.callHierarchyProvider = false
-        rc.completion = false
-        rc.completionProvider = false
-        rc.declarationProvider = false
-        rc.definitionProvider = false
-        rc.definitions = false
-        rc.hover = false
-        rc.hoverProvider = false
-        rc.rename = false
-        rc.renameProvider = false
-        rc.signatureHelpProvider = false
-        rc.signature_help = false
-    end
+    -- -- Pyright is pretty much useless, disabling most of the stuff and keeping
+    -- -- around for now.
+    -- if client.name == 'pyright' then
+    --     rc.callHierarchyProvider = false
+    --     rc.completion = false
+    --     rc.completionProvider = false
+    --     rc.declarationProvider = false
+    --     rc.definitionProvider = false
+    --     rc.definitions = false
+    --     rc.hover = false
+    --     rc.hoverProvider = false
+    --     rc.rename = false
+    --     rc.renameProvider = false
+    --     rc.signatureHelpProvider = false
+    --     rc.signature_help = false
+    -- end
 
     local lsp_signature
     res, lsp_signature = pcall(require, "lsp_signature")
@@ -353,28 +353,28 @@ function M.config()
         end
     end
 
-    nvim_lsp.pyright.setup {
-        on_attach = on_attach,
-        flags = {
-            debounce_text_changes = 150,
-        },
-        settings = {
-            python = {
-                analysis = {
-                    autoImportCompletions = false,
-                    diagnosticMode = "openFilesOnly",
-                    -- diagnosticSeverityOverrides = {
-                    --     reportGeneralTypeIssues = "none",
-                    --     reportOptionalMemberAccess = "none",
-                    --     reportOptionalSubscript = "none",
-                    --     reportPrivateImportUsage = "none",
-                    -- },
-                    useLibraryCodeForTypes = true
-                },
-                linting = { pylintEnabled = false }
-            },
-        },
-    }
+    -- nvim_lsp.pyright.setup {
+    --     on_attach = on_attach,
+    --     flags = {
+    --         debounce_text_changes = 150,
+    --     },
+    --     settings = {
+    --         python = {
+    --             analysis = {
+    --                 autoImportCompletions = false,
+    --                 diagnosticMode = "openFilesOnly",
+    --                 -- diagnosticSeverityOverrides = {
+    --                 --     reportGeneralTypeIssues = "none",
+    --                 --     reportOptionalMemberAccess = "none",
+    --                 --     reportOptionalSubscript = "none",
+    --                 --     reportPrivateImportUsage = "none",
+    --                 -- },
+    --                 useLibraryCodeForTypes = true
+    --             },
+    --             linting = { pylintEnabled = false }
+    --         },
+    --     },
+    -- }
 
     -- Pylsp for hover, documentation, go to definition, syntax checking
     -- https://github.com/python-lsp/python-lsp-server/blob/develop/CONFIGURATION.md
