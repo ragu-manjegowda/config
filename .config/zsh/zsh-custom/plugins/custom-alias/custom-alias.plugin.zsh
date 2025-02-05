@@ -215,7 +215,7 @@ export LESSOPEN='|$HOME/.config/zsh/lessfilter %s'
 zstyle ':fzf-tab:*' fzf-flags '--color=hl:green'
 
 # Custom binding
-zstyle ':fzf-tab:complete:*' fzf-bindings 'alt-/:jump,tab:toggle+down,shift-tab:toggle-all'
+zstyle ':fzf-tab:complete:*' fzf-bindings 'alt-/:jump,tab:toggle+down,ctrl-x:deselect-all'
 
 ############# zsh-autosuggestion specific #####################################
 
