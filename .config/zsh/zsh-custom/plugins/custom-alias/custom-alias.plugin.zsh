@@ -198,6 +198,13 @@ export PROMPT_EOL_MARK=""
 zshaddhistory() { whence ${${(z)1}[1]} >| /dev/null || return 1 }
 zstyle ":completion:*:commands" rehash 1
 
+
+############# per-directory-history specific #######################################
+
+PER_DIRECTORY_HISTORY_TOGGLE='^S'
+HISTORY_BASE="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/dir_history"
+
+
 ############# zsh-autocomplete specific #######################################
 
 # Set completion color to yellow
@@ -227,30 +234,27 @@ bindkey '^[/' autosuggest-fetch
 ######################### dirstack ############################################
 
 # Store 10 recent directories
-# Ref: https://wiki.archlinux.org/title/zsh#Tips_and_tricks
+# Ref: github.com/ohmyzsh/ohmyzsh/blob/master/plugins/dirpersist/dirpersist.plugin.zsh
 autoload -Uz add-zsh-hook
 
+DIRSTACKSIZE="10"
 DIRSTACKFILE="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/dirs"
-if [[ -f "$DIRSTACKFILE" ]] && (( ${#dirstack} == 0 )); then
-	dirstack=("${(@f)"$(< "$DIRSTACKFILE")"}")
-	[[ -d "${dirstack[1]}" ]] && cd -- "${dirstack[1]}"
+
+if [[ -f ${DIRSTACKFILE} ]] && [[ ${#dirstack[*]} -eq 0 ]] ; then
+  dirstack=( ${(f)"$(< $DIRSTACKFILE)"} )
+  # "cd -" won't work after login by just setting $OLDPWD, so
+  [[ -d $dirstack[1] ]] && cd $dirstack[1] && cd $OLDPWD
 fi
 
-chpwd_dirstack() {
-	print -l -- "$PWD" "${(u)dirstack[@]}" > "$DIRSTACKFILE"
+autoload -U add-zsh-hook
+add-zsh-hook chpwd chpwd_dirpersist
+chpwd_dirpersist() {
+  if (( $DIRSTACKSIZE <= 0 )) || [[ -z $DIRSTACKFILE ]]; then return; fi
+  local -ax my_stack
+  my_stack=( ${PWD} ${dirstack} )
+  builtin print -l ${(u)my_stack} >! ${DIRSTACKFILE}
 }
 
-add-zsh-hook -Uz chpwd chpwd_dirstack
-
-DIRSTACKSIZE='10'
-
-setopt AUTO_PUSHD PUSHD_SILENT PUSHD_TO_HOME
-
-## Remove duplicate entries
-setopt PUSHD_IGNORE_DUPS
-
-## This reverts the +/- operators.
-setopt PUSHD_MINUS
 
 ###################### word navigation ########################################
 
