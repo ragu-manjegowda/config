@@ -19,6 +19,10 @@ function M.config()
             TelescopePrompt = false,
             ["dap-repl"] = false
         },
+        server = {
+            portal_url = "https://codeium-poc.hwinf-scm-aws.nvidia.com",
+            api_url = "https://codeium-poc.hwinf-scm-aws.nvidia.com/_route/api_server",
+        },
         silent = true
     })
 
