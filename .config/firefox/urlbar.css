@@ -28,7 +28,7 @@
 #urlbar-background {
   border-radius: var(--uc-button-radius) !important;
   box-shadow: none !important;
-  background: transparent !important;
+  background: inherit !important;
 }
 
 #urlbar[breakout-extend] #urlbar-background {
@@ -38,12 +38,8 @@
   }
   background-color: var(--uc-panel-hint) !important;
   @media not (-moz-bool-pref: "uc.tweak.no-blur") {
-    background-color: color-mix(
-      in oklab,
-      var(--uc-panel-hint) 90%,
-      transparent
-    ) !important;
-    backdrop-filter: blur(var(--uc-blur-radius)) !important;
+    background-color: var(--uc-panel-hint) !important; /* Set solid background color */
+    backdrop-filter: none !important; /* Remove the blur effect */
   }
 }
 
