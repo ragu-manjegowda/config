@@ -29,13 +29,13 @@ user_pref("browser.compactmode.show", true);
 // fix sidebar tab drag on linux
 user_pref("widget.gtk.ignore-bogus-leave-notify", 1);
 
-user_pref("browser.tabs.allow_transparent_browser", true);
+user_pref("browser.tabs.allow_transparent_browser", false);
 
 // uidensity -> compact
 user_pref("browser.uidensity", 1);
 
 // macos transparent
-user_pref("widget.macos.titlebar-blend-mode.behind-window", true);
+user_pref("widget.macos.titlebar-blend-mode.behind-window", false);
 
 // don't warn on about:config open
 user_pref("browser.aboutConfig.showWarning", false);
@@ -50,6 +50,8 @@ user_pref("uc.tweak.no-window-controls", true);
 user_pref("uc.tweak.sidebar.wide", true);
 user_pref("uc.tweak.sidebar.header", false);
 user_pref("uc.tweak.translucency", false);
+user_pref("uc.tweak.no-blur", true);
+user_pref("uc.tweak.urlbar.not-floating", false);
 
 user_pref("cookiebanners.service.mode", 2);
 user_pref("cookiebanners.service.mode.privateBrowsing", 2);
