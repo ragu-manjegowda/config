@@ -401,6 +401,7 @@ local all_plugins = {
         opts = {}
     },
 
+    -- LLMs
     {
         "olimorris/codecompanion.nvim",
         dependencies = {
@@ -411,6 +412,27 @@ local all_plugins = {
         },
         event = "VeryLazy",
         opts = require("user.codecompanion").opts()
+    },
+
+    {
+        "yetone/avante.nvim",
+        build = "make",
+        dependencies = {
+            "stevearc/dressing.nvim",
+            "nvim-lua/plenary.nvim",
+            "MunifTanjim/nui.nvim",
+            "nvim-telescope/telescope.nvim",
+            "nvim-tree/nvim-web-devicons",
+            {
+                -- support for image pasting
+                "HakonHarnes/img-clip.nvim",
+                event = "VeryLazy",
+                opts = require("user.avante").img_clip_opts()
+            }
+        },
+        event = "VeryLazy",
+        opts = require("user.avante").opts(),
+        version = false
     }
 }
 
