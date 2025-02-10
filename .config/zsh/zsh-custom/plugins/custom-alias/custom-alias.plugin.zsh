@@ -1,3 +1,8 @@
+###############################################################################
+## Author       : Ragu Manjegowda
+## Github       : @ragu-manjegowda
+###############################################################################
+
 ################## Git aliases ################################################
 
 # Git version checking
@@ -240,6 +245,12 @@ autoload -Uz add-zsh-hook
 DIRSTACKSIZE="10"
 DIRSTACKFILE="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/dirs"
 
+# Ensure the file exists and is readable
+if [[ ! -f "$DIRSTACKFILE" ]]; then
+  mkdir -p "${DIRSTACKFILE:h}"
+  touch "$DIRSTACKFILE"
+fi
+
 if [[ -f ${DIRSTACKFILE} ]] && [[ ${#dirstack[*]} -eq 0 ]] ; then
   dirstack=( ${(f)"$(< $DIRSTACKFILE)"} )
   # "cd -" won't work after login by just setting $OLDPWD, so
@@ -255,6 +266,27 @@ chpwd_dirpersist() {
   builtin print -l ${(u)my_stack} >! ${DIRSTACKFILE}
 }
 
+# Load the custom dirstack to zsh
+load_dirstack() {
+  if [[ -f "$DIRSTACKFILE" ]]; then
+    # Read the custom file and set the DIRSTACK
+    dirs -c  # Clear the current stack
+    # Read the custom file into an array
+    local stack=()
+    while IFS= read -r dir; do
+      # Skip empty lines
+      [[ -n "$dir" ]] && stack+=("$dir")
+    done < "$DIRSTACKFILE"
+
+    # Reverse the array to maintain the correct order
+    for ((i=${#stack[@]}; i>=0; i--)); do
+      pushd "${stack[i]}" > /dev/null
+    done
+  fi
+}
+
+# Load the custom dirstack when the shell starts
+load_dirstack
 
 ###################### word navigation ########################################
 
