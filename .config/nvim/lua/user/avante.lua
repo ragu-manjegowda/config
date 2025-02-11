@@ -20,17 +20,6 @@ function M.opts()
         },
         azure = {}
     }
-
-    -- -- Disable folding for Avante filetypes
-    -- vim.api.nvim_create_augroup("disable_folding", { clear = true })
-    -- vim.api.nvim_create_autocmd("FileType", {
-    --     pattern = { "Avante*" },
-    --     group = "disable_folding",
-    --     desc = "Disable folding for Avante filetypes",
-    --     callback = function()
-    --         vim.opt_local.foldenable = false
-    --     end
-    -- })
 end
 
 function M.img_clip_opts()
