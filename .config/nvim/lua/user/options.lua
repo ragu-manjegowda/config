@@ -90,6 +90,9 @@ vim.opt["shell"] = "bash"
 -- User defined function to set list chars
 vim.g.u_list_chars_set = true
 
+-- Disable creating new file if doesn't exist
+vim.g.fsnonewfiles = 1
+
 vim.api.nvim_create_user_command(
     'ToggleListChars',
     function()
