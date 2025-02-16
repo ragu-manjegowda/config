@@ -38,6 +38,7 @@ libogg
 libreoffice-still
 libsmbios
 libxcrypt-compat
+lighttpd
 linux
 linux-firmware
 linux-headers
@@ -67,6 +68,7 @@ okular
 openrazer-daemon
 openssh
 openssl-1.1
+perl-cgi
 pipewire-alsa
 pipewire-pulse
 playerctl
