@@ -50,6 +50,7 @@ librewolf-bin
 libsmbios
 libxcrypt-compat
 light
+lighttpd
 linux
 linux-firmware
 linux-headers
@@ -91,6 +92,7 @@ pacman-cleanup-hook
 pam-fprint-grosshack
 paru
 pavucontrol-gtk3
+perl-cgi
 picom-git
 pipewire-alsa
 pipewire-pulse
