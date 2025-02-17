@@ -28,18 +28,23 @@
 #urlbar-background {
   border-radius: var(--uc-button-radius) !important;
   box-shadow: none !important;
-  background: inherit !important;
+  background: transparent !important;
 }
 
 #urlbar[breakout-extend] #urlbar-background {
+  --field: Field;
   --urlbar-bg: var(--toolbar-field-focus-background-color);
   @media (-moz-platform: linux) {
-    --urlbar-bg: Field;
+    --urlbar-bg: var(--toolbar-field-focus-background-color, var(--field));
   }
-  background-color: var(--uc-panel-hint) !important;
+  background-color: var(--urlbar-bg) !important;
   @media not (-moz-bool-pref: "uc.tweak.no-blur") {
-    background-color: var(--uc-panel-hint) !important; /* Set solid background color */
-    backdrop-filter: none !important; /* Remove the blur effect */
+    background-color: color-mix(
+      in oklab,
+      var(--urlbar-bg) 90%,
+      transparent
+    ) !important;
+    backdrop-filter: blur(var(--uc-blur-radius)) !important;
   }
 }
 
