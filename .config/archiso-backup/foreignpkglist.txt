@@ -4,7 +4,6 @@ awmtt
 check-broken-packages-pacman-hook-git
 cyrus-sasl-xoauth2-git
 find-cursor
-globalprotect-openconnect-git
 goimapnotify-git
 google-chrome
 gtk-theme-numix-solarized
@@ -18,6 +17,8 @@ neomutt-git
 newsboat-git
 nomachine
 numix-cursor-theme
+openconnect-gp-git
+openconnect-gp-git-debug
 pacman-cleanup-hook
 pam-fprint-grosshack
 paru
