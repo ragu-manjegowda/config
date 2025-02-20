@@ -30,7 +30,6 @@ fribidi
 fuse2
 gcr
 git
-globalprotect-openconnect-git
 goimapnotify-git
 google-chrome
 gst-plugin-pipewire
@@ -85,6 +84,8 @@ nvidia
 nvidia-container-toolkit
 nvidia-lts
 okular
+openconnect-gp-git
+openconnect-gp-git-debug
 openrazer-daemon
 openssh
 openssl-1.1

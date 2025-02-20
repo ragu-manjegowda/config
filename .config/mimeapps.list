@@ -1,5 +1,6 @@
 [Default Applications]
 text/plain=nvim-usercreated.desktop
+text/html=firefox.desktop;google-chrome.desktop;
 
 [Added Associations]
 text/plain=nvim-usercreated.desktop
