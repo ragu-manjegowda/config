@@ -7,7 +7,6 @@ find-cursor
 goimapnotify-git
 google-chrome
 gtk-theme-numix-solarized
-librewolf-bin
 light
 lua-pam-git
 mbsync-git
