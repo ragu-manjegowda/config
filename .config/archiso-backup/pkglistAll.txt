@@ -45,7 +45,6 @@ libinput
 libmupdf
 libogg
 libreoffice-still
-librewolf-bin
 libsmbios
 libxcrypt-compat
 light
