@@ -191,23 +191,24 @@ function M.config()
         }
     end
 
-    ---@param directory boolean
+    ---@param opts { dir: boolean, executables?: boolean }
     ---@return string|thread
-    local pick_file_or_directory        = function(directory)
-        local opts = bazel_filter({ dir = directory })
-        local filepath = utils.pick_file(opts)
+    local pick_file_or_directory        = function(opts)
+        local options = bazel_filter(opts)
+        local filepath = utils.pick_file(options)
         ---@diagnostic disable-next-line: undefined-field
         return filepath or dap.ABORT
     end
 
+    ---@param executables? boolean
     ---@return string|thread
-    local pick_program                  = function()
-        return pick_file_or_directory(false)
+    local pick_program                  = function(executables)
+        return pick_file_or_directory({ dir = false, executables = executables })
     end
 
     ---@return string|thread
     local pick_cwd                      = function()
-        return pick_file_or_directory(true)
+        return pick_file_or_directory({ dir = true })
     end
 
     -- Pretty printing setup
@@ -510,7 +511,9 @@ function M.config()
             type        = "python",
             request     = "launch",
             name        = "Launch file",
-            program     = pick_program,
+            program     = function()
+                return pick_program(false)
+            end,
             args        = function()
                 local argument_string = vim.fn.input("Program arguments: ")
                 return vim.fn.split(argument_string, " ", true)
