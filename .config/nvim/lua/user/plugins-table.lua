@@ -155,7 +155,6 @@ local extra_plugins = {
         end,
         dependencies = {
             "alexander-born/cmp-bazel",
-            "L3MON4D3/LuaSnip",
             "hrsh7th/cmp-buffer",
             "hrsh7th/cmp-cmdline",
             "hrsh7th/cmp-nvim-lsp",
@@ -163,8 +162,6 @@ local extra_plugins = {
             "hrsh7th/cmp-omni",
             "hrsh7th/cmp-path",
             "onsails/lspkind-nvim",
-            "rafamadriz/friendly-snippets",
-            "saadparwaiz1/cmp_luasnip",
             "quangnguyen30192/cmp-nvim-tags"
         }
     },
@@ -231,7 +228,8 @@ local all_plugins = {
             require("user.bazel").before()
         end,
         dependencies = {
-            "nvim-treesitter/nvim-treesitter"
+            "nvim-treesitter/nvim-treesitter",
+            "nvim-lua/plenary.nvim"
         },
         event = "VeryLazy"
     },
