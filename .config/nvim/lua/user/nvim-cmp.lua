@@ -12,7 +12,7 @@ function M.config()
         return vim.api.nvim_replace_termcodes(str, true, true, true)
     end
 
-    local res, cmp, lspkind, luasnip
+    local res, cmp, lspkind
 
     res, cmp = pcall(require, "cmp")
     if not res then
@@ -26,22 +26,13 @@ function M.config()
         return
     end
 
-    res, luasnip = pcall(require, "luasnip")
-    if not res then
-        vim.notify("luasnip not found", vim.log.levels.ERROR)
-        return
-    end
-
-    require('luasnip.loaders.from_vscode').lazy_load()
-
     local ELLIPSIS_CHAR = '…'
     local MAX_LABEL_WIDTH = 80
     local MIN_LABEL_WIDTH = 20
 
     cmp.setup {
         snippet = {
-            expand = function(args)
-                luasnip.lsp_expand(args.body)
+            expand = function(_)
             end
         },
 
@@ -57,8 +48,6 @@ function M.config()
                 i = function(fallback)
                     if cmp.visible() then
                         cmp.select_next_item({ behavior = cmp.SelectBehavior.Insert })
-                    elseif luasnip.expand_or_jumpable() then
-                        luasnip.expand_or_jump()
                     else
                         fallback()
                     end
@@ -76,8 +65,6 @@ function M.config()
                 i = function(fallback)
                     if cmp.visible() then
                         cmp.select_prev_item({ behavior = cmp.SelectBehavior.Insert })
-                    elseif luasnip.jumpable(-1) then
-                        luasnip.jump(-1)
                     else
                         fallback()
                     end
@@ -156,7 +143,6 @@ function M.config()
         },
 
         sources = cmp.config.sources({
-            { name = 'luasnip', option = { show_autosnippets = true } },
             { name = 'nvim_lsp' },
             { name = 'path' },
             { name = 'buffer' },
@@ -182,7 +168,6 @@ function M.config()
                 vim_item.kind = lspkind.presets.default[vim_item.kind] .. ' ' .. vim_item.kind
                 vim_item.menu = ({
                     nvim_lsp = '[LSP]',
-                    luasnip = '[Luasnip]',
                     path = '[Path]',
                     buffer = '[Buffer]',
                     bazel = '[Bazel]',
