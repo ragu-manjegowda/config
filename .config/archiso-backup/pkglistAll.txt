@@ -61,7 +61,6 @@ lxqt-policykit
 ly
 maim
 mbsync-git
-mosh-git
 mpv
 msmtp
 mu
