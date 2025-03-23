@@ -6,10 +6,13 @@
 ## Github  : @ragu-manjegowda
 ###############################################################################
 
-# General settings =========================={{{
+##########
+# General settings
+##########
 
-# Folder hooks
+## Folder hooks
 # folder-hook 'email1.outlook' 'source $XDG_CONFIG_HOME/neomutt/email1.outlook'
+
 set rfc2047_parameters = yes
 
 # Delete without confirming
@@ -17,18 +20,24 @@ set delete
 
 unset confirmappend
 
+#########
 # Check for new emails
-set timeout             = 5   # press artificially a key after 5 seconds
-set mail_check          = 10 # How often to check for new mail (time in seconds) but not more often then once in 300 seconds
-set beep
-set beep_new                  # beep on new messages in the mailboxes
+#########
 
-#If this variable is set, Mutt will require that all connections to remote servers be encrypted
+# press artificially a key after 5 seconds
+set timeout             = 5
+# Check for new mail (in seconds) but not more often then once in 10 seconds
+set mail_check          = 10
+set beep
+# beep on new messages in the mailboxes
+set beep_new
+
+# Will require all connections to remote servers be encrypted
 set ssl_force_tls=yes
 
 set imap_keepalive = 900
 
-# Don't ask to confirm the recipient and the subject when reply to an e-mail
+## Don't ask to confirm the recipient and the subject when reply to an e-mail
 # set fast_reply=yes
 
 # Include copy of original message in reply
@@ -62,9 +71,11 @@ unset markers
 set tilde
 set quote_regexp = "^( {0,4}[>|:#%]| {0,4}[a-z0-9]+[>|]+)+"
 
-# set sort = 'reverse-date'     # sorting the mails in threads in index (mails-list-view)
+## Sorting the mails in threads in index (mails-list-view)
+# set sort = 'reverse-date'
 # set sort = 'threads'
-# set sort_aux = reverse-last-date-received     # and the thread themselves reverse-date
+## and the thread themselves reverse-date
+# set sort_aux = reverse-last-date-received
 set use_threads = reverse
 set sort = last-date-received
 set narrow_tree = yes
@@ -76,13 +87,23 @@ set uncollapse_new = no # (default is yes)
 
 set mime_forward = yes
 
-#### Settings from https://github.com/ceuk/mutt_dotfiles/blob/master/.config/mutt/muttrc
-set pager_read_delay = 3      # View a message for 3 seconds to mark as read
-set mark_old = no            # Unread mail stay unread until read
-set mime_forward = no        # attachments are forwarded with mail
-set include                 # include message in replies
-set smart_wrap             # wrap lines at word boundaries rather than splitting up words
-set wrap = 90                # email view width
+####
+# Reference:
+# https://github.com/ceuk/mutt_dotfiles/blob/master/.config/mutt/muttrc
+####
+
+# View a message for 3 seconds to mark as read
+set pager_read_delay = 3
+# Unread mail stay unread until read
+set mark_old = no
+# attachments are forwarded with mail
+set mime_forward = no
+# include message in replies
+set include
+# wrap lines at word boundaries rather than splitting up words
+set smart_wrap
+# email view width
+set wrap = 90
 set text_flowed = yes
 set tmpdir = "$HOME/.cache/neomutt"
 
@@ -111,12 +132,16 @@ set history = 10000
 set history_file = "$XDG_CONFIG_HOME/neomutt/history"
 set save_history = 10000
 
-set pager_stop             # don't go to next message automatically
-set menu_scroll            # scroll in menus
+# don't go to next message automatically
+set pager_stop
+# scroll in menus
+set menu_scroll
 
 # }}}
 
-# HTML Rendering ============================{{{
+########
+# HTML Rendering
+########
 
 set mailcap_path = "$XDG_CONFIG_HOME/neomutt/mailcap"
 
@@ -124,26 +149,26 @@ auto_view text/calendar
 auto_view application/ics
 auto_view text/html
 auto_view text/plain
-alternative_order text/calendar application/ics text/html text/plain text/enriched     # list html for last
+# list html for last
+alternative_order text/calendar application/ics text/html text/plain text/enriched
 
-# }}}
 
-
-# Keybidings ================================{{{
+########
+# Keybidings
+########
 
 source $XDG_CONFIG_HOME/neomutt/bindings.mutt
 
-#}}}
 
-
-# Bars ======================================{{{
+########
+# Bars
+########
 
 source "$XDG_CONFIG_HOME/neomutt/styles.muttrc"
 
-#}}}
-
-
-# Sidebar ==================================={{{
+########
+# Sidebar
+########
 
 # Sidebar for neomutt
 set sidebar_visible = no
@@ -155,28 +180,36 @@ set sidebar_folder_indent = yes
 set sidebar_indent_string = '  ' # Two spaces
 set sidebar_next_new_wrap = yes
 
-#}}}
 
-
-# Colors ===================================={{{
+########
+# Colors
+########
 
 source "$XDG_CONFIG_HOME/neomutt/colors-custom.muttrc"
 
-#}}}
 
+########
+# Aliases
+########
 
-# Aliases ==========================={{{
-
-set display_filter = $XDG_CONFIG_HOME/neomutt/create-alias.sh # auto create aliases
+# auto create aliases
+set display_filter = $XDG_CONFIG_HOME/neomutt/create-alias.sh
 set alias_file     = $XDG_CONFIG_HOME/neomutt/aliases
 set sort_alias     = alias
 set reverse_alias  = yes
-source "cat $alias_file 2> /dev/null |" # only source if file exists
+# only source if file exists
+source "cat $alias_file 2> /dev/null |"
 
-# }}}
+########
+# GNUPG settings to encrypt/decrypt/sign email
+########
+
+source "$XDG_CONFIG_HOME/neomutt/gpg.rc"
 
 
-# Accounts ==========================={{{
+########
+# Accounts
+########
 
 # Default account
 source $XDG_CONFIG_HOME/neomutt/accounts/work/outlook-offline
@@ -192,12 +225,3 @@ macro index,pager i2 '<sync-mailbox><enter-command>source \
 macro index,pager i3 '<sync-mailbox><enter-command>source \
     $XDG_CONFIG_HOME/neomutt/accounts/personal/raghudarshan<enter>\
     <change-folder>!<enter>;<check-stats>' "switch to raghu-darshan - online"
-
-# }}}
-
-
-# GNUPG settings to encrypt/decrypt/sign email  ============================{{{
-
-source "$XDG_CONFIG_HOME/neomutt/gpg.rc"
-
-#}}}
