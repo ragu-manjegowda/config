@@ -31,11 +31,6 @@ function M.config()
     local MIN_LABEL_WIDTH = 20
 
     cmp.setup {
-        snippet = {
-            expand = function(_)
-            end
-        },
-
         mapping = {
             ["<Tab>"] = cmp.mapping({
                 c = function(fallback)
