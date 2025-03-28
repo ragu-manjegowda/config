@@ -306,6 +306,7 @@ function toggle-alacritty-theme () {
     git_config_path="$HOME/.config/git/config"
     broot_config_path="$HOME/.config/broot/conf.hjson"
     vim_config_path="$HOME/.config/nvim/lua/user/colorscheme.lua"
+    lualine_config_path="$HOME/.config/nvim/lua/user/lualine.lua"
     zathura_config_path="$HOME/.config/zathura/zathurarc"
     termshark_config_path="$HOME/.config/termshark/termshark.toml"
     wiki_script_path="$HOME/.local/bin/render-wiki.sh"
@@ -322,6 +323,7 @@ function toggle-alacritty-theme () {
             sed -i -e "s#(light)#(dark)#g" $git_config_path
 
             sed -i -e "s#background=light#background=dark#g" $vim_config_path
+            sed -i -e "s#solarized_light#solarized_dark#g" $lualine_config_path
 
             broot_config_dark_path="$HOME/.config/broot/conf-dark.hjson"
             cp $broot_config_dark_path $broot_config_path
@@ -350,6 +352,7 @@ function toggle-alacritty-theme () {
             sed -i -e "s#(dark)#(light)#g" $git_config_path
 
             sed -i -e "s#background=dark#background=light#g" $vim_config_path
+            sed -i -e "s#solarized_dark#solarized_light#g" $lualine_config_path
 
             broot_config_light_path="$HOME/.config/broot/conf-light.hjson"
             cp $broot_config_light_path $broot_config_path
@@ -414,6 +417,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
         git_config_path="$HOME/.config/git/config"
         broot_config_path="$HOME/.config/broot/conf.hjson"
         vim_config_path="$HOME/.config/nvim/lua/user/colorscheme.lua"
+        lualine_config_path="$HOME/.config/nvim/lua/user/lualine.lua"
         zathura_config_path="$HOME/.config/zathura/zathurarc"
         termshark_config_path="$HOME/.config/termshark/termshark.toml"
         wiki_script_path="$HOME/.local/bin/render-wiki.sh"
@@ -426,6 +430,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
             sed -i -e "s#(light)#(dark)#g" $git_config_path
 
             sed -i -e "s#background=light#background=dark#g" $vim_config_path
+            sed -i -e "s#solarized_light#solarized_dark#g" $lualine_config_path
 
             broot_config_dark_path="$HOME/.config/broot/conf-dark.hjson"
             cp $broot_config_dark_path $broot_config_path
@@ -448,6 +453,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
             sed -i -e "s#(dark)#(light)#g" $git_config_path
 
             sed -i -e "s#background=dark#background=light#g" $vim_config_path
+            sed -i -e "s#solarized_dark#solarized_light#g" $lualine_config_path
 
             broot_config_light_path="$HOME/.config/broot/conf-light.hjson"
             cp $broot_config_light_path $broot_config_path
@@ -477,6 +483,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         git_config_path="$HOME/.config/git/config"
         broot_config_path="$HOME/.config/broot/conf.hjson"
         vim_config_path="$HOME/.config/nvim/lua/user/colorscheme.lua"
+        lualine_config_path="$HOME/.config/nvim/lua/user/lualine.lua"
         zathura_config_path="$HOME/.config/zathura/zathurarc"
         termshark_config_path="$HOME/.config/termshark/termshark.toml"
         wiki_script_path="$HOME/.local/bin/render-wiki.sh"
@@ -493,6 +500,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
                 sed -i -e "s#(light)#(dark)#g" $git_config_path
 
                 sed -i -e "s#background=light#background=dark#g" $vim_config_path
+                sed -i -e "s#solarized_light#solarized_dark#g" $lualine_config_path
 
                 broot_config_dark_path="$HOME/.config/broot/conf-dark.hjson"
                 cp $broot_config_dark_path $broot_config_path
@@ -517,6 +525,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
                 sed -i -e "s#(dark)#(light)#g" $git_config_path
 
                 sed -i -e "s#background=dark#background=light#g" $vim_config_path
+                sed -i -e "s#solarized_dark#solarized_light#g" $lualine_config_path
 
                 broot_config_light_path="$HOME/.config/broot/conf-light.hjson"
                 cp $broot_config_light_path $broot_config_path

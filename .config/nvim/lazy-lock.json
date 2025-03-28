@@ -26,6 +26,7 @@
   "lsp_signature.nvim": { "branch": "master", "commit": "8b681c86b0bd7f932cd91987983d91497e43d83f" },
   "lspkind-nvim": { "branch": "master", "commit": "d79a1c3299ad0ef94e255d045bed9fa26025dab6" },
   "lspsaga.nvim": { "branch": "main", "commit": "6063935cf68de9aa6dd79f8e1caf5df0a9385de3" },
+  "lualine.nvim": { "branch": "master", "commit": "1517caa8fff05e4b4999857319d3b0609a7f57fa" },
   "magick": { "branch": "master", "commit": "6971fa700c4d392130492a3925344b51c7cc54aa" },
   "markview.nvim": { "branch": "main", "commit": "7a7d3ed0d276b32e121d791f73d850aae6d61b42" },
   "mason-tool-installer.nvim": { "branch": "main", "commit": "5639d58a3d11ff7c05c8e31e159bfedae55d7961" },
@@ -67,5 +68,4 @@
   "vim-fswitch": { "branch": "master", "commit": "94acdd8bc92458d3bf7e6557df8d93b533564491" },
   "vim-fugitive": { "branch": "master", "commit": "4a745ea72fa93bb15dd077109afbb3d1809383f2" },
   "which-key.nvim": { "branch": "main", "commit": "370ec46f710e058c9c1646273e6b225acf47cbed" },
-  "windline.nvim": { "branch": "master", "commit": "bef735787bef64697036774eca6418e7a786100b" }
 }
