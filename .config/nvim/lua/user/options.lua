@@ -7,30 +7,33 @@
 ---@diagnostic disable: codestyle-check
 local options = {
     autoindent = true,
-    backup = false,                          -- creates a backup file
-    cmdheight = 2,                           -- more space in the neovim command line
-    colorcolumn = "80",                      -- mark column at 80 chars
-    completeopt = { "menuone", "noselect" }, -- mostly just for cmp
-    conceallevel = 0,                        -- so that `` is visible in markdown files
-    confirm = true,                          -- Bring up confirm pop up for unsaved buffers
-    cursorline = true,                       -- highlight the current line
-    expandtab = true,                        -- convert tabs to spaces
-    fileencoding = "utf-8",                  -- the encoding written to a file
+    autoread = true,                  -- reload file if changed
+    backup = false,                   -- creates a backup file
+    cmdheight = 2,                    -- more space in the neovim command line
+    colorcolumn = "80",               -- mark column at 80 chars
+    completeopt = "menuone,noselect", -- mostly just for cmp
+    conceallevel = 0,                 -- so that `` is visible in markdown files
+    confirm = true,                   -- Bring up confirm pop up for unsaved buffers
+    cursorline = true,                -- highlight the current line
+    expandtab = true,                 -- convert tabs to spaces
+    fileencoding = "utf-8",           -- the encoding written to a file
     foldmethod = "indent",
     foldlevel = 1,
     foldminlines = 4,      -- minimum number of lines in a fold
     foldnestmax = 5,       -- maximum depth of nested folds
-    guicursor = "",        -- keep block cursor in insert mode
+    guicursor = "",        -- disable cursor style
     hlsearch = false,      -- search hl is taken care in autocmd
     inccommand = "split",  -- show split preview for replace
     ignorecase = true,     -- ignore case in search patterns
     laststatus = 3,        -- enable global status line
+    list = true,           -- show some invisible characters
     mouse = "",            -- disable mouse
     number = true,         -- set numbered lines
     numberwidth = 4,       -- set number column width to 4 {default 4}
     pumheight = 10,        -- pop up menu height
     relativenumber = true, -- set relative numbered lines
     scrolloff = 5,         -- is one of my fav
+    shell = "bash",        -- zsh has noglob issues with gtests in dap
     shiftround = true,     -- round indent to multiple of shiftwidth
     shiftwidth = 4,        -- the number of spaces inserted for each indentation
     showmode = false,      -- we don't need to see things like -- INSERT -- anymore
@@ -45,28 +48,51 @@ local options = {
     splitright = true,     -- force all vertical splits to go to the right of current window
     swapfile = false,      -- creates a swapfile
     syntax = "enable",
-    tabstop = 4,           -- insert 4 spaces for a tab
-    termguicolors = true,  -- set term gui colors (most terminals support this)
-    timeoutlen = 300,      -- time to wait for a mapped sequence to complete (in milliseconds)
-    undodir = vim.fn.expand("~/.cache/nvim/undodir"),
+    tabstop = 4,                                    -- insert 4 spaces for a tab
+    termguicolors = true,                           -- set term gui colors (most terminals support this)
+    timeoutlen = 300,                               -- time to wait for a mapped sequence to complete (in milliseconds)
+    undodir = vim.fn.stdpath("data") .. "/undodir",
     undofile = true,
     undolevels = 10000,
-    updatetime = 300,    -- faster completion (4000ms default)
-    wildchar = 4,        -- <C-d> for completion - https://neovim.io/doc/user/options.html#'wc'
-    wrap = false,        -- display lines as one long line
-    writebackup = false, -- if a file is being edited by another program (or was written to file
+    updatetime = 300,       -- faster completion (4000ms default)
+    virtualedit = "block",  -- allow cursor to move where there is no text
+    wildchar = 4,           -- <C-d> for completion - https://neovim.io/doc/user/options.html#'wc'
+    wrap = false,           -- display lines as one long line
+    writebackup = false,    -- if a file is being edited by another program (or was written to file
     -- while editing with another program), it is not allowed to be edited
 }
 
-vim.opt.diffopt:append { "algorithm:patience" } -- Use patience diff algorithm
-vim.opt.iskeyword:append "-" -- Match word-with-hypen for '*'
-vim.opt.list = true
-vim.opt.listchars:append "lead:⋅" -- Show leading spaces
-vim.opt.path:append { '**' } -- Finding files - Search down into subfolders
-vim.opt.shortmess:append "c" -- Show search preview in split
-
 for k, v in pairs(options) do
-    vim.opt[k] = v
+    vim.api.nvim_set_option_value(k, v, {})
+end
+
+-- Options to append (instead of set)
+local append_options = {
+    diffopt = "algorithm:patience",     -- Use patience diff algorithm
+    iskeyword = "-",                    -- Match word-with-hypen for '*'
+    listchars = "lead:⋅",               -- Show leading spaces
+    path = "**",                        -- Finding files - Search down into subfolders
+    shortmess = "c",                    -- Show search preview in split
+}
+
+for k, v in pairs(append_options) do
+    -- Retrieve current value
+    local current_value = vim.api.nvim_get_option_value(k, {})
+
+    -- Check if current value is a table
+    if type(current_value) == table then
+	    table.insert(current_value, v)
+    else
+        -- Check if current value is comma-separated string
+	    if string.find(current_value, ",") then
+            -- Append with a comma if already comma-separated
+		    current_value = current_value .. "," .. v
+	    else
+            -- Append without a comma if not comma-separated
+		    current_value = current_value .. v
+	    end
+    end
+    vim.api.nvim_set_option_value(k, current_value, {})
 end
 
 -- Enable build-in OSC52 clipboard provider
@@ -85,13 +111,16 @@ vim.g.clipboard = {
 
 -- Set shell to bash since zsh has noglob issues with gtests in dap
 vim.env.SHELL = "bash"
-vim.opt["shell"] = "bash"
 
 -- User defined function to set list chars
 vim.g.u_list_chars_set = true
 
 -- Disable creating new file if doesn't exist
 vim.g.fsnonewfiles = 1
+
+-- Newtrw liststyle:
+-- https://medium.com/usevim/the-netrw-style-options-3ebe91d42456
+vim.g.netrw_liststyle = 3
 
 vim.api.nvim_create_user_command(
     'ToggleListChars',

@@ -87,17 +87,9 @@ keymap("n", "<leader>od", ":Copen<CR><C-w>T", opts)
 -- Get full path of the current buffer
 keymap("n", "<leader>fp", "1<C-g><CR>", { noremap = true })
 
--- go substitute because the default map for sleeping is silly
-keymap("n", "gs", ":%s///gic<Left><Left><Left><Left><Left><Left><Left>", { noremap = true })
-
-
 -------------------------------------------------------------------------------
 -- Insert Mode
 -------------------------------------------------------------------------------
-
-keymap("i", "<A-j>", "<ESC>:m .+1<CR>==i", opts)
-keymap("i", "<A-k>", "<ESC>:m .-2<CR>==i", opts)
-
 -- Forward delete characters
 keymap("i", "<C-d>", "<Del>", opts)
 
@@ -109,26 +101,15 @@ keymap("i", "<C-d>", "<Del>", opts)
 keymap("v", "<", "<gv", opts)
 keymap("v", ">", ">gv", opts)
 
--- Move text up and down
-keymap("v", "<A-j>", ":m .+1<CR>==", opts)
-keymap("v", "<A-k>", ":m .-2<CR>==", opts)
+-- Paste without yank
 keymap("v", "p", '"_dP', opts)
-
--------------------------------------------------------------------------------
--- Visual Block Mode
--------------------------------------------------------------------------------
-
--- Move text up and down
-keymap("x", "<A-j>", ":move '>+1<CR>gv-gv", opts)
-keymap("x", "<A-k>", ":move '<-2<CR>gv-gv", opts)
-
 
 -------------------------------------------------------------------------------
 -- Terminal Mode
 -------------------------------------------------------------------------------
 
 -- Terminal exit insert mode
-keymap("t", "jk", "<C-\\><C-n>", opts)
+keymap("t", "jj", "<C-\\><C-n>", opts)
 
 -------------------------------------------------------------------------------
 -- Copy to system clipboard
