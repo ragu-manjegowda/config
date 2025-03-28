@@ -56,15 +56,6 @@ keymap("n", "n", "nzzzv", opts)
 keymap("n", "N", "Nzzzv", opts)
 keymap("n", "J", "mzJ`z", opts)
 
--- Add empty lines before and after cursor line
-keymap('n', 'gO',
-    "<Cmd>call append(line('.') - 1, repeat([''], v:count1))<CR>",
-    { desc = 'Put empty line above' })
-
-keymap('n', 'go',
-    "<Cmd>call append(line('.'),     repeat([''], v:count1))<CR>",
-    { desc = 'Put empty line below' })
-
 -- ============ Key maps for tabs
 -- Open new empty tab
 keymap("n", "<leader>n<Tab>", ":tabedit<CR>", opts)

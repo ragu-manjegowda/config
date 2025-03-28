@@ -7,75 +7,83 @@ local vim = vim
 
 local M = {}
 
-local res, protocol = pcall(require, "vim.lsp.protocol")
-if not res then
-    vim.notify("lsp.protocol not found", vim.log.levels.ERROR)
-    return
-end
-
-local signs = { Error = "", Hint = "", Info = "", Information = "", Warn = "" }
-for type, icon in pairs(signs) do
-    local hl = "DiagnosticSign" .. type
-    vim.fn.sign_define(hl, { text = icon, texthl = "", numhl = "" })
-end
-
--- Use an on_attach function to only map the following keys
--- after the language server attaches to the current buffer
-local function on_attach(client, bufnr)
+function M.define_keymap(client)
     local map = vim.keymap.set
 
-    -- Enable completion triggered by <c-x><c-o>
     -- <c-x><c-o> is also mapped to <c-d> in options.lua via wildchar
-    -- buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
     vim.opt.omnifunc = "v:lua.vim.lsp.omnifunc"
 
-    map({ 'n', 'v' }, '<leader>lD', '<cmd>lua vim.lsp.buf.declaration()<CR>',
-        { silent = true, desc = 'LSP goto declaration' })
-
-    map({ 'n', 'v' }, '<leader>lf', '<cmd>lua vim.lsp.buf.format()<CR>',
-        { silent = true, desc = 'LSP formatting' })
-
-    local rc = client.server_capabilities
-
-    -- -- Pyright is pretty much useless, disabling most of the stuff and keeping
-    -- -- around for now.
-    -- if client.name == 'pyright' then
-    --     rc.callHierarchyProvider = false
-    --     rc.completion = false
-    --     rc.completionProvider = false
-    --     rc.declarationProvider = false
-    --     rc.definitionProvider = false
-    --     rc.definitions = false
-    --     rc.hover = false
-    --     rc.hoverProvider = false
-    --     rc.rename = false
-    --     rc.renameProvider = false
-    --     rc.signatureHelpProvider = false
-    --     rc.signature_help = false
-    -- end
-
-    local lsp_signature
-    res, lsp_signature = pcall(require, "lsp_signature")
-    if not res then
-        vim.notify("lsp_signature not found", vim.log.levels.WARN)
-    else
-        lsp_signature.setup({
-            doc_lines = 0,
-            hint_enable = false,
-            select_signature_key = "<M-n>"
-        }, bufnr)
-
-        map({ 'n', 'i' }, '<C-k>',
-            '<cmd>lua require("lsp_signature").toggle_float_win()<CR>',
-            { silent = true, desc = 'Toggle LSP signature' })
+    if client:supports_method('textDocument/implementation') then
+        map({ 'n', 'v' }, '<leader>lD', '<cmd>lua vim.lsp.buf.declaration()<CR>',
+            { silent = true, desc = 'LSP goto declaration' })
     end
 
-    local lsp_inlayhints
-    res, lsp_inlayhints = pcall(require, "lsp-inlayhints")
+    if client:supports_method('textDocument/formatting') then
+        map({ 'n', 'v' }, '<leader>lf', '<cmd>lua vim.lsp.buf.format()<CR>',
+            { silent = true, desc = 'LSP formatting' })
+    end
+
+    map('n', '<leader>ltv', function()
+        local new_config = not vim.diagnostic.config().virtual_lines
+        vim.diagnostic.config({ virtual_lines = new_config })
+    end, { desc = 'Toggle diagnostic virtual_lines' })
+
+    map('n', '<leader>lti', function()
+        vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+    end, { desc = 'Toggle inlay hints' })
+end
+
+function M.setup_signatureHelp(client)
+    local map = vim.keymap.set
+    if client:supports_method('textDocument/signatureHelp') then
+        local res, lsp_signature
+        res, lsp_signature = pcall(require, "lsp_signature")
+        if not res then
+            vim.notify("lsp_signature not found", vim.log.levels.WARN)
+        else
+            lsp_signature.setup({
+                doc_lines = 0,
+                hint_enable = false,
+                select_signature_key = "<M-n>"
+            }, vim.api.nvim_get_current_buf())
+
+            map({ 'n', 'i' }, '<C-k>',
+                '<cmd>lua require("lsp_signature").toggle_float_win()<CR>',
+                { silent = true, desc = 'Toggle LSP signature' })
+        end
+    end
+end
+
+function M.setup_diagnostics(client)
+    if client:supports_method('textDocument/hover') then
+        vim.lsp.buf.hover(
+            { border = 'rounded' }
+        )
+    end
+
+    local signs = {
+        Error = "", Hint = "", Info = "", Information = "", Warn = "" }
+
+    vim.diagnostic.config({
+        float = {
+            border = "rounded"
+        },
+        signs = {
+            text = {
+                [vim.diagnostic.severity.ERROR] = signs.Error,
+                [vim.diagnostic.severity.HINT] = signs.Hint,
+                [vim.diagnostic.severity.INFO] = signs.Info,
+                [vim.diagnostic.severity.WARN] = signs.Warn
+            }
+        }
+    })
+end
+
+function M.setup_completionKind()
+    local res, protocol = pcall(require, "vim.lsp.protocol")
     if not res then
-        vim.notify("lsp-inlayhints not found", vim.log.levels.WARN)
-    else
-        lsp_inlayhints.on_attach(client, bufnr)
+        vim.notify("lsp.protocol not found", vim.log.levels.ERROR)
+        return
     end
 
     --protocol.SymbolKind = { }
@@ -108,29 +116,36 @@ local function on_attach(client, bufnr)
     }
 end
 
-vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-    vim.lsp.diagnostic.on_publish_diagnostics,
+vim.api.nvim_create_augroup("lsp attach", { clear = true })
+vim.api.nvim_create_autocmd(
+    { "LspAttach" },
     {
-        underline = false,
-        virtual_text = false,
-        signs = {
-            active = signs,
-        },
+        group = "lsp attach",
+        desc = "LSP on_attach",
+        callback = function(args)
+            local client = assert(
+                vim.lsp.get_client_by_id(args.data.client_id))
+
+            M.define_keymap(client)
+
+            M.setup_signatureHelp(client)
+
+            M.setup_diagnostics(client)
+
+            M.setup_completionKind()
+
+            if client:supports_method('textDocument/hover') then
+                vim.lsp.buf.hover(
+                    { border = 'rounded' }
+                )
+            end
+        end,
     }
 )
 
-vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(
-    vim.lsp.handlers.hover,
-    { border = 'rounded' }
-)
-
-vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
-    vim.lsp.handlers.signature_help,
-    { border = 'rounded' }
-)
 
 function M.config()
-    local nvim_lsp, cmp_nvim_lsp, lsp_windows
+    local res, nvim_lsp, cmp_nvim_lsp, lsp_windows
     res, nvim_lsp = pcall(require, "lspconfig")
     if not res then
         vim.notify("lspconfig not found", vim.log.levels.ERROR)
@@ -141,19 +156,6 @@ function M.config()
     if not res then
         vim.notify("cmp_nvim_lsp not found", vim.log.levels.ERROR)
         return
-    end
-
-    local lsp_inlayhints
-    res, lsp_inlayhints = pcall(require, "lsp-inlayhints")
-    if not res then
-        vim.notify("lsp-inlayhints not found", vim.log.levels.WARN)
-    else
-        vim.api.nvim_create_user_command(
-            'ToggleInlayHints',
-            function()
-                lsp_inlayhints.toggle()
-            end, {}
-        )
     end
 
     res, lsp_windows = pcall(require, "lspconfig.ui.windows")
@@ -178,9 +180,7 @@ function M.config()
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
     -- Bash
-    nvim_lsp.bashls.setup {
-        on_attach = on_attach
-    }
+    nvim_lsp.bashls.setup {}
 
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
@@ -212,7 +212,6 @@ function M.config()
     end
 
     nvim_lsp.clangd.setup {
-        on_attach = on_attach,
         root_dir = nvim_lsp.util.root_pattern("compile_commands.json", ".gitignore"),
         cmd = clangd_cmd
     }
@@ -220,9 +219,7 @@ function M.config()
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
     -- Cmake
-    nvim_lsp.cmake.setup {
-        on_attach = on_attach
-    }
+    nvim_lsp.cmake.setup {}
 
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
@@ -258,7 +255,6 @@ function M.config()
     end
 
     nvim_lsp.gopls.setup {
-        on_attach = on_attach,
         flags = {
             debounce_text_changes = 150,
         },
@@ -290,15 +286,12 @@ function M.config()
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
     -- Json
-    nvim_lsp.jsonls.setup {
-        on_attach = on_attach
-    }
+    nvim_lsp.jsonls.setup {}
 
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
     -- Lua
     nvim_lsp.lua_ls.setup {
-        on_attach = on_attach,
         -- root_dir is .luacheckrc which is added for both awesome and nvim
         settings = {
             Lua = {
@@ -331,8 +324,7 @@ function M.config()
     )
 
     nvim_lsp.marksman.setup {
-        capabilities = watch_capabilities,
-        on_attach = on_attach
+        capabilities = watch_capabilities
     }
 
     ---------------------------------------------------------------------------
@@ -354,7 +346,6 @@ function M.config()
     end
 
     -- nvim_lsp.pyright.setup {
-    --     on_attach = on_attach,
     --     flags = {
     --         debounce_text_changes = 150,
     --     },
@@ -379,7 +370,6 @@ function M.config()
     -- Pylsp for hover, documentation, go to definition, syntax checking
     -- https://github.com/python-lsp/python-lsp-server/blob/develop/CONFIGURATION.md
     nvim_lsp.pylsp.setup {
-        on_attach = on_attach,
         flags = {
             debounce_text_changes = 150,
         },
@@ -408,7 +398,6 @@ function M.config()
     ---------------------------------------------------------------------------
     -- Ruby
     nvim_lsp.ruby_lsp.setup {
-        on_attach = on_attach,
         init_options = {
             formatter = 'standard',
             linters = { 'standard' }
@@ -417,7 +406,6 @@ function M.config()
     -- Need this for formatting
     -- https://github.com/standardrb/standard/wiki/IDE:-neovim
     nvim_lsp.standardrb.setup {
-        on_attach = on_attach,
         single_file_support = true
     }
 
@@ -425,7 +413,6 @@ function M.config()
     ---------------------------------------------------------------------------
     -- Rust
     nvim_lsp.rust_analyzer.setup {
-        on_attach = on_attach,
         settings = {
             ["rust-analyzer"] = {
                 imports = {
@@ -456,7 +443,6 @@ function M.config()
     ---------------------------------------------------------------------------
     -- Toml
     nvim_lsp.harper_ls.setup {
-        on_attach = on_attach,
         filetypes = { "html", "toml" },
         settings = {
             ["harper-ls"] = {
@@ -471,24 +457,19 @@ function M.config()
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
     -- Vim
-    nvim_lsp.vimls.setup {
-        on_attach = on_attach
-    }
+    nvim_lsp.vimls.setup {}
 
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
     -- Toolchain of Web
     nvim_lsp.biome.setup {
-        on_attach = on_attach,
         single_file_support = true
     }
 
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
     -- Yaml
-    nvim_lsp.yamlls.setup {
-        on_attach = on_attach
-    }
+    nvim_lsp.yamlls.setup {}
 end
 
 return M

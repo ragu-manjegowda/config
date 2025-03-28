@@ -93,10 +93,11 @@ local core_plugins = {
 
     -- Status line
     {
-        "windwp/windline.nvim",
+        "nvim-lualine/lualine.nvim",
         config = function()
-            require("user.windline").config()
-        end
+            require("user.lualine").config()
+        end,
+        dependencies = { 'nvim-tree/nvim-web-devicons' }
     },
 
     -- Tabline
