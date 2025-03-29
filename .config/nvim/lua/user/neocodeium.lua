@@ -19,20 +19,16 @@ function M.config()
             TelescopePrompt = false,
             ["dap-repl"] = false
         },
-        server = {
-            portal_url = "https://codeium-poc.hwinf-scm-aws.nvidia.com",
-            api_url = "https://codeium-poc.hwinf-scm-aws.nvidia.com/_route/api_server",
-        },
+        -- server = {
+        --     portal_url = "https://codeium-poc.hwinf-scm-aws.nvidia.com",
+        --     api_url = "https://codeium-poc.hwinf-scm-aws.nvidia.com/_route/api_server",
+        -- },
         silent = true
     })
 
     local map = vim.keymap.set
 
-    map('i', '<C-e>',
-        neocodeium.accept,
-        { silent = true, desc = 'Codeium suggestion accept' })
-
-    map('i', '<M-e>',
+    map('i', '<M-y>',
         neocodeium.accept_line,
         { silent = true, desc = 'Codeium suggestion accept line' })
 
@@ -50,7 +46,7 @@ function M.config()
         end,
         { silent = true, desc = 'Codeium suggestion prev' })
 
-    map('i', '<C-x>',
+    map('i', '<M-e>',
         neocodeium.clear,
         { silent = true, desc = 'Codeium suggestion clear' })
 end
