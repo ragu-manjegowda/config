@@ -958,6 +958,29 @@ hi! link WinBar     Normal
 hi! link WinBarNC   Normal
 " }}}"
 
+" BlinkCmp "{{{
+" ---------------------------------------------------------------------
+exe "hi! BlinkCmpMenu"                      .s:fg_base0     .s:bg_none
+exe "hi! BlinkCmpMenuBorder"                .s:fmt_none     .s:fg_blue      .s:bg_none
+exe "hi! BlinkCmpMenuSelection"             .s:fmt_bold     .s:fg_base03    .s:bg_base01
+exe "hi! BlinkCmpLabel"                     .s:fmt_revr     .s:fg_base0     .s:bg_none
+exe "hi! BlinkCmpLabelDeprecated"           .s:fmt_ital     .s:fg_base0     .s:bg_none      . " gui=strikethrough cterm=strikethrough"
+exe "hi! BlinkCmpLabelMatch"                .s:fmt_bold     .s:fg_green     .s:bg_none
+"exe "hi! BlinkCmpGhostText"
+"exe "hi! BlinkCmpDoc"
+"exe "hi! BlinkCmpDocBorder"
+"exe "hi! BlinkCmpSignatureHelpBorder"
+exe "hi! BlinkCmpKind"                      .s:fmt_none     .s:fg_base0     .s:bg_none
+exe "hi! BlinkCmpKindText"                  .s:fmt_none     .s:fg_base0     .s:bg_none
+exe "hi! BlinkCmpKindFunction"              .s:fmt_none     .s:fg_green     .s:bg_none
+exe "hi! BlinkCmpKindVariable"              .s:fmt_none     .s:fg_yellow    .s:bg_none
+exe "hi! BlinkCmpKindEnum"                  .s:fmt_none     .s:fg_orange    .s:bg_none
+exe "hi! BlinkCmpKindSnippet"               .s:fmt_none     .s:fg_magenta   .s:bg_none
+exe "hi! BlinkCmpKindField"                 .s:fmt_none     .s:fg_violet    .s:bg_none
+exe "hi! BlinkCmpKindConstant"              .s:fmt_none     .s:fg_red       .s:bg_none
+exe "hi! BlinkCmpKindMethod"                .s:fmt_none     .s:fg_green     .s:bg_none
+exe "hi! BlinkCmpSource"                    .s:fmt_ital     .s:fg_base0     .s:bg_none
+
 " NeoVim terminal buffer colours "{{{
 " ---------------------------------------------------------------------
 let g:terminal_color_0 = s:gui_base03

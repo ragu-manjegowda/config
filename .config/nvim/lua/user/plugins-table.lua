@@ -150,27 +150,19 @@ local extra_plugins = {
 
     -- cmp plugins
     {
-        "hrsh7th/nvim-cmp",
-        config = function()
-            require("user.nvim-cmp").config()
-        end,
+        "saghen/blink.cmp",
         dependencies = {
-            "alexander-born/cmp-bazel",
-            "hrsh7th/cmp-buffer",
-            "hrsh7th/cmp-cmdline",
-            "hrsh7th/cmp-nvim-lsp",
-            "hrsh7th/cmp-nvim-lsp-document-symbol",
-            "hrsh7th/cmp-omni",
-            "hrsh7th/cmp-path",
-            "onsails/lspkind-nvim",
-            "quangnguyen30192/cmp-nvim-tags"
-        }
+            "xzbdmw/colorful-menu.nvim"
+        },
+        opts = require("user.blink-cmp").opts(),
+        version = '1.*'
     },
 
     -- LSP
     {
         "neovim/nvim-lspconfig",
         dependencies = {
+            "saghen/blink.cmp",
             {
                 "lvimuser/lsp-inlayhints.nvim",
                 config = function()
@@ -234,15 +226,6 @@ local all_plugins = {
         },
         event = "VeryLazy"
     },
-
-    -- Code Browsing
-    -- {
-    --     "skywind3000/gutentags_plus",
-    --     dependencies = { "ludovicchabant/vim-gutentags" },
-    --     config = function()
-    --         require("user.gutentags-plus").config()
-    --     end
-    -- },
 
     { "derekwyatt/vim-fswitch" },
 
