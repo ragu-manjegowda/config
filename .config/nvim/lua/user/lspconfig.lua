@@ -7,6 +7,9 @@ local vim = vim
 
 local M = {}
 
+--- LSP keymaps
+---@param client vim.lsp.Client
+---@return nil
 function M.define_keymap(client)
     local map = vim.keymap.set
 
@@ -33,6 +36,9 @@ function M.define_keymap(client)
     end, { desc = 'Toggle inlay hints' })
 end
 
+--- Setup signature help
+---@param client vim.lsp.Client
+---@return nil
 function M.setup_signatureHelp(client)
     local map = vim.keymap.set
     if client:supports_method('textDocument/signatureHelp') then
@@ -54,20 +60,13 @@ function M.setup_signatureHelp(client)
     end
 end
 
-function M.setup_diagnostics(client)
-    if client:supports_method('textDocument/hover') then
-        vim.lsp.buf.hover(
-            { border = 'rounded' }
-        )
-    end
-
+--- Setup diagnostics config
+--- @return nil
+function M.setup_diagnostics()
     local signs = {
         Error = "", Hint = "", Info = "", Information = "", Warn = "" }
 
     vim.diagnostic.config({
-        float = {
-            border = "rounded"
-        },
         signs = {
             text = {
                 [vim.diagnostic.severity.ERROR] = signs.Error,
@@ -79,6 +78,8 @@ function M.setup_diagnostics(client)
     })
 end
 
+--- Setup CompletionItemKind
+--- @return nil
 function M.setup_completionKind()
     local res, protocol = pcall(require, "vim.lsp.protocol")
     if not res then
@@ -86,7 +87,6 @@ function M.setup_completionKind()
         return
     end
 
-    --protocol.SymbolKind = { }
     protocol.CompletionItemKind = {
         '', -- Text
         '', -- Method
@@ -130,52 +130,37 @@ vim.api.nvim_create_autocmd(
 
             M.setup_signatureHelp(client)
 
-            M.setup_diagnostics(client)
+            M.setup_diagnostics()
 
             M.setup_completionKind()
-
-            if client:supports_method('textDocument/hover') then
-                vim.lsp.buf.hover(
-                    { border = 'rounded' }
-                )
-            end
         end,
     }
 )
 
 
 function M.config()
-    local res, nvim_lsp, cmp_nvim_lsp, lsp_windows
+    local res, nvim_lsp, blink_cmp, lsp_defaults
     res, nvim_lsp = pcall(require, "lspconfig")
     if not res then
         vim.notify("lspconfig not found", vim.log.levels.ERROR)
         return
     end
 
-    res, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
+    res, blink_cmp = pcall(require, "blink.cmp")
     if not res then
-        vim.notify("cmp_nvim_lsp not found", vim.log.levels.ERROR)
-        return
+        vim.notify("blink.cmp not found", vim.log.levels.WARN)
+    else
+        -- Add cmp_nvim_lsp capabilities to default capabilities
+        lsp_defaults = nvim_lsp.util.default_config
+
+        lsp_defaults.capabilities =
+            vim.tbl_deep_extend(
+                'force',
+                lsp_defaults.capabilities,
+                blink_cmp.get_lsp_capabilities({}, false))
+
+        nvim_lsp.util.default_config = lsp_defaults
     end
-
-    res, lsp_windows = pcall(require, "lspconfig.ui.windows")
-    if not res then
-        vim.notify("lspconfig.ui.windows not found", vim.log.levels.ERROR)
-        return
-    end
-
-    lsp_windows.default_options.border = "rounded"
-
-    -- Add cmp_nvim_lsp capabilities to default capabilities
-    local lsp_defaults = nvim_lsp.util.default_config
-
-    lsp_defaults.capabilities =
-        vim.tbl_deep_extend(
-            'force',
-            lsp_defaults.capabilities,
-            cmp_nvim_lsp.default_capabilities())
-
-    nvim_lsp.util.default_config = lsp_defaults
 
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
