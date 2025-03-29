@@ -138,38 +138,147 @@ vim.api.nvim_create_autocmd(
 )
 
 
-function M.config()
-    local res, nvim_lsp, blink_cmp, lsp_defaults
-    res, nvim_lsp = pcall(require, "lspconfig")
+--- Get default config, merge cmp capabilities if available
+---@return table
+function M.get_default_config()
+    local res, lspconfig, blink_cmp, lsp_defaults
+    res, lspconfig = pcall(require, "lspconfig")
     if not res then
         vim.notify("lspconfig not found", vim.log.levels.ERROR)
-        return
+        return {}
     end
+
+    lsp_defaults = lspconfig.util.default_config
 
     res, blink_cmp = pcall(require, "blink.cmp")
     if not res then
         vim.notify("blink.cmp not found", vim.log.levels.WARN)
     else
-        -- Add cmp_nvim_lsp capabilities to default capabilities
-        lsp_defaults = nvim_lsp.util.default_config
-
         lsp_defaults.capabilities =
             vim.tbl_deep_extend(
                 'force',
                 lsp_defaults.capabilities,
                 blink_cmp.get_lsp_capabilities({}, false))
-
-        nvim_lsp.util.default_config = lsp_defaults
     end
 
-    ---------------------------------------------------------------------------
-    ---------------------------------------------------------------------------
-    -- Bash
-    nvim_lsp.bashls.setup {}
+    return lsp_defaults
+end
 
-    ---------------------------------------------------------------------------
-    ---------------------------------------------------------------------------
-    -- C, C++
+function M.config()
+    local res, lspconfig = pcall(require, "lspconfig")
+    if not res then
+        vim.notify("lspconfig not found", vim.log.levels.ERROR)
+        return
+    end
+
+    lspconfig.util.default_config = M.get_default_config()
+
+    local opts = M.opts()
+    for server, config in pairs(opts.servers) do
+        lspconfig[server].setup(config)
+    end
+end
+
+
+--- Get Markdown LSP setup config
+---@return table
+function M.markdown_setup()
+    local default_config = M.get_default_config()
+
+    -- Ensure that dynamicRegistration is enabled! This allows the LS to take into account actions like the
+    -- Create Unresolved File code action, resolving completions for unindexed code blocks, ...
+    local watch_capabilities = vim.tbl_deep_extend(
+        'force',
+        default_config.capabilities,
+        {
+            workspace = {
+                didChangeWatchedFiles = {
+                    dynamicRegistration = true,
+                },
+            },
+        }
+    )
+
+    return {
+        capabilities = watch_capabilities
+    }
+end
+
+
+--- Get Golang LSP setup config
+---@return table
+function M.gopls_setup()
+    -- Golang
+    -- https://github.com/bazelbuild/rules_go/wiki/Editor-setup
+    -- https://github.com/AnatoleLucet/dotfiles/blob/9f329f8d624655ab262329e12531eb1dfb54df15/nvim.save/.config/nvim/lua/lsp/init.lua#L153
+
+    local cwd = vim.fn.getcwd()
+
+    local gopackagesdriver = ""
+    local bazel_workspace_dir = ""
+    local goroot = ""
+
+    local res, lspconfig, utils
+    res, lspconfig = pcall(require, "lspconfig")
+    if not res then
+        vim.notify("lspconfig not found", vim.log.levels.ERROR)
+        return {}
+    end
+
+    res, utils = pcall(require, "user.utils")
+    if not res then
+        vim.notify("user.utils not found", vim.log.levels.ERROR)
+        return {}
+    end
+
+    if utils.is_bazel_project() then
+        gopackagesdriver = cwd .. "/scripts/gopackagesdriver.sh"
+        if vim.fn.filereadable(gopackagesdriver) ~= 1 then
+            gopackagesdriver = ""
+        end
+
+        goroot = cwd .. "/bazel-" .. cwd:match("/([^/]*)$") .. "/external/go_sdk"
+        if vim.fn.isdirectory(goroot) ~= 1 then
+            goroot = ""
+        end
+
+        bazel_workspace_dir = vim.fn.fnamemodify(cwd, ':t')
+    end
+
+    return {
+        flags = {
+            debounce_text_changes = 150,
+        },
+        cmd = { "gopls", "serve" },
+        filetypes = { "go", "gomod" },
+        root_dir = lspconfig.util.root_pattern("go.mod", ".gitignore"),
+        settings = {
+            gopls = {
+                analyses = {
+                    unusedparams = true,
+                },
+                directoryFilters = {
+                    "-bazel-bin",
+                    "-bazel-out",
+                    "-bazel-testlogs",
+                    "-bazel-" .. bazel_workspace_dir,
+                },
+                env = {
+                    GOROOT = goroot,
+                    GOPACKAGESDRIVER_BAZEL_BUILD_FLAGS = "--strategy=GoStdlibList=local",
+                    GOPACKAGESDRIVER_BAZEL_QUERY = "kind(go_binary, //...)",
+                    GOPACKAGESDRIVER = gopackagesdriver
+                },
+                staticcheck = true
+            }
+        }
+    }
+end
+
+
+--- Get Clangd LSP setup config
+---@return table
+function M.clangd_setup()
     local clangd_cmd = {
         "clangd",
         "--all-scopes-completion=true",
@@ -196,265 +305,124 @@ function M.config()
         table.insert(clangd_cmd, "--malloc-trim")
     end
 
-    nvim_lsp.clangd.setup {
-        root_dir = nvim_lsp.util.root_pattern("compile_commands.json", ".gitignore"),
+    local res, lspconfig
+    res, lspconfig = pcall(require, "lspconfig")
+    if not res then
+        vim.notify("lspconfig not found", vim.log.levels.ERROR)
+        return {}
+    end
+
+    return {
+        root_dir = lspconfig.util.root_pattern(
+            "compile_commands.json", ".gitignore"),
         cmd = clangd_cmd
     }
+end
 
-    ---------------------------------------------------------------------------
-    ---------------------------------------------------------------------------
-    -- Cmake
-    nvim_lsp.cmake.setup {}
 
-    ---------------------------------------------------------------------------
-    ---------------------------------------------------------------------------
-    -- Golang
-    -- https://github.com/bazelbuild/rules_go/wiki/Editor-setup
-    -- https://github.com/AnatoleLucet/dotfiles/blob/9f329f8d624655ab262329e12531eb1dfb54df15/nvim.save/.config/nvim/lua/lsp/init.lua#L153
-
-    local cwd = vim.fn.getcwd()
-
-    local gopackagesdriver = ""
-    local bazel_workspace_dir = ""
-    local goroot = ""
-
-    local utils
-    res, utils = pcall(require, "user.utils")
-    if not res then
-        vim.notify("user.utils not found", vim.log.levels.ERROR)
-        return
-    end
-
-    if utils.is_bazel_project() then
-        gopackagesdriver = cwd .. "/scripts/gopackagesdriver.sh"
-        if vim.fn.filereadable(gopackagesdriver) ~= 1 then
-            gopackagesdriver = ""
-        end
-
-        goroot = cwd .. "/bazel-" .. cwd:match("/([^/]*)$") .. "/external/go_sdk"
-        if vim.fn.isdirectory(goroot) ~= 1 then
-            goroot = ""
-        end
-
-        bazel_workspace_dir = vim.fn.fnamemodify(cwd, ':t')
-    end
-
-    nvim_lsp.gopls.setup {
-        flags = {
-            debounce_text_changes = 150,
-        },
-        cmd = { "gopls", "serve" },
-        filetypes = { "go", "gomod" },
-        root_dir = nvim_lsp.util.root_pattern("go.mod", ".gitignore"),
-        settings = {
-            gopls = {
-                analyses = {
-                    unusedparams = true,
-                },
-                directoryFilters = {
-                    "-bazel-bin",
-                    "-bazel-out",
-                    "-bazel-testlogs",
-                    "-bazel-" .. bazel_workspace_dir,
-                },
-                env = {
-                    GOROOT = goroot,
-                    GOPACKAGESDRIVER_BAZEL_BUILD_FLAGS = "--strategy=GoStdlibList=local",
-                    GOPACKAGESDRIVER_BAZEL_QUERY = "kind(go_binary, //...)",
-                    GOPACKAGESDRIVER = gopackagesdriver
-                },
-                staticcheck = true
-            }
-        }
-    }
-
-    ---------------------------------------------------------------------------
-    ---------------------------------------------------------------------------
-    -- Json
-    nvim_lsp.jsonls.setup {}
-
-    ---------------------------------------------------------------------------
-    ---------------------------------------------------------------------------
-    -- Lua
-    nvim_lsp.lua_ls.setup {
-        -- root_dir is .luacheckrc which is added for both awesome and nvim
-        settings = {
-            Lua = {
-                completion = {
-                    keywordSnippet = "Both",
-                    callSnippet = "Both"
-                },
-                hint = { enable = true },
-                telemetry = { enable = false }
-            }
-        }
-    }
-
-    ---------------------------------------------------------------------------
-    ---------------------------------------------------------------------------
-    -- Markdown
-
-    -- Ensure that dynamicRegistration is enabled! This allows the LS to take into account actions like the
-    -- Create Unresolved File code action, resolving completions for unindexed code blocks, ...
-    local watch_capabilities = vim.tbl_deep_extend(
-        'force',
-        lsp_defaults.capabilities,
-        {
-            workspace = {
-                didChangeWatchedFiles = {
-                    dynamicRegistration = true,
-                },
+--- Define LSP servers to be setup
+---@return table
+function M.opts()
+    return {
+        servers = {
+            bashls = {},
+            biome = {
+                single_file_support = true
             },
-        }
-    )
-
-    nvim_lsp.marksman.setup {
-        capabilities = watch_capabilities
-    }
-
-    ---------------------------------------------------------------------------
-    ---------------------------------------------------------------------------
-    -- Python
-    -- https://www.reddit.com/r/neovim/comments/sazbw6/comment/hw1s6qg/?utm_source=share&utm_medium=web2x&context=3
-
-    -- Set heap size to 4GB - https://github.com/microsoft/pyright/issues/3239
-    -- exclude this on Mac, we know it's 4GB, issue is mostly on Ubuntu
-    ---@diagnostic disable-next-line: undefined-field
-    if not vim.loop.os_uname().sysname == "Darwin" then
-        local cmd = "node -e 'console.log(v8.getHeapStatistics().total_available_size / 1024 / 1024)'"
-        local f = assert(io.popen(cmd, 'r'))
-        local s = assert(f:read('*a'))
-        f:close()
-        if tonumber(s) < 4096 then
-            vim.env.NODE_OPTIONS = "--max-old-space-size=4096"
-        end
-    end
-
-    -- nvim_lsp.pyright.setup {
-    --     flags = {
-    --         debounce_text_changes = 150,
-    --     },
-    --     settings = {
-    --         python = {
-    --             analysis = {
-    --                 autoImportCompletions = false,
-    --                 diagnosticMode = "openFilesOnly",
-    --                 -- diagnosticSeverityOverrides = {
-    --                 --     reportGeneralTypeIssues = "none",
-    --                 --     reportOptionalMemberAccess = "none",
-    --                 --     reportOptionalSubscript = "none",
-    --                 --     reportPrivateImportUsage = "none",
-    --                 -- },
-    --                 useLibraryCodeForTypes = true
-    --             },
-    --             linting = { pylintEnabled = false }
-    --         },
-    --     },
-    -- }
-
-    -- Pylsp for hover, documentation, go to definition, syntax checking
-    -- https://github.com/python-lsp/python-lsp-server/blob/develop/CONFIGURATION.md
-    nvim_lsp.pylsp.setup {
-        flags = {
-            debounce_text_changes = 150,
-        },
-        settings = {
-            pylsp = {
-                plugins = {
-                    jedi_completion = {
-                        fuzzy = true
-                    },
-                    flake8 = { enabled = true },
-                    pycodestyle = {
-                        ignore = {
-                            'C0103', 'E266',
-                            'W0104', 'W391', 'W503', 'W504'
+            clangd = M.clangd_setup(),
+            cmake = {},
+            gopls = M.gopls_setup(),
+            harper_ls = {
+                filetypes = { "html", "toml" },
+                settings = {
+                    ["harper-ls"] = {
+                        linters = {
+                            spell_check = false,
+                            sentence_capitalization = false,
                         },
-                        maxLineLength = 80
-                    },
-                    pydocstyle = { enabled = true },
-                    pyflakes = { enabled = false },
-                },
+                    }
+                }
             },
-        },
-    }
-
-    ---------------------------------------------------------------------------
-    ---------------------------------------------------------------------------
-    -- Ruby
-    nvim_lsp.ruby_lsp.setup {
-        init_options = {
-            formatter = 'standard',
-            linters = { 'standard' }
+            jsonls = {},
+            lua_ls = {
+                -- root_dir is .luacheckrc which is added for both awesome and nvim
+                settings = {
+                    Lua = {
+                        completion = {
+                            keywordSnippet = "Both",
+                            callSnippet = "Both"
+                        },
+                        hint = { enable = true },
+                        telemetry = { enable = false }
+                    }
+                }
+            },
+            marksman = M.markdown_setup(),
+            pylsp = {
+                flags = {
+                    debounce_text_changes = 150
+                },
+                settings = {
+                    pylsp = {
+                        plugins = {
+                            jedi_completion = {
+                                fuzzy = true
+                            },
+                            flake8 = { enabled = true },
+                            pycodestyle = {
+                                ignore = {
+                                    'C0103', 'E266',
+                                    'W0104', 'W391', 'W503', 'W504'
+                                },
+                                maxLineLength = 80
+                            },
+                            pydocstyle = { enabled = true },
+                            pyflakes = { enabled = false }
+                        }
+                    }
+                }
+            },
+            ruby_lsp = {
+                init_options = {
+                    formatter = 'standard',
+                    linters = { 'standard' }
+                }
+            },
+            rust_analyzer = {
+                settings = {
+                    ["rust-analyzer"] = {
+                        imports = {
+                            granularity = {
+                                group = "module",
+                            },
+                            prefix = "self",
+                        },
+                        cargo = {
+                            buildScripts = {
+                                enable = true,
+                            },
+                        },
+                        procMacro = {
+                            enable = true
+                        },
+                        inlayHints = {
+                            enabled = true,
+                            typeHints = {
+                                enable = true,
+                            },
+                        },
+                    }
+                }
+            },
+            -- Need this for formatting
+            -- https://github.com/standardrb/standard/wiki/IDE:-neovim
+            standardrb = {
+                single_file_support = true
+            },
+            vimls = {},
+            yamlls = {}
         }
     }
-    -- Need this for formatting
-    -- https://github.com/standardrb/standard/wiki/IDE:-neovim
-    nvim_lsp.standardrb.setup {
-        single_file_support = true
-    }
-
-    ---------------------------------------------------------------------------
-    ---------------------------------------------------------------------------
-    -- Rust
-    nvim_lsp.rust_analyzer.setup {
-        settings = {
-            ["rust-analyzer"] = {
-                imports = {
-                    granularity = {
-                        group = "module",
-                    },
-                    prefix = "self",
-                },
-                cargo = {
-                    buildScripts = {
-                        enable = true,
-                    },
-                },
-                procMacro = {
-                    enable = true
-                },
-                inlayHints = {
-                    enabled = true,
-                    typeHints = {
-                        enable = true,
-                    },
-                },
-            }
-        }
-    }
-
-    ---------------------------------------------------------------------------
-    ---------------------------------------------------------------------------
-    -- Toml
-    nvim_lsp.harper_ls.setup {
-        filetypes = { "html", "toml" },
-        settings = {
-            ["harper-ls"] = {
-                linters = {
-                    spell_check = false,
-                    sentence_capitalization = false,
-                },
-            }
-        }
-    }
-
-    ---------------------------------------------------------------------------
-    ---------------------------------------------------------------------------
-    -- Vim
-    nvim_lsp.vimls.setup {}
-
-    ---------------------------------------------------------------------------
-    ---------------------------------------------------------------------------
-    -- Toolchain of Web
-    nvim_lsp.biome.setup {
-        single_file_support = true
-    }
-
-    ---------------------------------------------------------------------------
-    ---------------------------------------------------------------------------
-    -- Yaml
-    nvim_lsp.yamlls.setup {}
 end
 
 return M
