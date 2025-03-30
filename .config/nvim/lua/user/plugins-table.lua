@@ -353,6 +353,7 @@ local all_plugins = {
         dependencies = {
             "nvim-treesitter/nvim-treesitter"
         },
+        lazy = false,
         priority = 1001
     },
 

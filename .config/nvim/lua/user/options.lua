@@ -47,7 +47,6 @@ local options = {
     splitbelow = true,     -- force all horizontal splits to go below current window
     splitright = true,     -- force all vertical splits to go to the right of current window
     swapfile = false,      -- creates a swapfile
-    syntax = "enable",
     tabstop = 4,                                    -- insert 4 spaces for a tab
     termguicolors = true,                           -- set term gui colors (most terminals support this)
     timeoutlen = 300,                               -- time to wait for a mapped sequence to complete (in milliseconds)
