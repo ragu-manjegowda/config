@@ -290,3 +290,20 @@ vim.api.nvim_create_autocmd("FileType", {
     group = "disable_leading_spaces",
     pattern = { "checkhealth", "fugitive", "gitcommit", "text" }
 })
+
+
+-- Stop lsp client when no buffer is attached
+-- credit: https://www.reddit.com/r/neovim/s/1Xe19oPOVX
+vim.api.nvim_create_augroup("stop_lsp_with_last_client", { clear = true })
+vim.api.nvim_create_autocmd({ "LspDetach" }, {
+    callback = function(args)
+        local client = vim.lsp.get_client_by_id(args.data.client_id)
+        if not client or not client.attached_buffers then return end
+        for buf_id in pairs(client.attached_buffers) do
+            if buf_id ~= args.buf then return end
+        end
+        client:stop()
+    end,
+    group = "stop_lsp_with_last_client",
+    desc = "Stop lsp client when no buffer is attached",
+})
