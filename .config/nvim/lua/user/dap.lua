@@ -519,6 +519,7 @@ function M.config()
                 return vim.fn.split(argument_string, " ", true)
             end,
             cwd         = pick_cwd,
+            console     = 'integratedTerminal',
             stopOnEntry = true
         },
         -- Use the following to start a server
@@ -528,13 +529,14 @@ function M.config()
         -- For Address already in use error, use the following
         -- `fuser -k 1234/tcp`
         {
-            type = "remote_python",
-            request = "attach",
-            name = "Remote attach",
-            port = 1234,
-            host = "127.0.0.1",
+            type           = "remote_python",
+            request        = "attach",
+            name           = "Remote attach",
+            port           = 1234,
+            host           = "127.0.0.1",
             redirectOutput = true,
-            stopOnEntry = true
+            console        = 'integratedTerminal',
+            stopOnEntry    = true
         }
     }
 end

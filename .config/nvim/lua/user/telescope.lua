@@ -252,6 +252,7 @@ function M.config()
 
     telescope.setup({
         defaults = {
+            border = false,
 
             mappings = {
                 i = {

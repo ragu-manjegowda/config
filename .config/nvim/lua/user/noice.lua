@@ -26,8 +26,8 @@ function M.config()
 
     noice.setup({
         lsp = {
-            hover = { enabled = true },
-            signature = { enabled = true }
+            hover = { enabled = false },
+            signature = { enabled = false }
         },
         messages = {
             view_search = false,
@@ -40,7 +40,7 @@ function M.config()
             command_palette = true,       -- position the cmdline and popupmenu together
             long_message_to_split = true, -- long messages will be sent to a split
             inc_rename = false,           -- enables an input dialog for inc-rename.nvim
-            lsp_doc_border = true,        -- add a border to hover docs and signature help
+            lsp_doc_border = false,       -- add a border to hover docs and signature help
         },
         routes = {
             -- hide notification after writing to file
@@ -86,6 +86,15 @@ function M.config()
             })
         end,
         group = vim.api.nvim_create_augroup("NoiceMacroNotficationDismiss", { clear = true })
+    })
+
+    -- Temporary workaround for https://github.com/folke/noice.nvim/issues/1082
+    local initialWinborder = vim.o.winborder
+    vim.api.nvim_create_autocmd("CmdlineEnter", {
+        callback = function() vim.o.winborder = "none" end,
+    })
+    vim.api.nvim_create_autocmd("CmdlineLeave", {
+        callback = function() vim.o.winborder = initialWinborder end,
     })
 end
 
