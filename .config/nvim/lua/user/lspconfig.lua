@@ -7,113 +7,24 @@ local vim = vim
 
 local M = {}
 
---- LSP keymaps
+--- LSP attach keymaps
 ---@param client vim.lsp.Client
 ---@return nil
-function M.define_keymap(client)
+function M.define_lsp_attach_keymap(client)
     local map = vim.keymap.set
 
     -- <c-x><c-o> is also mapped to <c-d> in options.lua via wildchar
     vim.opt.omnifunc = "v:lua.vim.lsp.omnifunc"
 
-    if client:supports_method('textDocument/implementation') then
-        map({ 'n', 'v' }, '<leader>lD', '<cmd>lua vim.lsp.buf.declaration()<CR>',
-            { silent = true, desc = 'LSP goto declaration' })
+    if client:supports_method("textDocument/implementation") then
+        map({ "n", "v" }, "<leader>lD", "<cmd>lua vim.lsp.buf.declaration()<CR>",
+            { silent = true, desc = "LSP goto declaration" })
     end
 
-    if client:supports_method('textDocument/formatting') then
-        map({ 'n', 'v' }, '<leader>lf', '<cmd>lua vim.lsp.buf.format()<CR>',
-            { silent = true, desc = 'LSP formatting' })
+    if client:supports_method("textDocument/formatting") then
+        map({ "n", "v" }, "<leader>lf", "<cmd>lua vim.lsp.buf.format()<CR>",
+            { silent = true, desc = "LSP formatting" })
     end
-
-    map('n', '<leader>ltv', function()
-        local new_config = not vim.diagnostic.config().virtual_lines
-        vim.diagnostic.config({ virtual_lines = new_config })
-    end, { desc = 'Toggle diagnostic virtual_lines' })
-
-    map('n', '<leader>lti', function()
-        vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
-    end, { desc = 'Toggle inlay hints' })
-end
-
---- Setup signature help
----@param client vim.lsp.Client
----@return nil
-function M.setup_signatureHelp(client)
-    local map = vim.keymap.set
-    if client:supports_method('textDocument/signatureHelp') then
-        local res, lsp_signature
-        res, lsp_signature = pcall(require, "lsp_signature")
-        if not res then
-            vim.notify("lsp_signature not found", vim.log.levels.WARN)
-        else
-            lsp_signature.setup({
-                doc_lines = 0,
-                hint_enable = false,
-                select_signature_key = "<M-n>"
-            }, vim.api.nvim_get_current_buf())
-
-            map({ 'n', 'i' }, '<C-k>',
-                '<cmd>lua require("lsp_signature").toggle_float_win()<CR>',
-                { silent = true, desc = 'Toggle LSP signature' })
-        end
-    end
-end
-
---- Setup diagnostics config
---- @return nil
-function M.setup_diagnostics()
-    local signs = {
-        Error = "", Hint = "", Info = "", Information = "", Warn = "" }
-
-    vim.diagnostic.config({
-        signs = {
-            text = {
-                [vim.diagnostic.severity.ERROR] = signs.Error,
-                [vim.diagnostic.severity.HINT] = signs.Hint,
-                [vim.diagnostic.severity.INFO] = signs.Info,
-                [vim.diagnostic.severity.WARN] = signs.Warn
-            }
-        }
-    })
-end
-
---- Setup CompletionItemKind
---- @return nil
-function M.setup_completionKind()
-    local res, protocol = pcall(require, "vim.lsp.protocol")
-    if not res then
-        vim.notify("lsp.protocol not found", vim.log.levels.ERROR)
-        return
-    end
-
-    protocol.CompletionItemKind = {
-        '', -- Text
-        '', -- Method
-        '', -- Function
-        '', -- Constructor
-        '', -- Field
-        '', -- Variable
-        '', -- Class
-        'ﰮ', -- Interface
-        '', -- Module
-        '', -- Property
-        '', -- Unit
-        '', -- Value
-        '', -- Enum
-        '', -- Keyword
-        '﬌', -- Snippet
-        '', -- Color
-        '', -- File
-        '', -- Reference
-        '', -- Folder
-        '', -- EnumMember
-        '', -- Constant
-        '', -- Struct
-        '', -- Event
-        'ﬦ', -- Operator
-        '', -- TypeParameter
-    }
 end
 
 vim.api.nvim_create_augroup("lsp attach", { clear = true })
@@ -126,17 +37,94 @@ vim.api.nvim_create_autocmd(
             local client = assert(
                 vim.lsp.get_client_by_id(args.data.client_id))
 
-            M.define_keymap(client)
-
-            M.setup_signatureHelp(client)
-
-            M.setup_diagnostics()
-
-            M.setup_completionKind()
+            M.define_lsp_attach_keymap(client)
         end,
     }
 )
 
+--- Setup diagnostics config
+--- @return nil
+function M.setup_diagnostics()
+    local signs = {
+        Error = "",
+        Hint = "",
+        Info = "",
+        Information = "",
+        Warn = ""
+    }
+
+    vim.diagnostic.config({
+        signs = {
+            text = {
+                [vim.diagnostic.severity.ERROR] = signs.Error,
+                [vim.diagnostic.severity.HINT] = signs.Hint,
+                [vim.diagnostic.severity.INFO] = signs.Info,
+                [vim.diagnostic.severity.WARN] = signs.Warn
+            }
+        },
+        virtual_lines = {
+            current_line = true,
+            severity = {
+                min = vim.diagnostic.severity.ERROR,
+            }
+        }
+    })
+
+    local map = vim.keymap.set
+
+    map("n", "<leader>ltv", function()
+        local new_config = not vim.diagnostic.config().virtual_lines
+        vim.diagnostic.config({ virtual_lines = new_config })
+    end, { desc = "Toggle diagnostic virtual_lines" })
+end
+
+--- Setup CompletionItemKind
+--- @return nil
+function M.setup_completionKind()
+    local res, protocol = pcall(require, "vim.lsp.protocol")
+    if not res then
+        vim.notify("lsp.protocol not found", vim.log.levels.ERROR)
+        return
+    end
+
+    protocol.CompletionItemKind = {
+        "", -- Text
+        "", -- Method
+        "", -- Function
+        "", -- Constructor
+        "", -- Field
+        "", -- Variable
+        "", -- Class
+        "ﰮ", -- Interface
+        "", -- Module
+        "", -- Property
+        "", -- Unit
+        "", -- Value
+        "", -- Enum
+        "", -- Keyword
+        "﬌", -- Snippet
+        "", -- Color
+        "", -- File
+        "", -- Reference
+        "", -- Folder
+        "", -- EnumMember
+        "", -- Constant
+        "", -- Struct
+        "", -- Event
+        "ﬦ", -- Operator
+        "", -- TypeParameter
+    }
+end
+
+function M.setup_inlayHints()
+    vim.lsp.inlay_hint.enable()
+
+    local map = vim.keymap.set
+    map("n", "<leader>lti", function()
+        local new_config = not vim.lsp.inlay_hint.is_enabled()
+        vim.lsp.inlay_hint.enable(new_config)
+    end, { desc = "Toggle inlay hints" })
+end
 
 --- Get default config, merge cmp capabilities if available
 ---@return table
@@ -156,7 +144,7 @@ function M.get_default_config()
     else
         lsp_defaults.capabilities =
             vim.tbl_deep_extend(
-                'force',
+                "force",
                 lsp_defaults.capabilities,
                 blink_cmp.get_lsp_capabilities({}, false))
     end
@@ -165,6 +153,12 @@ function M.get_default_config()
 end
 
 function M.config()
+    -- Setup CompletionItemKind irrespective of `lspconfig`
+    M.setup_completionKind()
+
+    -- Setup diagnostics irrespective of `lspconfig`
+    M.setup_diagnostics()
+
     local res, lspconfig = pcall(require, "lspconfig")
     if not res then
         vim.notify("lspconfig not found", vim.log.levels.ERROR)
@@ -177,8 +171,9 @@ function M.config()
     for server, config in pairs(opts.servers) do
         lspconfig[server].setup(config)
     end
-end
 
+    M.setup_inlayHints()
+end
 
 --- Get Markdown LSP setup config
 ---@return table
@@ -188,7 +183,7 @@ function M.markdown_setup()
     -- Ensure that dynamicRegistration is enabled! This allows the LS to take into account actions like the
     -- Create Unresolved File code action, resolving completions for unindexed code blocks, ...
     local watch_capabilities = vim.tbl_deep_extend(
-        'force',
+        "force",
         default_config.capabilities,
         {
             workspace = {
@@ -203,7 +198,6 @@ function M.markdown_setup()
         capabilities = watch_capabilities
     }
 end
-
 
 --- Get Golang LSP setup config
 ---@return table
@@ -242,7 +236,7 @@ function M.gopls_setup()
             goroot = ""
         end
 
-        bazel_workspace_dir = vim.fn.fnamemodify(cwd, ':t')
+        bazel_workspace_dir = vim.fn.fnamemodify(cwd, ":t")
     end
 
     return {
@@ -274,7 +268,6 @@ function M.gopls_setup()
         }
     }
 end
-
 
 --- Get Clangd LSP setup config
 ---@return table
@@ -318,7 +311,6 @@ function M.clangd_setup()
         cmd = clangd_cmd
     }
 end
-
 
 --- Define LSP servers to be setup
 ---@return table
@@ -371,8 +363,8 @@ function M.opts()
                             flake8 = { enabled = true },
                             pycodestyle = {
                                 ignore = {
-                                    'C0103', 'E266',
-                                    'W0104', 'W391', 'W503', 'W504'
+                                    "C0103", "E266",
+                                    "W0104", "W391", "W503", "W504"
                                 },
                                 maxLineLength = 80
                             },
@@ -384,8 +376,8 @@ function M.opts()
             },
             ruby_lsp = {
                 init_options = {
-                    formatter = 'standard',
-                    linters = { 'standard' }
+                    formatter = "standard",
+                    linters = { "standard" }
                 }
             },
             rust_analyzer = {
