@@ -164,12 +164,10 @@ local extra_plugins = {
         dependencies = {
             "saghen/blink.cmp",
             {
-                "lvimuser/lsp-inlayhints.nvim",
-                config = function()
-                    require("lsp-inlayhints").setup()
-                end
-            },
-            "ray-x/lsp_signature.nvim"
+                "chrisgrieser/nvim-lsp-endhints",
+                event = "LspAttach",
+                opts = {},
+            }
         },
         config = function()
             require("user.lspconfig").config()
