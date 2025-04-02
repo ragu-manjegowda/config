@@ -7,7 +7,7 @@ local vim = vim
 
 local M = {}
 
---- LSP attach keymaps
+-- LSP attach keymaps
 ---@param client vim.lsp.Client
 ---@return nil
 function M.define_lsp_attach_keymap(client)
@@ -42,8 +42,8 @@ vim.api.nvim_create_autocmd(
     }
 )
 
---- Setup diagnostics config
---- @return nil
+-- Setup diagnostics config
+---@return nil
 function M.setup_diagnostics()
     local signs = {
         Error = "",
@@ -78,8 +78,8 @@ function M.setup_diagnostics()
     end, { desc = "Toggle diagnostic virtual_lines" })
 end
 
---- Setup CompletionItemKind
---- @return nil
+-- Setup CompletionItemKind
+---@return nil
 function M.setup_completionKind()
     local res, protocol = pcall(require, "vim.lsp.protocol")
     if not res then
@@ -126,7 +126,7 @@ function M.setup_inlayHints()
     end, { desc = "Toggle inlay hints" })
 end
 
---- Get default config, merge cmp capabilities if available
+-- Get default config, merge cmp capabilities if available
 ---@return table
 function M.get_default_config()
     local res, lspconfig, blink_cmp, lsp_defaults
@@ -175,7 +175,7 @@ function M.config()
     M.setup_inlayHints()
 end
 
---- Get Markdown LSP setup config
+-- Get Markdown LSP setup config
 ---@return table
 function M.markdown_setup()
     local default_config = M.get_default_config()
@@ -199,7 +199,7 @@ function M.markdown_setup()
     }
 end
 
---- Get Golang LSP setup config
+-- Get Golang LSP setup config
 ---@return table
 function M.gopls_setup()
     -- Golang
@@ -269,7 +269,7 @@ function M.gopls_setup()
     }
 end
 
---- Get Clangd LSP setup config
+-- Get Clangd LSP setup config
 ---@return table
 function M.clangd_setup()
     local clangd_cmd = {
@@ -312,7 +312,7 @@ function M.clangd_setup()
     }
 end
 
---- Define LSP servers to be setup
+-- Define LSP servers to be setup
 ---@return table
 function M.opts()
     return {

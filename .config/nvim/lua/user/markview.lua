@@ -126,7 +126,7 @@ function M.config()
         return;
     end
 
-    --- Fold text creator.
+    -- Fold text creator.
     ---@return string | table
     _G.heading_foldtext = function()
         --- Start & end of the current fold.
@@ -263,6 +263,7 @@ function M.config()
             vim.opt_local.fillchars = "fold: ,foldopen:,foldclose:";
             vim.opt_local.foldmethod = "expr"
             vim.opt_local.foldtext = "v:lua.heading_foldtext()"
+            vim.opt_local.foldlevel = 2
         end
     })
 end
