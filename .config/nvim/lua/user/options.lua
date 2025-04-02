@@ -142,8 +142,12 @@ vim.api.nvim_create_user_command(
     'ToggleColorScheme',
     function()
         vim.cmd("source $XDG_CONFIG_HOME/nvim/lua/user/colorscheme.lua")
+
         -- Reload bufferline silently
         vim.cmd("silent Lazy reload bufferline.nvim")
+        -- Reload lualine silently
+        vim.cmd("silent Lazy reload lualine.nvim")
+
         -- TODO: Debug why this is needed
         vim.cmd("source $XDG_CONFIG_HOME/nvim/lua/user/colorscheme.lua")
     end, {}
