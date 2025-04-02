@@ -12,6 +12,9 @@ M.config = function()
         return
     end
 
+    --- Get search count
+    ---@param opts {count: boolean, cond: boolean}
+    ---@return string | boolean
     local function getSearch(opts)
         -- Check if noice plugin is loaded
         local noice_exists, noice = pcall(require, "noice")
@@ -25,7 +28,7 @@ M.config = function()
                 return noice.api.status.search.get
             end
         end
-        return nil
+        return (opts.count and false) or (opts.count and "")
     end
 
     lualine.setup {

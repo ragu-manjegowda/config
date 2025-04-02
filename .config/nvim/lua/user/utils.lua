@@ -210,8 +210,8 @@ end
 -- Modified to fit needs
 
 ---@param opts {
----filter?: string|(fun(name: string):boolean),
----executables?: boolean, directories?: boolean}
+---    filter?: string|(fun(name: string):boolean),
+---    executables?: boolean, directories?: boolean}
 ---@return string[]
 local function get_files(path, opts)
     local filter = function(_) return true end
@@ -253,9 +253,9 @@ local function get_files(path, opts)
 end
 
 ---@param opts? {
----filter?: string|(fun(name: string): boolean),
----executables?: boolean, directories?: boolean,
----prompt?: string, path?: string }
+---    filter?: string|(fun(name: string): boolean),
+---    executables?: boolean, directories?: boolean,
+---    prompt?: string, path?: string }
 ---@return string|nil
 function M.pick_file(opts)
     opts = opts or {}
