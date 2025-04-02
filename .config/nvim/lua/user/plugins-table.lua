@@ -97,7 +97,7 @@ local core_plugins = {
         config = function()
             require("user.lualine").config()
         end,
-        dependencies = { 'nvim-tree/nvim-web-devicons' }
+        dependencies = { "nvim-tree/nvim-web-devicons" }
     },
 
     -- Tabline

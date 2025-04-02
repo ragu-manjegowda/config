@@ -163,6 +163,7 @@ config update-index --assume-unchanged \
     .config/rofi/config.rasi \
     .config/sioyek/prefs_user.config \
     .config/termshark/termshark.toml \
+    .config/tmux/tmux.conf \
     .config/xsettingsd/xsettingsd.conf \
     .gtkrc-2.0 \
     .icons/default/index.theme \
