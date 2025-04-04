@@ -36,7 +36,8 @@ local core_plugins = {
         dependencies = { "nvim-tree/nvim-web-devicons" },
         config = function()
             require("user.nvim-tree").config()
-        end
+        end,
+        event = "VeryLazy"
     },
 
     {
@@ -172,7 +173,7 @@ local extra_plugins = {
         config = function()
             require("user.lspconfig").config()
         end,
-        event = "VimEnter"
+        event = "BufReadPost"
     },
 
     -- LSP Saga
@@ -185,7 +186,7 @@ local extra_plugins = {
         config = function()
             require("user.lspsaga").config()
         end,
-        event = "VimEnter"
+        event = "LspAttach"
     },
 
     {

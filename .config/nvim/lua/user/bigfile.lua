@@ -1,53 +1,110 @@
 -------------------------------------------------------------------------------
 -- Author       : Ragu Manjegowda
 -- Github       : @ragu-manjegowda
+-- reference    : https://github.com/folke/snacks.nvim
 -------------------------------------------------------------------------------
 
-local vim = vim
-
+---@class bigfile
 local M = {}
 
-function M.setup()
-    local res, bigfile = pcall(require, "bigfile")
-    if not res then
-        vim.notify("bigfile not found", vim.log.levels.ERROR)
-        return
-    end
+M.meta = {
+    desc = "Deal with big files",
+    needs_setup = true,
+}
 
-    local mini_indentscope = {
-        name = "mini_indentscope",
-        disable = function(buf)
-            vim.api.nvim_buf_set_var(buf, "miniindentscope_disable", 1)
-            require("gitsigns").detach(buf)
-        end,
+--- Set buffer-local options.
+---@param bo vim.bo|{}
+function M.bo(bo)
+    for k, v in pairs(bo or {}) do
+        vim.api.nvim_set_option_value(k, v, { scope = "local" })
+    end
+end
+
+function M.setup()
+    local opts = {
+        notify = true,            -- show notification when big file detected
+        size = 1.5 * 1024 * 1024, -- 1.5MB
+        line_length = 5000,       -- average line length
+        -- Enable or disable features when big file detected
+        ---@param ctx {buf: number, ft:string}
+        setup = function(ctx)
+            if vim.fn.exists(":NoMatchParen") ~= 0 then
+                vim.cmd([[NoMatchParen]])
+            end
+
+            M.bo({
+                foldmethod = "manual",
+                statuscolumn = "",
+                conceallevel = 0
+            })
+
+            vim.schedule(function()
+                if vim.api.nvim_buf_is_valid(ctx.buf) then
+                    vim.bo[ctx.buf].syntax = ctx.ft
+
+                    local res, gitsigns = pcall(require, "gitsigns")
+                    if res then
+                        gitsigns.attach(ctx.buf)
+                    end
+                end
+            end)
+            vim.api.nvim_buf_set_var(ctx.buf, "miniindentscope_disable", 1)
+        end
     }
 
-    bigfile.config({
-        filesize = 1,
-        features = {
-            "filetype",
-            "indent_blankline",
-            "lsp",
-            "matchparen",
-            mini_indentscope,
-            "syntax",
-            "treesitter",
-            "vimopts"
-        }
+    vim.filetype.add({
+        pattern = {
+            [".*"] = {
+                function(path, buf)
+                    if not path or not buf or vim.bo[buf].filetype == "bigfile" then
+                        return
+                    end
+                    if path ~= vim.api.nvim_buf_get_name(buf) then
+                        return
+                    end
+                    local size = vim.fn.getfsize(path)
+                    if size <= 0 then
+                        return
+                    end
+                    if size > opts.size then
+                        return "bigfile"
+                    end
+                    local lines = vim.api.nvim_buf_line_count(buf)
+                    return lines > opts.line_length and "bigfile" or nil
+                end,
+            },
+        },
     })
 
-    -- taken from AstroNvim
-    local big_file_events = { "BufRead", "BufWinEnter", "BufNewFile" }
-    vim.api.nvim_create_autocmd(big_file_events, {
-        once = true,
-        callback = function(args)
-            local buftype = vim.api.nvim_get_option_value("buftype",
-                { buf = args.buf })
-            if not (vim.fn.expand "%" == "" or buftype == "nofile") then
-                vim.cmd "do User FileOpened"
-                require("user.lspconfig").config()
+    vim.api.nvim_create_autocmd({ "FileType" }, {
+        callback = function(ev)
+            if opts.notify then
+                local path = vim.fn.fnamemodify(
+                    vim.api.nvim_buf_get_name(ev.buf), ":p:~:.")
+
+                local msg = {
+                    ("Big file detected `%s`."):format(path),
+                    "Some Neovim features have been **disabled**.",
+                }
+
+                vim.notify(
+                    table.concat(msg, "\n"),
+                    {
+                        title = "Big File",
+                        level = vim.log.levels.WARN
+                    }
+                )
             end
-        end
+
+            vim.api.nvim_buf_call(ev.buf, function()
+                opts.setup({
+                    buf = ev.buf,
+                    ft = vim.filetype.match({ buf = ev.buf }) or "",
+                })
+            end)
+        end,
+        group = vim.api.nvim_create_augroup("bigfile", { clear = true }),
+        pattern = "bigfile"
     })
 end
 

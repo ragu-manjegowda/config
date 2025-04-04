@@ -3,15 +3,13 @@
 -- Github       : @ragu-manjegowda
 -------------------------------------------------------------------------------
 
-local opts = { silent = true }
+---@class keymaps
+local M = {}
 
--- Shorten function name
-local keymap = vim.keymap.set
-
---Remap space as leader key
-keymap("", "<Space>", "<Nop>", opts)
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
+M.meta = {
+    desc = "Set keymaps",
+    needs_setup = true,
+}
 
 -- Modes
 --   normal_mode = "n",
@@ -21,112 +19,135 @@ vim.g.maplocalleader = " "
 --   term_mode = "t",
 --   command_mode = "c",
 
--------------------------------------------------------------------------------
--- Normal Mode
--------------------------------------------------------------------------------
+local utils
 
--- Disable arrow keys in normal mode
-keymap("n", "<Up>", "<Nop>", opts)
-keymap("n", "<Down>", "<Nop>", opts)
-keymap("n", "<Left>", "<Nop>", opts)
-keymap("n", "<Right>", "<Nop>", opts)
-
--- Disable q: since it comes in way most of the time, command history is
--- mapped via telescope plugin
-keymap("n", "q:", "<Nop>", opts)
-
--- Scroll horizontally
-keymap("n", "<C-h>", "5zh", opts)
-keymap("n", "<C-l>", "5zl", opts)
-
--- Resize with arrows
-keymap("n", "<C-Up>", ":resize -2<CR>", opts)
-keymap("n", "<C-Down>", ":resize +2<CR>", opts)
-keymap("n", "<C-Left>", ":vertical resize -2<CR>", opts)
-keymap("n", "<C-Right>", ":vertical resize +2<CR>", opts)
-
--- Delete without yank
-keymap("n", "<leader>d", '"_d', opts)
-keymap("n", "x", '"_x', opts)
-keymap("n", "X", '"_X', opts)
-keymap("v", "<leader>d", '"_d', opts)
-
--- Keep it centered
-keymap("n", "n", "nzzzv", opts)
-keymap("n", "N", "Nzzzv", opts)
-keymap("n", "J", "mzJ`z", opts)
-
--- ============ Key maps for tabs
--- Open new empty tab
-keymap("n", "<leader>n<Tab>", ":tabedit<CR>", opts)
-
--- Close all tabs except current
-keymap("n", "<leader>co", ":tabonly<CR>", opts)
-
--- Open terminal in new tab
-keymap("n", "<leader>zsh", ":tabnew term://zsh<CR>", opts)
-keymap("n", "<leader>bash", ":tabnew term://bash -l<CR>", opts)
-
--- Write
-keymap("n", "<leader>w", ":w<CR>", { noremap = true })
-
--- Quit
-keymap("n", "<leader>q", ":q<CR>", opts)
-keymap("n", "<leader>qa", ":LspStop<CR>:qa<CR>", opts)
-
--- Map to open QuickFix list
-keymap("n", "<leader>oq", ":copen<CR><C-w>T", opts)
-
--- Map to navigate QuickFix list
-keymap("n", "<A-j>", "<cmd>cnext<CR>zz", opts)
-keymap("n", "<A-k>", "<cmd>cprev<CR>zz", opts)
-
--- Map to navigate QuickFix list after error from Dispatch
-keymap("n", "<leader>od", ":Copen<CR><C-w>T", opts)
-
--- Get full path of the current buffer
-keymap("n", "<leader>fp", "1<C-g><CR>", { noremap = true })
-
--------------------------------------------------------------------------------
--- Insert Mode
--------------------------------------------------------------------------------
--- Forward delete characters
-keymap("i", "<C-d>", "<Del>", opts)
-
--------------------------------------------------------------------------------
--- Visual Mode
--------------------------------------------------------------------------------
-
--- Stay in indent mode
-keymap("v", "<", "<gv", opts)
-keymap("v", ">", ">gv", opts)
-
--- Paste without yank
-keymap("v", "p", '"_dP', opts)
-
--------------------------------------------------------------------------------
--- Terminal Mode
--------------------------------------------------------------------------------
-
--- Terminal exit insert mode
-keymap("t", "jj", "<C-\\><C-n>", opts)
-
--------------------------------------------------------------------------------
--- Copy to system clipboard
--------------------------------------------------------------------------------
--- Now the '+' register will copy to system clipboard using OSC52
-keymap({ 'n', 'v' }, '<leader>c', '"+y', opts)
-keymap('n', '<leader>cc', '"+yy', opts)
-
--------------------------------------------------------------------------------
--- URL handling
--------------------------------------------------------------------------------
-
--- source: https://sbulav.github.io/vim/neovim-opening-urls/
-if vim.fn.has("mac") == 1 then
-    keymap("n", "gx", "<Cmd>call jobstart(['open', expand('<cfile>')], {'detach': v:true})<CR>", opts)
-elseif vim.fn.has("unix") == 1 then
-    keymap("n", "gx", "<Cmd>call jobstart(['xdg-open', expand('<cfile>')], {'detach': v:true})<CR>", opts)
-else
-    keymap("n", "gx", "<Cmd>lua print('Error: gx is not supported on this OS!')<CR>", opts)
+---@param mode string | table
+---@param lhs string
+---@param rhs string | function
+---@param opts? table
+---@return nil
+function M.keymap(mode, lhs, rhs, opts)
+    if not utils then
+        utils = require("user.utils")
+    end
+    utils.keymap(mode, lhs, rhs, opts)
 end
+
+function M.setup()
+    --Remap space as leader key
+    M.keymap("", "<Space>", "<Nop>")
+    vim.g.mapleader = " "
+    vim.g.maplocalleader = " "
+
+    -------------------------------------------------------------------------------
+    -- Normal Mode
+    -------------------------------------------------------------------------------
+
+    -- Disable arrow keys in normal mode
+    M.keymap("n", "<Up>", "<Nop>")
+    M.keymap("n", "<Down>", "<Nop>")
+    M.keymap("n", "<Left>", "<Nop>")
+    M.keymap("n", "<Right>", "<Nop>")
+
+    -- Disable q: since it comes in way most of the time, command history is
+    -- mapped via telescope plugin
+    M.keymap("n", "q:", "<Nop>")
+
+    -- Scroll horizontally
+    M.keymap("n", "<C-h>", "5zh")
+    M.keymap("n", "<C-l>", "5zl")
+
+    -- Resize with arrows
+    M.keymap("n", "<C-Up>", ":resize -2<CR>")
+    M.keymap("n", "<C-Down>", ":resize +2<CR>")
+    M.keymap("n", "<C-Left>", ":vertical resize -2<CR>")
+    M.keymap("n", "<C-Right>", ":vertical resize +2<CR>")
+
+    -- Delete without yank
+    M.keymap("n", "<leader>d", '"_d')
+    M.keymap("n", "x", '"_x')
+    M.keymap("n", "X", '"_X')
+    M.keymap("v", "<leader>d", '"_d')
+
+    -- Keep it centered
+    M.keymap("n", "n", "nzzzv")
+    M.keymap("n", "N", "Nzzzv")
+    M.keymap("n", "J", "mzJ`z")
+
+    -- ============ M.key maps for tabs
+    -- Open new empty tab
+    M.keymap("n", "<leader>n<Tab>", ":tabedit<CR>")
+
+    -- Close all tabs except current
+    M.keymap("n", "<leader>co", ":tabonly<CR>")
+
+    -- Open terminal in new tab
+    M.keymap("n", "<leader>zsh", ":tabnew term://zsh<CR>")
+    M.keymap("n", "<leader>bash", ":tabnew term://bash -l<CR>")
+
+    -- Write
+    M.keymap("n", "<leader>w", ":w<CR>", { noremap = true })
+
+    -- Quit
+    M.keymap("n", "<leader>q", ":q<CR>")
+    M.keymap("n", "<leader>qa", ":LspStop<CR>:qa<CR>")
+
+    -- Map to open QuickFix list
+    M.keymap("n", "<leader>oq", ":copen<CR><C-w>T")
+
+    -- Map to navigate QuickFix list
+    M.keymap("n", "<A-j>", "<cmd>cnext<CR>zz")
+    M.keymap("n", "<A-k>", "<cmd>cprev<CR>zz")
+
+    -- Map to navigate QuickFix list after error from Dispatch
+    M.keymap("n", "<leader>od", ":Copen<CR><C-w>T")
+
+    -- Get full path of the current buffer
+    M.keymap("n", "<leader>fp", "1<C-g><CR>", { noremap = true })
+
+    -------------------------------------------------------------------------------
+    -- Insert Mode
+    -------------------------------------------------------------------------------
+    -- Forward delete characters
+    M.keymap("i", "<C-d>", "<Del>")
+
+    -------------------------------------------------------------------------------
+    -- Visual Mode
+    -------------------------------------------------------------------------------
+
+    -- Stay in indent mode
+    M.keymap("v", "<", "<gv")
+    M.keymap("v", ">", ">gv")
+
+    -- Paste without yank
+    M.keymap("v", "p", '"_dP')
+
+    -------------------------------------------------------------------------------
+    -- Terminal Mode
+    -------------------------------------------------------------------------------
+
+    -- Terminal exit insert mode
+    M.keymap("t", "jj", "<C-\\><C-n>")
+
+    -------------------------------------------------------------------------------
+    -- Copy to system clipboard
+    -------------------------------------------------------------------------------
+    -- Now the '+' register will copy to system clipboard using OSC52
+    M.keymap({ 'n', 'v' }, '<leader>c', '"+y')
+    M.keymap('n', '<leader>cc', '"+yy')
+
+    -------------------------------------------------------------------------------
+    -- URL handling
+    -------------------------------------------------------------------------------
+
+    -- source: https://sbulav.github.io/vim/neovim-opening-urls/
+    if vim.fn.has("mac") == 1 then
+        M.keymap("n", "gx", "<Cmd>call jobstart(['open', expand('<cfile>')], {'detach': v:true})<CR>")
+    elseif vim.fn.has("unix") == 1 then
+        M.keymap("n", "gx", "<Cmd>call jobstart(['xdg-open', expand('<cfile>')], {'detach': v:true})<CR>")
+    else
+        M.keymap("n", "gx", "<Cmd>lua print('Error: gx is not supported on this OS!')<CR>")
+    end
+end
+
+return M
