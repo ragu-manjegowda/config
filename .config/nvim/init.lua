@@ -3,28 +3,44 @@
 -- Github       : @ragu-manjegowda
 -------------------------------------------------------------------------------
 
+-------------------------------------------------------------------------------
 -- Load all static (non plugin based) settings
-require "user.options"
-require "user.keymaps"
-require "user.autocommands"
-require "user.colorscheme"
-require "user.buf-only"
+-------------------------------------------------------------------------------
 
--- Bootstrap Lazy
-local res, bootstrap = pcall(require, "user.bootstrap")
+local static_settings = {
+    "user.options",
+    "user.keymaps",
+    "user.autocommands",
+    "user.colorscheme",
+    "user.bufonly",
+    "user.bigfile",
+}
+
+local res, utils = pcall(require, "user.utils")
 if not res then
-    vim.notify("Not able to bootstrap Lazy", vim.log.levels.WARN)
-else
-    bootstrap.init()
-
-    -- Load plugins
-    local plugins
-
-    res, plugins = pcall(require, "user.plugins-table")
-    if not res then
-        vim.notify("Plugins table not found", vim.log.levels.WARN)
-    else
-        bootstrap.load { plugins }
-    end
+    -- This is scary, basically user config bombs at this point!!
+    vim.notify("Error loading user.utils", vim.log.levels.ERROR)
+    return
 end
 
+for _, entry in pairs(static_settings) do
+    utils.load_plugin(entry, "setup")
+end
+
+-------------------------------------------------------------------------------
+--- Load plugins
+-------------------------------------------------------------------------------
+-- Bootstrap Lazy
+local lazy = utils.load_plugin("user.bootstrap", "init")
+if lazy then
+    -- Load plugins
+    local res, plugins = utils.load_plugin("user.plugins-table")
+
+    if res then
+        res = utils.load_plugin("user.bootstrap", "load", plugins)
+    end
+
+    if not res then
+        vim.notify("Error loading user.plugins-table", vim.log.levels.ERROR)
+    end
+end

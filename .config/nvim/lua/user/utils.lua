@@ -9,12 +9,47 @@ local M = {}
 
 local current_root_dir = nil
 
+-- Load a plugin or call a function in a plugin
+---@param path string path to the plugin
+---@param func? string name of the function
+---@param args? any arguments to be passed to the function
+---@return boolean, any? boolean indicates success, any is value returned by require
+function M.load_plugin(path, func, args)
+    local res, plugin = pcall(require, path)
+    if not res then
+        vim.notify(
+            path .. "not found" .. "\n" .. plugin,
+            vim.log.levels.WARN
+        )
+        return false
+    else
+        if func then
+            plugin[func](args)
+            return true
+        else
+            return true, plugin
+        end
+    end
+end
+
+-- Shorten function name
+---@param mode string | table
+---@param lhs string
+---@param rhs string | function
+---@param opts? table
+---@return nil
+function M.keymap(mode, lhs, rhs, opts)
+    opts = opts or {}
+    if not opts.silent then opts.silent = true end
+    vim.keymap.set(mode, lhs, rhs, opts)
+end
+
 local function restore_nvim_tree()
     local res, nvim_tree_api, nvim_tree_change_dir
 
     res, nvim_tree_api = pcall(require, "nvim-tree.api")
     if not res then
-        vim.notify("nvim-tree.api not found", vim.log.levels.ERROR)
+        -- do best effort, if plugin is not loaded yet, don't bother
         return
     end
 
@@ -34,20 +69,6 @@ local function restore_nvim_tree()
     end
 
     nvim_tree_api.tree.reload()
-end
-
-local function set_session_directory()
-    if current_root_dir == nil or current_root_dir == '/' then
-        return
-    end
-
-    local path = current_root_dir
-    path = vim.fn.substitute(path, '\\v\\/', '_', 'g')
-    path = vim.fn.substitute(path, '_', '', '')
-    path = vim.fn.substitute(path, '\\v\\.', '', 'g')
-    path = vim.fn.substitute(path, '[A-Z]', '\\U&', 'g')
-
-    vim.g.session_autosave_to = path
 end
 
 function M.set_cwd()
@@ -81,8 +102,6 @@ function M.set_cwd()
             current_root_dir = cwd
             -- restore nvim tree
             restore_nvim_tree()
-            -- update session directory
-            set_session_directory()
         end
     else
         current_root_dir = vim.fn.getcwd()
@@ -132,15 +151,6 @@ vim.api.nvim_create_autocmd(events, {
                 vim_enter_lsp_status = true
             end
         end
-    end,
-})
-
-vim.api.nvim_create_autocmd('DirChanged', {
-    pattern = "auto", -- trigger on autochdir
-    callback = function(_)
-        current_root_dir = vim.fn.getcwd()
-        -- set session directory
-        set_session_directory()
     end,
 })
 
@@ -238,7 +248,8 @@ local function get_files(path, opts)
         if opts.executables then
             -- On MacOS, use permissions to filter out non-executable files
             -- https://apple.stackexchange.com/a/116370
-            if vim.loop.os_uname().sysname == "Darwin" then
+            ---@diagnostic disable-next-line: undefined-field
+            if vim.uv.os_uname().sysname == "Darwin" then
                 table.insert(cmd, "-perm")
                 table.insert(cmd, "+ugo+x")
             else
