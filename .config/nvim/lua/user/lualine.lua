@@ -27,18 +27,42 @@ M.get_theme = function()
 
     return {
         normal = {
-            a = { fg = colors.base3, bg = colors.magenta, gui = "bold" },
-            b = { fg = colors.base2, bg = colors.base01 },
-            c = { fg = colors.base1, bg = colors.base02 },
+            a = {
+                fg = colors.base02, bg = colors.blue, gui = "bold"
+            },
+            b = {
+                fg = colors.base03, bg = colors.base01
+            },
+            c = {
+                fg = colors.base1, bg = colors.base02
+            }
         },
-        insert = { a = { fg = colors.base3, bg = colors.green, gui = "bold" } },
-        visual = { a = { fg = colors.base3, bg = colors.yellow, gui = "bold" } },
-        replace = { a = { fg = colors.base3, bg = colors.blue, gui = "bold" } },
+        insert = {
+            a = {
+                fg = colors.base02, bg = colors.green, gui = "bold"
+            }
+        },
+        visual = {
+            a = {
+                fg = colors.base02, bg = colors.yellow, gui = "bold"
+            }
+        },
+        replace = {
+            a = {
+                fg = colors.base02, bg = colors.magenta, gui = "bold"
+            }
+        },
         inactive = {
-            a = { fg = colors.base3, bg = colors.base00, gui = "bold" },
-            b = { fg = colors.base2, bg = colors.base01 },
-            c = { fg = colors.base1, bg = colors.base02 },
-        },
+            a = {
+                fg = colors.base03, bg = colors.base00, gui = "bold"
+            },
+            b = {
+                fg = colors.base03, bg = colors.base01
+            },
+            c = {
+                fg = colors.base1, bg = colors.base02
+            }
+        }
     }
 end
 
