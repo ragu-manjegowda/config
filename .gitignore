@@ -137,6 +137,7 @@
 /.config/neomutt/maildir
 /.config/neomutt/pass.gpg_decrypted
 /.config/nvim/lua/user/colorscheme.lua-e
+/.config/nvim/lua/user/lualine.lua-e
 /.config/oauth2ms/config.json
 /.config/oauth2ms/oauth2ms
 /.config/okularpartrc
@@ -167,6 +168,7 @@
 /.config/termshark/termshark.toml-e
 /.config/tmux/.tmux_history
 /.config/tmux/session-restore
+/.config/tmux/tmux.conf-e
 /.config/totem
 /.config/unity
 /.config/unity-monitors-v1-backup.xml

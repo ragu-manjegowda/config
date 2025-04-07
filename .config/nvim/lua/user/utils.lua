@@ -44,6 +44,21 @@ function M.keymap(mode, lhs, rhs, opts)
     vim.keymap.set(mode, lhs, rhs, opts)
 end
 
+
+-- Get colors, try NeoSolarized colors, fallback to default colors
+-- Not caching since we want to read fresh colors when toggling dark or light
+-- @return table
+function M.get_colors()
+    local colors = {}
+
+    local res, theme = pcall(require, "NeoSolarized.colors")
+    if res then
+        colors = theme.setup()
+    end
+
+    return colors
+end
+
 local function restore_nvim_tree()
     local res, nvim_tree_api, nvim_tree_change_dir
 

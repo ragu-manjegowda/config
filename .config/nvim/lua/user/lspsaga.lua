@@ -44,23 +44,7 @@ function M.config()
         ui = {
             -- border type can be single,double,rounded,solid,shadow.
             border = 'rounded',
-            winblend = 0,
-            colors = {
-                normal_bg = vim.g.gui_base02,
-                title_bg = vim.g.gui_base03,
-                fg = vim.g.gui_base2,
-                red = vim.g.gui_red,
-                magenta = vim.g.gui_magenta,
-                orange = vim.g.gui_orange,
-                yellow = vim.g.gui_yellow,
-                green = vim.g.gui_green,
-                cyan = vim.g.gui_violet,
-                blue = vim.g.gui_blue,
-                purple = vim.g.gui_cyan,
-                gray = vim.g.gui_base0,
-                white = vim.g.gui_base2,
-                black = vim.g.gui_base02,
-            }
+            winblend = 0
         },
     })
 

@@ -54,60 +54,6 @@ function M.config()
                 border = "▋",
                 border_hl = nil
             }
-        },
-        highlight_groups = {
-            ["ZZ"] = function()
-                return {
-                    {
-                        group_name = "MarkviewHeading1",
-                        value = {
-                            fg = tonumber(vim.g.gui_red:sub(2), 16),
-                            bg = tonumber(vim.g.gui_base02:sub(2), 16)
-                        }
-                    },
-                    {
-                        group_name = "MarkviewHeading2",
-                        value = {
-                            fg = vim.g.gui_green,
-                            bg = vim.g.gui_base02
-                        }
-                    },
-                    {
-                        group_name = "MarkviewHeading3",
-                        value = {
-                            fg = vim.g.gui_yellow,
-                            bg = vim.g.gui_base02
-                        }
-                    },
-                    {
-                        group_name = "MarkviewHeading4",
-                        value = {
-                            fg = vim.g.gui_orange,
-                            bg = vim.g.gui_base02
-                        }
-                    },
-                    {
-                        group_name = "MarkviewHeading5",
-                        value = {
-                            fg = vim.g.gui_cyan,
-                            bg = vim.g.gui_base02
-                        }
-                    },
-                    {
-                        group_name = "MarkviewCode",
-                        value = {
-                            bg = vim.g.gui_base02
-                        },
-                    },
-                    {
-                        group_name = "MarkviewInlineCode",
-                        value = {
-                            fg = vim.g.gui_cyan,
-                            bg = vim.g.gui_base02
-                        }
-                    }
-                }
-            end
         }
     })
 

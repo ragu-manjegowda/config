@@ -1,5 +1,6 @@
 {
   "FTerm.nvim": { "branch": "master", "commit": "d1320892cc2ebab472935242d9d992a2c9570180" },
+  "NeoSolarized.nvim": { "branch": "master", "commit": "fb395ea220c9befc06a91bd97e80fbfec939add5" },
   "SmoothCursor.nvim": { "branch": "main", "commit": "12518b284e1e3f7c6c703b346815968e1620bee2" },
   "avante.nvim": { "branch": "main", "commit": "b6000d5bbcb85e3b11177846220bfd438fc013dd" },
   "bazel.nvim": { "branch": "master", "commit": "4d34165d3b3931e99ef08ebcf596a820b9a640ad" },
