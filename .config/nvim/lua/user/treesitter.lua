@@ -23,6 +23,7 @@ M.config = function()
             "diff",
             "dockerfile",
             "git_config",
+            "gitcommit",
             "go",
             "gomod",
             "gosum",

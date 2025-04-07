@@ -33,13 +33,13 @@
     template = ~/.config/git/gitmessage.txt
 
 [core]
-    editor = "$EDITOR --noplugin -c 'set spell spelllang=en_us'"
+    editor = "$EDITOR -c 'set spell spelllang=en_us'"
     pager = delta | less --tabs=4 -RFX
 
 [delta]
     plus-style = green bold
     features = unobtrusive-line-numbers decorations
-    syntax-theme = "Solarized (dark)"
+    syntax-theme = "Solarized (light)"
     whitespace-error-style = 22 reverse
 
 [delta "interactive"]

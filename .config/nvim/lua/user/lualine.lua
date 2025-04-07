@@ -6,61 +6,48 @@
 local M = {}
 
 M.get_theme = function()
-    local colors = {
-        base3   = vim.g.gui_base3,
-        base2   = vim.g.gui_base2,
-        base1   = vim.g.gui_base1,
-        base0   = vim.g.gui_base0,
-        base00  = vim.g.gui_base00,
-        base01  = vim.g.gui_base01,
-        base02  = vim.g.gui_base02,
-        base03  = vim.g.gui_base03,
-        yellow  = vim.g.gui_yellow,
-        orange  = vim.g.gui_orange,
-        red     = vim.g.gui_red,
-        magenta = vim.g.gui_magenta,
-        violet  = vim.g.gui_violet,
-        blue    = vim.g.gui_blue,
-        cyan    = vim.g.gui_cyan,
-        green   = vim.g.gui_green,
-    }
+    local colors = require("user.utils").get_colors()
+
+    if colors == nil then
+        return {}
+    end
 
     return {
         normal = {
             a = {
-                fg = colors.base02, bg = colors.blue, gui = "bold"
+                fg = colors.bg1, bg = colors.blue, gui = "bold"
             },
             b = {
-                fg = colors.base03, bg = colors.base01
+                fg = colors.bg0, bg = colors.fg1, gui = "bold"
             },
             c = {
-                fg = colors.base1, bg = colors.base02
+                fg = colors.fg0, bg = colors.bg1
             }
         },
         insert = {
             a = {
-                fg = colors.base02, bg = colors.green, gui = "bold"
+                fg = colors.bg1, bg = colors.green, gui = "bold"
             }
         },
         visual = {
             a = {
-                fg = colors.base02, bg = colors.yellow, gui = "bold"
+                fg = colors.bg1, bg = colors.yellow, gui = "bold"
             }
         },
         replace = {
             a = {
-                fg = colors.base02, bg = colors.magenta, gui = "bold"
+                fg = colors.bg1, bg = colors.magenta, gui = "bold"
             }
         },
         inactive = {
             a = {
-                fg = colors.base03, bg = colors.base00, gui = "bold"
+                fg = colors.bg0, bg = colors.fg2, gui = "bold"
             },
             b = {
-                fg = colors.base03, bg = colors.base01
+                fg = colors.bg0, bg = colors.fg2
             },
             c = {
-                fg = colors.base1, bg = colors.base02
+                fg = colors.fg1, bg = colors.bg1
             }
         }
     }
@@ -153,24 +140,6 @@ M.config = function()
 
     vim.api.nvim_set_hl(0, "StatusLine", { reverse = false })
     vim.api.nvim_set_hl(0, "StatusLineNC", { reverse = false })
-
-    vim.api.nvim_set_hl(0, "LuaLineDiffAdd",
-        {
-            fg = vim.g.gui_green,
-            bold = true
-        })
-
-    vim.api.nvim_set_hl(0, "LuaLineDiffChange",
-        {
-            fg = vim.g.gui_yellow,
-            bold = true
-        })
-
-    vim.api.nvim_set_hl(0, "LuaLineDiffDelete",
-        {
-            fg = vim.g.gui_red,
-            bold = true
-        })
 
     vim.api.nvim_create_user_command(
         "ToggleLualine",

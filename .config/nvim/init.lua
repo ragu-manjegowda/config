@@ -7,21 +7,20 @@
 -- Load all static (non plugin based) settings
 -------------------------------------------------------------------------------
 
-local static_settings = {
-    "user.options",
-    "user.keymaps",
-    "user.autocommands",
-    "user.colorscheme",
-    "user.bufonly",
-    "user.bigfile",
-}
-
 local res, utils = pcall(require, "user.utils")
 if not res then
     -- This is scary, basically user config bombs at this point!!
     vim.notify("Error loading user.utils", vim.log.levels.ERROR)
     return
 end
+
+local static_settings = {
+    "user.options",
+    "user.keymaps",
+    "user.autocommands",
+    "user.bufonly",
+    "user.bigfile",
+}
 
 for _, entry in pairs(static_settings) do
     utils.load_plugin(entry, "setup")

@@ -18,58 +18,10 @@ if not res then
     return
 end
 
-vim.api.nvim_set_hl(0, 'bufferline_offset',
-    {
-        fg = vim.g.gui_base03,
-        bg = vim.g.gui_base01,
-        bold = true,
-        italic = true
-    })
-
 local M = {}
 
 function M.config()
     bufferline.setup({
-        highlights = {
-            tab_close = {
-                bg = vim.g.gui_base01
-            },
-            fill = {
-                bg = vim.g.gui_base01
-            },
-            background = {
-                fg = vim.g.gui_base02,
-                bg = vim.g.gui_base00
-            },
-            modified = {
-                fg = vim.g.gui_base02,
-                bg = vim.g.gui_base00
-            },
-            numbers = {
-                fg = vim.g.gui_base02,
-                bg = vim.g.gui_base00
-            },
-            separator = {
-                fg = vim.g.gui_base01,
-                bg = vim.g.gui_base00
-            },
-            buffer_selected = {
-                fg = vim.g.gui_magenta,
-                bg = vim.g.gui_base02
-            },
-            modified_selected = {
-                fg = vim.g.gui_magenta,
-                bg = vim.g.gui_base02
-            },
-            numbers_selected = {
-                fg = vim.g.gui_magenta,
-                bg = vim.g.gui_base02
-            },
-            separator_selected = {
-                fg = vim.g.gui_base01,
-                bg = vim.g.gui_base02
-            },
-        },
         options = {
             mode = "tabs",
             numbers = "ordinal",
@@ -89,35 +41,30 @@ function M.config()
                     filetype = "NvimTree",
                     text = "File Explorer",
                     text_align = "center",
-                    highlight = 'bufferline_offset',
                     separator = true
                 },
                 {
                     text = 'UNDOTREE',
                     filetype = 'undotree',
                     text_align = "center",
-                    highlight = 'bufferline_offset',
                     separator = true
                 },
                 {
                     text = 'TagBar',
                     filetype = 'tagbar',
                     text_align = "center",
-                    highlight = 'bufferline_offset',
                     separator = true
                 },
                 {
                     text = 'Code Outline',
                     filetype = 'lspsagaoutline',
                     text_align = "center",
-                    highlight = 'bufferline_offset',
                     separator = true
                 },
                 {
                     text = ' DIFF VIEW',
                     filetype = 'DiffviewFiles',
                     text_align = "center",
-                    highlight = 'bufferline_offset',
                     separator = true
                 }
             },

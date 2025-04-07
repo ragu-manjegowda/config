@@ -175,15 +175,14 @@ function M.set_user_commands()
                 return
             end
 
-            colorscheme.setup()
+            -- Reload colorscheme silently
+            vim.cmd("silent Lazy reload NeoSolarized.nvim")
 
             -- Reload bufferline silently
             vim.cmd("silent Lazy reload bufferline.nvim")
+
             -- Reload lualine silently
             vim.cmd("silent Lazy reload lualine.nvim")
-
-            -- WAR: Bufferline is too slow to pick up the changes first time
-            colorscheme.setup()
         end, {}
     )
 end
