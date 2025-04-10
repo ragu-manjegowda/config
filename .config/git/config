@@ -22,11 +22,11 @@
     whitespace = red reverse
 
 [color "status"]
-    added = "#268bd2 bold" # blue
+    added = "#859900 bold" # green
     changed = "#b58900 bold" # yellow
-    conflict = "#dc322f bold" # red
-    deleted = "#dc322f bold ul" # red
-    untracked = "#d33682 bold" # magenta
+    header = "#268bd2" # blue
+    unmerged = "#dc322f italic ul bold" # red
+    untracked = "#2aa198 italic bold" # bright cyan
 
 [commit]
     gpgsign = true
@@ -37,29 +37,8 @@
     pager = delta | less --tabs=4 -RFX
 
 [delta]
-    plus-style = green bold
-    features = unobtrusive-line-numbers decorations
-    syntax-theme = "Solarized (light)"
-    whitespace-error-style = 22 reverse
-
-[delta "interactive"]
-    keep-plus-minus-markers = false
-
-[delta "unobtrusive-line-numbers"]
-    line-numbers = true
-    line-numbers-left-format = "{nm:>4}┊"
-    line-numbers-left-style = blue
-    line-numbers-minus-style = red
-    line-numbers-plus-style = bold green
-    line-numbers-right-format = "{np:>4}│"
-    line-numbers-right-style = blue
-    line-numbers-zero-style = cyan
-
-[delta "decorations"]
-    commit-decoration-style = bold yellow box
-    commit-style = raw
-    file-style = bold yellow
-    hunk-header-decoration-style = yellow box
+    features = solarized
+    syntax-theme = "Solarized (dark)"
 
 [diff]
     algorithm = patience
@@ -67,6 +46,9 @@
 
 [github]
     user = ragu-manjegowda
+
+[include]
+    path = ~/.config/git/themes.gitconfig
 
 [init]
     defaultBranch = main

@@ -1,0 +1,27 @@
+[delta "solarized"]
+    # author: https://github.com/ragu-manjegowda
+    # based on: https://github.com/pablospe
+    commit-decoration-style = "#586e75" box # blue
+    file-decoration-style = "#2aa198" overline  # cyan
+    file-added-label = [●]
+    file-copied-label = [C]
+    file-modified-label = [+]
+    file-removed-label = [⛌]
+    file-renamed-label = [→]
+    file-style = bold "#073642" "#b58900" # black yellow
+    hunk-header-style = bold italic "#073642" "#d33682" # black magenta
+    line-numbers = true
+    line-numbers-left-format = "{nm:>1}┊"
+    line-numbers-left-style = "#268bd2" # red
+    line-numbers-minus-style = "#dc322f" bold # red
+    line-numbers-plus-style = "#859900" bold # green
+    line-numbers-right-format = " {np:>1}┊"
+    line-numbers-right-style = "#859900" # green
+    line-numbers-zero-style = "#b58900" italic # yellow
+    minus-emph-style = bold "#073642" "#cb4b16" # black brred
+    minus-style = bold "#dc322f" # red
+    plus-emph-style = bold "#073642" "#859900" # black green
+    plus-style = bold "#859900" # green
+    whitespace-error-style = "#b58900" reverse # yellow
+    zero-style = syntax
+    blame-format = "{author:<18} ({commit:>7}) ┊{timestamp:^16}┊ "
