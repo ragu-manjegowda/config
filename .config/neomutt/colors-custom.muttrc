@@ -51,4 +51,4 @@ color quoted3       magenta         default
 color quoted4       red             default
 color signature     red             default
 
-# vim: ft=muttrc ts=4 sw=4 sts=4 et
+# vim: ft=neomuttrc ts=4 sw=4 sts=4 et

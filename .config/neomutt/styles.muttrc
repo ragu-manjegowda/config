@@ -1,5 +1,3 @@
-# vim: filetype=neomuttrc
-
 ###############################################################################
 ## Author  : Ragu Manjegowda
 ## Github  : @ragu-manjegowda
@@ -247,3 +245,5 @@ tag-formats "replied" "GR" \
 #         (2) at the top of a thread, or (3) ``X-Label:'' is different from
 #         preceding message's ``X-Label:''.
 # %Z      message status flags
+
+# vim: filetype=neomuttrc
