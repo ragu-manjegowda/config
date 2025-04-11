@@ -30,19 +30,19 @@ function M.config()
                 text = '~'
             },
         },
-        signcolumn              = true,            -- Toggle with `:Gitsigns toggle_signs`
-        numhl                   = true,            -- Toggle with `:Gitsigns toggle_numhl`
-        linehl                  = false,           -- Toggle with `:Gitsigns toggle_linehl`
+        signcolumn              = true,  -- Toggle with `:Gitsigns toggle_signs`
+        numhl                   = true,  -- Toggle with `:Gitsigns toggle_numhl`
+        linehl                  = false, -- Toggle with `:Gitsigns toggle_linehl`
         diff_opts               = {
             algorithm = "patience"
         },
-        word_diff               = true,           -- Toggle with `:Gitsigns toggle_word_diff`
+        word_diff               = true, -- Toggle with `:Gitsigns toggle_word_diff`
         watch_gitdir            = {
             interval = 1000,
             follow_files = true
         },
         attach_to_untracked     = true,
-        current_line_blame      = false,           -- Toggle with `:Gitsigns toggle_current_line_blame`
+        current_line_blame      = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
         current_line_blame_opts = {
             virt_text = true,
             virt_text_pos = 'eol', -- 'eol' | 'overlay' | 'right_align'
@@ -50,7 +50,7 @@ function M.config()
         },
         sign_priority           = 6,
         update_debounce         = 100,
-        status_formatter        = nil,           -- Use default
+        status_formatter        = nil, -- Use default
         max_file_length         = 40000,
         preview_config          = {
             -- Options passed to nvim_open_win
@@ -63,43 +63,61 @@ function M.config()
         on_attach               = function(bufnr)
             local gs = package.loaded.gitsigns
 
-            local function map(mode, l, r, opts)
-                opts = opts or {}
-                opts.buffer = bufnr
-                vim.keymap.set(mode, l, r, opts)
+            local utils
+            res, utils = pcall(require, "user.utils")
+            if not res then
+                vim.notify("Error loading user.utils", vim.log.levels.ERROR)
+                return
+            end
+
+            local opts = function(desc)
+                return {
+                    buffer = bufnr,
+                    expr = true,
+                    desc = "gitsigns: " .. desc
+                }
             end
 
             -- Navigation
-            map('n', ']h', function()
-                if vim.wo.diff then return ']c' end
-                vim.schedule(function() gs.nav_hunk("next", { target = "unstaged" }) end)
-                return '<Ignore>'
-            end, { expr = true, desc = "Navigate to next unstaged hunk" })
+            utils.keymap('n', ']h', function()
+                    if vim.wo.diff then return ']c' end
+                    vim.schedule(function() gs.nav_hunk("next", { target = "unstaged" }) end)
+                    return '<Ignore>'
+                end,
+                opts('Navigate to next unstaged hunk'))
 
-            map('n', '[h', function()
-                if vim.wo.diff then return '[c' end
-                vim.schedule(function() gs.nav_hunk("prev", { target = "unstaged" }) end)
-                return '<Ignore>'
-            end, { expr = true, desc = "Navigate to prev unstaged hunk" })
+            utils.keymap('n', '[h', function()
+                    if vim.wo.diff then return '[c' end
+                    vim.schedule(function() gs.nav_hunk("prev", { target = "unstaged" }) end)
+                    return '<Ignore>'
+                end,
+                opts('Navigate to prev unstaged hunk'))
 
-            map('n', ']hs', function()
-                if vim.wo.diff then return ']c' end
-                vim.schedule(function() gs.nav_hunk("next", { target = "staged" }) end)
-                return '<Ignore>'
-            end, { expr = true, desc = "Navigate to next staged hunk" })
+            utils.keymap('n', ']hs', function()
+                    if vim.wo.diff then return ']c' end
+                    vim.schedule(function() gs.nav_hunk("next", { target = "staged" }) end)
+                    return '<Ignore>'
+                end,
+                opts('Navigate to next staged hunk'))
 
-            map('n', '[hs', function()
-                if vim.wo.diff then return '[c' end
-                vim.schedule(function() gs.nav_hunk("prev", { target = "staged" }) end)
-                return '<Ignore>'
-            end, { expr = true, desc = "Navigate to prev staged hunk" })
+            utils.keymap('n', '[hs', function()
+                    if vim.wo.diff then return '[c' end
+                    vim.schedule(function() gs.nav_hunk("prev", { target = "staged" }) end)
+                    return '<Ignore>'
+                end,
+                opts('Navigate to prev staged hunk'))
 
             -- Actions
-            map('n', '<leader>hp', gs.preview_hunk)
-            map('n', '<leader>gbl', gs.toggle_current_line_blame)
+            utils.keymap('n', '<leader>hp', gs.preview_hunk,
+                opts('Preview hunk'))
+
+            utils.keymap('n', '<leader>gbl', gs.toggle_current_line_blame,
+                opts('Toggle current line blame'))
 
             -- Text object
-            map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
+            utils.keymap({ 'o', 'x' }, 'ih',
+                ':<C-U>Gitsigns select_hunk<CR>',
+                opts('Select hunk'))
         end
     }
 end

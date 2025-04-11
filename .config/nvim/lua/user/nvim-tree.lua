@@ -26,22 +26,33 @@ function M.on_attach(_)
     if not res then
         vim.notify("nvim-tree.api not found", vim.log.levels.ERROR)
     else
-        local map = vim.keymap.set
+        local utils
+        res, utils = pcall(require, "user.utils")
+        if not res then
+            vim.notify("Error loading user.utils", vim.log.levels.ERROR)
+            return
+        end
+
         local opts = function(desc)
             return {
-                desc = "nvim-tree: " .. desc, noremap = true, silent = true
+                desc = "nvim-tree: " .. desc
             }
         end
 
-        map("n", "<leader><Tab>", api.node.open.tab, opts("open in new tab"))
-        map("n", "<leader>tgr", api.git.reload, opts("reload nvim-tree git"))
+        utils.keymap("n", "<leader><Tab>", api.node.open.tab,
+            opts("open in new tab"))
 
-        map("n", "<leader>tmn", api.marks.navigate.next,
+        utils.keymap("n", "<leader>tgr", api.git.reload,
+            opts("reload nvim-tree git"))
+
+        utils.keymap("n", "<leader>tmn", api.marks.navigate.next,
             opts("navigate to next mark"))
-        map("n", "<leader>tmp", api.marks.navigate.prev,
+
+        utils.keymap("n", "<leader>tmp", api.marks.navigate.prev,
             opts("navigate to previous mark"))
 
-        map('n', '<leader>tt', api.tree.toggle, opts("toggle nvim-tree"))
+        utils.keymap('n', '<leader>tt', api.tree.toggle,
+            opts("toggle nvim-tree"))
     end
 end
 
