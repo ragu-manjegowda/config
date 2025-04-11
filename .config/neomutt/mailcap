@@ -62,3 +62,5 @@ application/ics; "$HOME"/.local/share/venv/bin/python $XDG_CONFIG_HOME/neomutt/r
 application/octet-stream; mimeopen %s
 
 # }}}
+
+# vim: filetype=neomuttrc

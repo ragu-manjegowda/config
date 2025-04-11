@@ -61,18 +61,30 @@ bind                                index,pager     \Co sidebar-open
 
 bind editor <Tab> complete-query
 bind editor \CT complete
-bind editor <space> noop # So line-editor can accept folders with spaces in their names.
-bind generic * noop # Normally <last-entry>.
-bind generic < noop # Normally <previous-line>.
-bind generic = noop # Normally <first-entry>.
-bind generic > noop # Normally <next-line>.
-bind generic [ noop # Normally <half-up>.
-bind generic ] noop # Normally <half-down>.
-bind index V noop # Normally bound to "show-version".
-#bind attach,index,pager p noop # Normally <print-entry> or <print-message>.
-#bind generic \; noop # Normally <tag-prefix>.
-#bind index <space> next-page
-#bind pager <space> next-page
+
+# So line-editor can accept folders with spaces in their names.
+bind editor <space> noop
+
+# Normally <last-entry
+bind generic * noop
+
+# Normally previous-line
+bind generic < noop
+
+# Normally first-entry
+bind generic = noop
+
+# Normally next-line
+bind generic > noop
+
+# Normally half-up
+bind generic [ noop
+
+# Normally half-down
+bind generic ] noop
+
+# Normally bound to show-version
+bind index V noop
 
 # Misc
 macro index,pager ,ol \
@@ -124,3 +136,5 @@ macro index,pager ,of \
 <enter-command>unset wait_key<enter>\
 <pipe-message>~/.local/share/venv/bin/python ~/.config/neomutt/viewmailattachments.py 2> /dev/null\n &<enter>\
 " "View HTML email in browser"
+
+# vim: filetype=neomuttrc

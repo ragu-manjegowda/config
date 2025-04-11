@@ -1,4 +1,3 @@
-# vim: filetype=neomuttrc
 # muttrc file for account outlook offline
 
 ###############################################################################
@@ -79,11 +78,13 @@ set quote_regexp = "^( {0,4}[>|:#%]| {0,4}[a-z0-9]+[>|]+)+"
 set use_threads = reverse
 set sort = last-date-received
 set narrow_tree = yes
-set sort_re                                # thread based on regex
+# thread based on regex
+set sort_re
 set reply_regexp = "^(([Rr][Ee]?(\[[0-9]+\])?: *)?(\[[^]]+\] *)?)*"
 
 set collapse_all = yes
-set uncollapse_new = no # (default is yes)
+# (default is yes)
+set uncollapse_new = no
 
 set mime_forward = yes
 
@@ -225,3 +226,5 @@ macro index,pager i2 '<sync-mailbox><enter-command>source \
 macro index,pager i3 '<sync-mailbox><enter-command>source \
     $XDG_CONFIG_HOME/neomutt/accounts/personal/raghudarshan<enter>\
     <change-folder>!<enter>;<check-stats>' "switch to raghu-darshan - online"
+
+# vim: filetype=neomuttrc
