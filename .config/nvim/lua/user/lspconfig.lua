@@ -152,29 +152,6 @@ function M.get_default_config()
     return lsp_defaults
 end
 
-function M.config()
-    -- Setup CompletionItemKind irrespective of `lspconfig`
-    M.setup_completionKind()
-
-    -- Setup diagnostics irrespective of `lspconfig`
-    M.setup_diagnostics()
-
-    local res, lspconfig = pcall(require, "lspconfig")
-    if not res then
-        vim.notify("lspconfig not found", vim.log.levels.ERROR)
-        return
-    end
-
-    lspconfig.util.default_config = M.get_default_config()
-
-    local opts = M.opts()
-    for server, config in pairs(opts.servers) do
-        lspconfig[server].setup(config)
-    end
-
-    M.setup_inlayHints()
-end
-
 -- Get Markdown LSP setup config
 ---@return table
 function M.markdown_setup()
@@ -415,6 +392,57 @@ function M.opts()
             yamlls = {}
         }
     }
+end
+
+-- Enable lsp via lspconfig
+---@return nil
+function M.enable_with_lspconfig()
+    local res, lspconfig = pcall(require, "lspconfig")
+    if not res then
+        vim.notify("lspconfig not found", vim.log.levels.ERROR)
+        return
+    end
+
+    lspconfig.util.default_config = M.get_default_config()
+
+    local opts = M.opts()
+    for server, config in pairs(opts.servers) do
+        lspconfig[server].setup(config)
+    end
+end
+
+-- Enable lsp via native lsp (not available with lspconfig)
+---@return nil
+function M.enable_with_vim_lsp()
+    local servers = {
+        tmuxls = {
+            cmd = { "tmux-language-server" },
+            filetypes = { "tmux" }
+        },
+        neomuttls = {
+            cmd = { "mutt-language-server" },
+            filetypes = { "muttrc", "neomuttrc" }
+        }
+    }
+
+    for server, config in pairs(servers) do
+        vim.lsp.config[server] = config
+        vim.lsp.enable(server)
+    end
+end
+
+function M.config()
+    -- Setup CompletionItemKind irrespective of `lspconfig`
+    M.setup_completionKind()
+
+    -- Setup diagnostics irrespective of `lspconfig`
+    M.setup_diagnostics()
+
+    M.enable_with_lspconfig()
+
+    M.enable_with_vim_lsp()
+
+    M.setup_inlayHints()
 end
 
 return M
