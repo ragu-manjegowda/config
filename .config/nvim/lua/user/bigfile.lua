@@ -44,11 +44,10 @@ function M.setup()
 
                     local res, gitsigns = pcall(require, "gitsigns")
                     if res then
-                        gitsigns.attach(ctx.buf)
+                        gitsigns.detach(ctx.buf)
                     end
                 end
             end)
-            vim.api.nvim_buf_set_var(ctx.buf, "miniindentscope_disable", 1)
         end
     }
 
