@@ -109,108 +109,120 @@ end
 function M.before()
     vim.cmd "autocmd User TelescopePreviewerLoaded setlocal number"
 
-    local map = vim.keymap.set
+    local opts = function(desc)
+        return {
+            desc = "telescope: " .. desc
+        }
+    end
 
     -- Telescope fuzzy finder shortcuts
-    map({ 'n', 'v' }, '<leader>bs',
+    utils.keymap({ 'n', 'v' }, '<leader>bs',
         '<cmd>lua require("user.telescope").current_buffer_fuzzy_find()<CR>',
-        { silent = true, desc = 'Telescope buffer fuzzy find' })
+        opts('buffer fuzzy find'))
 
-    map('n', '<leader>dlb', '<cmd>lua require("telescope").extensions.dap.list_breakpoints{}<CR>',
-        { silent = true, desc = 'DAP list_breakpoints' })
+    utils.keymap('n', '<leader>dlb',
+        '<cmd>lua require("telescope").extensions.dap.list_breakpoints{}<CR>',
+        opts('DAP list breakpoints'))
 
-    map('n', '<leader>dbt', '<cmd>lua require("telescope").extensions.dap.frames{}<CR>',
-        { silent = true, desc = 'DAP stack backtrace' })
+    utils.keymap('n', '<leader>dbt',
+        '<cmd>lua require("telescope").extensions.dap.frames{}<CR>',
+        opts('DAP backtrace'))
 
-    map({ 'n', 'v' }, '<leader>fg',
+    utils.keymap({ 'n', 'v' }, '<leader>fg',
         '<cmd>lua require("user.telescope").live_grep()<CR>',
-        { silent = true, desc = 'Telescope live grep with regex' })
+        opts('live grep with regex'))
 
-    map({ 'n', 'v' }, '<leader>fgp',
+    utils.keymap({ 'n', 'v' }, '<leader>fgp',
         '<cmd>lua require("user.telescope").live_grep_current_buffer_folder()<CR>',
-        { silent = true, desc = 'Telescope live grep current buffer folder with regex' })
+        opts('live grep current buffer folder with regex'))
 
-    map('n', '<leader>pb', '<cmd>lua require("telescope.builtin").buffers()<CR>',
-        { silent = true, desc = 'Telescope list project buffers' })
+    utils.keymap('n', '<leader>pb',
+        '<cmd>lua require("telescope.builtin").buffers()<CR>',
+        opts('project list buffers'))
 
-    map('n', '<leader>pc', '<cmd>lua require("telescope.builtin").command_history()<CR>',
-        { silent = true, desc = 'Telescope command_history' })
+    utils.keymap('n', '<leader>pc',
+        '<cmd>lua require("telescope.builtin").command_history()<CR>',
+        opts('project command history'))
 
-    map({ 'n', 'v' }, '<leader>pf',
+    utils.keymap({ 'n', 'v' }, '<leader>pf',
         '<cmd>lua require("user.telescope").find_files()<CR>',
-        { silent = true, desc = 'Telescope find_files' })
+        opts('project find files'))
 
-    map('n', '<leader>ph', '<cmd>lua require("telescope.builtin").help_tags()<CR>',
-        { silent = true, desc = 'Telescope help_tags' })
+    utils.keymap('n', '<leader>ph',
+        '<cmd>lua require("telescope.builtin").help_tags()<CR>',
+        opts('project help tags'))
 
-    map('n', '<leader>pj', '<cmd>lua require("telescope.builtin").jumplist()<CR>',
-        { silent = true, desc = 'Telescope jumplist' })
+    utils.keymap('n', '<leader>pj',
+        '<cmd>lua require("telescope.builtin").jumplist()<CR>',
+        opts('project jumplist'))
 
-    map('n', '<leader>pk', '<cmd>lua require("telescope.builtin").keymaps()<CR>',
-        { silent = true, desc = 'Telescope keymaps' })
+    utils.keymap('n', '<leader>pk',
+        '<cmd>lua require("telescope.builtin").keymaps()<CR>',
+        opts('project keymaps'))
 
-    map('n', '<leader>pm', '<cmd>lua require("telescope.builtin").man_pages()<CR>',
-        { silent = true, desc = 'Telescope man_pages' })
+    utils.keymap('n', '<leader>pm',
+        '<cmd>lua require("telescope.builtin").man_pages()<CR>',
+        opts('project man pages'))
 
-    map('n', '<leader>pq', '<cmd>lua require("telescope.builtin").quickfix()<CR>',
-        { silent = true, desc = 'Telescope quickfix' })
+    utils.keymap('n', '<leader>pq',
+        '<cmd>lua require("telescope.builtin").quickfix()<CR>',
+        opts('project quickfix buffers'))
 
-    map('n', '<leader>pr', '<cmd>lua require("telescope.builtin").registers()<CR>',
-        { silent = true, desc = 'Telescope registers' })
+    utils.keymap('n', '<leader>pr',
+        '<cmd>lua require("telescope.builtin").registers()<CR>',
+        opts('project registers'))
 
-    map({ 'n', 'v' }, '<leader>ps', '<cmd>lua require("user.telescope").grep()<CR>',
-        { silent = true, desc = 'Telescope grep' })
+    utils.keymap({ 'n', 'v' }, '<leader>ps',
+        '<cmd>lua require("user.telescope").grep()<CR>',
+        opts('project search'))
 
-    map({ 'n', 'v' }, '<leader>psf', '<cmd>lua require("user.telescope").grep_folder()<CR>',
-        { silent = true, desc = 'Telescope grep in directories' })
+    utils.keymap({ 'n', 'v' }, '<leader>psf',
+        '<cmd>lua require("user.telescope").grep_folder()<CR>',
+        opts('project search in directories'))
 
-    map('n', '<leader>pt', '<cmd>lua require("telescope.builtin").treesitter()<CR>',
-        { silent = true, desc = 'Telescope treesitter' })
+    utils.keymap('n', '<leader>pt',
+        '<cmd>lua require("telescope.builtin").treesitter()<CR>',
+        opts('current buffer treesitter symbols'))
 
-    map({ 'n', 'v' }, '<leader>pw', '<cmd>lua require("user.telescope").grep_word()<CR>',
-        { silent = true, desc = 'Telescope grep_word' })
+    utils.keymap({ 'n', 'v' }, '<leader>pw',
+        '<cmd>lua require("user.telescope").grep_word()<CR>',
+        opts('project search word'))
 
-    map({ 'n', 'v' }, '<leader>pW', '<cmd>lua require("user.telescope").grep_word_exact()<CR>',
-        { silent = true, desc = 'Telescope grep_word_exact' })
+    utils.keymap({ 'n', 'v' }, '<leader>pW',
+        '<cmd>lua require("user.telescope").grep_word_exact()<CR>',
+        opts('project search word_exact'))
 
     -- LSP
-    -- map('n', '<leader>lA', '<cmd>lua vim.lsp.buf.code_action()<CR>',
-    --     { silent = true, desc = 'LSP code_action' })
-    map('n', '<leader>lic', '<cmd>lua require("telescope.builtin").lsp_incoming_calls()<CR>',
-        { silent = true, desc = 'LSP incoming_calls' })
-    map('n', '<leader>loc', '<cmd>lua require("telescope.builtin").lsp_outgoing_calls()<CR>',
-        { silent = true, desc = 'LSP outgoing_calls' })
-    -- map('n', '<leader>ld', '<cmd>lua require("telescope.builtin").lsp_definitions()<CR>',
-    --     { silent = true, desc = 'LSP definitions' })
-    map('n', '<leader>oe', '<cmd>lua require("telescope.builtin").diagnostics()<CR>',
-        { silent = true, desc = 'LSP diagnostics preview in Telescope' })
-    -- map('n', '<leader>li', '<cmd>lua require("telescope.builtin").lsp_implementations()<CR>',
-    --     { silent = true, desc = 'LSP implementations' })
-    -- map('n', '<leader>lr', '<cmd>lua require("telescope.builtin").lsp_references()<CR>',
-    --     { silent = true, desc = 'LSP references' })
-    -- map('n', '<leader>lt', '<cmd>lua require("telescope.builtin").lsp_type_definitions()<CR>',
-    --     { silent = true, desc = 'LSP type_definitions' })
+    utils.keymap('n', '<leader>lic',
+        '<cmd>lua require("telescope.builtin").lsp_incoming_calls()<CR>',
+        opts('project incoming calls'))
+
+    utils.keymap('n', '<leader>loc',
+        '<cmd>lua require("telescope.builtin").lsp_outgoing_calls()<CR>',
+        opts('project outgoing calls'))
+
+    utils.keymap('n', '<leader>oe',
+        '<cmd>lua require("telescope.builtin").diagnostics()<CR>',
+        opts('LSP diagnostics in Telescope'))
 
     -- Git shortcuts
-    map('n', '<leader>gco', '<cmd>lua require("telescope.builtin").git_commits()<CR>',
-        { silent = true, desc = 'Git checkout commit' })
-    map('n', '<leader>glogft', '<cmd>lua require("telescope.builtin").git_bcommits()<CR>',
-        { silent = true, desc = 'Git log file with telescope' })
-    -- map('n', '<leader>glogp',  '<cmd>lua ' ..
-    --     'require("telescope.builtin").git_commits({ ' ..
-    --     'git_command = {"git", "log", "--pretty=full"}})<CR>', opts)
-    -- map('n', '<leader>gst',    '<cmd>lua require("telescope.builtin").git_status()<CR>', opts)
-    map('n', '<leader>gstash', '<cmd>lua require("telescope.builtin").git_stash()<CR>',
-        { silent = true, desc = 'Git list stash' })
+    utils.keymap('n', '<leader>glogt',
+        '<cmd>lua require("telescope.builtin").git_commits()<CR>',
+        opts('Git list commits'))
+
+    utils.keymap('n', '<leader>glogft',
+        '<cmd>lua require("telescope.builtin").git_bcommits()<CR>',
+        opts('Git log current file commits'))
 
     -- Spell suggest
-    map('n', 'z=', '<cmd>lua require("telescope.builtin").spell_suggest()<CR>',
-        { silent = true, desc = 'Spell suggest' })
+    utils.keymap('n', 'z=',
+        '<cmd>lua require("telescope.builtin").spell_suggest()<CR>',
+        opts('Spell suggest'))
 
     -- Undo Tree
-    map('n', '<leader>ut',
+    utils.keymap('n', '<leader>ut',
         '<cmd>lua require("telescope").extensions.undo.undo()<CR>',
-        { silent = true, desc = 'Open undo tree in telescope' })
+        opts('Open undo tree'))
 end
 
 function M.config()
