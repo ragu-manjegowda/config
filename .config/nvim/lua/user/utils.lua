@@ -41,6 +41,7 @@ end
 function M.keymap(mode, lhs, rhs, opts)
     opts = opts or {}
     if not opts.silent then opts.silent = true end
+    if not opts.noremap then opts.noremap = true end
     vim.keymap.set(mode, lhs, rhs, opts)
 end
 

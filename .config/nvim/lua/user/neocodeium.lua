@@ -26,29 +26,40 @@ function M.config()
         silent = true
     })
 
-    local map = vim.keymap.set
+    local utils
+    res, utils = pcall(require, "user.utils")
+    if not res then
+        vim.notify("Error loading user.utils", vim.log.levels.ERROR)
+        return
+    end
 
-    map('i', '<M-y>',
+    local opts = function(desc)
+        return {
+            desc = "neocodeium: " .. desc
+        }
+    end
+
+    utils.keymap('i', '<M-y>',
         neocodeium.accept_line,
-        { silent = true, desc = 'Codeium suggestion accept line' })
+        opts('Codeium suggestion accept line'))
 
-    map('i', '<M-f>',
+    utils.keymap('i', '<M-f>',
         neocodeium.accept_word,
-        { silent = true, desc = 'Codeium suggestion accept word' })
+        opts('Codeium suggestion accept word'))
 
-    map('i', '<M-i>',
+    utils.keymap('i', '<M-i>',
         neocodeium.cycle_or_complete,
-        { silent = true, desc = 'Codeium suggestion next' })
+        opts('Codeium suggestion next'))
 
-    map('i', '<M-o>',
+    utils.keymap('i', '<M-o>',
         function()
             neocodeium.cycle_or_complete(-1)
         end,
-        { silent = true, desc = 'Codeium suggestion prev' })
+        opts('Codeium suggestion prev'))
 
-    map('i', '<M-e>',
+    utils.keymap('i', '<M-e>',
         neocodeium.clear,
-        { silent = true, desc = 'Codeium suggestion clear' })
+        opts('Codeium suggestion clear'))
 end
 
 return M

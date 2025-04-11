@@ -28,11 +28,16 @@ function M.config()
         }
     })
 
-    -- Shorten function name
-    local keymap = vim.keymap.set
+
+    local utils
+    res, utils = pcall(require, "user.utils")
+    if not res then
+        vim.notify("Error loading user.utils", vim.log.levels.ERROR)
+        return
+    end
 
     -- Open image under cursor in the Preview app (macOS)
-    keymap("n", "<leader>io", function()
+    utils.keymap("n", "<leader>io", function()
         local function get_image_path()
             -- Get the current line
             local line = vim.api.nvim_get_current_line()
@@ -82,8 +87,7 @@ function M.config()
             print("No image found under the cursor")
         end
     end, {
-        silent = true,
-        desc = "xdg-open image under cursor"
+        desc = "image.nvim: xdg-open image under cursor"
     })
 end
 

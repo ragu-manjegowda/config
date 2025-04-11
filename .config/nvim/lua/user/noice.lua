@@ -55,13 +55,24 @@ function M.config()
         }
     })
 
-    local map = vim.keymap.set
+    local utils
+    res, utils = pcall(require, "user.utils")
+    if not res then
+        vim.notify("Error loading user.utils", vim.log.levels.ERROR)
+        return
+    end
 
-    map('n', '<leader>nd', '<cmd>Noice dismiss<CR>',
-        { silent = true, desc = 'Noice dismiss' })
+    local opts = function(desc)
+        return {
+            desc = "noice: " .. desc
+        }
+    end
 
-    map('n', '<leader>nm', '<cmd>Noice<CR><C-W>T',
-        { silent = true, desc = 'Noice messages' })
+    utils.keymap('n', '<leader>nd', '<cmd>Noice dismiss<CR>',
+        opts('Noice dismiss'))
+
+    utils.keymap('n', '<leader>nm', '<cmd>Noice<CR><C-W>T',
+        opts('Noice messages'))
 
     -- show messages while recording macro
     -- https://github.com/folke/noice.nvim/issues/922#issuecomment-2254401041
@@ -74,7 +85,8 @@ function M.config()
                 keep = function() return _MACRO_RECORDING_STATUS end,
             })
         end,
-        group = vim.api.nvim_create_augroup("NoiceMacroNotfication", { clear = true })
+        group = vim.api.nvim_create_augroup(
+            "NoiceMacroNotfication", { clear = true })
     })
 
     vim.api.nvim_create_autocmd("RecordingLeave", {
@@ -85,7 +97,8 @@ function M.config()
                 timeout = 2000,
             })
         end,
-        group = vim.api.nvim_create_augroup("NoiceMacroNotficationDismiss", { clear = true })
+        group = vim.api.nvim_create_augroup(
+            "NoiceMacroNotficationDismiss", { clear = true })
     })
 
     -- Temporary workaround for https://github.com/folke/noice.nvim/issues/1082

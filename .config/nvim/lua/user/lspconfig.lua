@@ -7,23 +7,40 @@ local vim = vim
 
 local M = {}
 
+local res, utils = pcall(require, "user.utils")
+if not res then
+    vim.notify("Error loading user.utils", vim.log.levels.ERROR)
+    return
+end
+
+local lspconfig
+res, lspconfig = pcall(require, "lspconfig")
+if not res then
+    vim.notify("lspconfig not found", vim.log.levels.ERROR)
+    return
+end
+
+local opts = function(desc)
+    return {
+        desc = "lsp: " .. desc
+    }
+end
+
 -- LSP attach keymaps
 ---@param client vim.lsp.Client
 ---@return nil
 function M.define_lsp_attach_keymap(client)
-    local map = vim.keymap.set
-
     -- <c-x><c-o> is also mapped to <c-d> in options.lua via wildchar
     vim.opt.omnifunc = "v:lua.vim.lsp.omnifunc"
 
     if client:supports_method("textDocument/implementation") then
-        map({ "n", "v" }, "<leader>lD", "<cmd>lua vim.lsp.buf.declaration()<CR>",
-            { silent = true, desc = "LSP goto declaration" })
+        utils.keymap({ "n", "v" }, "<leader>lD", "<cmd>lua vim.lsp.buf.declaration()<CR>",
+            opts('LSP goto declaration'))
     end
 
     if client:supports_method("textDocument/formatting") then
-        map({ "n", "v" }, "<leader>lf", "<cmd>lua vim.lsp.buf.format()<CR>",
-            { silent = true, desc = "LSP formatting" })
+        utils.keymap({ "n", "v" }, "<leader>lf", "<cmd>lua vim.lsp.buf.format()<CR>",
+            opts('LSP formatting'))
     end
 end
 
@@ -70,18 +87,18 @@ function M.setup_diagnostics()
         }
     })
 
-    local map = vim.keymap.set
-
-    map("n", "<leader>ltv", function()
-        local new_config = not vim.diagnostic.config().virtual_lines
-        vim.diagnostic.config({ virtual_lines = new_config })
-    end, { desc = "Toggle diagnostic virtual_lines" })
+    utils.keymap("n", "<leader>ltv", function()
+            local new_config = not vim.diagnostic.config().virtual_lines
+            vim.diagnostic.config({ virtual_lines = new_config })
+        end,
+        opts('Toggle diagnostic virtual_lines'))
 end
 
 -- Setup CompletionItemKind
 ---@return nil
 function M.setup_completionKind()
-    local res, protocol = pcall(require, "vim.lsp.protocol")
+    local protocol
+    res, protocol = pcall(require, "vim.lsp.protocol")
     if not res then
         vim.notify("lsp.protocol not found", vim.log.levels.ERROR)
         return
@@ -119,22 +136,17 @@ end
 function M.setup_inlayHints()
     vim.lsp.inlay_hint.enable()
 
-    local map = vim.keymap.set
-    map("n", "<leader>lti", function()
-        local new_config = not vim.lsp.inlay_hint.is_enabled()
-        vim.lsp.inlay_hint.enable(new_config)
-    end, { desc = "Toggle inlay hints" })
+    utils.keymap("n", "<leader>lti", function()
+            local new_config = not vim.lsp.inlay_hint.is_enabled()
+            vim.lsp.inlay_hint.enable(new_config)
+        end,
+        opts('Toggle inlay hints'))
 end
 
 -- Get default config, merge cmp capabilities if available
 ---@return table
 function M.get_default_config()
-    local res, lspconfig, blink_cmp, lsp_defaults
-    res, lspconfig = pcall(require, "lspconfig")
-    if not res then
-        vim.notify("lspconfig not found", vim.log.levels.ERROR)
-        return {}
-    end
+    local blink_cmp, lsp_defaults
 
     lsp_defaults = lspconfig.util.default_config
 
@@ -188,19 +200,6 @@ function M.gopls_setup()
     local gopackagesdriver = ""
     local bazel_workspace_dir = ""
     local goroot = ""
-
-    local res, lspconfig, utils
-    res, lspconfig = pcall(require, "lspconfig")
-    if not res then
-        vim.notify("lspconfig not found", vim.log.levels.ERROR)
-        return {}
-    end
-
-    res, utils = pcall(require, "user.utils")
-    if not res then
-        vim.notify("user.utils not found", vim.log.levels.ERROR)
-        return {}
-    end
 
     if utils.is_bazel_project() then
         gopackagesdriver = cwd .. "/scripts/gopackagesdriver.sh"
@@ -273,13 +272,6 @@ function M.clangd_setup()
         -- Linux specific exclude this on Mac
         table.insert(clangd_cmd, "--enable-config")
         table.insert(clangd_cmd, "--malloc-trim")
-    end
-
-    local res, lspconfig
-    res, lspconfig = pcall(require, "lspconfig")
-    if not res then
-        vim.notify("lspconfig not found", vim.log.levels.ERROR)
-        return {}
     end
 
     return {
@@ -397,12 +389,6 @@ end
 -- Enable lsp via lspconfig
 ---@return nil
 function M.enable_with_lspconfig()
-    local res, lspconfig = pcall(require, "lspconfig")
-    if not res then
-        vim.notify("lspconfig not found", vim.log.levels.ERROR)
-        return
-    end
-
     lspconfig.util.default_config = M.get_default_config()
 
     local opts = M.opts()
