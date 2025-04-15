@@ -90,7 +90,12 @@ function M.setup()
 
     -- Quit
     M.keymap("n", "<leader>q", ":q<CR>")
-    M.keymap("n", "<leader>qa", ":LspStop<CR>:qa<CR>")
+    M.keymap("n", "<leader>qa", function()
+        if vim.fn.exists(":LspStop") == 2 then
+            vim.cmd("LspStop")
+        end
+        vim.cmd("qa")
+    end)
 
     -- Map to open QuickFix list
     M.keymap("n", "<leader>oq", ":copen<CR><C-w>T")

@@ -175,24 +175,18 @@ end
 -- Get Markdown LSP setup config
 ---@return table
 function M.markdown_setup()
-    local default_config = M.get_default_config()
-
-    -- Ensure that dynamicRegistration is enabled! This allows the LS to take into account actions like the
-    -- Create Unresolved File code action, resolving completions for unindexed code blocks, ...
-    local watch_capabilities = vim.tbl_deep_extend(
-        "force",
-        default_config.capabilities,
-        {
+    -- Ensure that dynamicRegistration is enabled!
+    -- This allows the LS to take into account actions like the
+    -- create Unresolved File code action,
+    -- resolving completions for unindexed code blocks, ...
+    return {
+        capabilities = {
             workspace = {
                 didChangeWatchedFiles = {
                     dynamicRegistration = true,
                 },
             },
         }
-    )
-
-    return {
-        capabilities = watch_capabilities
     }
 end
 
@@ -397,11 +391,12 @@ end
 -- Enable lsp via lspconfig
 ---@return nil
 function M.enable_with_lspconfig()
-    lspconfig.util.default_config = M.get_default_config()
-
+    local default_config = M.get_default_config()
     local servers_opts = M.servers_opts()
     for server, config in pairs(servers_opts.servers) do
-        lspconfig[server].setup(config)
+        config = vim.tbl_deep_extend("force", default_config, config)
+        vim.lsp.config[server] = config
+        vim.lsp.enable(server)
     end
 end
 
