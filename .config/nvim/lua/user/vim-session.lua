@@ -33,7 +33,7 @@ function M.before()
     vim.g.session_verbose_messages = 0
     vim.g.session_command_aliases = 1
     vim.g.session_menu = 0
-    vim.g.session_extension = ''
+    vim.g.session_extension = ""
 
     -- vim.g.session_autosave_to will be set  in utils.lua
 end

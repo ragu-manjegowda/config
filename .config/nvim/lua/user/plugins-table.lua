@@ -166,7 +166,7 @@ local extra_plugins = {
             "xzbdmw/colorful-menu.nvim"
         },
         opts = require("user.blink-cmp").opts(),
-        version = '1.*'
+        version = "1.*"
     },
 
     -- LSP
@@ -340,7 +340,7 @@ local all_plugins = {
             require("user.image").config()
         end,
         dependencies = {
-            'leafo/magick',
+            "leafo/magick",
         },
         event = "VeryLazy"
     },

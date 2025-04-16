@@ -12,25 +12,40 @@ function M.config()
         augroup GitStatus
             au filetype fugitive nmap <buffer> <leader>gdv :Gtabedit <Plug><cfile><Bar>Gvdiffsplit!<CR>
         augroup END
-
-        " Git status in new tab
-        nnoremap <silent> <leader>gca :tab Git commit --amend<CR>
-        nnoremap <silent> <leader>gcan :Git commit --amend --no-edit<CR>
-        nnoremap <silent> <leader>gcm :tab Git commit -s<CR>
-        nnoremap <silent> <leader>gfa :Git fetch --all --prune<CR>
-        nnoremap <silent> <leader>glog :GcLog!<Bar>cclose<Bar>tab copen<CR>
-        nnoremap <silent> <leader>glogf :tab Git log --oneline --decorate --graph -- %<CR>
-        nnoremap <silent> <leader>glogp :tab Git log --pretty=full<CR>
-        nnoremap <silent> <leader>gpulla :Git pull --rebase --autostash<CR>
-        nnoremap <silent> <leader>gpush :Git push<CR>
-        nnoremap <silent> <leader>gst :tab G<CR>
-        " nnoremap <silent> <leader>gstash :GcLog -g stash<Bar>cclose<Bar>tab copen<CR>
-        " nnoremap <silent> <leader>gstasha :Git stash apply <C-R><C-G><CR>
-
-        " Resolve merge conflict
-        nnoremap <silent> <leader>gpf :diffget //2<CR>
-        nnoremap <silent> <leader>gpj :diffget //3<CR>
     ]]
+
+    local res, utils = pcall(require, "user.utils")
+    if not res then
+        vim.notify("Error loading user.utils", vim.log.levels.ERROR)
+        return
+    end
+
+    local opts = function(desc)
+        return {
+            desc = "fugitive: " .. desc
+        }
+    end
+
+    utils.keymap("n", "<leader>gfa", "<cmd>Git fetch --all --prune<CR>",
+        opts("Git fetch --all --prune"))
+
+    utils.keymap("n", "<leader>glog", "<cmd>GcLog!<Bar>cclose<Bar>tab copen<CR>",
+        opts("Git log commits in new quick fix tab"))
+
+    utils.keymap("n", "<leader>glogf", "<cmd>tab Git log --oneline --decorate --graph -- %<CR>",
+        opts("Git log current file in new quick fix tab"))
+
+    utils.keymap("n", "<leader>gpulla", "<cmd>Git pull --rebase --autostash<CR>",
+        opts("Git pull --rebase --autostash"))
+
+    utils.keymap("n", "<leader>gst", "<cmd>tab G<CR>",
+        opts("Git tab status"))
+
+    utils.keymap("n", "<leader>gpf", "<cmd>diffget //2<CR>",
+        opts("Git merge apply left diff"))
+
+    utils.keymap("n", "<leader>gpj", "<cmd>diffget //3<CR>",
+        opts("Git merge apply right diff"))
 
     local status_ok, whichkey = pcall(require, "which-key")
     if not status_ok then
