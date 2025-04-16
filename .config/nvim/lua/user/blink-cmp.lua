@@ -10,9 +10,9 @@ function M.opts()
         keymap = {
             preset = "default",
 
-            ['<M-k>'] = { 'scroll_documentation_up', 'fallback' },
-            ['<M-j>'] = { 'scroll_documentation_down', 'fallback' },
-            ['<M-q>'] = { 'hide_documentation', 'fallback' }
+            ["<M-k>"] = { "scroll_documentation_up", "fallback" },
+            ["<M-j>"] = { "scroll_documentation_down", "fallback" },
+            ["<M-q>"] = { "hide_documentation", "fallback" }
         },
         cmdline = {
             keymap = {

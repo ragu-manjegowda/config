@@ -12,7 +12,7 @@ M.config = function()
         return
     end
 
-    require 'nvim-treesitter.configs'.setup {
+    require "nvim-treesitter.configs".setup {
         auto_install = true,
         ensure_installed = {
             "bash",
@@ -107,7 +107,7 @@ M.config = function()
 
             lsp_interop = {
                 enable = false,
-                border = 'none',
+                border = "none",
                 peek_definition_code = {
                     -- Offload this to lspsaga
                     -- ["<leader>lpf"] = "@function.outer",
@@ -124,20 +124,20 @@ M.config = function()
     -- Setup new symantic highlighting
     -- Reference: reddit.com/r/neovim/comments/12gvms4
     local links = {
-        ['@lsp.type.namespace'] = '@namespace',
-        ['@lsp.type.type'] = '@type',
-        ['@lsp.type.class'] = '@type',
-        ['@lsp.type.enum'] = '@type',
-        ['@lsp.type.interface'] = '@type',
-        ['@lsp.type.struct'] = '@structure',
-        ['@lsp.type.parameter'] = '@parameter',
-        ['@lsp.type.variable'] = '@variable',
-        ['@lsp.type.property'] = '@property',
-        ['@lsp.type.enumMember'] = '@constant',
-        ['@lsp.type.function'] = '@function',
-        ['@lsp.type.method'] = '@method',
-        ['@lsp.type.macro'] = '@macro',
-        ['@lsp.type.decorator'] = '@function',
+        ["@lsp.type.namespace"] = "@namespace",
+        ["@lsp.type.type"] = "@type",
+        ["@lsp.type.class"] = "@type",
+        ["@lsp.type.enum"] = "@type",
+        ["@lsp.type.interface"] = "@type",
+        ["@lsp.type.struct"] = "@structure",
+        ["@lsp.type.parameter"] = "@parameter",
+        ["@lsp.type.variable"] = "@variable",
+        ["@lsp.type.property"] = "@property",
+        ["@lsp.type.enumMember"] = "@constant",
+        ["@lsp.type.function"] = "@function",
+        ["@lsp.type.method"] = "@method",
+        ["@lsp.type.macro"] = "@macro",
+        ["@lsp.type.decorator"] = "@function",
     }
 
     for newgroup, oldgroup in pairs(links) do

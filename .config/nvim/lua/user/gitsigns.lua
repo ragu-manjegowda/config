@@ -15,19 +15,19 @@ function M.config()
     gitsigns.setup {
         signs                   = {
             add          = {
-                text = '│'
+                text = "│"
             },
             change       = {
-                text = '│'
+                text = "│"
             },
             delete       = {
-                text = '_'
+                text = "_"
             },
             topdelete    = {
-                text = '‾'
+                text = "‾"
             },
             changedelete = {
-                text = '~'
+                text = "~"
             },
         },
         signcolumn              = true,  -- Toggle with `:Gitsigns toggle_signs`
@@ -45,7 +45,7 @@ function M.config()
         current_line_blame      = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
         current_line_blame_opts = {
             virt_text = true,
-            virt_text_pos = 'eol', -- 'eol' | 'overlay' | 'right_align'
+            virt_text_pos = "eol", -- 'eol' | 'overlay' | 'right_align'
             delay = 1000,
         },
         sign_priority           = 6,
@@ -54,9 +54,9 @@ function M.config()
         max_file_length         = 40000,
         preview_config          = {
             -- Options passed to nvim_open_win
-            border = 'rounded',
-            style = 'minimal',
-            relative = 'cursor',
+            border = "rounded",
+            style = "minimal",
+            relative = "cursor",
             row = 0,
             col = 1
         },
@@ -79,45 +79,45 @@ function M.config()
             end
 
             -- Navigation
-            utils.keymap('n', ']h', function()
-                    if vim.wo.diff then return ']c' end
+            utils.keymap("n", "]h", function()
+                    if vim.wo.diff then return "]c" end
                     vim.schedule(function() gs.nav_hunk("next", { target = "unstaged" }) end)
-                    return '<Ignore>'
+                    return "<Ignore>"
                 end,
-                opts('Navigate to next unstaged hunk'))
+                opts("Navigate to next unstaged hunk"))
 
-            utils.keymap('n', '[h', function()
-                    if vim.wo.diff then return '[c' end
+            utils.keymap("n", "[h", function()
+                    if vim.wo.diff then return "[c" end
                     vim.schedule(function() gs.nav_hunk("prev", { target = "unstaged" }) end)
-                    return '<Ignore>'
+                    return "<Ignore>"
                 end,
-                opts('Navigate to prev unstaged hunk'))
+                opts("Navigate to prev unstaged hunk"))
 
-            utils.keymap('n', ']hs', function()
-                    if vim.wo.diff then return ']c' end
+            utils.keymap("n", "]hs", function()
+                    if vim.wo.diff then return "]c" end
                     vim.schedule(function() gs.nav_hunk("next", { target = "staged" }) end)
-                    return '<Ignore>'
+                    return "<Ignore>"
                 end,
-                opts('Navigate to next staged hunk'))
+                opts("Navigate to next staged hunk"))
 
-            utils.keymap('n', '[hs', function()
-                    if vim.wo.diff then return '[c' end
+            utils.keymap("n", "[hs", function()
+                    if vim.wo.diff then return "[c" end
                     vim.schedule(function() gs.nav_hunk("prev", { target = "staged" }) end)
-                    return '<Ignore>'
+                    return "<Ignore>"
                 end,
-                opts('Navigate to prev staged hunk'))
+                opts("Navigate to prev staged hunk"))
 
             -- Actions
-            utils.keymap('n', '<leader>hp', gs.preview_hunk,
-                opts('Preview hunk'))
+            utils.keymap("n", "<leader>hp", gs.preview_hunk,
+                opts("Preview hunk"))
 
-            utils.keymap('n', '<leader>gbl', gs.toggle_current_line_blame,
-                opts('Toggle current line blame'))
+            utils.keymap("n", "<leader>gbl", gs.toggle_current_line_blame,
+                opts("Toggle current line blame"))
 
             -- Text object
-            utils.keymap({ 'o', 'x' }, 'ih',
-                ':<C-U>Gitsigns select_hunk<CR>',
-                opts('Select hunk'))
+            utils.keymap({ "o", "x" }, "ih",
+                ":<C-U>Gitsigns select_hunk<CR>",
+                opts("Select hunk"))
         end
     }
 end

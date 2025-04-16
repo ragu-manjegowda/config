@@ -39,27 +39,27 @@ function M.config()
         }
     end
 
-    utils.keymap('i', '<M-y>',
+    utils.keymap("i", "<M-y>",
         neocodeium.accept_line,
-        opts('Codeium suggestion accept line'))
+        opts("Codeium suggestion accept line"))
 
-    utils.keymap('i', '<M-f>',
+    utils.keymap("i", "<M-f>",
         neocodeium.accept_word,
-        opts('Codeium suggestion accept word'))
+        opts("Codeium suggestion accept word"))
 
-    utils.keymap('i', '<M-i>',
+    utils.keymap("i", "<M-i>",
         neocodeium.cycle_or_complete,
-        opts('Codeium suggestion next'))
+        opts("Codeium suggestion next"))
 
-    utils.keymap('i', '<M-o>',
+    utils.keymap("i", "<M-o>",
         function()
             neocodeium.cycle_or_complete(-1)
         end,
-        opts('Codeium suggestion prev'))
+        opts("Codeium suggestion prev"))
 
-    utils.keymap('i', '<M-e>',
+    utils.keymap("i", "<M-e>",
         neocodeium.clear,
-        opts('Codeium suggestion clear'))
+        opts("Codeium suggestion clear"))
 end
 
 return M

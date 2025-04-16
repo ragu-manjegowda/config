@@ -107,9 +107,9 @@ function M.set_autocommands_using_lua()
         vim.api.nvim_create_augroup("fswitch_h", { clear = true })
         vim.api.nvim_create_autocmd("BufEnter", {
             callback = function()
-                vim.b.fswitchdst = 'c,_interface.cpp,cpp'
-                vim.b.fswitchlocs = 'reg:|include.*|src/**|'
-                vim.b.fswitchfnames = '/$/_interface/'
+                vim.b.fswitchdst = "c,_interface.cpp,cpp"
+                vim.b.fswitchlocs = "reg:|include.*|src/**|"
+                vim.b.fswitchfnames = "/$/_interface/"
             end,
             desc = "Switch between source files for .h header files",
             group = "fswitch_h",
@@ -119,8 +119,8 @@ function M.set_autocommands_using_lua()
         vim.api.nvim_create_augroup("fswitch_hpp", { clear = true })
         vim.api.nvim_create_autocmd("BufEnter", {
             callback = function()
-                vim.b.fswitchdst = 'cpp'
-                vim.b.fswitchlocs = 'reg:|include.*|src/**|,./impl'
+                vim.b.fswitchdst = "cpp"
+                vim.b.fswitchlocs = "reg:|include.*|src/**|,./impl"
             end,
             desc = "Switch between source files for .hpp header files",
             group = "fswitch_hpp",
@@ -130,8 +130,8 @@ function M.set_autocommands_using_lua()
         vim.api.nvim_create_augroup("fswitch_cpp", { clear = true })
         vim.api.nvim_create_autocmd("BufEnter", {
             callback = function()
-                vim.b.fswitchdst = 'hpp'
-                vim.b.fswitchlocs = 'reg:|include.*|src/**|,../'
+                vim.b.fswitchdst = "hpp"
+                vim.b.fswitchlocs = "reg:|include.*|src/**|,../"
             end,
             desc = "Switch between header files for .cpp source files",
             group = "fswitch_cpp",
@@ -141,8 +141,8 @@ function M.set_autocommands_using_lua()
         vim.api.nvim_create_augroup("fswitch_interface_cpp", { clear = true })
         vim.api.nvim_create_autocmd("BufEnter", {
             callback = function()
-                vim.b.fswitchdst = 'h'
-                vim.b.fswitchfnames = '/_interface$//'
+                vim.b.fswitchdst = "h"
+                vim.b.fswitchfnames = "/_interface$//"
             end,
             desc = "Switch between header files for _interface.cpp source files",
             group = "fswitch_interface_cpp",
@@ -203,7 +203,7 @@ function M.set_autocommands_using_lua()
                 local save_cursor = vim.fn.getcurpos()
                 vim.cmd(":%s/\\s\\+$//e")
                 -- Set cursor position to the saved position
-                vim.fn.setpos('.', save_cursor)
+                vim.fn.setpos(".", save_cursor)
             end,
             desc     = "Remove trailing whitespaces",
             group    = "remove_trailing_whitespaces",
@@ -254,7 +254,7 @@ function M.set_autocommands_using_lua()
 
     -- Mason update
     vim.api.nvim_create_augroup("mason_update", { clear = true })
-    vim.api.nvim_create_autocmd('User',
+    vim.api.nvim_create_autocmd("User",
         {
             callback = function()
                 vim.schedule(function()
@@ -265,19 +265,19 @@ function M.set_autocommands_using_lua()
             end,
             desc = "Mason update",
             group = "mason_update",
-            pattern = 'MasonToolsUpdateCompleted'
+            pattern = "MasonToolsUpdateCompleted"
         }
     )
 
     -- Toggle hlsearch b/w enter and exiting search mode
-    local events = { 'CmdlineEnter', 'CmdlineLeave' }
+    local events = { "CmdlineEnter", "CmdlineLeave" }
     vim.api.nvim_create_augroup("toggle_hlsearch", { clear = true })
     vim.api.nvim_create_autocmd(events,
         {
             callback = function(args)
-                if args.event == 'CmdlineEnter' then
+                if args.event == "CmdlineEnter" then
                     vim.opt.hlsearch = true
-                elseif args.event == 'CmdlineLeave' then
+                elseif args.event == "CmdlineLeave" then
                     vim.opt.hlsearch = false
                 end
             end,
@@ -291,21 +291,22 @@ function M.set_autocommands_using_lua()
     -- Remove `-` from iskeyword to avoid not matching pointer variables
     -- Ex: `this->pointer` considers `this-` but not `this` when matching words
     vim.api.nvim_create_augroup("match_pairs", { clear = true })
-    vim.api.nvim_create_autocmd('FileType',
+    vim.api.nvim_create_autocmd("FileType",
         {
             callback = function()
                 vim.opt.mps:append "=:;"
+                ---@diagnostic disable-next-line: undefined-field
                 vim.opt.iskeyword:remove "-"
             end,
             desc = "Set match pairs for c, cpp",
             group = "match_pairs",
-            pattern = { 'cpp', 'c' }
+            pattern = { "cpp", "c" }
         }
     )
 
     -- Fix gf functionality inside .lua files
     vim.api.nvim_create_augroup("lua_gf", { clear = true })
-    vim.api.nvim_create_autocmd('FileType',
+    vim.api.nvim_create_autocmd("FileType",
         {
             callback = function()
                 ---@diagnostic disable: assign-type-mismatch
@@ -328,7 +329,7 @@ function M.set_autocommands_using_lua()
     -- Resize window when vim is resized
     -- credit: https://github.com/LunarVim/LunarVim
     vim.api.nvim_create_augroup("resize_window", { clear = true })
-    vim.api.nvim_create_autocmd('VimResized', {
+    vim.api.nvim_create_autocmd("VimResized", {
         command = "tabdo wincmd =",
         desc = "Resize window when vim is resized",
         group = "resize_window",

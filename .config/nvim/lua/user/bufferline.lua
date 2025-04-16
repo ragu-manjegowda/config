@@ -26,14 +26,14 @@ function M.config()
             mode = "tabs",
             numbers = "ordinal",
             indicator = {
-                icon = '▎',
-                style = 'icon'
+                icon = "▎",
+                style = "icon"
             },
-            buffer_close_icon = '',
-            modified_icon = '●',
-            close_icon = '',
-            left_trunc_marker = '',
-            right_trunc_marker = '',
+            buffer_close_icon = "",
+            modified_icon = "●",
+            close_icon = "",
+            left_trunc_marker = "",
+            right_trunc_marker = "",
             diagnostics = false,
             custom_filter = nil,
             offsets = {
@@ -44,26 +44,26 @@ function M.config()
                     separator = true
                 },
                 {
-                    text = 'UNDOTREE',
-                    filetype = 'undotree',
+                    text = "UNDOTREE",
+                    filetype = "undotree",
                     text_align = "center",
                     separator = true
                 },
                 {
-                    text = 'TagBar',
-                    filetype = 'tagbar',
+                    text = "TagBar",
+                    filetype = "tagbar",
                     text_align = "center",
                     separator = true
                 },
                 {
-                    text = 'Code Outline',
-                    filetype = 'lspsagaoutline',
+                    text = "Code Outline",
+                    filetype = "lspsagaoutline",
                     text_align = "center",
                     separator = true
                 },
                 {
-                    text = ' DIFF VIEW',
-                    filetype = 'DiffviewFiles',
+                    text = " DIFF VIEW",
+                    filetype = "DiffviewFiles",
                     text_align = "center",
                     separator = true
                 }

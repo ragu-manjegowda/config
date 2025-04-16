@@ -3,8 +3,6 @@
 -- Github       : @ragu-manjegowda
 -------------------------------------------------------------------------------
 
-local vim = vim
-
 local M = {}
 
 function M.opts()

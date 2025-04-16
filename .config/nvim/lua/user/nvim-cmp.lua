@@ -26,7 +26,7 @@ function M.config()
         return
     end
 
-    local ELLIPSIS_CHAR = '…'
+    local ELLIPSIS_CHAR = "…"
     local MAX_LABEL_WIDTH = 80
     local MIN_LABEL_WIDTH = 20
 
@@ -66,24 +66,24 @@ function M.config()
                 end
             }),
 
-            ['<Down>'] = cmp.mapping(
+            ["<Down>"] = cmp.mapping(
                 cmp.mapping.select_next_item(
                     { behavior = cmp.SelectBehavior.Select }),
-                { 'i' }
+                { "i" }
             ),
 
-            ['<Up>'] = cmp.mapping(
+            ["<Up>"] = cmp.mapping(
                 cmp.mapping.select_prev_item(
                     { behavior = cmp.SelectBehavior.Select }),
-                { 'i' }
+                { "i" }
             ),
 
-            ['<C-n>'] = cmp.mapping({
+            ["<C-n>"] = cmp.mapping({
                 c = function()
                     if cmp.visible() then
                         cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
                     else
-                        vim.api.nvim_feedkeys(t('<Down>'), 'n', true)
+                        vim.api.nvim_feedkeys(t("<Down>"), "n", true)
                     end
                 end,
                 i = function(fallback)
@@ -95,12 +95,12 @@ function M.config()
                 end
             }),
 
-            ['<C-p>'] = cmp.mapping({
+            ["<C-p>"] = cmp.mapping({
                 c = function()
                     if cmp.visible() then
                         cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select })
                     else
-                        vim.api.nvim_feedkeys(t('<Up>'), 'n', true)
+                        vim.api.nvim_feedkeys(t("<Up>"), "n", true)
                     end
                 end,
                 i = function(fallback)
@@ -112,16 +112,16 @@ function M.config()
                 end
             }),
 
-            ['<C-u>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
-            ['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
+            ["<C-u>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), { "i", "c" }),
+            ["<C-f>"] = cmp.mapping(cmp.mapping.scroll_docs(4), { "i", "c" }),
             ---@diagnostic disable-next-line: missing-parameter
-            ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
+            ["<C-Space>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
 
-            ['<C-q>'] = cmp.mapping({
+            ["<C-q>"] = cmp.mapping({
                 i = cmp.mapping.close(), c = cmp.mapping.close()
             }),
 
-            ['<CR>'] = cmp.mapping({
+            ["<CR>"] = cmp.mapping({
                 i = cmp.mapping.confirm({
                     behavior = cmp.ConfirmBehavior.Insert, select = false
                 }),
@@ -138,15 +138,15 @@ function M.config()
         },
 
         sources = cmp.config.sources({
-            { name = 'nvim_lsp' },
-            { name = 'path' },
-            { name = 'buffer' },
-            { name = 'bazel' },
-            { name = 'tags' }
+            { name = "nvim_lsp" },
+            { name = "path" },
+            { name = "buffer" },
+            { name = "bazel" },
+            { name = "tags" }
         }),
 
         completion = {
-            completeopt = 'menu,menuone,preview,noinsert',
+            completeopt = "menu,menuone,preview,noinsert",
             documentation = {}
         },
 
@@ -157,21 +157,21 @@ function M.config()
                 if truncated_label ~= label then
                     vim_item.abbr = truncated_label .. ELLIPSIS_CHAR
                 elseif string.len(label) < MIN_LABEL_WIDTH then
-                    local padding = string.rep(' ', MIN_LABEL_WIDTH - string.len(label))
+                    local padding = string.rep(" ", MIN_LABEL_WIDTH - string.len(label))
                     vim_item.abbr = label .. padding
                 end
-                vim_item.kind = lspkind.presets.default[vim_item.kind] .. ' ' .. vim_item.kind
+                vim_item.kind = lspkind.presets.default[vim_item.kind] .. " " .. vim_item.kind
                 vim_item.menu = ({
-                    nvim_lsp = '[LSP]',
-                    path = '[Path]',
-                    buffer = '[Buffer]',
-                    bazel = '[Bazel]',
-                    tags = '[tags]'
+                    nvim_lsp = "[LSP]",
+                    path = "[Path]",
+                    buffer = "[Buffer]",
+                    bazel = "[Bazel]",
+                    tags = "[tags]"
                 })[entry.source.name]
 
                 return vim_item
             end,
-            fields = { 'menu', 'abbr', 'kind' }
+            fields = { "menu", "abbr", "kind" }
         },
 
         window = {
@@ -185,30 +185,30 @@ function M.config()
     }
 
     -- Use buffer source for `/`.
-    cmp.setup.cmdline('/', {
+    cmp.setup.cmdline("/", {
         ---@diagnostic disable-next-line: assign-type-mismatch
         completion = { autocomplete = false },
         sources = {
-            { name = 'buffer' }
+            { name = "buffer" }
         }
     })
 
     -- Use cmdline & path source for ':'.
-    cmp.setup.cmdline(':', {
+    cmp.setup.cmdline(":", {
         sources = cmp.config.sources({
-            { name = 'path' },
-            { name = 'cmdline' }
+            { name = "path" },
+            { name = "cmdline" }
         })
     })
 
-    vim.api.nvim_create_autocmd('FileType', {
-        pattern = { 'text', 'mail', 'rmd', 'rst' },
+    vim.api.nvim_create_autocmd("FileType", {
+        pattern = { "text", "mail", "rmd", "rst" },
         callback = function()
             cmp.setup.buffer {
                 sources = {
-                    { name = 'buffer' },
-                    { name = 'path' },
-                    { name = 'bazel' }
+                    { name = "buffer" },
+                    { name = "path" },
+                    { name = "bazel" }
                 }
             }
         end

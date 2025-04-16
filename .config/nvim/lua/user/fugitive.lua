@@ -27,26 +27,26 @@ function M.config()
         }
     end
 
-    utils.keymap('n', '<leader>gfa', '<cmd>Git fetch --all --prune<CR>',
-        opts('Git fetch --all --prune'))
+    utils.keymap("n", "<leader>gfa", "<cmd>Git fetch --all --prune<CR>",
+        opts("Git fetch --all --prune"))
 
-    utils.keymap('n', '<leader>glog', '<cmd>GcLog!<Bar>cclose<Bar>tab copen<CR>',
-        opts('Git log commits in new quick fix tab'))
+    utils.keymap("n", "<leader>glog", "<cmd>GcLog!<Bar>cclose<Bar>tab copen<CR>",
+        opts("Git log commits in new quick fix tab"))
 
-    utils.keymap('n', '<leader>glogf', '<cmd>tab Git log --oneline --decorate --graph -- %<CR>',
-        opts('Git log current file in new quick fix tab'))
+    utils.keymap("n", "<leader>glogf", "<cmd>tab Git log --oneline --decorate --graph -- %<CR>",
+        opts("Git log current file in new quick fix tab"))
 
-    utils.keymap('n', '<leader>gpulla', '<cmd>Git pull --rebase --autostash<CR>',
-        opts('Git pull --rebase --autostash'))
+    utils.keymap("n", "<leader>gpulla", "<cmd>Git pull --rebase --autostash<CR>",
+        opts("Git pull --rebase --autostash"))
 
-    utils.keymap('n', '<leader>gst', '<cmd>tab G<CR>',
-        opts('Git tab status'))
+    utils.keymap("n", "<leader>gst", "<cmd>tab G<CR>",
+        opts("Git tab status"))
 
-    utils.keymap('n', '<leader>gpf', '<cmd>diffget //2<CR>',
-        opts('Git merge apply left diff'))
+    utils.keymap("n", "<leader>gpf", "<cmd>diffget //2<CR>",
+        opts("Git merge apply left diff"))
 
-    utils.keymap('n', '<leader>gpj', '<cmd>diffget //3<CR>',
-        opts('Git merge apply right diff'))
+    utils.keymap("n", "<leader>gpj", "<cmd>diffget //3<CR>",
+        opts("Git merge apply right diff"))
 
     local status_ok, whichkey = pcall(require, "which-key")
     if not status_ok then

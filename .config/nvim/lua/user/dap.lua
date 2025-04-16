@@ -7,118 +7,162 @@ local vim = vim
 
 local M = {}
 
-function M.config()
-    local map = vim.api.nvim_set_keymap
+local res, utils = pcall(require, "user.utils")
+if not res then
+    vim.notify("Error loading user.utils", vim.log.levels.ERROR)
+    return
+end
 
-    map('n', '<leader>dcb',
+local dap
+res, dap = pcall(require, "dap")
+if not res then
+    vim.notify("dap not found", vim.log.levels.ERROR)
+    return
+end
+
+local keymap_opts = function(desc)
+    return {
+        desc = "DAP: " .. desc
+    }
+end
+
+-- DAP keymaps
+---@return nil
+function M.define_mappings()
+    utils.keymap("n", "<leader>dcb",
         '<cmd>lua require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: "))<CR>',
-        { silent = true, desc = 'DAP set breakpoint with condition' })
+        keymap_opts("set breakpoint with condition"))
 
-    map('n', '<leader>dce', '<cmd>lua require("dap").continue()<CR>',
-        { silent = true, desc = 'DAP launch or continue' })
+    utils.keymap("n", "<leader>dce", '<cmd>lua require("dap").continue()<CR>',
+        keymap_opts("launch or continue"))
 
-    map('n', '<leader>deb', '<cmd>lua require("dap").set_exception_breakpoints({"all"})<CR>',
-        { silent = true, desc = 'DAP set exception breakpoint' })
+    utils.keymap("n", "<leader>deb", '<cmd>lua require("dap").set_exception_breakpoints({"all"})<CR>',
+        keymap_opts("set exception breakpoint"))
 
-    map('n', '<leader>drb', '<cmd>lua require("dap").clear_breakpoints()<CR>',
-        { silent = true, desc = 'DAP remove breakpoints' })
+    utils.keymap("n", "<leader>drb", '<cmd>lua require("dap").clear_breakpoints()<CR>',
+        keymap_opts("remove breakpoints"))
 
-    map('n', '<leader>drc', '<cmd>lua require("dap").run_to_cursor()<CR>',
-        { silent = true, desc = 'DAP run to cursor' })
+    utils.keymap("n", "<leader>drc", '<cmd>lua require("dap").run_to_cursor()<CR>',
+        keymap_opts("run to cursor"))
 
-    map('n', '<leader>drl', '<cmd>lua require("dap").run_last()<CR>',
-        { silent = true, desc = 'DAP re-run last adapter configuration' })
+    utils.keymap("n", "<leader>drl", '<cmd>lua require("dap").run_last()<CR>',
+        keymap_opts("re-run last adapter configuration"))
 
-    map('n', '<leader>drr', '<cmd>lua require("dap").restart()<CR>',
-        { silent = true, desc = 'DAP restart' })
+    utils.keymap("n", "<leader>drr", '<cmd>lua require("dap").restart()<CR>',
+        keymap_opts("restart"))
 
-    map('n', '<leader>dtb', '<cmd>lua require("dap").toggle_breakpoint()<CR>',
-        { silent = true, desc = 'DAP toggle breakpoint' })
+    utils.keymap("n", "<leader>dtb", '<cmd>lua require("dap").toggle_breakpoint()<CR>',
+        keymap_opts("toggle breakpoint"))
 
-    map('n', '<leader>dte', '<cmd>lua require("dap").terminate()<CR>',
-        { silent = true, desc = 'DAP terminate' })
+    utils.keymap("n", "<leader>dte", '<cmd>lua require("dap").terminate()<CR>',
+        keymap_opts("terminate"))
 
-    map('n', '<leader>dtui', '<cmd>lua require("dapui").toggle()<CR>',
-        { silent = true, desc = 'DAP toggle UI' })
+    utils.keymap("n", "<leader>dtui", '<cmd>lua require("dapui").toggle()<CR>',
+        keymap_opts("toggle UI"))
 
-    map('n', '<leader>si', '<cmd>lua require("dap").step_into()<CR>',
-        { silent = true, desc = 'DAP step into' })
+    utils.keymap("n", "<leader>si", '<cmd>lua require("dap").step_into()<CR>',
+        keymap_opts("step into"))
 
-    map('n', '<leader>sn', '<cmd>lua require("dap").step_over()<CR>',
-        { silent = true, desc = 'DAP step over' })
+    utils.keymap("n", "<leader>sn", '<cmd>lua require("dap").step_over()<CR>',
+        keymap_opts("step over"))
 
-    map('n', '<leader>so', '<cmd>lua require("dap").step_out()<CR>',
-        { silent = true, desc = 'DAP step out' })
+    utils.keymap("n", "<leader>so", '<cmd>lua require("dap").step_out()<CR>',
+        keymap_opts("step out"))
+end
 
-    local res, dap = pcall(require, "dap")
-    if not res then
-        vim.notify("dap not found", vim.log.levels.ERROR)
-        return
-    end
+-- DAP Pick file filter for bazel projects
+-- Choose only from runfiles sandbox under bazel-bin
+---@param opts? { dir: boolean, executables?: boolean }
+---@return {
+---path?: string, filter?: string|(fun(name: string): boolean),
+---executables?: boolean, directories?: boolean, prompt?: string }
+local bazel_filter           = function(opts)
+    local filter = nil
+    local file_path = nil
+    local prompt = nil
 
-    local dap_virtual_text
-    res, dap_virtual_text = pcall(require, "nvim-dap-virtual-text")
-    if not res then
-        vim.notify("nvim-dap-virtual-text not found", vim.log.levels.ERROR)
+    opts = opts or {}
+    local executables = opts.executables == nil and true or opts.executables
+    local directories = opts.dir == nil and true or opts.dir
+
+    if utils.is_bazel_project() then
+        -- Bazel puts sandbox under folder named `*.runfiles`
+        filter = function(filepath)
+            return string.find(filepath, "runfiles") ~= nil
+        end
+
+        file_path = vim.fn.getcwd() .. "/bazel-bin"
+        executables = false
     else
-        dap_virtual_text.setup({
-            virt_text_pos = "eol"
-        })
+        -- For non interpreted projects (python) do not look for executables
+        -- opts.executables is set to false explicitly
+        if opts.executables == nil then
+            executables = true
+        end
     end
 
-    local utils
-    res, utils = pcall(require, "user.utils")
-    if not res then
-        vim.notify("user.utils not found", vim.log.levels.ERROR)
-        return
+    if directories == true then
+        prompt = "Pick a directory:"
+    else
+        if executables == true then
+            prompt = "Pick an executable:"
+        else
+            prompt = "Pick a file:"
+        end
     end
 
-    local dap_utils
-    res, dap_utils = pcall(require, "dap.utils")
-    if not res then
-        vim.notify("dap.utils not found", vim.log.levels.ERROR)
-        return
-    end
+    return {
+        path = file_path,
+        filter = filter,
+        executables = executables,
+        directories = directories,
+        prompt = prompt
+    }
+end
 
-    -- Shift the focus to terminal, avoid focusing buffer in insert mode
-    -- because of TermOpen autocmd
+---@param opts { dir: boolean, executables?: boolean }
+---@return string|thread
+local pick_file_or_directory = function(opts)
+    local options = bazel_filter(opts)
+    local filepath = utils.pick_file(options)
     ---@diagnostic disable-next-line: undefined-field
-    dap.defaults.fallback.focus_terminal = true
+    return filepath or dap.ABORT
+end
 
-    local path
-    res, path = pcall(require, "mason-core.path")
-    if not res then
-        vim.notify("mason-core.path not found", vim.log.levels.ERROR)
-        return
-    end
+---@param executables? boolean
+---@return string|thread
+local pick_program           = function(executables)
+    return pick_file_or_directory({ dir = false, executables = executables })
+end
 
-    ---------------------------------------------------------------------------
-    -- Configure language adapaters
-    ---------------------------------------------------------------------------
+---@return string|thread
+local pick_cwd               = function()
+    return pick_file_or_directory({ dir = true })
+end
 
-    ---------------------------------------------------------------------------
-    -- C++ adapters
-    ---------------------------------------------------------------------------
-
+-- DAP setup for C++
+---@return nil
+function M.setup_cpp_adapters()
     --- GDB adapter
-
     local gdb_debugger_path = "gdb"
+
+    local path_components = {
+        vim.fn.stdpath "data",
+        "mason",
+        "bin",
+        "OpenDebugAD7"
+    }
+
+    local dbg_command = table.concat(path_components, "/")
 
     ---@diagnostic disable-next-line: undefined-field
     dap.adapters.cppdbg = {
         id = "cppdbg",
         type = "executable",
-        command = path.concat {
-            ---@diagnostic disable-next-line: assign-type-mismatch
-            vim.fn.stdpath "data",
-            "mason",
-            "bin",
-            "OpenDebugAD7"
-        }
+        command = dbg_command
     }
 
     --- LLDB adapter
-
     local lldb_debugger_path
     local lldb_dap_debugger_path = "lldb-dap"
 
@@ -140,77 +184,6 @@ function M.config()
         -- export DISPLAY=:0.0
         DISPLAY = os.getenv "DISPLAY",
     }
-
-    -- DAP Pick file filter for bazel projects
-    -- Choose only from runfiles sandbox under bazel-bin
-    ---@param opts? { dir: boolean, executables?: boolean }
-    ---@return {
-    ---path?: string, filter?: string|(fun(name: string): boolean),
-    ---executables?: boolean, directories?: boolean, prompt?: string }
-    local bazel_filter                  = function(opts)
-        local filter = nil
-        local file_path = nil
-        local prompt = nil
-
-        opts = opts or {}
-        local executables = opts.executables == nil and true or opts.executables
-        local directories = opts.dir == nil and true or opts.dir
-
-        if utils.is_bazel_project() then
-            -- Bazel puts sandbox under folder named `*.runfiles`
-            filter = function(filepath)
-                return string.find(filepath, "runfiles") ~= nil
-            end
-
-            file_path = vim.fn.getcwd() .. "/bazel-bin"
-            executables = false
-        else
-            -- For non interpreted projects (python) do not look for executables
-            -- opts.executables is set to false explicitly
-            if opts.executables == nil then
-                executables = true
-            end
-        end
-
-        if directories == true then
-            prompt = "Pick a directory:"
-        else
-            if executables == true then
-                prompt = "Pick an executable:"
-            else
-                prompt = "Pick a file:"
-            end
-        end
-
-        return {
-            path = file_path,
-            filter = filter,
-            executables = executables,
-            directories = directories,
-            prompt = prompt
-        }
-    end
-
-    ---@param opts { dir: boolean, executables?: boolean }
-    ---@return string|thread
-    local pick_file_or_directory        = function(opts)
-        local options = bazel_filter(opts)
-        local filepath = utils.pick_file(options)
-        ---@diagnostic disable-next-line: undefined-field
-        return filepath or dap.ABORT
-    end
-
-    ---@param executables? boolean
-    ---@return string|thread
-    local pick_program                  = function(executables)
-        return pick_file_or_directory({ dir = false, executables = executables })
-    end
-
-    ---@return string|thread
-    local pick_cwd                      = function()
-        return pick_file_or_directory({ dir = true })
-    end
-
     -- Pretty printing setup
     -- Ref: https://github.com/microsoft/vscode-cpptools/issues/8485#issuecomment-1912764586
     local setup_commands                = {
@@ -335,12 +308,11 @@ function M.config()
     dap.configurations.c = dap.configurations.cpp
     ---@diagnostic disable-next-line: undefined-field
     dap.configurations.rust = dap.configurations.cpp
+end
 
-
-    ---------------------------------------------------------------------------
-    -- Go adapters
-    ---------------------------------------------------------------------------
-
+--- DAP setup for Go
+---@return nil
+function M.setup_go_adapters()
     ---@diagnostic disable-next-line: undefined-field
     dap.adapters.go = function(callback, config)
         -- https://neovim.io/doc/user/luvref.html#uv.new_pipe()
@@ -381,6 +353,13 @@ function M.config()
                 callback({ type = "server", host = "127.0.0.1", port = port })
             end,
             100)
+    end
+
+    local dap_utils
+    res, dap_utils = pcall(require, "dap.utils")
+    if not res then
+        vim.notify("dap.utils not found", vim.log.levels.ERROR)
+        return
     end
 
     ---@diagnostic disable-next-line: undefined-field
@@ -474,25 +453,27 @@ function M.config()
             end
         }
     }
+end
 
-    ---------------------------------------------------------------------------
-    -- Python adapters
-    ---------------------------------------------------------------------------
+-- DAP setup for Python
+---@return nil
+function M.setup_python_adapters()
+    local path_components = {
+        vim.fn.stdpath "data",
+        "mason",
+        "packages",
+        "debugpy",
+        "venv",
+        "bin",
+        "python"
+    }
+
+    local dbg_command = table.concat(path_components, "/")
 
     ---@diagnostic disable-next-line: undefined-field
     dap.adapters.python = {
         type = "executable",
-        command = path.concat
-            {
-                ---@diagnostic disable-next-line: assign-type-mismatch
-                vim.fn.stdpath "data",
-                "mason",
-                "packages",
-                "debugpy",
-                "venv",
-                "bin",
-                "python"
-            },
+        command = dbg_command,
         args = { "-m", "debugpy.adapter" }
     }
 
@@ -519,7 +500,7 @@ function M.config()
                 return vim.fn.split(argument_string, " ", true)
             end,
             cwd         = pick_cwd,
-            console     = 'integratedTerminal',
+            console     = "integratedTerminal",
             stopOnEntry = true
         },
         -- Use the following to start a server
@@ -535,10 +516,50 @@ function M.config()
             port           = 1234,
             host           = "127.0.0.1",
             redirectOutput = true,
-            console        = 'integratedTerminal',
+            console        = "integratedTerminal",
             stopOnEntry    = true
         }
     }
+end
+
+function M.config()
+    -- Define keymaps
+    M.define_mappings()
+
+    local dap_virtual_text
+    res, dap_virtual_text = pcall(require, "nvim-dap-virtual-text")
+    if not res then
+        vim.notify("nvim-dap-virtual-text not found", vim.log.levels.WARN)
+    else
+        ---@diagnostic disable-next-line: missing-fields
+        dap_virtual_text.setup({
+            virt_text_pos = "eol"
+        })
+    end
+
+    -- Shift the focus to terminal, avoid focusing buffer in insert mode
+    -- because of TermOpen autocmd
+    ---@diagnostic disable-next-line: undefined-field
+    dap.defaults.fallback.focus_terminal = true
+
+    ---------------------------------------------------------------------------
+    -- Configure language adapaters
+    ---------------------------------------------------------------------------
+
+    ---------------------------------------------------------------------------
+    -- C++ adapters
+    ---------------------------------------------------------------------------
+    M.setup_cpp_adapters()
+
+    ---------------------------------------------------------------------------
+    -- Go adapters
+    ---------------------------------------------------------------------------
+    M.setup_go_adapters()
+
+    ---------------------------------------------------------------------------
+    -- Python adapters
+    ---------------------------------------------------------------------------
+    M.setup_python_adapters()
 end
 
 return M

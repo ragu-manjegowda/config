@@ -15,18 +15,18 @@ function M.config()
     end
 
     bracketed.setup({
-        buffer = { suffix = '' },
-        comment = { suffix = '/' },
-        diagnostic = { suffix = '' },
-        file = { suffix = '' },
-        oldfile = { suffix = '' },
-        undo = { suffix = '' },
-        window = { suffix = '' },
-        yank = { suffix = '' }
+        buffer = { suffix = "" },
+        comment = { suffix = "/" },
+        diagnostic = { suffix = "" },
+        file = { suffix = "" },
+        oldfile = { suffix = "" },
+        undo = { suffix = "" },
+        window = { suffix = "" },
+        yank = { suffix = "" }
     })
 
     vim.api.nvim_create_user_command(
-        'ToggleMiniBracketed',
+        "ToggleMiniBracketed",
         function()
             if vim.g.minibracketed_disable then
                 vim.g.minibracketed_disable = false

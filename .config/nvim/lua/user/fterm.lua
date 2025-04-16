@@ -15,7 +15,7 @@ end
 
 ---@diagnostic disable-next-line: missing-fields
 local ftzsh = fterm:new({
-    ft = 'fterm_zsh',
+    ft = "fterm_zsh",
     cmd = "zsh",
     ---@diagnostic disable-next-line: missing-fields
     dimensions = {
@@ -62,7 +62,7 @@ end
 function M.config()
     ---@diagnostic disable-next-line: missing-fields
     fterm.setup({
-        border     = 'double',
+        border     = "double",
         ---@diagnostic disable-next-line: missing-fields
         dimensions = {
             height = 0.9,
@@ -74,8 +74,8 @@ function M.config()
     local map = vim.api.nvim_set_keymap
     local opts = { noremap = true, silent = true }
 
-    map('n', '<leader>ts', '<CMD>lua require("user.fterm").__fterm_zsh()<CR>', opts)
-    map('n', '<leader>ss', '<CMD>lua require("user.fterm").terminal_send(vim.fn.input("> ") .. "\\n")<CR>', opts)
+    map("n", "<leader>ts", '<CMD>lua require("user.fterm").__fterm_zsh()<CR>', opts)
+    map("n", "<leader>ss", '<CMD>lua require("user.fterm").terminal_send(vim.fn.input("> ") .. "\\n")<CR>', opts)
 end
 
 return M
