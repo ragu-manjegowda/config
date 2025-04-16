@@ -301,6 +301,9 @@ local all_plugins = {
 
     {
         "sindrets/diffview.nvim",
+        config = function()
+            require("user.diffview").config()
+        end,
         event = "VeryLazy"
     },
 
