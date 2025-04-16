@@ -133,8 +133,8 @@ function M.setup()
     -- Copy to system clipboard
     -------------------------------------------------------------------------------
     -- Now the '+' register will copy to system clipboard using OSC52
-    M.keymap({ 'n', 'v' }, '<leader>c', '"+y')
-    M.keymap('n', '<leader>cc', '"+yy')
+    M.keymap({ "n", "v" }, "<leader>c", '"+y')
+    M.keymap("n", "<leader>cc", '"+yy')
 
     -------------------------------------------------------------------------------
     -- URL handling

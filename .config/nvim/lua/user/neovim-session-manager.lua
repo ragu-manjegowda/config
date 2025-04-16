@@ -26,9 +26,9 @@ function M.config()
         autoload_mode = config.AutoloadMode.Disabled,
         -- All buffers of these file types will be closed before the session is saved.
         autosave_ignore_filetypes = {
-            'fugitive',
-            'gitcommit',
-            'gitrebase'
+            "fugitive",
+            "gitcommit",
+            "gitrebase"
         }
     })
 end

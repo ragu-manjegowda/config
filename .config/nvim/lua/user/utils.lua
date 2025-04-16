@@ -45,7 +45,6 @@ function M.keymap(mode, lhs, rhs, opts)
     vim.keymap.set(mode, lhs, rhs, opts)
 end
 
-
 -- Get colors, try NeoSolarized colors, fallback to default colors
 -- Not caching since we want to read fresh colors when toggling dark or light
 -- @return table
@@ -128,24 +127,24 @@ end
 
 function M.getVisualSelection()
     -- If not in visual mode, return empty string
-    if vim.api.nvim_get_mode()["mode"] ~= 'v' then
-        return ''
+    if vim.api.nvim_get_mode()["mode"] ~= "v" then
+        return ""
     end
 
     vim.cmd('noau normal! "vy"')
-    local text = vim.fn.getreg('v')
-    vim.fn.setreg('v', {})
+    local text = vim.fn.getreg("v")
+    vim.fn.setreg("v", {})
 
     text = string.gsub(text, "\n", "")
     if #text > 0 then
         return text
     else
-        return ''
+        return ""
     end
 end
 
 -- Updating the current working directory
-local events = { 'LspAttach', 'VimEnter' }
+local events = { "LspAttach", "VimEnter" }
 
 -- Lsp is started after filetype, however, Lazy plugin manager doesn't seem to
 -- have relevant event to trigger loading lspconfig hence this hack to
@@ -176,8 +175,8 @@ function M.is_bazel_project()
     -- Check if either BUILD or WORKSPACE files exist in the project directory
     -- Define patterns for Bazel files (BUILD and WORKSPACE)
     local cwd = vim.fn.getcwd()
-    local build_file_pattern = cwd .. '/BUILD'
-    local workspace_file_pattern = cwd .. '/WORKSPACE'
+    local build_file_pattern = cwd .. "/BUILD"
+    local workspace_file_pattern = cwd .. "/WORKSPACE"
 
     local has_build_file = vim.fn.filereadable(build_file_pattern) == 1
     local has_workspace_file = vim.fn.filereadable(workspace_file_pattern) == 1
@@ -194,7 +193,7 @@ end
 function M.pick_one_sync(items, prompt, label_fn)
     local choices = { prompt }
     for i, item in ipairs(items) do
-        table.insert(choices, string.format('%d: %s', i, label_fn(item)))
+        table.insert(choices, string.format("%d: %s", i, label_fn(item)))
     end
     local choice = vim.fn.inputlist(choices)
     if choice < 1 or choice > #items then
@@ -251,7 +250,7 @@ local function get_files(path, opts)
                 return opts.filter(filepath)
             end
         else
-            error('opts.filter must be a string or a function')
+            error("opts.filter must be a string or a function")
         end
     end
 
@@ -276,7 +275,7 @@ local function get_files(path, opts)
     table.insert(cmd, "-follow")
 
     local output = vim.fn.system(cmd)
-    return vim.tbl_filter(filter, vim.split(output, '\n'))
+    return vim.tbl_filter(filter, vim.split(output, "\n"))
 end
 
 ---@param opts? {

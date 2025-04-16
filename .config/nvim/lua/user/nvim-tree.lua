@@ -51,7 +51,7 @@ function M.on_attach(_)
         utils.keymap("n", "<leader>tmp", api.marks.navigate.prev,
             opts("navigate to previous mark"))
 
-        utils.keymap('n', '<leader>tt', api.tree.toggle,
+        utils.keymap("n", "<leader>tt", api.tree.toggle,
             opts("toggle nvim-tree"))
     end
 end
@@ -84,7 +84,7 @@ function M.config()
         },
         view = {
             width = 30,
-            side = 'left',
+            side = "left",
             number = true,
             relativenumber = true
         }

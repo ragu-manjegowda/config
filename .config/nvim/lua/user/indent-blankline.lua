@@ -28,7 +28,7 @@ function M.config()
     })
 
     vim.api.nvim_create_user_command(
-        'ToggleIndentBlankLine',
+        "ToggleIndentBlankLine",
         function()
             if vim.g.u_indent_blankline_enabled then
                 indent_blankline.update { enabled = false }

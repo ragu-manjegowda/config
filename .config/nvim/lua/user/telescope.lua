@@ -22,14 +22,14 @@ function M.grep(options)
 
     if not options or options.grep_word == nil then
         local text = M.getVisualSelection()
-        if text ~= '' then
+        if text ~= "" then
             opts.search = text
         else
             opts.search = vim.fn.input("Grep For > ")
         end
     end
 
-    require('telescope.builtin').grep_string(opts)
+    require("telescope.builtin").grep_string(opts)
 end
 
 function M.grep_folder()
@@ -58,27 +58,27 @@ function M.current_buffer_fuzzy_find()
     local opts = {}
 
     local text = M.getVisualSelection()
-    if text ~= '' then
+    if text ~= "" then
         opts.default_text = text
     else
         opts.default_text = nil
     end
 
-    require('telescope.builtin').current_buffer_fuzzy_find(opts)
+    require("telescope.builtin").current_buffer_fuzzy_find(opts)
 end
 
 function M.live_grep(options)
     local opts = options or {}
 
     local text = M.getVisualSelection()
-    if text ~= '' then
+    if text ~= "" then
         opts.default_text = text
     else
         opts.default_text = nil
     end
 
     if opts.folder_path ~= nil then
-        opts.default_text = '"' .. (opts.default_text or '') .. '" ' .. opts.folder_path
+        opts.default_text = '"' .. (opts.default_text or "") .. '" ' .. opts.folder_path
     end
 
     require("telescope").extensions.live_grep_args.live_grep_args(opts)
@@ -97,7 +97,7 @@ function M.find_files()
     opts.find_command = { "rg", "--files", "--hidden", "-g", "!.git" }
 
     local text = M.getVisualSelection()
-    if text ~= '' then
+    if text ~= "" then
         opts.default_text = text
     else
         opts.default_text = nil
@@ -116,121 +116,121 @@ function M.before()
     end
 
     -- Telescope fuzzy finder shortcuts
-    utils.keymap({ 'n', 'v' }, '<leader>bs',
+    utils.keymap({ "n", "v" }, "<leader>bs",
         '<cmd>lua require("user.telescope").current_buffer_fuzzy_find()<CR>',
-        opts('buffer fuzzy find'))
+        opts("buffer fuzzy find"))
 
-    utils.keymap('n', '<leader>dlb',
+    utils.keymap("n", "<leader>dlb",
         '<cmd>lua require("telescope").extensions.dap.list_breakpoints{}<CR>',
-        opts('DAP list breakpoints'))
+        opts("DAP list breakpoints"))
 
-    utils.keymap('n', '<leader>dbt',
+    utils.keymap("n", "<leader>dbt",
         '<cmd>lua require("telescope").extensions.dap.frames{}<CR>',
-        opts('DAP backtrace'))
+        opts("DAP backtrace"))
 
-    utils.keymap({ 'n', 'v' }, '<leader>fg',
+    utils.keymap({ "n", "v" }, "<leader>fg",
         '<cmd>lua require("user.telescope").live_grep()<CR>',
-        opts('live grep with regex'))
+        opts("live grep with regex"))
 
-    utils.keymap({ 'n', 'v' }, '<leader>fgp',
+    utils.keymap({ "n", "v" }, "<leader>fgp",
         '<cmd>lua require("user.telescope").live_grep_current_buffer_folder()<CR>',
-        opts('live grep current buffer folder with regex'))
+        opts("live grep current buffer folder with regex"))
 
-    utils.keymap('n', '<leader>pb',
+    utils.keymap("n", "<leader>pb",
         '<cmd>lua require("telescope.builtin").buffers()<CR>',
-        opts('project list buffers'))
+        opts("project list buffers"))
 
-    utils.keymap('n', '<leader>pc',
+    utils.keymap("n", "<leader>pc",
         '<cmd>lua require("telescope.builtin").command_history()<CR>',
-        opts('project command history'))
+        opts("project command history"))
 
-    utils.keymap({ 'n', 'v' }, '<leader>pf',
+    utils.keymap({ "n", "v" }, "<leader>pf",
         '<cmd>lua require("user.telescope").find_files()<CR>',
-        opts('project find files'))
+        opts("project find files"))
 
-    utils.keymap('n', '<leader>ph',
+    utils.keymap("n", "<leader>ph",
         '<cmd>lua require("telescope.builtin").help_tags()<CR>',
-        opts('project help tags'))
+        opts("project help tags"))
 
-    utils.keymap('n', '<leader>pj',
+    utils.keymap("n", "<leader>pj",
         '<cmd>lua require("telescope.builtin").jumplist()<CR>',
-        opts('project jumplist'))
+        opts("project jumplist"))
 
-    utils.keymap('n', '<leader>pk',
+    utils.keymap("n", "<leader>pk",
         '<cmd>lua require("telescope.builtin").keymaps()<CR>',
-        opts('project keymaps'))
+        opts("project keymaps"))
 
-    utils.keymap('n', '<leader>pm',
+    utils.keymap("n", "<leader>pm",
         '<cmd>lua require("telescope.builtin").man_pages()<CR>',
-        opts('project man pages'))
+        opts("project man pages"))
 
-    utils.keymap('n', '<leader>pq',
+    utils.keymap("n", "<leader>pq",
         '<cmd>lua require("telescope.builtin").quickfix()<CR>',
-        opts('project quickfix buffers'))
+        opts("project quickfix buffers"))
 
-    utils.keymap('n', '<leader>pr',
+    utils.keymap("n", "<leader>pr",
         '<cmd>lua require("telescope.builtin").registers()<CR>',
-        opts('project registers'))
+        opts("project registers"))
 
-    utils.keymap({ 'n', 'v' }, '<leader>ps',
+    utils.keymap({ "n", "v" }, "<leader>ps",
         '<cmd>lua require("user.telescope").grep()<CR>',
-        opts('project search'))
+        opts("project search"))
 
-    utils.keymap({ 'n', 'v' }, '<leader>psf',
+    utils.keymap({ "n", "v" }, "<leader>psf",
         '<cmd>lua require("user.telescope").grep_folder()<CR>',
-        opts('project search in directories'))
+        opts("project search in directories"))
 
-    utils.keymap('n', '<leader>pt',
+    utils.keymap("n", "<leader>pt",
         '<cmd>lua require("telescope.builtin").treesitter()<CR>',
-        opts('current buffer treesitter symbols'))
+        opts("current buffer treesitter symbols"))
 
-    utils.keymap({ 'n', 'v' }, '<leader>pw',
+    utils.keymap({ "n", "v" }, "<leader>pw",
         '<cmd>lua require("user.telescope").grep_word()<CR>',
-        opts('project search word'))
+        opts("project search word"))
 
-    utils.keymap({ 'n', 'v' }, '<leader>pW',
+    utils.keymap({ "n", "v" }, "<leader>pW",
         '<cmd>lua require("user.telescope").grep_word_exact()<CR>',
-        opts('project search word_exact'))
+        opts("project search word_exact"))
 
     -- LSP
-    utils.keymap('n', '<leader>lic',
+    utils.keymap("n", "<leader>lic",
         '<cmd>lua require("telescope.builtin").lsp_incoming_calls()<CR>',
-        opts('project incoming calls'))
+        opts("project incoming calls"))
 
-    utils.keymap('n', '<leader>loc',
+    utils.keymap("n", "<leader>loc",
         '<cmd>lua require("telescope.builtin").lsp_outgoing_calls()<CR>',
-        opts('project outgoing calls'))
+        opts("project outgoing calls"))
 
-    utils.keymap('n', '<leader>oe',
+    utils.keymap("n", "<leader>oe",
         '<cmd>lua require("telescope.builtin").diagnostics()<CR>',
-        opts('LSP diagnostics in Telescope'))
+        opts("LSP diagnostics in Telescope"))
 
     -- Git shortcuts
-    utils.keymap('n', '<leader>glogt',
+    utils.keymap("n", "<leader>glogt",
         '<cmd>lua require("telescope.builtin").git_commits()<CR>',
-        opts('Git list commits'))
+        opts("Git list commits"))
 
-    utils.keymap('n', '<leader>glogft',
+    utils.keymap("n", "<leader>glogft",
         '<cmd>lua require("telescope.builtin").git_bcommits()<CR>',
-        opts('Git log current file commits'))
+        opts("Git log current file commits"))
 
     -- Spell suggest
-    utils.keymap('n', 'z=',
+    utils.keymap("n", "z=",
         '<cmd>lua require("telescope.builtin").spell_suggest()<CR>',
-        opts('Spell suggest'))
+        opts("Spell suggest"))
 
     -- Undo Tree
-    utils.keymap('n', '<leader>ut',
+    utils.keymap("n", "<leader>ut",
         '<cmd>lua require("telescope").extensions.undo.undo()<CR>',
-        opts('Open undo tree'))
+        opts("Open undo tree"))
 end
 
 function M.config()
     local ignore_these = {
-        '.git/.*',
-        'bazel-sdk/.*',
-        'bazel-out/*',
-        'bazel-bin/*',
+        ".git/.*",
+        "bazel-sdk/.*",
+        "bazel-out/*",
+        "bazel-bin/*",
     }
 
     local res, telescope = pcall(require, "telescope")
@@ -313,8 +313,8 @@ function M.config()
             },
 
             color_devicons = true,
-            sorting_strategy = 'ascending',
-            layout_strategy = 'vertical', --flex
+            sorting_strategy = "ascending",
+            layout_strategy = "vertical", --flex
             file_ignore_patterns = ignore_these,
             prompt_prefix = " ",
             selection_caret = " ",

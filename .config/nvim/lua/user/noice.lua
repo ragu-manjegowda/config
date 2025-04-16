@@ -68,11 +68,11 @@ function M.config()
         }
     end
 
-    utils.keymap('n', '<leader>nd', '<cmd>Noice dismiss<CR>',
-        opts('Noice dismiss'))
+    utils.keymap("n", "<leader>nd", "<cmd>Noice dismiss<CR>",
+        opts("Noice dismiss"))
 
-    utils.keymap('n', '<leader>nm', '<cmd>Noice<CR><C-W>T',
-        opts('Noice messages'))
+    utils.keymap("n", "<leader>nm", "<cmd>Noice<CR><C-W>T",
+        opts("Noice messages"))
 
     -- show messages while recording macro
     -- https://github.com/folke/noice.nvim/issues/922#issuecomment-2254401041

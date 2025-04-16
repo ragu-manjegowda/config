@@ -39,7 +39,7 @@ function M.load(plugins)
     -- other plugins
     if os.getenv("NVIM") ~= nil then
         lazy.setup {
-            { 'willothy/flatten.nvim', config = true },
+            { "willothy/flatten.nvim", config = true },
         }
         return
     end

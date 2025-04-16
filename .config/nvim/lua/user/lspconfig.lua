@@ -42,13 +42,13 @@ function M.define_lsp_attach_keymap(client, bufnr)
     if client:supports_method("textDocument/implementation") then
         utils.keymap({ "n", "v" }, "<leader>lD",
             "<cmd>lua vim.lsp.buf.declaration()<CR>",
-            opts('LSP goto declaration', bufnr))
+            opts("LSP goto declaration", bufnr))
     end
 
     if client:supports_method("textDocument/formatting") then
         utils.keymap({ "n", "v" }, "<leader>lf",
             "<cmd>lua vim.lsp.buf.format()<CR>",
-            opts('LSP formatting', bufnr))
+            opts("LSP formatting", bufnr))
     end
 end
 
@@ -99,7 +99,7 @@ function M.setup_diagnostics()
             local new_config = not vim.diagnostic.config().virtual_lines
             vim.diagnostic.config({ virtual_lines = new_config })
         end,
-        opts('Toggle diagnostic virtual_lines'))
+        opts("Toggle diagnostic virtual_lines"))
 end
 
 -- Setup CompletionItemKind
@@ -148,7 +148,7 @@ function M.setup_inlayHints()
             local new_config = not vim.lsp.inlay_hint.is_enabled()
             vim.lsp.inlay_hint.enable(new_config)
         end,
-        opts('Toggle inlay hints'))
+        opts("Toggle inlay hints"))
 end
 
 -- Get default config, merge cmp capabilities if available

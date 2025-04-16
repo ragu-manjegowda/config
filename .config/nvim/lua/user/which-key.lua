@@ -9,8 +9,8 @@ local M = {}
 
 function M.before()
     -- If we do not wish to wait for timeoutlen
-    vim.api.nvim_set_keymap('n', '<Leader>?', "<Esc>:WhichKey '' n<CR>", { noremap = true, silent = true })
-    vim.api.nvim_set_keymap('v', '<Leader>?', "<Esc>:WhichKey '' v<CR>", { noremap = true, silent = true })
+    vim.api.nvim_set_keymap("n", "<Leader>?", "<Esc>:WhichKey '' n<CR>", { noremap = true, silent = true })
+    vim.api.nvim_set_keymap("v", "<Leader>?", "<Esc>:WhichKey '' v<CR>", { noremap = true, silent = true })
 end
 
 function M.config()
