@@ -66,6 +66,9 @@
     keepBackup = false
     prompt = false
 
+[mergetool "nvimdiff1"]
+    cmd = nvim --cmd '+lua vim.g.blazing_fast=1' -d "$LOCAL" "$REMOTE"
+
 [pager]
     diff = delta | less --tabs=1,5 -RFX
     show = delta | less --tabs=1,5 -RFX

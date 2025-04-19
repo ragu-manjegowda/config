@@ -111,6 +111,7 @@ case "$(command -v nvim)" in
 esac
 
 export EDITOR=$VIM
+export MANPAGER="$VIM +Man!"
 export VISUAL=$VISUAL
 export FCEDIT=$EDITOR
 

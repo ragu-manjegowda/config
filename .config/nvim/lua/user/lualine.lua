@@ -109,7 +109,6 @@ M.config = function()
                 },
                 {
                     "diagnostics",
-                    always_visible = true,
                     sources = { "nvim_diagnostic", "nvim_lsp" },
                     symbols = {
                         error = " ",

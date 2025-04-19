@@ -95,6 +95,10 @@ function M.setup_diagnostics()
         }
     })
 
+    -- Disable virtual lines by default
+    -- Use <leader>ltv to toggle
+    vim.diagnostic.config({ virtual_lines = false })
+
     utils.keymap("n", "<leader>ltv", function()
             local new_config = not vim.diagnostic.config().virtual_lines
             vim.diagnostic.config({ virtual_lines = new_config })
@@ -175,24 +179,21 @@ end
 -- Get Markdown LSP setup config
 ---@return table
 function M.markdown_setup()
-    local default_config = M.get_default_config()
-
-    -- Ensure that dynamicRegistration is enabled! This allows the LS to take into account actions like the
-    -- Create Unresolved File code action, resolving completions for unindexed code blocks, ...
-    local watch_capabilities = vim.tbl_deep_extend(
-        "force",
-        default_config.capabilities,
-        {
-            workspace = {
-                didChangeWatchedFiles = {
-                    dynamicRegistration = true,
-                },
-            },
-        }
-    )
-
+    -- Ensure that dynamicRegistration is enabled!
+    -- This allows the LS to take into account actions like the
+    -- create Unresolved File code action,
+    -- resolving completions for unindexed code blocks, ...
     return {
-        capabilities = watch_capabilities
+        capabilities = {
+            {
+                workspace = {
+                    didChangeWatchedFiles = {
+                        dynamicRegistration = true,
+                    },
+                },
+            }
+
+        }
     }
 end
 
@@ -200,21 +201,12 @@ end
 ---@return table
 function M.gopls_setup()
     -- Golang
-    -- https://github.com/bazelbuild/rules_go/wiki/Editor-setup
-    -- https://github.com/AnatoleLucet/dotfiles/blob/9f329f8d624655ab262329e12531eb1dfb54df15/nvim.save/.config/nvim/lua/lsp/init.lua#L153
-
     local cwd = vim.fn.getcwd()
 
-    local gopackagesdriver = ""
     local bazel_workspace_dir = ""
     local goroot = ""
 
     if utils.is_bazel_project() then
-        gopackagesdriver = cwd .. "/scripts/gopackagesdriver.sh"
-        if vim.fn.filereadable(gopackagesdriver) ~= 1 then
-            gopackagesdriver = ""
-        end
-
         goroot = cwd .. "/bazel-" .. cwd:match("/([^/]*)$") .. "/external/go_sdk"
         if vim.fn.isdirectory(goroot) ~= 1 then
             goroot = ""
@@ -227,9 +219,6 @@ function M.gopls_setup()
         flags = {
             debounce_text_changes = 150,
         },
-        cmd = { "gopls", "serve" },
-        filetypes = { "go", "gomod" },
-        root_dir = lspconfig.util.root_pattern("go.mod", ".gitignore"),
         settings = {
             gopls = {
                 analyses = {
@@ -243,9 +232,6 @@ function M.gopls_setup()
                 },
                 env = {
                     GOROOT = goroot,
-                    GOPACKAGESDRIVER_BAZEL_BUILD_FLAGS = "--strategy=GoStdlibList=local",
-                    GOPACKAGESDRIVER_BAZEL_QUERY = "kind(go_binary, //...)",
-                    GOPACKAGESDRIVER = gopackagesdriver
                 },
                 staticcheck = true
             }
@@ -283,7 +269,7 @@ function M.clangd_setup()
     end
 
     return {
-        root_dir = lspconfig.util.root_pattern(
+        root_markers = lspconfig.util.root_pattern(
             "compile_commands.json", ".gitignore"),
         cmd = clangd_cmd
     }
@@ -397,11 +383,13 @@ end
 -- Enable lsp via lspconfig
 ---@return nil
 function M.enable_with_lspconfig()
-    lspconfig.util.default_config = M.get_default_config()
+    vim.lsp.config("*", M.get_default_config())
 
     local servers_opts = M.servers_opts()
     for server, config in pairs(servers_opts.servers) do
-        lspconfig[server].setup(config)
+        vim.lsp.config(server, config)
+        vim.lsp.enable(server)
+        -- lspconfig[server].setup(config)
     end
 end
 
@@ -426,17 +414,15 @@ function M.enable_with_vim_lsp()
 end
 
 function M.config()
-    -- Setup CompletionItemKind irrespective of `lspconfig`
     M.setup_completionKind()
-
-    -- Setup diagnostics irrespective of `lspconfig`
-    M.setup_diagnostics()
 
     M.enable_with_lspconfig()
 
     M.enable_with_vim_lsp()
 
     M.setup_inlayHints()
+
+    M.setup_diagnostics()
 end
 
 return M
