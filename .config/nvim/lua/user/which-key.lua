@@ -27,7 +27,7 @@ function M.config()
             -- shows your registers on " in NORMAL or <C-r> in INSERT mode
             -- the presets plugin, adds help for a bunch of default
             -- keybindings in Neovim. No actual key bindings are created
-            registers = false,
+            registers = true,
             spelling = {
                 -- enabling this will show WhichKey when pressing z= to
                 -- select spelling suggestions
@@ -40,9 +40,9 @@ function M.config()
                 -- help for text objects triggered after entering an operator
                 text_objects = false,
                 windows = true, -- default bindings on <c-w>
-                nav = true, -- misc bindings to work with windows
-                z = true, -- bindings for folds, spelling and others prefixed with z
-                g = true -- bindings for prefixed with g
+                nav = true,     -- misc bindings to work with windows
+                z = true,       -- bindings for folds, spelling and others prefixed with z
+                g = true        -- bindings for prefixed with g
             }
         },
         replace = {
@@ -62,10 +62,13 @@ function M.config()
         layout = {
             height = { min = 4, max = 25 }, -- min and max height of the columns
             width = { min = 20, max = 50 }, -- min and max width of the columns
-            spacing = 5 -- spacing between columns
+            spacing = 5                     -- spacing between columns
         },
         -- show help message on the command line when the popup is visible
         show_help = true,
+        triggers = {
+            { "<leader>", mode = { "n", "v" } },
+        }
     }
 end
 
