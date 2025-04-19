@@ -60,7 +60,6 @@ function M.set_options()
         swapfile = false,      -- creates a swapfile
         tabstop = 4,           -- insert 4 spaces for a tab
         termguicolors = true,  -- set term gui colors (most terminals support this)
-        timeoutlen = 300,      -- time to wait for a mapped sequence to complete (in milliseconds)
         undodir = vim.fn.stdpath("data") .. "/undodir",
         undofile = true,
         undolevels = 10000,

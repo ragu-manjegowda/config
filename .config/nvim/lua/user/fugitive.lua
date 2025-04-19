@@ -8,8 +8,9 @@ local vim = vim
 local M = {}
 
 function M.config()
+    -- Autocmd with vimscript is much cleaner than lua
     vim.cmd [[
-        augroup GitStatus
+        augroup GitDiffSplit
             au filetype fugitive nmap <buffer> <leader>gdv :Gtabedit <Plug><cfile><Bar>Gvdiffsplit!<CR>
         augroup END
     ]]
@@ -55,15 +56,12 @@ function M.config()
 
     -- Register mappings description with which-key
     whichkey.add({
-        { "<leader>g",      group = "Git" },
-        { "<leader>gco",    desc = "Git commits in telescope float window" },
-        { "<leader>gdv",    desc = "Git diff view in new tab" },
-        { "<leader>glog",   desc = "Git log commits in new quick fix tab" },
-        { "<leader>glogf",  desc = "Git log current file in telescope float window" },
-        { "<leader>glogp",  desc = "Git log pretty in new tab" },
-        { "<leader>gpf",    desc = "Git merge apply left diff" },
-        { "<leader>gpj",    desc = "Git merge apply right diff" },
-        { "<leader>gstash", desc = "Git stash list in telescope float window" },
+        { "<leader>g",     group = "Git" },
+        { "<leader>gdv",   desc = "Git merge view current file" },
+        { "<leader>glog",  desc = "Git log commits in new quick fix tab" },
+        { "<leader>glogf", desc = "Git log current file in new quick fix tab" },
+        { "<leader>gpf",   desc = "Git merge apply left diff" },
+        { "<leader>gpj",   desc = "Git merge apply right diff" }
     })
 end
 
