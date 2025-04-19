@@ -26,6 +26,8 @@ function M.config()
 
     noice.setup({
         lsp = {
+            -- disable progress info mini view
+            progress = { enabled = false },
             hover = { enabled = false },
             signature = { enabled = false }
         },
@@ -51,6 +53,14 @@ function M.config()
                     find = "written",
                 },
                 opts = { skip = true },
+            }
+        },
+        views = {
+            mini = {
+                win_options = {
+                    -- Make LSP float window transparent
+                    winblend = 0
+                }
             }
         }
     })
