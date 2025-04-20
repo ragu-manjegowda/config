@@ -4,7 +4,7 @@
 -- reference    : https://github.com/folke/snacks.nvim
 -------------------------------------------------------------------------------
 
----@class bigfile
+---@class BigFile
 local M = {}
 
 M.meta = {
@@ -42,6 +42,7 @@ function M.setup()
                 if vim.api.nvim_buf_is_valid(ctx.buf) then
                     vim.bo[ctx.buf].syntax = ctx.ft
 
+                    -- Disable git signs
                     local res, gitsigns = pcall(require, "gitsigns")
                     if res then
                         gitsigns.detach(ctx.buf)
@@ -55,7 +56,7 @@ function M.setup()
         pattern = {
             [".*"] = {
                 function(path, buf)
-                    if not path or not buf or vim.bo[buf].filetype == "bigfile" then
+                    if not path or not buf or vim.bo[buf].filetype == "BigFile" then
                         return
                     end
                     if path ~= vim.api.nvim_buf_get_name(buf) then
@@ -66,10 +67,10 @@ function M.setup()
                         return
                     end
                     if size > opts.size then
-                        return "bigfile"
+                        return "BigFile"
                     end
                     local lines = vim.api.nvim_buf_line_count(buf)
-                    return lines > opts.line_length and "bigfile" or nil
+                    return lines > opts.line_length and "BigFile" or nil
                 end,
             },
         },
@@ -102,8 +103,8 @@ function M.setup()
                 })
             end)
         end,
-        group = vim.api.nvim_create_augroup("bigfile", { clear = true }),
-        pattern = "bigfile"
+        group = vim.api.nvim_create_augroup("BigFile", { clear = true }),
+        pattern = "BigFile"
     })
 end
 

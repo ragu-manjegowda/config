@@ -20,7 +20,7 @@ function M.config()
         exclude = {
             filetypes = {
                 "lspinfo", "lazy", "checkhealth", "help", "man", "fugitive",
-                "README", "text", "markdown", "bigfile"
+                "text", "markdown", "BigFile"
             },
             buftypes = { "markdown" },
         },

@@ -3,6 +3,7 @@ anydesk-bin
 awesome-luajit-git
 awmtt
 check-broken-packages-pacman-hook-git
+cppreference
 cyrus-sasl-xoauth2-git
 find-cursor
 goimapnotify-git
@@ -31,6 +32,5 @@ solarized-colors-iconpack-git
 subliminal-git
 sync-pacman-hook-git
 teams
-tgpt-git
 xidlehook
 zoom

@@ -16,6 +16,7 @@ broadcom-wl-dkms
 ca-certificates-mozilla
 calibre
 check-broken-packages-pacman-hook-git
+cppreference
 cups
 cyrus-sasl-xoauth2-git
 darkman
@@ -118,7 +119,6 @@ sync-pacman-hook-git
 system-config-printer
 teams
 termshark
-tgpt-git
 thermald
 thunar
 tigervnc

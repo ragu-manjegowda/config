@@ -20,7 +20,7 @@ function M.config()
         },
         disable_float_win = true,
         threshold = 10,
-        disabled_filetypes = { "TelescopePrompt", "NvimTree" }
+        disabled_filetypes = { "BigFile", "NvimTree", "TelescopePrompt" }
     })
 end
 
