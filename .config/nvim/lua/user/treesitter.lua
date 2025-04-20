@@ -48,8 +48,10 @@ M.config = function()
             "yaml"
         },
         highlight = {
-            enable = true,    -- false will disable the whole extension
-            disable = { "" }, -- list of language that will be disabled
+            enable = true,               -- false will disable the whole extension
+            disable = function(_, bufnr) -- disable in BigFile
+                return vim.bo[bufnr].filetype == "BigFile"
+            end,
             additional_vim_regex_highlighting = false,
         },
         ignore_install = {},
