@@ -33,7 +33,7 @@ function M.set_options()
         foldminlines = 3,      -- minimum number of lines in a fold
         foldnestmax = 5,       -- maximum depth of nested folds
         guicursor = "",        -- disable cursor style
-        hlsearch = false,      -- search hl is taken care in autocmd
+        hlsearch = true,       -- search hl is taken care in autocmd
         inccommand = "split",  -- show split preview for replace
         ignorecase = true,     -- ignore case in search patterns
         laststatus = 3,        -- enable global status line
@@ -149,7 +149,7 @@ end
 function M.set_user_commands()
     -- User defined function to toggle list chars
     vim.api.nvim_create_user_command(
-        'ToggleListChars',
+        "ToggleListChars",
         function()
             if vim.g.u_list_chars_set then
                 vim.opt.listchars:remove "lead"
@@ -165,7 +165,7 @@ function M.set_user_commands()
     -- Naming `ToggleColorScheme` is intentional since it's intended to call only
     -- when colorscheme is toggled by OS (dark/light)
     vim.api.nvim_create_user_command(
-        'ToggleColorScheme',
+        "ToggleColorScheme",
         function()
             package.loaded["user.colorscheme"] = nil
             local colorscheme = require("user.colorscheme")

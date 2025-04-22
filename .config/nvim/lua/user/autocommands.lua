@@ -269,24 +269,6 @@ function M.set_autocommands_using_lua()
         }
     )
 
-    -- Toggle hlsearch b/w enter and exiting search mode
-    local events = { "CmdlineEnter", "CmdlineLeave" }
-    vim.api.nvim_create_augroup("toggle_hlsearch", { clear = true })
-    vim.api.nvim_create_autocmd(events,
-        {
-            callback = function(args)
-                if args.event == "CmdlineEnter" then
-                    vim.opt.hlsearch = true
-                elseif args.event == "CmdlineLeave" then
-                    vim.opt.hlsearch = false
-                end
-            end,
-            desc = "Toggle hlsearch b/w enter and exiting search mode",
-            group = "toggle_hlsearch",
-            pattern = "/,\\?"
-        }
-    )
-
     -- Set match pairs for c, cpp
     -- Remove `-` from iskeyword to avoid not matching pointer variables
     -- Ex: `this->pointer` considers `this-` but not `this` when matching words
