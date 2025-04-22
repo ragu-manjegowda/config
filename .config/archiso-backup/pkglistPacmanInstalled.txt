@@ -1,6 +1,7 @@
 alacritty
 alsa-firmware
 alsa-utils
+arch-install-scripts
 archlinux-keyring
 aspell-en
 avidemux-qt

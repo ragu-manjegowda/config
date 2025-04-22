@@ -326,23 +326,10 @@ local all_plugins = {
             require("user.markview").config()
         end,
         dependencies = {
-            "3rd/image.nvim",
             "nvim-treesitter/nvim-treesitter",
             "nvim-tree/nvim-web-devicons"
         },
         ft = "markdown"
-    },
-
-    -- Image preview
-    {
-        "3rd/image.nvim",
-        config = function()
-            require("user.image").config()
-        end,
-        dependencies = {
-            "leafo/magick",
-        },
-        event = "VeryLazy"
     },
 
     -- Treesitter
