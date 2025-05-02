@@ -59,10 +59,6 @@ function M.setup()
     -- mapped via telescope plugin
     M.keymap("n", "q:", "<Nop>")
 
-    -- Scroll horizontally
-    M.keymap("n", "<C-h>", "5zh", desc("Scroll left"))
-    M.keymap("n", "<C-l>", "5zl", desc("Scroll right"))
-
     -- Resize with arrows
     M.keymap("n", "<C-Up>", ":resize -2<CR>", desc("Resize up"))
     M.keymap("n", "<C-Down>", ":resize +2<CR>", desc("Resize down"))
