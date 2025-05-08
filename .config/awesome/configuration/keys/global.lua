@@ -501,6 +501,33 @@ local global_keys = awful.util.table.join(
     ),
 
     awful.key(
+        { modkey, 'Control' },
+        'w',
+        function()
+            awful.spawn.easy_async_with_shell('exec warpd --hint', function() end)
+        end,
+        { description = 'Warpd Hint Mode', group = 'Utility' }
+    ),
+
+    awful.key(
+        { modkey, 'Shift' },
+        'w',
+        function()
+            awful.spawn.easy_async_with_shell('exec warpd --normal', function() end)
+        end,
+        { description = 'Warpd Normal Mode', group = 'Utility' }
+    ),
+
+    awful.key(
+        { modkey, 'Mod1' },
+        'w',
+        function()
+            awful.spawn.easy_async_with_shell('exec warpd --grid', function() end)
+        end,
+        { description = 'Warpd Grid Mode', group = 'Utility' }
+    ),
+
+    awful.key(
         { modkey },
         ']',
         function()

@@ -2,11 +2,11 @@ alacritty
 alsa-firmware
 alsa-utils
 arch-install-scripts
-archlinux-keyring
 aspell-en
 avidemux-qt
 base
 base-devel
+blender
 blueman
 bluez-utils
 broadcom-wl-dkms
@@ -17,10 +17,8 @@ darkman
 docker
 docker-buildx
 docker-compose
-ffmpeg
 firefox
 fprintd
-fribidi
 fuse2
 gcr
 git
@@ -34,7 +32,7 @@ libfido2
 libgit2
 libinput
 libmupdf
-libogg
+librecad
 libreoffice-still
 libsmbios
 libxcrypt-compat
@@ -58,8 +56,6 @@ networkmanager-openconnect
 nfs-utils
 noto-fonts
 noto-fonts-emoji
-nspr
-nss
 ntp
 nvidia
 nvidia-container-toolkit
@@ -98,10 +94,8 @@ vlc
 webkit2gtk
 webkit2gtk-4.1
 woff2
-x264
 xcalib
 xclip
-xkeyboard-config
 xorg-bdftopcf
 xorg-docs
 xorg-font-util
@@ -151,5 +145,4 @@ xsettingsd
 yubikey-manager
 zathura
 zathura-pdf-mupdf
-zim
 zsh

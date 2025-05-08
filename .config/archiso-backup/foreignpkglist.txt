@@ -18,7 +18,6 @@ newsboat-git
 nomachine
 numix-cursor-theme
 openconnect-gp-git
-openconnect-gp-git-debug
 pacman-cleanup-hook
 pam-fprint-grosshack
 paru
@@ -29,8 +28,8 @@ reflector-pacman-hook-git
 ruby-neovim
 sioyek-git
 solarized-colors-iconpack-git
-subliminal-git
 sync-pacman-hook-git
 teams
+warpd
 xidlehook
 zoom

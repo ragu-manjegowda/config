@@ -4,13 +4,13 @@ alsa-firmware
 alsa-utils
 anydesk-bin
 arch-install-scripts
-archlinux-keyring
 aspell-en
 avidemux-qt
 awesome-luajit-git
 awmtt
 base
 base-devel
+blender
 blueman
 bluez-utils
 broadcom-wl-dkms
@@ -24,11 +24,9 @@ darkman
 docker
 docker-buildx
 docker-compose
-ffmpeg
 find-cursor
 firefox
 fprintd
-fribidi
 fuse2
 gcr
 git
@@ -45,7 +43,7 @@ libfido2
 libgit2
 libinput
 libmupdf
-libogg
+librecad
 libreoffice-still
 libsmbios
 libxcrypt-compat
@@ -76,8 +74,6 @@ nfs-utils
 nomachine
 noto-fonts
 noto-fonts-emoji
-nspr
-nss
 ntp
 numix-cursor-theme
 nvidia
@@ -85,7 +81,6 @@ nvidia-container-toolkit
 nvidia-lts
 okular
 openconnect-gp-git
-openconnect-gp-git-debug
 openrazer-daemon
 openssh
 openssl-1.1
@@ -115,7 +110,6 @@ sioyek-git
 skanpage
 sof-firmware
 solarized-colors-iconpack-git
-subliminal-git
 sync-pacman-hook-git
 system-config-printer
 teams
@@ -129,14 +123,13 @@ ttf-hack-nerd
 ueberzugpp
 upower
 vlc
+warpd
 webkit2gtk
 webkit2gtk-4.1
 woff2
-x264
 xcalib
 xclip
 xidlehook
-xkeyboard-config
 xorg-bdftopcf
 xorg-docs
 xorg-font-util
@@ -186,6 +179,5 @@ xsettingsd
 yubikey-manager
 zathura
 zathura-pdf-mupdf
-zim
 zoom
 zsh
