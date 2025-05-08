@@ -18,10 +18,58 @@ if not res then
     return
 end
 
+local colors, hl
+colors = require("user.utils").get_colors()
+
+if colors == nil then
+    hl = {}
+else
+    if vim.o.background == "light" then
+        hl = {
+            -- Buffer line background
+            fill               = { bg = colors.base2 },
+
+            -- Text and icon (non-selected tab) highlight group
+            background         = { fg = colors.base2, bg = colors.base1 },
+
+            -- Non-selected tab highlight group
+            modified           = { fg = colors.base2, bg = colors.base1 },
+            numbers            = { fg = colors.base2, bg = colors.base1 },
+            separator          = { fg = colors.base2, bg = colors.base1 },
+
+            -- Selected tab highlight group
+            buffer_selected    = { fg = colors.magenta, bg = colors.base3 },
+            modified_selected  = { fg = colors.magenta, bg = colors.base3 },
+            numbers_selected   = { fg = colors.magenta, bg = colors.base3 },
+            separator_selected = { fg = colors.base2, bg = colors.base3 }
+        }
+    else
+        hl = {
+            -- Buffer line background
+            fill               = { bg = colors.base02 },
+
+            -- Text and icon (non-selected tab) highlight group
+            background         = { fg = colors.base02, bg = colors.base01 },
+
+            -- Non-selected tab highlight group
+            modified           = { fg = colors.base02, bg = colors.base01 },
+            numbers            = { fg = colors.base02, bg = colors.base01 },
+            separator          = { fg = colors.base02, bg = colors.base01 },
+
+            -- Selected tab highlight group
+            buffer_selected    = { fg = colors.magenta, bg = colors.base03 },
+            modified_selected  = { fg = colors.magenta, bg = colors.base03 },
+            numbers_selected   = { fg = colors.magenta, bg = colors.base03 },
+            separator_selected = { fg = colors.base02, bg = colors.base03 }
+        }
+    end
+end
+
 local M = {}
 
 function M.config()
     bufferline.setup({
+        highlights = hl,
         options = {
             mode = "tabs",
             numbers = "ordinal",
@@ -41,6 +89,7 @@ function M.config()
                     filetype = "NvimTree",
                     text = "File Explorer",
                     text_align = "center",
+                    highlight = "Directory",
                     separator = true
                 },
                 {
@@ -71,9 +120,9 @@ function M.config()
             color_icons = true,
             show_buffer_close_icons = false,
             get_element_icon = function(element)
-                local icon, hl = web_devicons.get_icon_by_filetype(
+                local icon, hlg = web_devicons.get_icon_by_filetype(
                     element.filetype, { default = false })
-                return icon, hl
+                return icon, hlg
             end,
             show_tab_indicators = false,
             show_duplicate_prefix = true,

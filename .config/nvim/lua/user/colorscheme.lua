@@ -14,70 +14,82 @@ M.meta = {
 function M.config()
     vim.cmd [[ set background=light ]]
 
-    local ok_status, NeoSolarized = pcall(require, "NeoSolarized")
+    vim.o.termguicolors = true
+
+    local ok_status, solarized = pcall(require, "solarized")
 
     if not ok_status then
         return
     end
 
-    NeoSolarized.setup {
-        transparent = false,
-        terminal_colors = false,
-        -- Add specific hightlight groups
-        on_highlights = function(highlights, colors)
-            highlights.BlinkCmpKind                 = { bold = true }
-            highlights.BlinkCmpKindConstant         = { fg = colors.red }
-            highlights.BlinkCmpKindEnum             = { fg = colors.orange }
-            highlights.BlinkCmpKindField            = { fg = colors.violet }
-            highlights.BlinkCmpKindMethod           = { fg = colors.green }
-            highlights.BlinkCmpKindSnippet          = { fg = colors.orange }
-            highlights.BlinkCmpLabelDeprecated      = { fg = colors.red, strikethrough = true }
-            highlights.BlinkCmpLabelMatch           = { fg = colors.green, bold = true }
-            highlights.BlinkCmpMenuBorder           = { fg = colors.blue }
-            highlights.BlinkCmpMenuSelection        = { fg = colors.bg1, bg = colors.green }
-            highlights.BlinkCmpSource               = { italic = true }
-            highlights.BlinkCmpVariable             = { fg = colors.green }
-            highlights.CursorWord                   = { fg = colors.aqua, bold = true }
-            highlights.CustomRainbowDelimiterBlue   = { fg = colors.blue, bold = true }
-            highlights.CustomRainbowDelimiterGreen  = { fg = colors.green, bold = true }
-            highlights.CustomRainbowDelimiterOrange = { fg = colors.orange, bold = true }
-            highlights.CustomRainbowDelimiterViolet = { fg = colors.violet, bold = true }
-            highlights.CustomRainbowDelimiterYellow = { fg = colors.yellow, bold = true }
-            highlights.FloatBorder                  = { fg = colors.blue, bold = true }
-            highlights.FloatTitle                   = { fg = colors.red, bold = true }
-            highlights.GitSignsAddLnInline          = { fg = colors.green, bold = true }
-            highlights.GitSignsChangeLnInline       = { fg = colors.blue, bold = true }
-            highlights.GitSignsDeleteLnInline       = { fg = colors.red, bold = true }
-            highlights.LazyDimmed                   = { fg = colors.fg1, strikethrough = true }
-            highlights.LuaLineDiffAdd               = { fg = colors.green, bold = true }
-            highlights.LuaLineDiffChange            = { fg = colors.yellow, bold = true }
-            highlights.LuaLineDiffDelete            = { fg = colors.red, bold = true }
-            highlights.MarkviewHeading1             = { fg = colors.red, bold = true }
-            highlights.MarkviewHeading2             = { fg = colors.green, bold = true }
-            highlights.MarkviewHeading3             = { fg = colors.yellow, bold = true }
-            highlights.MarkviewHeading4             = { fg = colors.orange, bold = true }
-            highlights.MarkviewHeading5             = { fg = colors.aqua, bold = true }
-            highlights.SmoothCursor                 = { fg = colors.violet, bg = colors.none }
-            highlights.SmoothCursorAqua             = { fg = colors.aqua, bg = colors.none }
-            highlights.SmoothCursorBlue             = { fg = colors.blue, bg = colors.none }
-            highlights.SmoothCursorGreen            = { fg = colors.green, bg = colors.none }
-            highlights.SmoothCursorOrange           = { fg = colors.orange, bg = colors.none }
-            highlights.SmoothCursorPurple           = { fg = colors.purple, bg = colors.none }
-            highlights.SmoothCursorRed              = { fg = colors.red, bg = colors.none }
-            highlights.SmoothCursorYellow           = { fg = colors.yellow, bg = colors.none }
-            highlights.TelescopeMatching            = { fg = colors.bg1, bg = colors.aqua }
-            highlights.TelescopeSelection           = { bg = colors.orange, bold = true }
-            highlights.Visual                       = { bg = colors.yellow, fg = colors.bg1 }
-            highlights.WinBarNC                     = { link = "Normal" }
-            highlights.Winbar                       = { link = "Normal" }
+    local styles = {
+        comments = { italic = true, bold = false },
+        functions = { italic = true },
+        variables = { italic = false },
+    }
+
+    solarized.setup {
+        transparent = {
+            enabled = true
+        },
+        styles = styles,
+        plugins = {
+            bufferline = false
+        },
+        variant = "spring",
+
+        -- Add specific highlight groups
+        on_highlights = function(colors, _)
+            return {
+                diffAdded               = { fg = colors.green },
+                BlinkCmpKind            = { bold = true },
+                BlinkCmpKindConstant    = { fg = colors.red },
+                BlinkCmpKindEnum        = { fg = colors.orange },
+                BlinkCmpKindField       = { fg = colors.violet },
+                BlinkCmpKindMethod      = { fg = colors.green },
+                BlinkCmpKindSnippet     = { fg = colors.orange },
+                BlinkCmpLabelDeprecated = { fg = colors.red, strikethrough = true },
+                BlinkCmpLabelMatch      = { fg = colors.green, bold = true },
+                BlinkCmpMenuBorder      = { fg = colors.blue },
+                BlinkCmpMenuSelection   = { fg = colors.base02, bg = colors.green },
+                BlinkCmpSource          = { italic = true },
+                BlinkCmpVariable        = { fg = colors.green },
+                CursorWord              = { fg = colors.cyan, bold = true },
+                FloatBorder             = { fg = colors.blue, bold = true },
+                FloatTitle              = { fg = colors.red, bold = true },
+                GitSignsAddLnInline     = { fg = colors.green, bold = true },
+                GitSignsChangeLnInline  = { fg = colors.blue, bold = true },
+                GitSignsDeleteLnInline  = { fg = colors.red, bold = true },
+                LuaLineDiffAdd          = { fg = colors.green, bold = true },
+                MarkviewHeading1        = { fg = colors.red, bold = true },
+                MarkviewHeading2        = { fg = colors.green, bold = true },
+                MarkviewHeading3        = { fg = colors.yellow, bold = true },
+                MarkviewHeading4        = { fg = colors.orange, bold = true },
+                MarkviewHeading5        = { fg = colors.cyan, bold = true },
+                SmoothCursor            = { fg = colors.violet },
+                SmoothCursorAqua        = { fg = colors.cyan },
+                SmoothCursorBlue        = { fg = colors.blue },
+                SmoothCursorGreen       = { fg = colors.green },
+                SmoothCursorOrange      = { fg = colors.orange },
+                SmoothCursorPurple      = { fg = colors.purple },
+                SmoothCursorRed         = { fg = colors.red },
+                SmoothCursorYellow      = { fg = colors.yellow },
+                SpellBad                = { underline = true, strikethrough = false },
+                TelescopeMatching       = { fg = colors.base02, bg = colors.cyan },
+                TelescopeResultsComment = { fg = colors.purple, italic = true },
+                TelescopeSelection      = { fg = colors.orange, bg = colors.base02, bold = true },
+                Visual                  = { fg = colors.base02, bg = colors.yellow },
+                WinBarNC                = { link = "Normal" },
+                Winbar                  = { link = "Normal" }
+            }
         end
     }
 
-    -- Set colorscheme to NeoSolarized
+    -- Set colorscheme to solarized
     vim.cmd [[
         try
-            " Use NeoSolarized
-            colorscheme NeoSolarized
+            " Use solarized
+            colorscheme solarized
         catch /^Vim\%((\a\+)\)\=:E185/
             colorscheme default
         endtry
