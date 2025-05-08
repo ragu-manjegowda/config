@@ -27,7 +27,7 @@ function M.config()
     noice.setup({
         lsp = {
             -- disable progress info mini view
-            progress = { enabled = false },
+            progress = { enabled = true },
             hover = { enabled = false },
             signature = { enabled = false }
         },

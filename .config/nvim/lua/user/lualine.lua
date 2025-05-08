@@ -12,42 +12,53 @@ M.get_theme = function()
         return {}
     end
 
+    local c0, c1, c2
+    if vim.o.background == "light" then
+        c0 = colors.base0
+        c1 = colors.base1
+        c2 = colors.base2
+    else
+        c0 = colors.base00
+        c1 = colors.base01
+        c2 = colors.base02
+    end
+
     return {
         normal = {
             a = {
-                fg = colors.bg1, bg = colors.blue, gui = "bold"
+                fg = c2, bg = colors.blue, gui = "bold"
             },
             b = {
-                fg = colors.bg0, bg = colors.fg1, gui = "bold"
+                fg = c2, bg = c1, gui = "bold"
             },
             c = {
-                fg = colors.fg0, bg = colors.bg1
+                fg = c0, bg = c2
             }
         },
         insert = {
             a = {
-                fg = colors.bg1, bg = colors.green, gui = "bold"
+                fg = c2, bg = colors.green, gui = "bold"
             }
         },
         visual = {
             a = {
-                fg = colors.bg1, bg = colors.yellow, gui = "bold"
+                fg = c2, bg = colors.yellow, gui = "bold"
             }
         },
         replace = {
             a = {
-                fg = colors.bg1, bg = colors.magenta, gui = "bold"
+                fg = c2, bg = colors.magenta, gui = "bold"
             }
         },
         inactive = {
             a = {
-                fg = colors.bg0, bg = colors.fg2, gui = "bold"
+                fg = c2, bg = c1, gui = "bold"
             },
             b = {
-                fg = colors.bg0, bg = colors.fg2
+                fg = c2, bg = c1
             },
             c = {
-                fg = colors.fg1, bg = colors.bg1
+                fg = c0, bg = c2
             }
         }
     }

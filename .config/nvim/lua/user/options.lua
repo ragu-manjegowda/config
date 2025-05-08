@@ -175,7 +175,7 @@ function M.set_user_commands()
             end
 
             -- Reload colorscheme silently
-            vim.cmd("silent Lazy reload NeoSolarized.nvim")
+            vim.cmd("silent Lazy reload solarized.nvim")
 
             -- Reload bufferline silently
             vim.cmd("silent Lazy reload bufferline.nvim")

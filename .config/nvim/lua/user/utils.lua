@@ -45,15 +45,17 @@ function M.keymap(mode, lhs, rhs, opts)
     vim.keymap.set(mode, lhs, rhs, opts)
 end
 
--- Get colors, try NeoSolarized colors, fallback to default colors
+-- Get colors, try solarized colors, fallback to default colors
 -- Not caching since we want to read fresh colors when toggling dark or light
 -- @return table
 function M.get_colors()
     local colors = {}
 
-    local res, theme = pcall(require, "NeoSolarized.colors")
-    if res then
-        colors = theme.setup()
+    local res, solarized_utils = pcall(require, "solarized.utils")
+    if not res then
+        vim.notify("utils.lua: solarized.utils not found", vim.log.levels.WARN)
+    else
+        colors = solarized_utils.get_colors()
     end
 
     return colors

@@ -18,10 +18,46 @@ if not res then
     return
 end
 
+local colors, hl
+colors = require("user.utils").get_colors()
+
+if colors == nil then
+    hl = {}
+else
+    if vim.o.background == "light" then
+        hl = {
+            background         = { fg = colors.base2, bg = colors.base0 },
+            buffer_selected    = { fg = colors.magenta, bg = colors.base2 },
+            fill               = { bg = colors.base1 },
+            modified           = { fg = colors.base2, bg = colors.base0 },
+            modified_selected  = { fg = colors.magenta, bg = colors.base2 },
+            numbers            = { fg = colors.base2, bg = colors.base0 },
+            numbers_selected   = { fg = colors.magenta, bg = colors.base2 },
+            separator          = { fg = colors.base1, bg = colors.base0 },
+            separator_selected = { fg = colors.base1, bg = colors.base2 },
+            tab_close          = { bg = colors.base1 },
+        }
+    else
+        hl = {
+            background         = { fg = colors.base02, bg = colors.base00 },
+            buffer_selected    = { fg = colors.magenta, bg = colors.base02 },
+            fill               = { bg = colors.base01 },
+            modified           = { fg = colors.base02, bg = colors.base00 },
+            modified_selected  = { fg = colors.magenta, bg = colors.base02 },
+            numbers            = { fg = colors.base02, bg = colors.base00 },
+            numbers_selected   = { fg = colors.magenta, bg = colors.base02 },
+            separator          = { fg = colors.base01, bg = colors.base00 },
+            separator_selected = { fg = colors.base01, bg = colors.base02 },
+            tab_close          = { bg = colors.base01 },
+        }
+    end
+end
+
 local M = {}
 
 function M.config()
     bufferline.setup({
+        highlights = hl,
         options = {
             mode = "tabs",
             numbers = "ordinal",
@@ -41,6 +77,7 @@ function M.config()
                     filetype = "NvimTree",
                     text = "File Explorer",
                     text_align = "center",
+                    highlight = "Directory",
                     separator = true
                 },
                 {

@@ -53,7 +53,7 @@ function M.load(plugins)
         },
         install = {
             -- try to load one of these colorschemes when starting an installation during startup
-            colorscheme = { "NeoSolarized" }
+            colorscheme = { "solarized" }
         },
         ui = {
             border = "rounded"
