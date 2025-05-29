@@ -36,7 +36,6 @@ function M.config()
                 suggestions = 20
             },
             presets = {
-                motions = false, -- adds help for motions
                 -- help for text objects triggered after entering an operator
                 text_objects = false,
                 windows = true, -- default bindings on <c-w>
