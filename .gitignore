@@ -45,12 +45,14 @@
 /.config/Atom
 /.config/Epic
 /.config/Fonts/.uuid
+/.config/FreeCAD
 /.config/GIMP
 /.config/LibreCAD
 /.config/Luminar
 /.config/Microsoft
 /.config/Perforce
 /.config/Pinta
+/.config/QGDialogFactory
 /.config/QtProject
 /.config/QtProject.conf
 /.config/Slack
@@ -67,6 +69,7 @@
 /.config/awesome/library/volctl/volctl.egg-info
 /.config/awesome/library/volctl/volctl/__pycache__
 /.config/awesome/theme/icons/sedpHNNtT
+/.config/awesome/theme/icons/titlebar/win10/sedDwqIEQ
 /.config/awesome/widget/email/icons/sedVulxFl
 /.config/awesome/widget/email/mails.txt
 /.config/bash/.bash_history

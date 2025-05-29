@@ -27,6 +27,7 @@ docker-compose
 find-cursor
 firefox
 fprintd
+freecad
 fuse2
 gcr
 git

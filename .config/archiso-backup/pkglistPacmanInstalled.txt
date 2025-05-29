@@ -19,6 +19,7 @@ docker-buildx
 docker-compose
 firefox
 fprintd
+freecad
 fuse2
 gcr
 git
