@@ -9,16 +9,17 @@ function M.opts()
     return {
         -- add any opts here
         provider = "openai",
-        openai = {
-            endpoint = "https://integrate.api.nvidia.com/v1",
-            -- model = "nvdev/nvidia/llama-3.1-nemotron-70b-instruct"
-            -- model = "nvdev/meta/llama-3.1-405b-instruct"
-            model = "nvdev/qwen/qwen2.5-coder-32b-instruct",
-            -- model = "nvdev/deepseek-ai/deepseek-r1",
-            -- temperature = 0.6
-            disable_tools = true
-        },
-        azure = {}
+        providers = {
+            openai = {
+                endpoint = "https://integrate.api.nvidia.com/v1",
+                -- model = "nvdev/nvidia/llama-3.1-nemotron-70b-instruct"
+                -- model = "nvdev/meta/llama-3.1-405b-instruct"
+                model = "nvdev/qwen/qwen2.5-coder-32b-instruct",
+                -- model = "nvdev/deepseek-ai/deepseek-r1",
+                -- temperature = 0.6
+                disable_tools = true
+            }
+        }
     }
 end
 
