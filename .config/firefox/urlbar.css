@@ -38,7 +38,7 @@
     --urlbar-bg: var(--toolbar-field-focus-background-color, var(--field));
   }
   background-color: var(--urlbar-bg) !important;
-  @media not (-moz-bool-pref: "uc.tweak.no-blur") {
+  @media not -moz-pref( "uc.tweak.no-blur") {
     background-color: color-mix(
       in oklab,
       var(--urlbar-bg) 90%,
@@ -48,7 +48,7 @@
   }
 }
 
-@media not (-moz-bool-pref: "uc.tweak.urlbar.not-floating") {
+@media not -moz-pref( "uc.tweak.urlbar.not-floating") {
   #main-window:not([customizing]) {
     --uc-urlbar-width: clamp(
       min(

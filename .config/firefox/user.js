@@ -57,3 +57,6 @@ user_pref("cookiebanners.service.mode", 2);
 user_pref("cookiebanners.service.mode.privateBrowsing", 2);
 user_pref("browser.quitShortcut.disabled", true);
 user_pref("browser.fullscreen.exit_on_escape", false);
+user_pref("extensions.pocket.enabled", false);
+user_pref("accessibility.force_disabled", 1);
+user_pref("media.ffmpeg.vaapi.enabled", true);
