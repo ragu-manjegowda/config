@@ -11,6 +11,7 @@ google-chrome
 gtk-theme-numix-solarized
 light
 lua-pam-git
+masterpdfeditor-free
 mbsync-git
 mu
 neomutt-git
@@ -33,3 +34,5 @@ teams
 warpd
 xidlehook
 zoom
+zram-hibernate-git
+zramswap

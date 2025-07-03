@@ -269,8 +269,9 @@ function M.clangd_setup()
     end
 
     return {
-        root_markers = lspconfig.util.root_pattern(
-            "compile_commands.json", ".gitignore"),
+        root_markers = {
+            "compile_commands.json", ".gitignore"
+        },
         cmd = clangd_cmd
     }
 end

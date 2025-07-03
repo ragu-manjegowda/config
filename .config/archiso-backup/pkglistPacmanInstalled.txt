@@ -23,6 +23,7 @@ freecad
 fuse2
 gcr
 git
+go
 gst-plugin-pipewire
 gst-plugins-good
 imagemagick
@@ -61,7 +62,6 @@ ntp
 nvidia
 nvidia-container-toolkit
 nvidia-lts
-okular
 openrazer-daemon
 openssh
 openssl-1.1
@@ -81,6 +81,7 @@ ruby-erb
 rust-src
 skanpage
 sof-firmware
+swig
 system-config-printer
 termshark
 thermald
