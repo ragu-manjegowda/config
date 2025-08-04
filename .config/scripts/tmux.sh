@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TMUX_BIN_PATH=/localhome/local-rmanjegowda/.remote-nvim/tmux-downloads/tmux.appimage
+TMUX_BIN_PATH=/localhome/local-rmanjegowda/.config/tmux-downloads/tmux.appimage
 TMUX_INSTALL_DIR=$(dirname "$TMUX_BIN_PATH")
 
 if [ ! -f "$TMUX_BIN_PATH" ]; then

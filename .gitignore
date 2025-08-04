@@ -37,6 +37,9 @@
 /.ccache
 /.cgdb
 /.cisco
+/.claude
+/.claude.json
+/.claude.json.backup
 /.cmake
 /.codeium
 /.compiz
@@ -123,6 +126,7 @@
 /.config/libreoffice
 /.config/lxqt
 /.config/maglev
+/.config/mcphub
 /.config/menus
 /.config/monitors-v1-backup.xml
 /.config/monitors.xml
@@ -213,6 +217,7 @@
 /.gazebo
 /.gconf
 /.gem
+/.gemini
 /.globalrc
 /.gnome
 /.httpie
