@@ -17,6 +17,7 @@ broadcom-wl-dkms
 ca-certificates-mozilla
 calibre
 check-broken-packages-pacman-hook-git
+claude-code
 cppreference
 cups
 cyrus-sasl-xoauth2-git
@@ -30,6 +31,7 @@ fprintd
 freecad
 fuse2
 gcr
+gemini-cli
 git
 go
 goimapnotify-git

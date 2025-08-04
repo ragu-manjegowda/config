@@ -3,9 +3,11 @@ anydesk-bin
 awesome-luajit-git
 awmtt
 check-broken-packages-pacman-hook-git
+claude-code
 cppreference
 cyrus-sasl-xoauth2-git
 find-cursor
+gemini-cli
 goimapnotify-git
 google-chrome
 gtk-theme-numix-solarized
