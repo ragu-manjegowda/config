@@ -322,18 +322,26 @@ function M.servers_opts()
                     pylsp = {
                         plugins = {
                             jedi_completion = {
+                                enabled = true,
                                 fuzzy = true
                             },
-                            flake8 = { enabled = true },
-                            pycodestyle = {
-                                ignore = {
-                                    "C0103", "E266",
-                                    "W0104", "W391", "W503", "W504"
-                                },
-                                maxLineLength = 80
+                            pylsp_mypy = { enabled = true },
+                            ruff = {
+                                enabled = true,
+                                extendSelect = { "D,E,F" }, -- Enable docstring (D) and other common checks
+                                pydocstyle = { convention = "google" }
                             },
-                            pydocstyle = { enabled = true },
-                            pyflakes = { enabled = false }
+                            black = {
+                                enabled = true,
+                                line_length = 80
+                            },
+                            pycodestyle = { enabled = false }, -- disable to avoid conflicts
+                            autopep8 = { enabled = false },
+                            yapf = { enabled = false }
+                        },
+                        signatures = {
+                            formatter = "black",
+                            line_length = 80
                         }
                     }
                 }

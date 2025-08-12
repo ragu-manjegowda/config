@@ -7,7 +7,6 @@ claude-code
 cppreference
 cyrus-sasl-xoauth2-git
 find-cursor
-gemini-cli
 goimapnotify-git
 google-chrome
 gtk-theme-numix-solarized
@@ -21,6 +20,7 @@ newsboat-git
 nomachine
 numix-cursor-theme
 openconnect-gp-git
+openconnect-gp-git-debug
 pacman-cleanup-hook
 pam-fprint-grosshack
 paru

@@ -6,7 +6,6 @@ aspell-en
 avidemux-qt
 base
 base-devel
-blender
 blueman
 bluez-utils
 broadcom-wl-dkms

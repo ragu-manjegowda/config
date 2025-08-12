@@ -10,7 +10,6 @@ awesome-luajit-git
 awmtt
 base
 base-devel
-blender
 blueman
 bluez-utils
 broadcom-wl-dkms
@@ -31,7 +30,6 @@ fprintd
 freecad
 fuse2
 gcr
-gemini-cli
 git
 go
 goimapnotify-git
@@ -85,6 +83,7 @@ nvidia
 nvidia-container-toolkit
 nvidia-lts
 openconnect-gp-git
+openconnect-gp-git-debug
 openrazer-daemon
 openssh
 openssl-1.1
