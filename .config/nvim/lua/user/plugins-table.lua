@@ -384,6 +384,22 @@ local all_plugins = {
     },
 
     -- LLMs
+
+    -- MCPhub
+    {
+        "ravitemer/mcphub.nvim",
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+        },
+        build = "bundled_build.lua", -- Bundles `mcp-hub` binary along with the neovim plugin
+        config = function()
+            require("mcphub").setup({
+                use_bundled_binary = true, -- Use local `mcp-hub` binary
+            })
+        end,
+    },
+
+    -- Code companion
     {
         "olimorris/codecompanion.nvim",
         dependencies = {
@@ -394,27 +410,6 @@ local all_plugins = {
         },
         event = "VeryLazy",
         opts = require("user.codecompanion").opts()
-    },
-
-    {
-        "yetone/avante.nvim",
-        build = "make",
-        dependencies = {
-            "stevearc/dressing.nvim",
-            "nvim-lua/plenary.nvim",
-            "MunifTanjim/nui.nvim",
-            "nvim-telescope/telescope.nvim",
-            "nvim-tree/nvim-web-devicons",
-            {
-                -- support for image pasting
-                "HakonHarnes/img-clip.nvim",
-                event = "VeryLazy",
-                opts = require("user.avante").img_clip_opts()
-            }
-        },
-        event = "VeryLazy",
-        opts = require("user.avante").opts(),
-        version = false
     }
 }
 
