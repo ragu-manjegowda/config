@@ -37,7 +37,7 @@ return {
         quake = '',
         -- Run menu
         rofi_runmenu = 'rofi -dpi ' .. screen.primary.dpi ..
-            ' -show run -theme ' .. config_dir ..
+            ' -show drun -theme ' .. config_dir ..
             'configuration/rofi/runmenu/rofi.rasi',
         -- Emoji menu
         rofi_emojimenu = 'rofi -dpi ' .. screen.primary.dpi ..

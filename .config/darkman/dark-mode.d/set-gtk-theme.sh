@@ -22,6 +22,11 @@ sed -i -e 's/Numix-Cursor-Light$/Numix-Cursor/g' $gtk3_config_path
 sed -i -e 's/Numix-Cursor-Light$/Numix-Cursor/g' $icon_config_path
 sed -i -e 's/"Numix-Cursor-Light"/"Numix-Cursor"/g' $xdg_config_path
 
+if ! pgrep -x "gsettings" > /dev/null
+then
+    gsettings set org.gnome.desktop.interface icon-theme "Solarized-Dark-Green-Numix"
+fi
+
 if ! pgrep -x "xsettingsd" > /dev/null
 then
     xsettingsd &
@@ -38,4 +43,3 @@ then
     sleep 0.2
     killall lxappearance
 fi
-
