@@ -2,11 +2,12 @@ acpilight
 alacritty
 alsa-firmware
 alsa-utils
+android-sdk-platform-tools
 anydesk-bin
 arch-install-scripts
 aspell-en
 avidemux-qt
-awesome-luajit-git
+awesome-git
 awmtt
 base
 base-devel
@@ -19,6 +20,7 @@ check-broken-packages-pacman-hook-git
 claude-code
 cppreference
 cups
+cursor-bin
 cyrus-sasl-xoauth2-git
 darkman
 docker
@@ -57,8 +59,8 @@ linux-headers
 linux-lts
 linux-lts-headers
 lld
-lua-lgi
 lua-pam-git
+lua51-lgi
 lxqt-policykit
 ly
 maim

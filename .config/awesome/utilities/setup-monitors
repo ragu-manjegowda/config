@@ -7,7 +7,7 @@
 xrandr --dpi 192
 
 # set up high DPI monitor
-xrandr --output eDP-1 --mode 3840x2400 --pos 0x0
+# xrandr --output eDP-1 --mode 3840x2400 --pos 0x0
 
 # Following fixes low res monitor cursor and resolution issue
 
@@ -19,3 +19,14 @@ xrandr --output eDP-1 --mode 3840x2400 --pos 0x0
 
 # Following turns off TV output, change the output ID as needed
 # xrandr --output HDMI-1 --off
+
+
+################################################
+
+xrandr --output eDP-1 --mode 3840x2400 --pos 0x0 --scale 1x1 --auto --primary
+
+# Check if DP-3 is connected
+if xrandr | grep -q "^DP-3 connected"; then
+    # Set up external display to mirror eDP-1
+    xrandr --output DP-3 --mode 1920x1200 --same-as eDP-1 --scale 2x2 --auto
+fi
