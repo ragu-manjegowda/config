@@ -37,5 +37,7 @@ elif [ "$category" = text ]; then
         bat --color=always "$1"
     fi
 else
-    exit 1
+    echo "[lessfilter] Unsupported MIME type: $mime" >&2
+    echo "Unsupported file type for preview"
+    exit 0
 fi

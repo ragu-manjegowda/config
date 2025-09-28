@@ -46,6 +46,7 @@
 /.conda
 /.config.git
 /.config/Atom
+/.config/Cursor
 /.config/Epic
 /.config/Fonts/.uuid
 /.config/FreeCAD
@@ -91,6 +92,7 @@
 /.config/configstore
 /.config/conky
 /.config/cppman
+/.config/cursor
 /.config/dconf
 /.config/ddb-frontend Dev
 /.config/dlv
@@ -203,6 +205,7 @@
 /.config/zsh/.zsh_history_*.bak
 /.config/zsh/.zsh_sessions
 /.cups
+/.cursor
 /.dazelrc
 /.dbus
 /.dmrc

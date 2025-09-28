@@ -1,10 +1,12 @@
 acpilight
+android-sdk-platform-tools
 anydesk-bin
-awesome-luajit-git
+awesome-git
 awmtt
 check-broken-packages-pacman-hook-git
 claude-code
 cppreference
+cursor-bin
 cyrus-sasl-xoauth2-git
 find-cursor
 goimapnotify-git
