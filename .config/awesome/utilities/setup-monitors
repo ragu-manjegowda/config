@@ -23,7 +23,7 @@ xrandr --dpi 192
 
 ################################################
 
-xrandr --output eDP-1 --mode 3840x2400 --pos 0x0 --scale 1x1 --auto --primary
+xrandr --output eDP-1 --mode 3840x2400 --pos 0x0
 
 # Check if DP-3 is connected
 if xrandr | grep -q "^DP-3 connected"; then
