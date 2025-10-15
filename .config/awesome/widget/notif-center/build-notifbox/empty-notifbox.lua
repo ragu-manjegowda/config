@@ -1,8 +1,9 @@
 -- This returns the "Wow, such empty." message.
 
 local wibox = require('wibox')
+local beautiful = require('beautiful')
 
-local dpi = require('beautiful').xresources.apply_dpi
+local dpi = beautiful.xresources.apply_dpi
 
 local config_dir = require('gears').filesystem.get_configuration_dir()
 local widget_icon_dir = config_dir .. 'widget/notif-center/icons/'
@@ -26,14 +27,14 @@ local empty_notifbox = wibox.widget {
         },
         {
             text = 'Wow, such empty.',
-            font = 'Hack Nerd Bold 14',
+            font = beautiful.font_bold(14),
             align = 'center',
             valign = 'center',
             widget = wibox.widget.textbox
         },
         {
             text = 'Come back later.',
-            font = 'Hack Nerd Regular 10',
+            font = beautiful.font_regular(10),
             align = 'center',
             valign = 'center',
             widget = wibox.widget.textbox

@@ -14,7 +14,7 @@ return function()
         format = "%a %b %d %l:%M %p",
         align = "center",
         valign = "center",
-        font = beautiful.font_bold,
+        font = beautiful.font_bold(12),
     })
 
     clock.markup = "<span foreground='" .. beautiful.fg_normal .. "'>" .. clock.text .. "</span>"

@@ -10,14 +10,14 @@ local widget_icon_dir = widget_dir .. 'icons/'
 
 local action_name = wibox.widget {
     text = 'Blue Light',
-    font = 'Hack Nerd Bold 12',
+    font = beautiful.font_bold(11),
     align = 'left',
     widget = wibox.widget.textbox
 }
 
 local action_status = wibox.widget {
     text = 'Off',
-    font = 'Hack Nerd Regular 12',
+    font = beautiful.font_regular(10),
     align = 'left',
     widget = wibox.widget.textbox
 }

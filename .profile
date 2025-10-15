@@ -80,6 +80,7 @@ if [ -d "$HOME"/.local/bin ]; then
     export PATH="$HOME"/.local/bin:"$PATH"
 fi
 
+## Set python from venv as default
 if [ -d "$HOME"/.local/share/venv/bin ]; then
     # shellcheck disable=SC1091
     export PATH="$HOME"/.local/share/venv/bin:"$PATH"

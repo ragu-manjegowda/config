@@ -1,11 +1,12 @@
 local wibox = require('wibox')
 local awful = require('awful')
 local gears = require('gears')
+local beautiful = require('beautiful')
 local naughty = require('naughty')
 local apps = require('configuration.apps')
 local battery = require('library.battery')
 local clickable_container = require('widget.clickable-container')
-local dpi = require('beautiful').xresources.apply_dpi
+local dpi = beautiful.xresources.apply_dpi
 local config_dir = gears.filesystem.get_configuration_dir()
 local widget_icon_dir = config_dir .. 'widget/battery/icons/'
 
@@ -26,7 +27,7 @@ local return_button = function()
     local battery_percentage_text = wibox.widget {
         id = 'percent_text',
         text = '100%',
-        font = 'Hack Nerd Bold 14',
+        font = beautiful.font_bold(12),
         align = 'center',
         valign = 'center',
         visible = false,

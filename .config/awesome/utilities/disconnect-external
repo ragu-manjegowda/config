@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# Gracefully disconnect external monitor
+# Moves windows to primary screen before disconnect
+
+echo "Preparing for monitor disconnect..."
+
+# Tell AwesomeWM to prepare
+awesome-client "
+local screen_mgr = require('module.screen-manager')
+screen_mgr.prepare_for_disconnect()
+"
+
+# Give AwesomeWM time to reorganize
+sleep 2
+
+# Switch to laptop-only configuration
+xrandr --output DP-4 --off
+xrandr --output eDP-1 --primary --mode 3840x2400 --pos 0x0
+xrandr --dpi 192
+
+echo "✓ External monitor disconnected"
+echo "✓ Windows moved to laptop screen"
+echo ""
+echo "You can now safely unplug the external monitor"
+

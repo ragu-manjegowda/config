@@ -10,21 +10,21 @@ local secrets = {
 }
 
 local stocks = wibox.widget {
-    font = 'Hack Nerd Bold 16',
+    font = beautiful.font_bold(16),
     markup = 'Stocks',
     widget = wibox.widget.textbox
 }
 
 local symbol = wibox.widget {
     markup = 'NVDA',
-    font   = 'Hack Nerd Regular 10',
+    font   = beautiful.font_regular(10),
     align  = 'left',
     valign = 'center',
     widget = wibox.widget.textbox
 }
 
 local stock_price = wibox.widget {
-    font   = 'Hack Nerd Regular 10',
+    font   = beautiful.font_regular(10),
     align  = 'left',
     valign = 'center',
     widget = wibox.widget.textbox

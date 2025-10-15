@@ -111,7 +111,7 @@ end
 
 local cal = wibox.widget {
     date = os.date('*t'),
-    font = 'Hack Nerd Regular 14',
+    font = beautiful.font_regular(14),
     fn_embed = decorate_cell,
     long_weekdays = true,
     start_sunday = start_sunday,

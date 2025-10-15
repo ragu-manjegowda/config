@@ -44,14 +44,14 @@ local email_icon_widget = wibox.widget {
 
 local email_header = wibox.widget {
     text   = 'Email',
-    font   = 'Hack Nerd Bold 14',
+    font   = beautiful.font_bold(14),
     align  = 'left',
     valign = 'center',
     widget = wibox.widget.textbox
 }
 
 local email_from_text = wibox.widget {
-    font = 'Hack Nerd Regular 10',
+    font = beautiful.font_regular(10),
     markup = 'From:',
     align = 'left',
     valign = 'center',
@@ -60,7 +60,7 @@ local email_from_text = wibox.widget {
 
 
 local email_recent_from = wibox.widget {
-    font = 'Hack Nerd Regular 10',
+    font = beautiful.font_regular(10),
     markup = 'loading@stdout.sh',
     align = 'left',
     valign = 'center',
@@ -68,7 +68,7 @@ local email_recent_from = wibox.widget {
 }
 
 local email_subject_text = wibox.widget {
-    font = 'Hack Nerd Regular 10',
+    font = beautiful.font_regular(10),
     markup = 'Subject:',
     align = 'left',
     valign = 'center',
@@ -76,7 +76,7 @@ local email_subject_text = wibox.widget {
 }
 
 local email_recent_subject = wibox.widget {
-    font = 'Hack Nerd Regular 10',
+    font = beautiful.font_regular(10),
     markup = 'Loading data',
     align = 'left',
     valign = 'center',
@@ -84,7 +84,7 @@ local email_recent_subject = wibox.widget {
 }
 
 local email_date_text = wibox.widget {
-    font = 'Hack Nerd Regular 10',
+    font = beautiful.font_regular(10),
     markup = 'Local Date:',
     align = 'left',
     valign = 'center',
@@ -92,7 +92,7 @@ local email_date_text = wibox.widget {
 }
 
 local email_recent_date = wibox.widget {
-    font = 'Hack Nerd Regular 10',
+    font = beautiful.font_regular(10),
     markup = 'Loading date...',
     align = 'left',
     valign = 'center',

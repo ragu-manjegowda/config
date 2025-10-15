@@ -7,8 +7,6 @@ local theme = {}
 theme.icon_theme = 'Solarized-Dark-Green-Numix'
 
 theme.icons = theme_dir .. '/icons/'
-theme.font = 'Hack Nerd Regular 12'
-theme.font_bold = 'Hack Nerd Bold 12'
 
 theme.colors         = {}
 theme.colors.base3   = "#002b3666"
