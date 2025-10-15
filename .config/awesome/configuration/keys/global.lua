@@ -670,6 +670,28 @@ local global_keys = awful.util.table.join(
         { description = 'mute microphone', group = 'hotkeys' }
     ),
 
+    -- Custom key for programmable keyboard (ZMK)
+    awful.key(
+        {},
+        'F20',
+        function()
+            awful.spawn('wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle', false)
+            -- Show notification since OSD module was removed
+            awful.spawn.easy_async_with_shell(
+                'wpctl get-volume @DEFAULT_AUDIO_SOURCE@',
+                function(stdout)
+                    local muted = stdout:match('%[MUTED%]')
+                    local status = muted and '🔴 MUTED' or '🟢 UNMUTED'
+                    naughty.notification({
+                        title = 'Microphone',
+                        message = status
+                    })
+                end
+            )
+        end,
+        { description = 'toggle microphone (custom key)', group = 'hotkeys' }
+    ),
+
     awful.key(
         {},
         'XF86PowerOff',

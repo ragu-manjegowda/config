@@ -11,7 +11,7 @@ local hours           = wibox.widget.textclock("%I")
 local minutes         = wibox.widget.textclock("%M")
 
 local date            = {
-    font   = 'Hack Nerd Bold 18',
+    font   = beautiful.font_bold(18),
     align  = "center",
     valign = "center",
     widget = wibox.widget.textclock("%A %B %d"),
@@ -29,7 +29,7 @@ end
 
 local time            = {
     {
-        font   = 'Hack Nerd Bold 24',
+        font   = beautiful.font_bold(24),
         align  = "right",
         valign = "top",
         widget = hours,
@@ -46,7 +46,7 @@ local time            = {
         widget = wibox.layout.align.vertical,
     },
     {
-        font   = 'Hack Nerd Bold 24',
+        font   = beautiful.font_bold(24),
         align  = "left",
         valign = "top",
         widget = minutes,

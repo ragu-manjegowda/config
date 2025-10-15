@@ -76,7 +76,7 @@ local old_cursor, old_wibox
 local create_button = function(symbol, color, command, playpause)
     local icon = wibox.widget {
         markup = "<span foreground='" .. color .. "'>" .. symbol .. "</span>",
-        font = "Hack Nerd Font Mono 20",
+        font = beautiful.font_mono(20),
         align = "center",
         valigin = "center",
         widget = wibox.widget.textbox()
@@ -152,14 +152,14 @@ local artist_widget = wibox.widget {
 
 local current_time = wibox.widget {
     text = '00:00',
-    font = 'Hack Nerd Bold 12',
+    font = beautiful.font_bold(12),
     align = 'left',
     widget = wibox.widget.textbox
 }
 
 local end_time = wibox.widget {
     text = '00:00',
-    font = 'Hack Nerd Regular 12',
+    font = beautiful.font_regular(12),
     align = 'right',
     widget = wibox.widget.textbox
 }

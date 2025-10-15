@@ -51,7 +51,7 @@ local client_focused = nil
 local uname_text = wibox.widget {
     id = 'uname_text',
     markup = '$USER',
-    font = 'Hack Nerd Bold 18',
+    font = beautiful.font_bold(18),
     align = 'center',
     valign = 'center',
     widget = wibox.widget.textbox
@@ -60,7 +60,7 @@ local uname_text = wibox.widget {
 local caps_text = wibox.widget {
     id = 'uname_text',
     markup = 'Caps Lock is on',
-    font = 'Hack Nerd Italic 18',
+    font = beautiful.font_italic(18),
     align = 'center',
     valign = 'center',
     opacity = 0.0,
@@ -83,9 +83,9 @@ local profile_imagebox = wibox.widget {
     widget = wibox.widget.imagebox
 }
 
-local clock_format = '<span font="Hack Nerd Bold 26">%A %B %d, %H:%M</span>'
+local clock_format = string.format('<span font="%s">%%A %%B %%d, %%H:%%M</span>', beautiful.font_bold(26))
 if not locker_config.military_clock then
-    clock_format = '<span font="Hack Nerd Bold 26">%A %B %d, %I:%M %p</span>'
+    clock_format = string.format('<span font="%s">%%A %%B %%d, %%I:%%M %%p</span>', beautiful.font_bold(26))
 end
 
 -- Create clock widget
@@ -93,7 +93,7 @@ local time = wibox.widget.textclock(clock_format, 60)
 
 local wanted_text = wibox.widget {
     markup = 'INTRUDER ALERT!',
-    font   = 'Hack Nerd Bold 14',
+    font   = beautiful.font_bold(14),
     align  = 'center',
     valign = 'center',
     widget = wibox.widget.textbox
@@ -117,7 +117,7 @@ local msg_table = {
 
 local wanted_msg = wibox.widget {
     markup = 'This incident will be reported!',
-    font   = 'Hack Nerd Regular 12',
+    font   = beautiful.font_regular(12),
     align  = 'center',
     valign = 'center',
     widget = wibox.widget.textbox

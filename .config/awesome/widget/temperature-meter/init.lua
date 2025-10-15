@@ -8,7 +8,7 @@ local icons = require('theme.icons')
 
 local meter_name = wibox.widget {
     text = 'Temperature',
-    font = 'Hack Nerd Bold 10',
+    font = beautiful.font_bold(10),
     align = 'left',
     widget = wibox.widget.textbox
 }

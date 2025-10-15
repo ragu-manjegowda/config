@@ -7,12 +7,16 @@ local tag_list = require('widget.tag-list')
 local vseparator = require('widget.vseparator')
 
 local top_panel = function(s)
+    -- Use DPI-scaled panel height for consistency across resolutions
+    -- Base height of 46px scales with DPI (at 144 DPI = ~68px)
+    local panel_height = dpi(46)
+
     local panel = wibox
         {
             ontop = true,
             screen = s,
             type = 'desktop',
-            height = s.geometry.height / 26,
+            height = panel_height,
             width = s.geometry.width,
             x = s.geometry.x,
             y = s.geometry.y,
@@ -23,7 +27,7 @@ local top_panel = function(s)
 
     panel:struts
     {
-        top = s.geometry.height / 26
+        top = panel_height
     }
 
     panel:connect_signal(
@@ -36,11 +40,22 @@ local top_panel = function(s)
         end
     )
 
-    s.systray                 = wibox.widget {
-        base_size = s.geometry.width / 65,
+    -- Systray can only be shown on ONE screen at a time (X11 limitation)
+    -- Show on non-primary screen if available (external monitor), otherwise primary
+    local systray_screen = s
+    if screen.count() > 1 and s ~= screen.primary then
+        systray_screen = s  -- Show on external monitor
+    elseif screen.count() == 1 then
+        systray_screen = s  -- Show on the only screen available
+    else
+        systray_screen = nil  -- Don't show on laptop screen when external is connected
+    end
+
+    s.systray = wibox.widget {
+        base_size = dpi(24),  -- DPI-scaled icon size (24 @ 96 DPI, 36 @ 144 DPI)
         visible = true,
         horizontal = true,
-        screen = 'primary',
+        screen = systray_screen,
         widget = wibox.widget.systray
     }
 

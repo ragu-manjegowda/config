@@ -25,7 +25,7 @@ record_tbl.screen_rec_toggle_button = wibox.widget {
 
 record_tbl.screen_rec_countdown_txt = wibox.widget {
     id = 'countdown_text',
-    font = 'Hack Nerd Bold 64',
+    font = beautiful.font_bold(64),
     text = '4',
     align = 'center',
     valign = 'bottom',
@@ -176,7 +176,7 @@ record_tbl.screen_rec_back_button = wibox.widget {
 record_tbl.screen_rec_back_txt = wibox.widget {
     {
         text = 'Back',
-        font = 'Hack Nerd Bold 16',
+        font = beautiful.font_bold(16),
         align = 'left',
         valign = 'center',
         widget = wibox.widget.textbox
@@ -189,7 +189,7 @@ record_tbl.screen_rec_back_txt = wibox.widget {
 record_tbl.screen_rec_res_txt = wibox.widget {
     {
         text = 'Resolution',
-        font = 'Hack Nerd Bold 16',
+        font = beautiful.font_bold(16),
         align = 'left',
         valign = 'center',
         widget = wibox.widget.textbox
@@ -205,7 +205,7 @@ record_tbl.screen_rec_res_txtbox = wibox.widget {
             {
                 id = 'res_tbox',
                 markup = '<span foreground="#FFFFFF66">' .. '1366x768' .. "</span>",
-                font = 'Hack Nerd Bold 16',
+                font = beautiful.font_bold(16),
                 align = 'left',
                 valign = 'center',
                 widget = wibox.widget.textbox
@@ -227,7 +227,7 @@ record_tbl.screen_rec_res_txtbox = wibox.widget {
 record_tbl.screen_rec_offset_txt = wibox.widget {
     {
         text = 'Offset',
-        font = 'Hack Nerd Bold 16',
+        font = beautiful.font_bold(16),
         align = 'left',
         valign = 'center',
         widget = wibox.widget.textbox
@@ -242,7 +242,7 @@ record_tbl.screen_rec_offset_txtbox = wibox.widget {
             {
                 id = 'offset_tbox',
                 markup = '<span foreground="#FFFFFF66">' .. '0,0' .. "</span>",
-                font = 'Hack Nerd Bold 16',
+                font = beautiful.font_bold(16),
                 ellipsize = 'start',
                 align = 'left',
                 valign = 'center',

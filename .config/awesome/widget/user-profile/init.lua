@@ -76,7 +76,7 @@ local create_profile = function()
     )
 
     local profile_name = wibox.widget {
-        font = 'Hack Nerd Regular 12',
+        font = beautiful.font_regular(12),
         markup = 'User',
         align = 'left',
         valign = 'center',

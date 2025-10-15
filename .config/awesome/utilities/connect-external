@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+# Connect external monitor in extended mode
+# Detects if monitor is already connected
+
+echo "Checking for external monitor..."
+
+if xrandr | grep -q "^DP-4 connected"; then
+    echo "✓ External monitor detected"
+
+    # Set up extended display
+    /home/ragu/.config/awesome/utilities/setup-monitors
+
+    # Restart AwesomeWM to properly initialize new screen
+    echo ""
+    echo "Restarting AwesomeWM to initialize new screen..."
+    sleep 1
+    awesome-client "awesome.restart()"
+
+    echo "✓ Extended display configured"
+else
+    echo "✗ No external monitor detected on DP-4"
+    echo ""
+    echo "Available displays:"
+    xrandr | grep " connected"
+fi
+
