@@ -488,14 +488,8 @@ local global_keys = awful.util.table.join(
         { modkey },
         'w',
         function()
-            if screen.primary.systray then
-                if not screen.primary.tray_toggler then
-                    local systray = screen.primary.systray
-                    systray.visible = not systray.visible
-                else
-                    awesome.emit_signal('widget::systray:toggle')
-                end
-            end
+            -- Emit signal to toggle systray (works regardless of which screen has it)
+            awesome.emit_signal('widget::systray:toggle')
         end,
         { description = 'toggle systray visibility', group = 'Utility' }
     ),
