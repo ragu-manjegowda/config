@@ -4,10 +4,23 @@ local gears = require('gears')
 local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 
-local config = require('configuration.api_keys')
+-- Try to load API keys, handle missing file gracefully
+local config_ok, config = pcall(require, 'configuration.api_keys')
 local secrets = {
-    api_key = config.widget.stocks.api_key
+    api_key = config_ok and config.widget.stocks.api_key or nil
 }
+
+-- If api_keys is missing and we're not in CI, show a helpful message
+if not config_ok then
+    local home = os.getenv('HOME') or ''
+    -- Check if we're not in CI (GitHub Actions uses /github/home or /home/runner)
+    if not home:match('/github/') and not home:match('/runner/') and not home:match('^/root$') then
+        print('⚠ Warning: configuration/api_keys.lua not found')
+        print('  The stocks widget requires an API key to function.')
+        print('  Please create ~/.config/awesome/configuration/api_keys.lua')
+        print('  See api_keys.lua_encrypted for the expected format.')
+    end
+end
 
 local stocks = wibox.widget {
     font = beautiful.font_bold(16),
@@ -36,6 +49,12 @@ local stocks_to_fetch = {
 }
 
 local update_stocks = function()
+    -- Skip if API key is not available (missing api_keys.lua)
+    if not secrets.api_key then
+        stock_price:set_text('N/A (no API key)')
+        return
+    end
+    
     local fetch_stock_price_command = " "
 
     for _, stock in ipairs(stocks_to_fetch) do

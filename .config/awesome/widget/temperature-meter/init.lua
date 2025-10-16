@@ -95,8 +95,16 @@ awful.spawn.easy_async_with_shell(
             10,
             function(_, stdout_)
                 local temp = stdout_:match('(%d+)')
-                slider.temp_status:set_value((temp / 1000) / max_temp * 100)
-                temp_t = temp / 1000
+
+                -- Handle missing thermal sensor (CI environment)
+                if temp then
+                    slider.temp_status:set_value((temp / 1000) / max_temp * 100)
+                    temp_t = temp / 1000
+                else
+                    slider.temp_status:set_value(0)
+                    temp_t = 0
+                end
+
                 collectgarbage('collect')
             end
         )

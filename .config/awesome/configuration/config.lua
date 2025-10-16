@@ -167,7 +167,7 @@ return {
             -- Blur lockscreen background
             blur_background = false,
             -- Blurred/filtered background image path (No reason to change this)
-            tmp_wall_dir = '/tmp/awesomewm/' .. os.getenv('USER') .. '/'
+            tmp_wall_dir = '/tmp/awesomewm/' .. (os.getenv('USER') or 'unknown') .. '/'
         }
     }
 }

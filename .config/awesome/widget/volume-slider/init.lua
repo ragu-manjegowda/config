@@ -97,10 +97,15 @@ local update_slider = function()
                 -- Extracting the decimal value using pattern matching
                 local volume = string.match(stdout, "%d+%.%d+")
 
-                -- Convert slider value from percentage to absolute value
-                local slider_value = tonumber(volume * 100)
+                -- Handle missing audio service (CI environment)
+                if volume then
+                    -- Convert slider value from percentage to absolute value
+                    local slider_value = tonumber(volume * 100)
+                    volume_slider:set_value(slider_value)
+                else
+                    volume_slider:set_value(0)
+                end
 
-                volume_slider:set_value(slider_value)
                 volume_icon:set_image(icons.volume)
             else
                 volume_icon:set_image(icons.volume_muted)

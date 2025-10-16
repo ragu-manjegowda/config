@@ -107,6 +107,12 @@ local update_slider = function()
         function(stdout)
             local kbd_brightness = string.match(stdout, '(%d+)')
 
+            -- Handle missing hardware (CI environment)
+            if not kbd_brightness then
+                kbd_brightness_slider:set_value(0)
+                return
+            end
+
             if string.find(kbd_brightness_path, "smc") then
                 kbd_brightness_slider:set_value((tonumber(kbd_brightness) / 255) * 100)
             elseif string.find(kbd_brightness_path, "tpacpi") or

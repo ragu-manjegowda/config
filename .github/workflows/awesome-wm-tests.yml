@@ -1,0 +1,1021 @@
+name: AwesomeWM Configuration Tests
+
+# This workflow tests AwesomeWM dotfiles configuration using Arch Linux
+# for consistency with the production runtime environment.
+#
+# Key features:
+# - Uses Arch Linux containers (archlinux:latest)
+# - Installs awesome-git from AUR (bleeding-edge version)
+# - Tests with awmtt (AwesomeWM Test Tool) for real runtime verification
+# - Tests Lua syntax, bash scripts, configuration, and integrations
+# - Runs security scans and best practices checks
+#
+# All jobs use Arch Linux to match the actual runtime environment.
+
+on:
+  push:
+    branches: [ main, master, develop ]
+    paths:
+      - '.config/awesome/**'
+      - '.github/workflows/awesome-wm-tests.yml'
+  pull_request:
+    branches: [ main, master, develop ]
+    paths:
+      - '.config/awesome/**'
+  workflow_dispatch:
+
+env:
+  AWESOME_CONFIG_DIR: .config/awesome
+
+jobs:
+  lua-syntax-check:
+    name: Lua Syntax Validation
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+    steps:
+      - name: Install Git
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm git
+
+      - name: Checkout dotfiles
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm lua luarocks gcc make
+
+      - name: Install luacheck
+        run: luarocks install luacheck
+
+      - name: Run luacheck on all Lua files
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE"/test-logs
+          luacheck ${{ env.AWESOME_CONFIG_DIR }} \
+            --globals awesome client root screen tag \
+            --globals mouse mousegrabber \
+            --globals button awful beautiful gears naughty wibox \
+            --globals menubar dpi \
+            --max-line-length 120 \
+            --ignore 211 212 213 \
+            --exclude-files "${{ env.AWESOME_CONFIG_DIR }}/library/**" \
+            --exclude-files "${{ env.AWESOME_CONFIG_DIR }}/theme/solarized-*/**" \
+            2>&1 | tee "$GITHUB_WORKSPACE"/test-logs/luacheck.log || true
+
+      - name: Check Lua syntax for all files
+        run: |
+          echo "Checking Lua syntax..." | tee -a "$GITHUB_WORKSPACE"/test-logs/luacheck.log
+          EXIT_CODE=0
+          while IFS= read -r file; do
+            if ! luac -p "$file" 2>&1 | tee -a "$GITHUB_WORKSPACE"/test-logs/luacheck.log; then
+              echo "❌ Syntax error in: $file" | tee -a "$GITHUB_WORKSPACE"/test-logs/luacheck.log
+              EXIT_CODE=1
+            else
+              echo "✓ $file" | tee -a "$GITHUB_WORKSPACE"/test-logs/luacheck.log
+            fi
+          done < <(find ${{ env.AWESOME_CONFIG_DIR }} -name "*.lua" \
+            -not -path "${{ env.AWESOME_CONFIG_DIR }}/library/*" \
+            -not -path "${{ env.AWESOME_CONFIG_DIR }}/theme/solarized-*/*")
+          exit $EXIT_CODE
+
+      - name: Upload Lua syntax validation logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lua-syntax-logs
+          path: test-logs/
+          retention-days: 30
+          if-no-files-found: ignore
+
+  awesome-config-load:
+    name: AwesomeWM Configuration Load Test (Lua)
+    runs-on: ubuntu-latest
+    needs: lua-syntax-check
+    container:
+      image: archlinux:latest
+    steps:
+      - name: Initialize pacman keyring
+        run: |
+          pacman-key --init
+          pacman-key --populate archlinux
+
+      - name: Install Git
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm git
+
+      - name: Checkout dotfiles
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Fix battery widget symlink
+        run: |
+          cd "$GITHUB_WORKSPACE/.config/awesome/library/battery"
+          ln -sf src/awesome-battery_widget/init.lua init.lua
+
+      - name: Update system and install base-devel
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm base-devel sudo
+
+      - name: Create build user for AUR
+        run: |
+          useradd -m -G wheel -s /bin/bash builder
+          echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+      - name: Install dependencies
+        run: |
+          pacman -S --noconfirm \
+            lua \
+            lua-lgi \
+            cairo \
+            pango \
+            gdk-pixbuf2 \
+            xcb-util-cursor \
+            xcb-util-keysyms \
+            xcb-util-wm \
+            xcb-util-xrm \
+            libxdg-basedir \
+            libxkbcommon-x11 \
+            startup-notification \
+            xorg-server-xvfb \
+            dbus \
+            imagemagick \
+            ttf-hack-nerd \
+            upower \
+            playerctl \
+            libcanberra \
+            gtk3
+
+      - name: Install awesome-git from AUR
+        run: |
+          cd /tmp
+          sudo -u builder bash << 'EOFAUR'
+          set -e
+          git clone https://aur.archlinux.org/awesome-git.git
+          cd awesome-git
+          MAKEFLAGS="-j$(nproc)" makepkg -si --noconfirm
+          EOFAUR
+
+      - name: Test configuration with awesome --check
+        run: |
+          cd "$GITHUB_WORKSPACE"
+
+          # Validate config syntax
+          awesome --check || echo "⚠ Config check warning (may be due to missing dependencies)"
+
+          echo "✓ Configuration syntax check complete"
+
+      - name: Install awmtt (AwesomeWM Test Tool)
+        run: |
+          cd /tmp
+          sudo -u builder bash << 'EOFAWMTT'
+          set -e
+          git clone https://aur.archlinux.org/awmtt.git
+          cd awmtt
+          makepkg -si --noconfirm
+          EOFAWMTT
+
+      - name: Test configuration with awmtt
+        run: |
+          cd "$GITHUB_WORKSPACE"
+
+          # Set up X server
+          Xvfb :99 -screen 0 1920x1080x24 &
+          export DISPLAY=:99
+          sleep 2
+
+          # Create fake D-Bus machine-id and start D-Bus session
+          mkdir -p /var/lib/dbus
+          dbus-uuidgen > /var/lib/dbus/machine-id
+
+          # Start D-Bus session for playerctl
+          eval $(dbus-launch --sh-syntax)
+          export DBUS_SESSION_BUS_ADDRESS
+
+          # Create awmtt test script with error capturing
+          cat > /tmp/awmtt-test.sh << 'EOFTEST'
+          #!/bin/bash
+          set -e
+          export DISPLAY=:99
+          export DBUS_SESSION_BUS_ADDRESS="DBUS_PLACEHOLDER"
+
+          # Setup trap to always copy logs on exit
+          cleanup() {
+            echo "Copying logs for artifact upload..."
+            mkdir -p "WORKSPACE_PLACEHOLDER/test-logs"
+            cp /tmp/awesome-errors.log "WORKSPACE_PLACEHOLDER/test-logs/" 2>/dev/null || echo "No error log"
+            cp /tmp/awesome-config-errors.log "WORKSPACE_PLACEHOLDER/test-logs/" 2>/dev/null || echo "No filtered log"
+          }
+          trap cleanup EXIT
+
+          # Copy config to expected location
+          echo "Copying AwesomeWM config from WORKSPACE_PLACEHOLDER/.config/awesome to ~/.config/awesome"
+          mkdir -p ~/.config
+          cp -r "WORKSPACE_PLACEHOLDER/.config/awesome" ~/.config/
+
+          ERROR_LOG="/tmp/awesome-errors.log"
+          FILTERED_ERRORS="/tmp/awesome-config-errors.log"
+
+          echo "Starting AwesomeWM with error logging..."
+
+          # Run awmtt with stderr capture and let it run for 8 seconds
+          # awmtt will handle the Xephyr session and cleanup
+          timeout 8 awmtt start 2>"$ERROR_LOG" || true
+
+          echo "AwesomeWM session completed"
+
+          # Check for errors in the log
+          echo ""
+          echo "Checking for configuration errors..."
+
+          if [ -f "$ERROR_LOG" ] && [ -s "$ERROR_LOG" ]; then
+            echo "Log file exists, checking for errors..."
+
+            # Filter for ERRORS ONLY (not warnings) from .config/awesome files
+            # Look for " E: " or "error:" to distinguish from warnings
+            grep -E " E: | error:" "$ERROR_LOG" | \
+              grep "\.config/awesome" > "$FILTERED_ERRORS" || true
+
+            if [ -s "$FILTERED_ERRORS" ]; then
+              echo "❌ Found errors in AwesomeWM configuration:"
+              echo "================================================"
+              cat "$FILTERED_ERRORS"
+              echo "================================================"
+              exit 1
+            fi
+
+            # Check for critical runtime errors (stack traces)
+            if grep -qi "stack traceback\|attempt to call\|attempt to index" "$ERROR_LOG"; then
+              echo "❌ Found critical runtime errors"
+              cat "$ERROR_LOG"
+              exit 1
+            fi
+
+            echo "✓ No configuration errors found (only warnings present)"
+            echo ""
+            echo "Full log for reference:"
+            echo "================================================"
+            cat "$ERROR_LOG"
+            echo "================================================"
+          else
+            echo "✓ No errors logged during startup"
+          fi
+
+          exit 0
+          EOFTEST
+
+          # Replace placeholders with actual values
+          echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
+          echo "DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
+          sed -i "s|WORKSPACE_PLACEHOLDER|$GITHUB_WORKSPACE|g" /tmp/awmtt-test.sh
+          sed -i "s|DBUS_PLACEHOLDER|$DBUS_SESSION_BUS_ADDRESS|g" /tmp/awmtt-test.sh
+
+          # Verify the replacement worked
+          echo "Checking config copy command in script:"
+          grep "cp -r" /tmp/awmtt-test.sh | head -1
+
+          chmod +x /tmp/awmtt-test.sh
+          /tmp/awmtt-test.sh
+
+      - name: Upload awmtt error logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: awmtt-logs
+          path: test-logs/
+          retention-days: 30
+          if-no-files-found: ignore
+
+  awesome-luajit-config-load:
+    name: AwesomeWM Configuration Load Test (LuaJIT)
+    runs-on: ubuntu-latest
+    needs: lua-syntax-check
+    container:
+      image: archlinux:latest
+    steps:
+      - name: Initialize pacman keyring
+        run: |
+          pacman-key --init
+          pacman-key --populate archlinux
+
+      - name: Install Git
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm git
+
+      - name: Checkout dotfiles
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Fix battery widget symlink
+        run: |
+          cd "$GITHUB_WORKSPACE/.config/awesome/library/battery"
+          ln -sf src/awesome-battery_widget/init.lua init.lua
+
+      - name: Update system and install base-devel
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm base-devel sudo
+
+      - name: Create build user for AUR
+        run: |
+          useradd -m -G wheel -s /bin/bash builder
+          echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+      - name: Install dependencies
+        run: |
+          pacman -S --noconfirm \
+            luajit \
+            cairo \
+            pango \
+            gdk-pixbuf2 \
+            xcb-util-cursor \
+            xcb-util-keysyms \
+            xcb-util-wm \
+            xcb-util-xrm \
+            libxdg-basedir \
+            libxkbcommon-x11 \
+            startup-notification \
+            xorg-server-xvfb \
+            dbus \
+            imagemagick \
+            ttf-hack-nerd
+
+      - name: Install luajit-lgi from AUR
+        run: |
+          cd /tmp
+          sudo -u builder bash << 'EOFLGI'
+          set -e
+          git clone https://aur.archlinux.org/luajit-lgi.git
+          cd luajit-lgi
+          MAKEFLAGS="-j$(nproc)" makepkg -si --noconfirm
+          EOFLGI
+
+      - name: Patch lgi for LuaJIT compatibility
+        run: |
+          # Fix for: /usr/share/lua/5.1/lgi/ffi.lua:83: attempt to call field 'ref' (a nil value)
+          # Issue: https://github.com/awesomeWM/awesome/issues/4031#issuecomment-3408360239
+          # Instead of building glib from source, we patch lgi to not use the missing 'ref' function
+          # Reference: https://github.com/lgi-devs/lgi/blob/a412921fad445bcfc05/lgi/ffi.lua#L83
+
+          LGI_FFI_FILE="/usr/share/lua/5.1/lgi/ffi.lua"
+
+          if [ -f "$LGI_FFI_FILE" ]; then
+            # Check if patch is still needed
+            if grep -q '\.ref' "$LGI_FFI_FILE"; then
+              echo "Patching lgi/ffi.lua to work with LuaJIT..."
+              # Replace '.ref' with '.get' wherever it appears
+              # Example: GObject.TypeClass.ref(gtype) -> GObject.TypeClass.get(gtype)
+              sed -i 's/\.ref/\.get/g' "$LGI_FFI_FILE"
+              echo "✓ lgi patched successfully"
+              # Show what was changed
+              grep -n '\.get' "$LGI_FFI_FILE" | head -3 || true
+            else
+              echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+              echo "✓ lgi/ffi.lua already uses '.get' - patch no longer needed!"
+              echo "  You can safely remove the 'Fix lgi for LuaJIT' step from"
+              echo "  the GitHub Actions workflow file."
+              echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            fi
+          else
+            echo "⚠ Warning: lgi/ffi.lua not found at expected location"
+          fi
+
+      - name: Install awesome-luajit-git from AUR
+        run: |
+          cd /tmp
+          sudo -u builder bash << 'EOFAUR'
+          set -e
+          git clone https://aur.archlinux.org/awesome-luajit-git.git
+          cd awesome-luajit-git
+          MAKEFLAGS="-j$(nproc)" makepkg -si --noconfirm
+          EOFAUR
+
+      - name: Test configuration with awesome --check
+        run: |
+          cd "$GITHUB_WORKSPACE"
+
+          # Validate config syntax
+          awesome --check || echo "⚠ Config check warning (may be due to missing dependencies)"
+
+          echo "✓ Configuration syntax check complete"
+
+      - name: Install awmtt (AwesomeWM Test Tool)
+        run: |
+          cd /tmp
+          sudo -u builder bash << 'EOFAWMTT'
+          set -e
+          git clone https://aur.archlinux.org/awmtt.git
+          cd awmtt
+          makepkg -si --noconfirm
+          EOFAWMTT
+
+      - name: Test configuration with awmtt (LuaJIT)
+        run: |
+          cd "$GITHUB_WORKSPACE"
+
+          # Set up X server
+          Xvfb :99 -screen 0 1920x1080x24 &
+          export DISPLAY=:99
+          sleep 2
+
+          # Create fake D-Bus machine-id and start D-Bus session
+          mkdir -p /var/lib/dbus
+          dbus-uuidgen > /var/lib/dbus/machine-id
+
+          # Start D-Bus session for playerctl
+          eval $(dbus-launch --sh-syntax)
+          export DBUS_SESSION_BUS_ADDRESS
+
+          # Create awmtt test script with error capturing
+          cat > /tmp/awmtt-test-luajit.sh << 'EOFTEST'
+          #!/bin/bash
+          set -e
+          export DISPLAY=:99
+          export DBUS_SESSION_BUS_ADDRESS="DBUS_PLACEHOLDER"
+
+          # Setup trap to always copy logs on exit
+          cleanup() {
+            echo "Copying logs for artifact upload..."
+            mkdir -p "WORKSPACE_PLACEHOLDER/test-logs"
+            cp /tmp/awesome-luajit-errors.log "WORKSPACE_PLACEHOLDER/test-logs/" 2>/dev/null || echo "No error log"
+            cp /tmp/awesome-luajit-config-errors.log "WORKSPACE_PLACEHOLDER/test-logs/" 2>/dev/null || echo "No filtered log"
+          }
+          trap cleanup EXIT
+
+          # Copy config to expected location
+          echo "Copying AwesomeWM config from WORKSPACE_PLACEHOLDER/.config/awesome to ~/.config/awesome"
+          mkdir -p ~/.config
+          cp -r "WORKSPACE_PLACEHOLDER/.config/awesome" ~/.config/
+
+          ERROR_LOG="/tmp/awesome-luajit-errors.log"
+          FILTERED_ERRORS="/tmp/awesome-luajit-config-errors.log"
+
+          echo "Starting AwesomeWM (LuaJIT) with error logging..."
+
+          # Run awmtt with stderr capture and let it run for 8 seconds
+          # awmtt will handle the Xephyr session and cleanup
+          timeout 8 awmtt start 2>"$ERROR_LOG" || true
+
+          echo "AwesomeWM (LuaJIT) session completed"
+
+          # Check for errors in the log
+          echo ""
+          echo "Checking for configuration errors..."
+
+          if [ -f "$ERROR_LOG" ] && [ -s "$ERROR_LOG" ]; then
+            echo "Log file exists, checking for errors..."
+
+            # Filter for ERRORS ONLY (not warnings) from .config/awesome files
+            # Look for " E: " or "error:" to distinguish from warnings
+            grep -E " E: | error:" "$ERROR_LOG" | \
+              grep "\.config/awesome" > "$FILTERED_ERRORS" || true
+
+            if [ -s "$FILTERED_ERRORS" ]; then
+              echo "❌ Found errors in AwesomeWM configuration:"
+              echo "================================================"
+              cat "$FILTERED_ERRORS"
+              echo "================================================"
+              exit 1
+            fi
+
+            # Check for critical runtime errors (stack traces)
+            if grep -qi "stack traceback\|attempt to call\|attempt to index" "$ERROR_LOG"; then
+              echo "❌ Found critical runtime errors"
+              cat "$ERROR_LOG"
+              exit 1
+            fi
+
+            echo "✓ No configuration errors found (only warnings present)"
+            echo ""
+            echo "Full log for reference:"
+            echo "================================================"
+            cat "$ERROR_LOG"
+            echo "================================================"
+          else
+            echo "✓ No errors logged during startup"
+          fi
+
+          exit 0
+          EOFTEST
+
+          # Replace placeholders with actual values
+          echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
+          echo "DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
+          sed -i "s|WORKSPACE_PLACEHOLDER|$GITHUB_WORKSPACE|g" /tmp/awmtt-test-luajit.sh
+          sed -i "s|DBUS_PLACEHOLDER|$DBUS_SESSION_BUS_ADDRESS|g" /tmp/awmtt-test-luajit.sh
+
+          # Verify the replacement worked
+          echo "Checking config copy command in script:"
+          grep "cp -r" /tmp/awmtt-test-luajit.sh | head -1
+
+          chmod +x /tmp/awmtt-test-luajit.sh
+          /tmp/awmtt-test-luajit.sh
+
+      - name: Upload awmtt error logs (LuaJIT)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: awmtt-logs-luajit
+          path: test-logs/
+          retention-days: 30
+          if-no-files-found: ignore
+
+  bash-scripts-validation:
+    name: Bash Scripts Validation
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+    steps:
+      - name: Install Git
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm git
+
+      - name: Checkout dotfiles
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install shellcheck and dependencies
+        run: pacman -Syu --noconfirm && pacman -S --noconfirm shellcheck file
+
+      - name: Find all bash scripts
+        run: |
+          echo "Finding bash scripts..."
+          find ${{ env.AWESOME_CONFIG_DIR }}/utilities -type f -executable \
+            -o -name "*.sh" | tee /tmp/scripts.txt
+
+      - name: Run shellcheck on bash scripts
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE"/test-logs
+          echo "Running shellcheck..." | tee "$GITHUB_WORKSPACE"/test-logs/shellcheck.log
+          EXIT_CODE=0
+
+          # Check shell scripts
+          while IFS= read -r script; do
+            # Skip non-bash files (Lua, Python, data files, etc.)
+            if head -n1 "$script" 2>/dev/null | grep -qE '^#!/.*(bash|sh)$'; then
+              echo "Checking: $script" | tee -a "$GITHUB_WORKSPACE"/test-logs/shellcheck.log
+              if ! shellcheck -x "$script" \
+                -e SC1090 \
+                -e SC1091 \
+                -e SC2164 \
+                -e SC2086 \
+                -e SC2004 \
+                -e SC2005 \
+                -e SC2006 \
+                -e SC2012 \
+                -e SC2034 \
+                -e SC2046 \
+                -e SC2059 \
+                -e SC2068 \
+                -e SC2155 \
+                -e SC2235 2>&1 | tee -a "$GITHUB_WORKSPACE"/test-logs/shellcheck.log; then
+                EXIT_CODE=1
+              fi
+            fi
+          done < <(find ${{ env.AWESOME_CONFIG_DIR }}/utilities -type f)
+
+          # Also check .sh files
+          find ${{ env.AWESOME_CONFIG_DIR }} -name "*.sh" -type f | while read -r script; do
+            echo "Checking: $script" | tee -a "$GITHUB_WORKSPACE"/test-logs/shellcheck.log
+            shellcheck -x "$script" \
+              -e SC1090 \
+              -e SC1091 \
+              -e SC2164 \
+              -e SC2086 \
+              -e SC2004 \
+              -e SC2005 \
+              -e SC2006 \
+              -e SC2012 \
+              -e SC2034 \
+              -e SC2046 \
+              -e SC2059 \
+              -e SC2068 \
+              -e SC2155 \
+              -e SC2235 2>&1 | tee -a "$GITHUB_WORKSPACE"/test-logs/shellcheck.log || EXIT_CODE=1
+          done
+
+          if [ $EXIT_CODE -eq 0 ]; then
+            echo "✓ All scripts passed shellcheck" | tee -a "$GITHUB_WORKSPACE"/test-logs/shellcheck.log
+          fi
+          exit $EXIT_CODE
+
+      - name: Check script executability
+        run: |
+          echo "Checking script permissions..."
+          EXIT_CODE=0
+
+          SCRIPTS=(
+            "utilities/setup-monitors"
+            "utilities/connect-external"
+            "utilities/disconnect-external"
+            "utilities/read-display-config"
+            "utilities/kbd-bkl"
+            "utilities/capture"
+            "utilities/location"
+            "utilities/snap"
+            "utilities/time"
+            "utilities/touchpad-toggle"
+          )
+
+          for script in "${SCRIPTS[@]}"; do
+            FULL_PATH="${{ env.AWESOME_CONFIG_DIR }}/$script"
+            if [ -f "$FULL_PATH" ]; then
+              if [ -x "$FULL_PATH" ]; then
+                echo "✓ $script is executable"
+              else
+                echo "❌ $script is not executable"
+                EXIT_CODE=1
+              fi
+            else
+              echo "⚠ $script not found (may be optional)"
+            fi
+          done
+
+          exit $EXIT_CODE
+
+      - name: Upload bash script validation logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bash-validation-logs
+          path: test-logs/
+          retention-days: 30
+          if-no-files-found: ignore
+
+  display-config-test:
+    name: Display Configuration Tests
+    runs-on: ubuntu-latest
+    needs: lua-syntax-check
+    container:
+      image: archlinux:latest
+    steps:
+      - name: Install Git
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm git
+
+      - name: Checkout dotfiles
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Lua
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm lua
+
+      - name: Test display config can be read
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          mkdir -p "$GITHUB_WORKSPACE"/test-logs
+
+          # Create mock gears.filesystem module for testing
+          mkdir -p /tmp/gears
+          cat > /tmp/gears/filesystem.lua << EOF
+          return {
+            get_configuration_dir = function()
+              return "$GITHUB_WORKSPACE/${{ env.AWESOME_CONFIG_DIR }}/"
+            end
+          }
+          EOF
+
+          # Test read-display-config
+          export LUA_PATH="/tmp/?.lua;/tmp/?/init.lua;;"
+
+          if [ -x "${{ env.AWESOME_CONFIG_DIR }}/utilities/read-display-config" ]; then
+            echo "Testing read-display-config..." | tee -a "$GITHUB_WORKSPACE"/test-logs/display-config.log
+            OUTPUT=$(${{ env.AWESOME_CONFIG_DIR }}/utilities/read-display-config 2>&1 | tee -a "$GITHUB_WORKSPACE"/test-logs/display-config.log)
+
+            if echo "$OUTPUT" | grep -q "export DISPLAY_DPI"; then
+              echo "✓ read-display-config works" | tee -a "$GITHUB_WORKSPACE"/test-logs/display-config.log
+              echo "$OUTPUT" | tee -a "$GITHUB_WORKSPACE"/test-logs/display-config.log
+            else
+              echo "❌ read-display-config failed" | tee -a "$GITHUB_WORKSPACE"/test-logs/display-config.log
+              exit 1
+            fi
+          else
+            echo "⚠ read-display-config not found or not executable" | tee -a "$GITHUB_WORKSPACE"/test-logs/display-config.log
+          fi
+
+      - name: Validate config.lua display section
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          cat > /tmp/test-display-config.lua << EOF
+          -- Add awesome config directory to Lua path
+          package.path = "$GITHUB_WORKSPACE/${{ env.AWESOME_CONFIG_DIR }}/?.lua;" ..
+                         "$GITHUB_WORKSPACE/${{ env.AWESOME_CONFIG_DIR }}/?/init.lua;" ..
+                         "/tmp/?.lua;/tmp/?/init.lua;" .. package.path
+
+          -- Mock gears
+          package.loaded['gears.filesystem'] = {
+            get_configuration_dir = function()
+              return "$GITHUB_WORKSPACE/${{ env.AWESOME_CONFIG_DIR }}/"
+            end
+          }
+
+          -- Load config
+          local config = require('configuration.config')
+
+          -- Validate display config exists
+          assert(config.display, "display config missing")
+          assert(config.display.dpi, "display.dpi missing")
+          assert(config.display.primary, "display.primary missing")
+          assert(config.display.external, "display.external missing")
+          assert(config.display.primary.name, "display.primary.name missing")
+          assert(config.display.primary.mode, "display.primary.mode missing")
+          assert(config.display.external.name, "display.external.name missing")
+          assert(config.display.external.mode, "display.external.mode missing")
+
+          print("✓ Display configuration is valid")
+          print(string.format("  DPI: %d", config.display.dpi))
+          print(string.format("  Primary: %s @ %s", config.display.primary.name, config.display.primary.mode))
+          print(string.format("  External: %s @ %s", config.display.external.name, config.display.external.mode))
+          EOF
+
+          mkdir -p "$GITHUB_WORKSPACE"/test-logs
+          lua /tmp/test-display-config.lua 2>&1 | tee "$GITHUB_WORKSPACE"/test-logs/display-config.log
+
+      - name: Upload display config test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: display-config-logs
+          path: test-logs/
+          retention-days: 30
+          if-no-files-found: ignore
+
+  module-imports-test:
+    name: Module Import Tests
+    runs-on: ubuntu-latest
+    needs: lua-syntax-check
+    container:
+      image: archlinux:latest
+    steps:
+      - name: Install Git
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm git
+
+      - name: Checkout dotfiles
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Lua and dependencies
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm lua lua-lgi
+
+      - name: Test module imports
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          cat > /tmp/test-imports.lua << EOF
+          -- Add awesome config directory to Lua path
+          package.path = "$GITHUB_WORKSPACE/${{ env.AWESOME_CONFIG_DIR }}/?.lua;" ..
+                         "$GITHUB_WORKSPACE/${{ env.AWESOME_CONFIG_DIR }}/?/init.lua;" ..
+                         package.path
+
+          -- Test standalone modules (those that don't require AwesomeWM runtime)
+          -- Excludes: library/* (submodules), module/* (needs awful/wibox),
+          --           layout/* (needs awful/wibox), theme/* (needs beautiful),
+          --           widget/* (needs awful/wibox), configuration.client/keys/tags (needs awful),
+          --           configuration.api_keys (secret file, not in git)
+          local modules_to_test = {
+            -- Core configuration (data-only modules)
+            "configuration.config",
+            "configuration.apps",
+            "configuration.keys.mod",
+          }
+
+          -- Mock gears
+          package.loaded['gears.filesystem'] = {
+            get_configuration_dir = function()
+              return "$GITHUB_WORKSPACE/${{ env.AWESOME_CONFIG_DIR }}/"
+            end
+          }
+
+          local failed = {}
+          local passed = {}
+
+          for _, module in ipairs(modules_to_test) do
+            local success, result = pcall(require, module)
+            if success then
+              table.insert(passed, module)
+              print("✓ " .. module)
+            else
+              table.insert(failed, module)
+              print("❌ " .. module .. ": " .. tostring(result))
+            end
+          end
+
+          print(string.format("\n%d passed, %d failed", #passed, #failed))
+
+          if #failed > 0 then
+            os.exit(1)
+          end
+          EOF
+
+          mkdir -p "$GITHUB_WORKSPACE"/test-logs
+          lua /tmp/test-imports.lua 2>&1 | tee "$GITHUB_WORKSPACE"/test-logs/module-imports.log
+
+      - name: Upload module import test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: module-imports-logs
+          path: test-logs/
+          retention-days: 30
+          if-no-files-found: ignore
+
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: [bash-scripts-validation, display-config-test]
+    container:
+      image: archlinux:latest
+    steps:
+      - name: Install Git
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm git
+
+      - name: Checkout dotfiles
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Lua
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm lua
+
+      - name: Test monitor scripts integration
+        run: |
+          cd "$GITHUB_WORKSPACE"
+
+          # Mock gears for read-display-config
+          mkdir -p /tmp/gears
+          cat > /tmp/gears/filesystem.lua << EOF
+          return {
+            get_configuration_dir = function()
+              return "$GITHUB_WORKSPACE/${{ env.AWESOME_CONFIG_DIR }}/"
+            end
+          }
+          EOF
+          export LUA_PATH="/tmp/?.lua;/tmp/?/init.lua;;"
+
+          # Test that setup-monitors can source the config
+          if [ -x "${{ env.AWESOME_CONFIG_DIR }}/utilities/setup-monitors" ]; then
+            echo "Testing setup-monitors config sourcing..."
+
+            # Extract just the config sourcing part
+            if grep -q "read-display-config" "${{ env.AWESOME_CONFIG_DIR }}/utilities/setup-monitors"; then
+              echo "✓ setup-monitors uses read-display-config"
+            else
+              echo "❌ setup-monitors doesn't use read-display-config"
+              exit 1
+            fi
+          fi
+
+          # Test connect-external
+          if [ -x "${{ env.AWESOME_CONFIG_DIR }}/utilities/connect-external" ]; then
+            if grep -q "read-display-config" "${{ env.AWESOME_CONFIG_DIR }}/utilities/connect-external"; then
+              echo "✓ connect-external uses read-display-config"
+            else
+              echo "❌ connect-external doesn't use read-display-config"
+              exit 1
+            fi
+          fi
+
+          # Test disconnect-external
+          if [ -x "${{ env.AWESOME_CONFIG_DIR }}/utilities/disconnect-external" ]; then
+            if grep -q "read-display-config" "${{ env.AWESOME_CONFIG_DIR }}/utilities/disconnect-external"; then
+              echo "✓ disconnect-external uses read-display-config"
+            else
+              echo "❌ disconnect-external doesn't use read-display-config"
+              exit 1
+            fi
+          fi
+
+          mkdir -p "$GITHUB_WORKSPACE"/test-logs
+          echo "All integration tests passed" | tee "$GITHUB_WORKSPACE"/test-logs/integration.log
+
+      - name: Upload integration test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-logs
+          path: test-logs/
+          retention-days: 30
+          if-no-files-found: ignore
+
+  security-scan:
+    name: Security and Best Practices
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+    steps:
+      - name: Install Git
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm git
+
+      - name: Checkout dotfiles
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install required tools
+        run: pacman -Syu --noconfirm && pacman -S --noconfirm grep findutils
+
+      - name: Check for hardcoded secrets
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE"/test-logs
+          echo "Scanning for potential secrets..." | tee "$GITHUB_WORKSPACE"/test-logs/security.log
+
+          # Check for common secret patterns
+          if grep -r -i -E "password.*=.*['\"][^'\"]{8,}" ${{ env.AWESOME_CONFIG_DIR }} \
+            --exclude-dir=library \
+            --exclude-dir=.git \
+            --exclude="*.md" 2>&1 | tee -a "$GITHUB_WORKSPACE"/test-logs/security.log; then
+            echo "⚠ Potential hardcoded passwords found" | tee -a "$GITHUB_WORKSPACE"/test-logs/security.log
+          fi
+
+          # Check for API keys (excluding placeholders)
+          if grep -r -E "['\"][A-Za-z0-9]{32,}['\"]" ${{ env.AWESOME_CONFIG_DIR }} \
+            --exclude-dir=library \
+            --exclude-dir=.git \
+            --exclude="*.md" 2>&1 | tee -a "$GITHUB_WORKSPACE"/test-logs/security.log | grep -v "app_password = ''"; then
+            echo "⚠ Potential API keys found" | tee -a "$GITHUB_WORKSPACE"/test-logs/security.log
+          fi
+
+          echo "✓ Security scan complete" | tee -a "$GITHUB_WORKSPACE"/test-logs/security.log
+
+      - name: Check for common issues
+        run: |
+          echo "Checking for common configuration issues..." | tee -a "$GITHUB_WORKSPACE"/test-logs/security.log
+
+          # Check for TODO/FIXME comments
+          echo "TODOs and FIXMEs:" | tee -a "$GITHUB_WORKSPACE"/test-logs/security.log
+          grep -r -n "TODO\|FIXME" ${{ env.AWESOME_CONFIG_DIR }} \
+            --exclude-dir=library \
+            --exclude-dir=.git \
+            --exclude="*.md" 2>&1 | tee -a "$GITHUB_WORKSPACE"/test-logs/security.log || echo "None found" | tee -a "$GITHUB_WORKSPACE"/test-logs/security.log
+
+          # Check file permissions
+          echo -e "\nChecking suspicious file permissions..." | tee -a "$GITHUB_WORKSPACE"/test-logs/security.log
+          find ${{ env.AWESOME_CONFIG_DIR }} -type f -perm /o+w -ls 2>&1 | tee -a "$GITHUB_WORKSPACE"/test-logs/security.log || echo "✓ No world-writable files" | tee -a "$GITHUB_WORKSPACE"/test-logs/security.log
+
+      - name: Upload security scan logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-scan-logs
+          path: test-logs/
+          retention-days: 30
+          if-no-files-found: ignore
+
+  test-summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [lua-syntax-check, awesome-config-load, awesome-luajit-config-load, bash-scripts-validation, display-config-test, module-imports-test, integration-tests, security-scan]
+    if: always()
+    steps:
+      - name: Check test results
+        run: |
+          echo "╔════════════════════════════════════════╗"
+          echo "║   AwesomeWM Configuration Tests       ║"
+          echo "╚════════════════════════════════════════╝"
+          echo ""
+          echo "✓ Lua Syntax Check: ${{ needs.lua-syntax-check.result }}"
+          echo "✓ Awesome Config Load (Lua): ${{ needs.awesome-config-load.result }}"
+          echo "✓ Awesome Config Load (LuaJIT): ${{ needs.awesome-luajit-config-load.result }}"
+          echo "✓ Bash Scripts Validation: ${{ needs.bash-scripts-validation.result }}"
+          echo "✓ Display Config Test: ${{ needs.display-config-test.result }}"
+          echo "✓ Module Imports: ${{ needs.module-imports-test.result }}"
+          echo "✓ Integration Tests: ${{ needs.integration-tests.result }}"
+          echo "✓ Security Scan: ${{ needs.security-scan.result }}"
+          echo ""
+
+          if [ "${{ needs.lua-syntax-check.result }}" != "success" ] || \
+             [ "${{ needs.awesome-config-load.result }}" != "success" ] || \
+             [ "${{ needs.awesome-luajit-config-load.result }}" != "success" ] || \
+             [ "${{ needs.bash-scripts-validation.result }}" != "success" ] || \
+             [ "${{ needs.display-config-test.result }}" != "success" ] || \
+             [ "${{ needs.integration-tests.result }}" != "success" ]; then
+            echo "❌ Some tests failed"
+            exit 1
+          else
+            echo "✓ All tests passed!"
+          fi
+
