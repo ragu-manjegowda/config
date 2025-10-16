@@ -2,31 +2,36 @@
 
 # Extended display with scaled external monitor to match laptop height
 # This makes cursor movement smooth across displays
+# Configuration is read from config.lua via read-display-config
 
-# Set DPI based on primary display
-xrandr --dpi 192
+# Source the configuration from config.lua
+source <("$HOME/.config/awesome/utilities/read-display-config")
+
+# Set DPI based on configuration
+xrandr --dpi "$DISPLAY_DPI"
 
 # Set laptop display (primary)
-xrandr --output eDP-1 --primary --mode 3840x2400 --pos 0x0
+xrandr --output "$PRIMARY_NAME" --primary --mode "$PRIMARY_MODE" --pos "$PRIMARY_POS"
 
-# Check if DP-3 is connected
-if xrandr | grep -q "^DP-4 connected"; then
-    # Scale external monitor to match laptop dimensions using --scale-from
-    # This automatically calculates the scale factor:
-    #   Width: 3840/3440 = 1.116x
-    #   Height: 2400/1440 = 1.667x
-    # No manual calculation needed!
+# Check if external monitor is connected
+if xrandr | grep -q "^${EXTERNAL_NAME} connected"; then
+    # Build external monitor command
+    EXTERNAL_CMD="xrandr --output $EXTERNAL_NAME --mode $EXTERNAL_MODE --pos $EXTERNAL_POS"
 
-    xrandr --output DP-4 --mode 3440x1440 --scale-from 3840x2400 --pos 3840x0
+    # Add scaling if configured
+    if [ -n "$EXTERNAL_SCALE_FROM" ]; then
+        EXTERNAL_CMD="$EXTERNAL_CMD --scale-from $EXTERNAL_SCALE_FROM"
+    fi
 
-    echo "✓ Extended display with scaling:"
-    echo "  - Laptop (eDP-1): 3840x2400 @ 0x0 (native)"
-    echo "  - External (DP-4): 3440x1440 scaled from 3840x2400"
-    echo "  - Total desktop: 7280x2400 pixels (both displays same effective size)"
-    echo "  - Heights aligned perfectly for smooth cursor movement"
-    echo ""
-    echo "Note: External display will be slightly less sharp due to scaling"
+    # Apply external monitor settings
+    eval "$EXTERNAL_CMD"
+
+    echo "✓ Extended display configured:"
+    echo "  - Primary ($PRIMARY_NAME): $PRIMARY_MODE @ $PRIMARY_POS"
+    echo "  - External ($EXTERNAL_NAME): $EXTERNAL_MODE @ $EXTERNAL_POS"
+    [ -n "$EXTERNAL_SCALE_FROM" ] && echo "  - Scaling: from $EXTERNAL_SCALE_FROM"
+    echo "  - DPI: $DISPLAY_DPI"
 else
-    echo "DP-4 not connected, using laptop display only"
+    echo "$EXTERNAL_NAME not connected, using $PRIMARY_NAME only"
 fi
 

@@ -1,0 +1,34 @@
+#!/usr/bin/env lua
+
+-- Helper script to read display configuration from config.lua
+-- This allows bash scripts to source AwesomeWM configuration
+-- Usage: source <(utilities/read-display-config)
+
+local awful_config_dir = os.getenv("HOME") .. "/.config/awesome"
+
+-- Set up Lua path to find AwesomeWM modules
+package.path = awful_config_dir .. "/?.lua;" ..
+               awful_config_dir .. "/?/init.lua;" ..
+               package.path
+
+-- Mock gears.filesystem for standalone use
+package.loaded['gears.filesystem'] = {
+    get_configuration_dir = function()
+        return awful_config_dir .. "/"
+    end
+}
+
+-- Load the configuration
+local config = require('configuration.config')
+local d = config.display
+
+-- Output bash-compatible variable assignments
+print(string.format('export DISPLAY_DPI=%d', d.dpi))
+print(string.format('export PRIMARY_NAME="%s"', d.primary.name))
+print(string.format('export PRIMARY_MODE="%s"', d.primary.mode))
+print(string.format('export PRIMARY_POS="%s"', d.primary.position))
+print(string.format('export EXTERNAL_NAME="%s"', d.external.name))
+print(string.format('export EXTERNAL_MODE="%s"', d.external.mode))
+print(string.format('export EXTERNAL_POS="%s"', d.external.position))
+print(string.format('export EXTERNAL_SCALE_FROM="%s"', d.external.scale_from or ''))
+
