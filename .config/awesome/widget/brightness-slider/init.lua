@@ -89,7 +89,13 @@ local update_slider = function()
         'light -G',
         function(stdout)
             local brightness = string.match(stdout, '(%d+)')
-            brightness_slider:set_value(tonumber(brightness))
+
+            -- Handle missing backlight device (CI environment)
+            if brightness then
+                brightness_slider:set_value(tonumber(brightness))
+            else
+                brightness_slider:set_value(0)
+            end
         end
     )
 end

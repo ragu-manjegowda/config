@@ -37,7 +37,7 @@ local locker_config = {
     -- bg_image = config.module.lockscreen.bg_image or 'morning-wallpaper.jpg',
     -- /tmp directory
     tmp_wall_dir = config.module.lockscreen.tmp_wall_dir or
-        ('/tmp/awesomewm/' .. os.getenv('USER') .. '/')
+        ('/tmp/awesomewm/' .. (os.getenv('USER') or 'unknown') .. '/')
 }
 
 -- Useful variables (DO NOT TOUCH THESE)
@@ -331,7 +331,7 @@ local locker = function(s)
         ]] .. config.module.lockscreen.capture_script ..
             " " .. config.module.lockscreen.camera_device .. [[ "${file_loc}"
 
-        canberra-gtk-play -i camera-shutter &
+        canberra-gtk-play -i camera-shutter 2>/dev/null &
         echo "${file_loc}"
         ]]
 

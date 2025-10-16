@@ -4,7 +4,27 @@
 -- This allows bash scripts to source AwesomeWM configuration
 -- Usage: source <(utilities/read-display-config)
 
-local awful_config_dir = os.getenv("HOME") .. "/.config/awesome"
+-- Determine the AwesomeWM config directory
+-- In CI: use the script's actual location
+-- Locally: use $HOME/.config/awesome
+local function get_script_dir()
+    local str = debug.getinfo(1, "S").source:sub(2)
+    return str:match("(.*/)")
+end
+
+local script_dir = get_script_dir()
+local awful_config_dir
+
+if script_dir and script_dir:match("utilities/?$") then
+    -- Script is in utilities/ directory, go up one level
+    awful_config_dir = script_dir:gsub("utilities/?$", "")
+else
+    -- Fallback to HOME
+    awful_config_dir = os.getenv("HOME") .. "/.config/awesome/"
+end
+
+-- Remove trailing slash if present, then add it back for consistency
+awful_config_dir = awful_config_dir:gsub("/$", "")
 
 -- Set up Lua path to find AwesomeWM modules
 package.path = awful_config_dir .. "/?.lua;" ..

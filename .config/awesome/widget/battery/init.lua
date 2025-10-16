@@ -4,11 +4,28 @@ local gears = require('gears')
 local beautiful = require('beautiful')
 local naughty = require('naughty')
 local apps = require('configuration.apps')
-local battery = require('library.battery')
 local clickable_container = require('widget.clickable-container')
 local dpi = beautiful.xresources.apply_dpi
 local config_dir = gears.filesystem.get_configuration_dir()
 local widget_icon_dir = config_dir .. 'widget/battery/icons/'
+
+-- Try to load battery library, return dummy widget if it fails (CI environment)
+local battery_ok, battery = pcall(require, 'library.battery')
+if not battery_ok then
+    return function()
+        return wibox.widget {
+            {
+                text = 'N/A',
+                font = beautiful.font_bold(12),
+                align = 'center',
+                valign = 'center',
+                widget = wibox.widget.textbox
+            },
+            visible = false,
+            widget = wibox.container.background
+        }
+    end
+end
 
 local return_button = function()
     local battery_imagebox = wibox.widget {
@@ -195,13 +212,30 @@ local return_button = function()
         )
     end
 
-    -- Create the battery widget:
-    local my_battery_widget = battery {
-        screen = screen,
-        device_path = '/org/freedesktop/UPower/devices/battery_BAT0',
-        instant_update = true,
-        widget_template = wibox.widget.textbox
-    }
+    -- Create the battery widget (wrapped in pcall for CI environment):
+    local battery_ok, my_battery_widget = pcall(function()
+        return battery {
+            screen = screen,
+            device_path = '/org/freedesktop/UPower/devices/battery_BAT0',
+            instant_update = true,
+            widget_template = wibox.widget.textbox
+        }
+    end)
+
+    -- Handle battery library failure (CI environment without UPower)
+    if not battery_ok or not my_battery_widget then
+        return wibox.widget {
+            {
+                text = 'N/A',
+                font = beautiful.font_bold(12),
+                align = 'center',
+                valign = 'center',
+                widget = wibox.widget.textbox
+            },
+            visible = false,
+            widget = wibox.container.background
+        }
+    end
 
     -- When UPower updates the battery status, the widget is notified
     -- and calls a signal you need to connect to:

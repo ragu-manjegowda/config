@@ -2,6 +2,10 @@ local filesystem = require('gears.filesystem')
 local config_dir = filesystem.get_configuration_dir()
 local utils_dir = config_dir .. 'utilities/'
 
+-- Get DPI safely (use config fallback when screen is not available)
+local config = require('configuration.config')
+local dpi = (screen and screen.primary and dpi) or config.display.dpi
+
 return {
     -- The default applications that we will use in keybindings and widgets
     default = {
@@ -36,25 +40,25 @@ return {
         -- Default quake terminal
         quake = '',
         -- Run menu
-        rofi_runmenu = 'rofi -dpi ' .. screen.primary.dpi ..
+        rofi_runmenu = 'rofi -dpi ' .. dpi ..
             ' -show drun -theme ' .. config_dir ..
             'configuration/rofi/runmenu/rofi.rasi',
         -- Emoji menu
-        rofi_emojimenu = 'rofi -dpi ' .. screen.primary.dpi ..
+        rofi_emojimenu = 'rofi -dpi ' .. dpi ..
             ' -show emoji -modi emoji -theme ' .. config_dir ..
             'configuration/rofi/emojimenu/rofi.rasi',
         -- App menu
-        rofi_appmenu = 'rofi -dpi ' .. screen.primary.dpi ..
+        rofi_appmenu = 'rofi -dpi ' .. dpi ..
             ' -show drun -theme ' .. config_dir ..
             'configuration/rofi/appmenu/rofi.rasi',
 
         -- Show time
-        rofi_time = 'rofi -dpi ' .. screen.primary.dpi ..
+        rofi_time = 'rofi -dpi ' .. dpi ..
             ' -theme ' .. config_dir ..
             'configuration/rofi/time/rofi.rasi',
 
         -- Show calc
-        rofi_calc = 'rofi -dpi ' .. screen.primary.dpi ..
+        rofi_calc = 'rofi -dpi ' .. dpi ..
             ' -theme ' .. config_dir ..
             'configuration/rofi/calc/rofi.rasi' ..
             ' -normal-window -show calc -modi calc -no-show-match -no-sort' ..

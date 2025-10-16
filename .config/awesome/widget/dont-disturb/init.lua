@@ -149,7 +149,7 @@ naughty.connect_signal(
     'request::display',
     function(_)
         if not dont_disturb_state then
-            awful.spawn.with_shell('canberra-gtk-play -i message')
+            awful.spawn.with_shell('canberra-gtk-play -i message 2>/dev/null')
         end
     end
 )
