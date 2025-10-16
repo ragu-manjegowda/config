@@ -2,6 +2,10 @@
 
 # Gracefully disconnect external monitor
 # Moves windows to primary screen before disconnect
+# Configuration is read from config.lua via read-display-config
+
+# Source the configuration from config.lua
+source <("$HOME/.config/awesome/utilities/read-display-config")
 
 echo "Preparing for monitor disconnect..."
 
@@ -15,12 +19,12 @@ screen_mgr.prepare_for_disconnect()
 sleep 2
 
 # Switch to laptop-only configuration
-xrandr --output DP-4 --off
-xrandr --output eDP-1 --primary --mode 3840x2400 --pos 0x0
-xrandr --dpi 192
+xrandr --output "$EXTERNAL_NAME" --off
+xrandr --output "$PRIMARY_NAME" --primary --mode "$PRIMARY_MODE" --pos "$PRIMARY_POS"
+xrandr --dpi "$DISPLAY_DPI"
 
 echo "✓ External monitor disconnected"
-echo "✓ Windows moved to laptop screen"
+echo "✓ Windows moved to $PRIMARY_NAME"
 echo ""
 echo "You can now safely unplug the external monitor"
 

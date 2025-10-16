@@ -3,6 +3,31 @@ local config_dir = filesystem.get_configuration_dir()
 local utils_dir = config_dir .. 'utilities/'
 
 return {
+    display = {
+        -- DPI setting for all displays
+        dpi = 192,
+
+        -- Primary display (laptop)
+        primary = {
+            name = 'eDP-1',
+            mode = '3840x2400',
+            position = '0x0',
+            -- Additional settings
+            rate = nil,  -- Optional: refresh rate (e.g., '60')
+        },
+
+        -- External display
+        external = {
+            name = 'DP-4',
+            mode = '3440x1440',
+            position = '3840x0',  -- Position relative to primary
+            -- Scaling: scale external to match primary height
+            -- This makes cursor movement smooth between displays
+            scale_from = '3840x2400',  -- Scale to match primary dimensions
+            rate = nil,  -- Optional: refresh rate
+        },
+    },
+
     keyboard = {
         script = utils_dir .. 'kbd-bkl',
         file = '/sys/class/leds/dell::kbd_backlight/brightness'
@@ -50,7 +75,7 @@ return {
 
         screen_recorder = {
             -- Default record dimension
-            resolution = '3840x2400',
+            resolution = '2560x1440',
             -- X,Y coordinate
             offset = '0,0',
             -- Enable audio by default
