@@ -1,0 +1,64 @@
+#!/bin/bash
+# Event-based laptop display brightness manager
+# Monitors systemd-logind for lid state changes via D-Bus
+
+# Source display configuration from AwesomeWM config
+source <("$HOME/.config/awesome/utilities/read-display-config")
+
+# Use the centralized configuration
+EXTERNAL_DISPLAY="$EXTERNAL_NAME"
+PRIMARY_DISPLAY="$PRIMARY_NAME"
+
+# Brightness cache file
+BRIGHTNESS_CACHE="/tmp/laptop_brightness_${USER}"
+
+# Function to check if external monitor is connected
+is_external_connected() {
+    xrandr 2>/dev/null | grep -q "^${EXTERNAL_DISPLAY} connected"
+}
+
+# Function to get current lid state
+get_lid_state() {
+    cat /proc/acpi/button/lid/LID*/state 2>/dev/null | awk '{print $2}'
+}
+
+# Function to manage brightness based on lid state
+manage_brightness() {
+    local lid_state=$(get_lid_state)
+    
+    if [ "$lid_state" = "closed" ] && is_external_connected; then
+        # Save current brightness if not already saved
+        if [ ! -f "$BRIGHTNESS_CACHE" ]; then
+            light -G > "$BRIGHTNESS_CACHE" 2>/dev/null
+            echo "[$(date '+%H:%M:%S')] Lid closed with external monitor - saved brightness: $(cat "$BRIGHTNESS_CACHE")%"
+        fi
+        
+        # Set brightness to 0
+        light -S 0 2>/dev/null
+        echo "[$(date '+%H:%M:%S')] Laptop display brightness set to 0"
+        
+    elif [ "$lid_state" = "open" ] && [ -f "$BRIGHTNESS_CACHE" ]; then
+        # Restore brightness
+        local saved_brightness=$(cat "$BRIGHTNESS_CACHE")
+        light -S "$saved_brightness" 2>/dev/null
+        echo "[$(date '+%H:%M:%S')] Lid opened - restored brightness to ${saved_brightness}%"
+        rm "$BRIGHTNESS_CACHE"
+    fi
+}
+
+# Run once on startup
+echo "[$(date '+%H:%M:%S')] Starting lid brightness monitor..."
+manage_brightness
+
+# Monitor D-Bus for property changes using gdbus
+# This monitors the systemd-logind Manager interface for any property changes
+# which includes lid switch state changes
+echo "[$(date '+%H:%M:%S')] Monitoring for lid events via D-Bus..."
+gdbus monitor --system --dest org.freedesktop.login1 --object-path /org/freedesktop/login1 2>/dev/null | \
+while read -r line; do
+    # React to any signal from logind (including PropertyChanged)
+    # Sleep briefly to let the lid state file update
+    sleep 0.3
+    manage_brightness
+done
+
