@@ -36,6 +36,12 @@ end
 local reorganize_windows_on_remove = function(removed_screen)
     local primary_screen = screen.primary
 
+    -- Move systray to primary screen when external is disconnected
+    if primary_screen and primary_screen.systray then
+        primary_screen.systray.screen = primary_screen
+        primary_screen.systray.visible = true
+    end
+
     -- Save the last selected tag on the external monitor before removal
     for _, tag in ipairs(removed_screen.tags) do
         if tag.selected then
@@ -186,6 +192,12 @@ end
 
 -- Restore windows to external monitor when reconnected
 local restore_windows_to_external = function(new_screen)
+    -- Move systray to external monitor
+    if new_screen and new_screen.systray then
+        new_screen.systray.screen = new_screen
+        new_screen.systray.visible = true
+    end
+
     -- Wait a moment for screen to be fully initialized
     gears.timer.start_new(0.5, function()
         local primary_screen = screen.primary

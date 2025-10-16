@@ -43,6 +43,7 @@ local top_panel = function(s)
     -- Systray can only be shown on ONE screen at a time (X11 limitation)
     -- Show on non-primary screen if available (external monitor), otherwise primary
     local systray_screen = s
+
     if screen.count() > 1 and s ~= screen.primary then
         systray_screen = s  -- Show on external monitor
     elseif screen.count() == 1 then
@@ -61,7 +62,7 @@ local top_panel = function(s)
 
     s.clock                   = require('widget.clock')()
     local layout_box          = require('widget.layoutbox')(s)
-    s.tray_toggler            = require('widget.tray-toggle')
+    s.tray_toggler            = require('widget.tray-toggle')()
     s.screen_rec              = require('widget.screen-recorder')()
     s.playerctl_center_toggle = require('widget.playerctl-center-toggle')()
     s.battery                 = require('widget.battery')()
