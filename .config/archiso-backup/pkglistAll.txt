@@ -21,6 +21,7 @@ claude-code
 cppreference
 cups
 cursor-bin
+cursor-cli
 cyrus-sasl-xoauth2-git
 darkman
 docker
