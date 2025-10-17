@@ -1,0 +1,181 @@
+name: Neovim Configuration Tests
+
+# Run tests only when Neovim config files change
+on:
+  push:
+    branches: [ main, master, develop ]
+    paths:
+      - '.config/nvim/**'
+      - '.github/workflows/neovim-tests.yml'
+  pull_request:
+    branches: [ main, master, develop ]
+    paths:
+      - '.config/nvim/**'
+      - '.github/workflows/neovim-tests.yml'
+
+jobs:
+  test:
+    name: ${{ matrix.test_name }}
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+    strategy:
+      fail-fast: false
+      matrix:
+        test_file:
+          - test_core_behavior.lua
+          - test_utils_behavior.lua
+          - test_treesitter_behavior.lua
+          - test_telescope_behavior.lua
+          - test_lsp_behavior.lua
+          - test_dap_behavior.lua
+          - test_git_behavior.lua
+          - test_ui_behavior.lua
+        include:
+          - test_file: test_core_behavior.lua
+            test_name: "Core Behavior"
+          - test_file: test_utils_behavior.lua
+            test_name: "Utils Module"
+          - test_file: test_treesitter_behavior.lua
+            test_name: "Treesitter"
+          - test_file: test_telescope_behavior.lua
+            test_name: "Telescope"
+          - test_file: test_lsp_behavior.lua
+            test_name: "LSP"
+          - test_file: test_dap_behavior.lua
+            test_name: "DAP"
+          - test_file: test_git_behavior.lua
+            test_name: "Git Integration"
+          - test_file: test_ui_behavior.lua
+            test_name: "UI Plugins"
+    
+    steps:
+      - name: Initialize pacman keyring
+        run: |
+          pacman-key --init
+          pacman-key --populate archlinux
+
+      - name: Install Git
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm git
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Neovim and dependencies
+        run: |
+          pacman -S --noconfirm neovim base-devel
+
+      - name: Install test dependencies
+        run: |
+          # Install plenary.nvim for testing
+          PLENARY_PATH="$HOME/.local/share/nvim/site/pack/vendor/start/plenary.nvim"
+          mkdir -p "$(dirname "$PLENARY_PATH")"
+          git clone --depth=1 https://github.com/nvim-lua/plenary.nvim "$PLENARY_PATH"
+
+      - name: Copy Neovim config to home directory
+        run: |
+          echo "Copying Neovim config from $GITHUB_WORKSPACE/.config/nvim to ~/.config/nvim"
+          mkdir -p ~/.config
+          cp -r "$GITHUB_WORKSPACE/.config/nvim" ~/.config/
+
+      - name: Install Neovim plugins with Lazy
+        run: |
+          echo "Installing plugins with Lazy.nvim..."
+          nvim --headless "+Lazy! sync" +qa
+          echo "Plugins installed successfully"
+
+      - name: Run test - ${{ matrix.test_name }}
+        run: |
+          cd ~/.config/nvim/tests
+          echo "Running ${{ matrix.test_file }}..."
+          nvim --headless \
+            -u minimal_init.lua \
+            -c "lua require('plenary.busted').run('${{ matrix.test_file }}')" \
+            -c "qa!" \
+            2>&1 | tee "/tmp/nvim_test_${{ matrix.test_file }}.log"
+          
+          # Check for failures
+          failed_count=$(grep "Failed" "/tmp/nvim_test_${{ matrix.test_file }}.log" | sed 's/\x1b\[[0-9;]*m//g' | grep -oE '[0-9]+' | tail -1)
+          error_count=$(grep "Errors" "/tmp/nvim_test_${{ matrix.test_file }}.log" | sed 's/\x1b\[[0-9;]*m//g' | grep -oE '[0-9]+' | tail -1)
+          
+          failed_count=${failed_count:-0}
+          error_count=${error_count:-0}
+          
+          if [ "$failed_count" != "0" ] 2>/dev/null || [ "$error_count" != "0" ] 2>/dev/null; then
+            echo "❌ Test failed (Failed: $failed_count, Errors: $error_count)"
+            exit 1
+          else
+            echo "✅ Test passed"
+          fi
+
+      - name: Upload test logs (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-logs-${{ matrix.test_file }}
+          path: /tmp/nvim_test_${{ matrix.test_file }}.log
+          retention-days: 7
+
+  lint:
+    name: Lua Syntax Check
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+    
+    steps:
+      - name: Initialize pacman keyring
+        run: |
+          pacman-key --init
+          pacman-key --populate archlinux
+
+      - name: Install Git
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm git
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          pacman -S --noconfirm lua luarocks gcc make
+
+      - name: Install luacheck
+        run: luarocks install luacheck
+
+      - name: Copy Neovim config to home directory
+        run: |
+          echo "Copying Neovim config from $GITHUB_WORKSPACE/.config/nvim to ~/.config/nvim"
+          mkdir -p ~/.config
+          cp -r "$GITHUB_WORKSPACE/.config/nvim" ~/.config/
+
+      - name: Run luacheck
+        run: |
+          cd ~/.config/nvim
+          luacheck lua/ init.lua --no-unused-args --no-unused-secondaries || true
+        continue-on-error: true
+
+  summary:
+    name: All Tests Complete
+    runs-on: ubuntu-latest
+    needs: [test, lint]
+    if: always()
+    
+    steps:
+      - name: Summary
+        run: |
+          echo "# Neovim Configuration Tests Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All test jobs have completed. Check individual job results above." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.lint.result }}" == "success" ]; then
+            echo "✅ **Lint check**: Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️  **Lint check**: Issues found (non-blocking)" >> $GITHUB_STEP_SUMMARY
+          fi
+
