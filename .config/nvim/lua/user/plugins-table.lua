@@ -399,17 +399,12 @@ local all_plugins = {
         end,
     },
 
-    -- Code companion
+    -- Sidekick
     {
-        "olimorris/codecompanion.nvim",
-        dependencies = {
-            "nvim-tree/nvim-web-devicons",
-            {
-                "nvim-lua/plenary.nvim"
-            }
-        },
+        "folke/sidekick.nvim",
         event = "VeryLazy",
-        opts = require("user.codecompanion").opts()
+        opts = require("user.sidekick").opts(),
+        keys = require("user.sidekick").keys()
     }
 }
 
