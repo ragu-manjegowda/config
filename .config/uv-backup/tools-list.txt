@@ -1,0 +1,11 @@
+jupyterlab
+spotdl
+subliminal
+python-lsp-server[all]
+mutt-language-server
+tmux-language-server
+pynvim
+nbdev
+img2pdf
+pdfminer.six
+
