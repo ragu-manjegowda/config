@@ -139,6 +139,7 @@
 /.config/mpv/scripts/uosc
 /.config/nautilus
 /.config/neofetch/config.conf
+/.config/neomutt/__pycache__
 /.config/neomutt/accounts/*/TOKEN_FILENAME*
 /.config/neomutt/accounts/*/msmtp.log
 /.config/neomutt/accounts/personal/raghudarshan

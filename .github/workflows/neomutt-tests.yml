@@ -1,0 +1,106 @@
+name: Neomutt Configuration Tests
+
+# Run tests only when Neomutt config files change
+on:
+  push:
+    branches: [ main, master, develop ]
+    paths:
+      - '.config/neomutt/**'
+      - '.github/workflows/neomutt-tests.yml'
+  pull_request:
+    branches: [ main, master, develop ]
+    paths:
+      - '.config/neomutt/**'
+      - '.github/workflows/neomutt-tests.yml'
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: ${{ matrix.test_name }}
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+    strategy:
+      fail-fast: false
+      matrix:
+        test_suite:
+          - test_config_syntax.sh
+          - test_scripts.sh
+          - test_settings.sh
+          - test_mailcap.sh
+        include:
+          - test_suite: test_config_syntax.sh
+            test_name: "Config Syntax"
+          - test_suite: test_scripts.sh
+            test_name: "Helper Scripts"
+          - test_suite: test_settings.sh
+            test_name: "Settings Validation"
+          - test_suite: test_mailcap.sh
+            test_name: "Mailcap Configuration"
+
+    steps:
+      - name: Initialize pacman keyring
+        run: |
+          pacman-key --init
+          pacman-key --populate archlinux
+
+      - name: Install Git
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm git
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Neomutt and dependencies
+        run: |
+          pacman -S --noconfirm neomutt python python-pip bash w3m
+
+          # Install Python packages needed for script validation
+          python -m pip install --break-system-packages --quiet vobject
+
+      - name: Copy Neomutt config to home directory
+        run: |
+          echo "Copying Neomutt config from $GITHUB_WORKSPACE/.config/neomutt to ~/.config/neomutt"
+          mkdir -p ~/.config
+          cp -r "$GITHUB_WORKSPACE/.config/neomutt" ~/.config/
+
+          # Set XDG_CONFIG_HOME for tests
+          echo "XDG_CONFIG_HOME=$HOME/.config" >> $GITHUB_ENV
+
+      - name: Run test - ${{ matrix.test_name }}
+        run: |
+          cd ~/.config/neomutt/tests
+          echo "Running ${{ matrix.test_suite }}..."
+          bash "${{ matrix.test_suite }}"
+
+      - name: Upload test logs (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-logs-${{ matrix.test_suite }}
+          path: ~/.config/neomutt/tests/*.log
+          retention-days: 7
+          if-no-files-found: ignore
+
+  summary:
+    name: All Tests Complete
+    runs-on: ubuntu-latest
+    needs: [test]
+    if: always()
+
+    steps:
+      - name: Summary
+        run: |
+          echo "# Neomutt Configuration Tests Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All test jobs have completed. Check individual job results above." >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ needs.test.result }}" == "success" ]; then
+            echo "✅ **All tests passed**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Some tests failed**" >> $GITHUB_STEP_SUMMARY
+          fi
+
