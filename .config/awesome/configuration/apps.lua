@@ -87,7 +87,7 @@ return {
         -- Set the dpi for GDK applications
         'xrdb -merge ~/.Xresources',
         -- Set keyboard repeat rate (delay in ms, rate per second)
-        'xset r rate 150 40',
+        'xset r rate 140 45',
         -- Audio equalizer
         -- Enable blue light filter
         'killall -9 redshift &>/dev/null; redshift &>/dev/null &',

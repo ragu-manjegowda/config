@@ -111,6 +111,15 @@ local main_control_row_two = wibox.widget {
                 require('widget.blur-toggle'),
                 nil
             }
+        ),
+        format_item_no_fix_height(
+            {
+                layout = wibox.layout.align.vertical,
+                expand = 'none',
+                nil,
+                require('widget.microphone-toggle'),
+                nil
+            }
         )
     }
 }

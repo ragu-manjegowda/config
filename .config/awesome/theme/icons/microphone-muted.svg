@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="240" height="240" fill="#eee8d5">
+  <desc>Microphone Mute – solid version with properly gapped diagonal slash</desc>
+
+  <!-- Diagonal mute slash (inset to create top/bottom gap) -->
+  <path d="M2.8 2.2a.5.5 0 0 1 .7 0l9.8 9.8a.5.5 0 1 1-.7.7L2.8 2.9a.5.5 0 0 1 0-.7Z"/>
+
+  <!-- Mic capsule/top -->
+  <path fill-rule="evenodd" clip-rule="evenodd"
+    d="M5.5 2.922C5.5 1.769 6.435.833 7.589.833H8c1.381 0 2.5 1.119 2.5 2.5v3.667a.5.5 0 0 1-.82.384L6.252 4.527A2.004 2.004 0 0 1 5.5 2.922ZM9.333 9.833A3.84 3.84 0 0 1 5.5 6h1c0 1.565 1.269 2.833 2.833 2.833v1Z"/>
+
+  <!-- Outer waveform -->
+  <path fill-rule="evenodd" clip-rule="evenodd"
+    d="M3.333 6.167a.5.5 0 0 1 .5.5v.666c0 2.302 1.865 4.167 4.167 4.167 2.301 0 4.166-1.865 4.166-4.167v-.666a.5.5 0 1 1 1 0v.666c0 2.853-2.313 5.167-5.166 5.167-2.854 0-5.167-2.314-5.167-5.167v-.666a.5.5 0 0 1 .5-.5Z"/>
+
+  <!-- Mic stand -->
+  <path fill-rule="evenodd" clip-rule="evenodd"
+    d="M8 11.5a.5.5 0 0 1 .5.5v2.167H10a.5.5 0 1 1 0 1H6a.5.5 0 1 1 0-1h1.5V12a.5.5 0 0 1 .5-.5Z"/>
+</svg>
+

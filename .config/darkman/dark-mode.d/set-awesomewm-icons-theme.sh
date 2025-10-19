@@ -13,7 +13,7 @@ for i in $(find $HOME/.config/awesome/ -name "*.png" \
             -not -path "*/configuration/user-profile/*" \
             -not -path "*/library/*" \
             -not -path "*/widget/playerctl/*"); do
-    convert $i -fill "#eee8d5" -colorize 100% $i
+    magick $i -fill "#eee8d5" -colorize 100% $i
 done
 
 config_path="$HOME/.config/awesome/theme/init.lua"
