@@ -68,9 +68,17 @@ local slider = wibox.widget {
 
 local volume_slider = slider.volume_slider
 
+-- Track if we're updating the slider programmatically (from event monitor)
+local is_programmatic_update = false
+
 volume_slider:connect_signal(
     'property::value',
     function()
+        -- Skip if this is an automatic update from the event monitor
+        if is_programmatic_update then
+            return
+        end
+
         local volume_level = volume_slider:get_value()
 
         spawn('wpctl set-volume @DEFAULT_AUDIO_SINK@ ' ..
@@ -78,7 +86,13 @@ volume_slider:connect_signal(
             false
         )
 
-        -- Update volume osd
+        -- Show volume osd
+        awesome.emit_signal(
+            'module::volume_osd:show',
+            true
+        )
+
+        -- Update the OSD slider value
         awesome.emit_signal(
             'module::volume_osd',
             volume_level
@@ -166,6 +180,34 @@ awesome.connect_signal(
         volume_slider:set_value(tonumber(value))
     end
 )
+
+-- Monitor volume state changes via pactl subscribe (event-driven)
+local monitor_volume_changes = function()
+    awful.spawn.with_line_callback(
+        'pactl subscribe 2>/dev/null',
+        {
+            stdout = function(line)
+                -- Only react to sink (speaker) changes
+                if line:match("Event 'change' on sink") then
+                    -- Set flag to prevent OSD from being triggered
+                    is_programmatic_update = true
+                    update_slider()
+                    is_programmatic_update = false
+                end
+            end
+        }
+    )
+end
+
+-- Start monitoring in background (delayed to ensure PulseAudio is ready)
+gears.timer {
+    timeout = 1,
+    autostart = true,
+    single_shot = true,
+    callback = function()
+        monitor_volume_changes()
+    end
+}
 
 local volume_setting = wibox.widget {
     layout = wibox.layout.fixed.vertical,

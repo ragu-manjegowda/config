@@ -59,9 +59,10 @@ require('module.exit-screen')
 require('module.brightness-osd')
 require('module.kbd-brightness-osd')
 require('module.volume-osd')
+require('module.mic-osd')
 require('module.lockscreen')
 require('module.dynamic-wallpaper')
-require('module.screen-manager')  -- Handle monitor connect/disconnect gracefully
+require('module.screen-manager') -- Handle monitor connect/disconnect gracefully
 
 -- ░█░█░█▀█░█░░░█░░░█▀█░█▀█░█▀█░█▀▀░█▀▄
 -- ░█▄█░█▀█░█░░░█░░░█▀▀░█▀█░█▀▀░█▀▀░█▀▄
@@ -137,13 +138,13 @@ end
 local load_last_active_tag = function()
     local f = io.open(ws_fname, "r")
     if not f then
-        return  -- File doesn't exist yet
+        return -- File doesn't exist yet
     end
     local saved_line = f:read("*line")
     f:close()
 
     if not saved_line then
-        return  -- No data saved
+        return -- No data saved
     end
 
     -- Parse saved data: "tag_name|screen_index"

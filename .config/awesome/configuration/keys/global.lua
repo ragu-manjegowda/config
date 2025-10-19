@@ -660,6 +660,8 @@ local global_keys = awful.util.table.join(
         'XF86AudioMicMute',
         function()
             awful.spawn('wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle', false)
+            awesome.emit_signal('widget::microphone:update')
+            awesome.emit_signal('module::mic_osd:show', true)
         end,
         { description = 'mute microphone', group = 'hotkeys' }
     ),
@@ -670,20 +672,10 @@ local global_keys = awful.util.table.join(
         'F20',
         function()
             awful.spawn('wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle', false)
-            -- Show notification since OSD module was removed
-            awful.spawn.easy_async_with_shell(
-                'wpctl get-volume @DEFAULT_AUDIO_SOURCE@',
-                function(stdout)
-                    local muted = stdout:match('%[MUTED%]')
-                    local status = muted and '🔴 MUTED' or '🟢 UNMUTED'
-                    naughty.notification({
-                        title = 'Microphone',
-                        message = status
-                    })
-                end
-            )
+            awesome.emit_signal('widget::microphone:update')
+            awesome.emit_signal('module::mic_osd:show', true)
         end,
-        { description = 'toggle microphone (custom key)', group = 'hotkeys' }
+        { description = 'mute microphone', group = 'hotkeys' }
     ),
 
     awful.key(

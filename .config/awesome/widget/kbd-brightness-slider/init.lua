@@ -88,7 +88,13 @@ kbd_brightness_slider:connect_signal(
 
         awful.spawn.with_shell(bkl_set_command)
 
-        -- Update brightness osd
+        -- Show keyboard brightness osd
+        awesome.emit_signal(
+            'module::kbd_brightness_osd:show',
+            true
+        )
+
+        -- Update the OSD slider value
         awesome.emit_signal(
             'module::kbd_brightness_osd',
             kbd_brightness_level

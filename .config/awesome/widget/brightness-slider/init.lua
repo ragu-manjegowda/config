@@ -76,7 +76,13 @@ brightness_slider:connect_signal(
             false
         )
 
-        -- Update brightness osd
+        -- Show brightness osd
+        awesome.emit_signal(
+            'module::brightness_osd:show',
+            true
+        )
+
+        -- Update the OSD slider value
         awesome.emit_signal(
             'module::brightness_osd',
             brightness_level
