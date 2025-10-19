@@ -80,6 +80,12 @@ if [ -d "$HOME"/.local/bin ]; then
     export PATH="$HOME"/.local/bin:"$PATH"
 fi
 
+## Activate system-wide Python venv (created with uv)
+if [ -d "$HOME"/.local/share/venv/bin ]; then
+    # shellcheck disable=SC1091
+    export PATH="$HOME"/.local/share/venv/bin:"$PATH"
+fi
+
 # use nvim if installed,
 # if not use vim
 # else vi
