@@ -83,6 +83,7 @@ end
 check_mic_status()
 
 local toggle_mic = function()
+
     awful.spawn('wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle', false)
     awful.spawn.easy_async_with_shell(
         'wpctl get-volume @DEFAULT_AUDIO_SOURCE@',
@@ -162,7 +163,7 @@ gears.timer {
 
 -- Subscribe to global mic OSD updates
 awesome.connect_signal(
-    'widget::microphone:update',
+    'widget::microphone',
     function()
         check_mic_status()
     end

@@ -60,7 +60,6 @@ local function view_prev_tag_with_client()
     end
 end
 
-
 -- Key bindings
 local global_keys = awful.util.table.join(
 
@@ -659,8 +658,9 @@ local global_keys = awful.util.table.join(
         {},
         'XF86AudioMicMute',
         function()
+
             awful.spawn('wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle', false)
-            awesome.emit_signal('widget::microphone:update')
+            awesome.emit_signal('widget::microphone')
             awesome.emit_signal('module::mic_osd:show', true)
         end,
         { description = 'mute microphone', group = 'hotkeys' }
@@ -672,7 +672,8 @@ local global_keys = awful.util.table.join(
         'F20',
         function()
             awful.spawn('wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle', false)
-            awesome.emit_signal('widget::microphone:update')
+
+            awesome.emit_signal('widget::microphone')
             awesome.emit_signal('module::mic_osd:show', true)
         end,
         { description = 'mute microphone', group = 'hotkeys' }

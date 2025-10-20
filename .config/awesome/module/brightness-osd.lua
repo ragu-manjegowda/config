@@ -229,6 +229,10 @@ awesome.connect_signal(
                 'module::volume_osd:show',
                 false
             )
+            awesome.emit_signal(
+                'module::mic_osd:show',
+                false
+            )
         else
             if hide_osd.started then
                 hide_osd:stop()

@@ -149,9 +149,9 @@ awesome.connect_signal(
     end
 )
 
--- Handle microphone status update signal (check status before showing OSD)
+-- Handle microphone status update signal
 awesome.connect_signal(
-    'widget::microphone:update',
+    'widget::microphone',
     function()
         awful.spawn.easy_async_with_shell(
             'wpctl get-volume @DEFAULT_AUDIO_SOURCE@',
@@ -163,7 +163,7 @@ awesome.connect_signal(
     end
 )
 
--- Monitor microphone state changes via pactl subscribe (cleaner than pw-mon)
+-- Monitor microphone state changes via pactl subscribe
 local dbus_monitor = function()
     awful.spawn.with_line_callback(
         'pactl subscribe 2>/dev/null',
@@ -171,14 +171,16 @@ local dbus_monitor = function()
             stdout = function(line)
                 -- Only react to source (microphone) changes
                 if line:match("Event 'change' on source") then
-                    -- Check current mic status and update widget + OSD
                     awful.spawn.easy_async_with_shell(
                         'wpctl get-volume @DEFAULT_AUDIO_SOURCE@',
                         function(stdout)
                             local muted = stdout:match('%[MUTED%]') ~= nil
+                            -- Update OSD icon state
                             awesome.emit_signal('module::mic_osd:update', muted)
-                            awesome.emit_signal('widget::microphone:update')
-                            awesome.emit_signal('module::mic_osd:show', true)
+                            -- Update microphone widget state
+                            awesome.emit_signal('widget::microphone')
+                            -- Do NOT show OSD from pactl events (notifications also trigger source changes)
+                            -- OSD only shows from explicit user actions (F20, XF86AudioMicMute, widget click)
                         end
                     )
                 end

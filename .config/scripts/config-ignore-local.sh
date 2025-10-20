@@ -28,6 +28,8 @@ config update-index --assume-unchanged \
     .config/awesome/theme/icons/logout.svg \
     .config/awesome/theme/icons/magnify.svg \
     .config/awesome/theme/icons/memory.svg \
+    .config/awesome/theme/icons/microphone-high.svg \
+    .config/awesome/theme/icons/microphone-muted.svg \
     .config/awesome/theme/icons/plus.svg \
     .config/awesome/theme/icons/power-hibernate.svg \
     .config/awesome/theme/icons/power-sleep.svg \
