@@ -5,17 +5,45 @@ local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 local icons = require('theme.icons')
 
-local mic_icon = wibox.widget {
-    image = icons.microphone_high,
-    resize = true,
-    forced_height = dpi(240),
-    forced_width = dpi(240),
-    widget = wibox.widget.imagebox
+local osd_header = wibox.widget {
+    text = 'Microphone',
+    font = beautiful.font_bold(14),
+    align = 'left',
+    valign = 'center',
+    widget = wibox.widget.textbox
+}
+
+local osd_value = wibox.widget {
+    text = 'Active',
+    font = beautiful.font_bold(14),
+    align = 'center',
+    valign = 'center',
+    widget = wibox.widget.textbox
+}
+
+local slider_osd = wibox.widget {
+    nil,
+    {
+        bar_shape    = gears.shape.rounded_rect,
+        bar_height   = dpi(24),
+        bar_color    = beautiful.groups_bg,
+        handle_color = beautiful.fg_focus,
+        handle_shape = gears.shape.circle,
+        handle_width = dpi(0),
+        widget       = wibox.widget.slider
+    },
+    nil,
+    expand = 'none',
+    layout = wibox.layout.align.vertical
 }
 
 local icon = wibox.widget {
-    mic_icon,
-    forced_height = dpi(240),
+    {
+        image = icons.microphone_high,
+        resize = true,
+        widget = wibox.widget.imagebox
+    },
+    forced_height = dpi(150),
     top = dpi(12),
     bottom = dpi(12),
     widget = wibox.container.margin
@@ -25,8 +53,8 @@ local osd_margin = dpi(10)
 
 screen.connect_signal(
     'request::desktop_decoration',
-    function(s)
-        s = s or {}
+    function(screen)
+        local s = screen or {}
 
         s.mic_osd_overlay = awful.popup {
             widget = {
@@ -52,17 +80,31 @@ screen.connect_signal(
                 {
                     layout = wibox.layout.fixed.vertical,
                     {
-                        layout = wibox.layout.align.horizontal,
-                        expand = 'none',
-                        nil,
-                        icon,
-                        nil
-                    }
+                        {
+                            layout = wibox.layout.align.horizontal,
+                            expand = 'none',
+                            nil,
+                            icon,
+                            nil
+                        },
+                        {
+                            layout = wibox.layout.fixed.vertical,
+                            spacing = dpi(5),
+                            {
+                                layout = wibox.layout.align.horizontal,
+                                expand = 'none',
+                                osd_header,
+                                nil,
+                                osd_value
+                            },
+                            slider_osd
+                        },
+                        spacing = dpi(10),
+                        layout = wibox.layout.fixed.vertical
+                    },
                 },
                 left = dpi(24),
                 right = dpi(24),
-                top = dpi(12),
-                bottom = dpi(12),
                 widget = wibox.container.margin
             },
             bg = beautiful.groups_bg .. "44",
@@ -122,11 +164,11 @@ awesome.connect_signal(
     'module::mic_osd:update',
     function(muted)
         if muted then
-            mic_icon:set_image(icons.microphone_muted)
-            awful.screen.focused().mic_osd_overlay.fg = beautiful.background_light
+            icon.children[1]:set_image(icons.microphone_muted)
+            osd_value.text = 'Muted'
         else
-            mic_icon:set_image(icons.microphone_high)
-            awful.screen.focused().mic_osd_overlay.fg = beautiful.fg_focus
+            icon.children[1]:set_image(icons.microphone_high)
+            osd_value.text = 'Active'
         end
     end
 )
@@ -138,9 +180,18 @@ awesome.connect_signal(
         awful.screen.focused().mic_osd_overlay.visible = bool
         if bool then
             awesome.emit_signal('module::mic_osd:rerun')
-            awesome.emit_signal('module::volume_osd:show', false)
-            awesome.emit_signal('module::brightness_osd:show', false)
-            awesome.emit_signal('module::kbd_brightness_osd:show', false)
+            awesome.emit_signal(
+                'module::kbd_brightness_osd:show',
+                false
+            )
+            awesome.emit_signal(
+                'module::volume_osd:show',
+                false
+            )
+            awesome.emit_signal(
+                'module::brightness_osd:show',
+                false
+            )
         else
             if hide_osd.started then
                 hide_osd:stop()

@@ -189,6 +189,7 @@ awesome.connect_signal(
     'module::unlocked',
     function(_)
         sleep_requested = 0;
+        awful.spawn.with_shell('xset r rate 180 45')
     end
 )
 
