@@ -367,13 +367,13 @@ local locker = function(s)
         -- if capture_now then
         --     intruder_capture()
         -- else
-            gears.timer.start_new(
-                1,
-                function()
-                    circle_container.bg = beautiful.transparent
-                    type_again = true
-                end
-            )
+        gears.timer.start_new(
+            1,
+            function()
+                circle_container.bg = beautiful.transparent
+                type_again = true
+            end
+        )
         -- end
     end
 
@@ -624,6 +624,7 @@ local locker = function(s)
             awesome.emit_signal('module::spawn_apps')
             awesome.emit_signal('module::change_wallpaper')
             awesome.emit_signal('module::change_background_wallpaper')
+            awful.spawn.with_shell('xset r rate 180 45')
         end
     )
 
