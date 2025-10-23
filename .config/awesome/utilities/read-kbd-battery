@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# Find all connected devices with battery service
+DEVICES=$(gdbus introspect --system --only-properties --dest org.bluez --object-path /org/bluez/hci0 2>/dev/null | grep -o 'dev_[A-Z0-9_]*')
+
+if [ -z "$DEVICES" ]; then
+    echo "disconnected"
+    exit 0
+fi
+
+BATTERIES=()
+
+for DEVICE in $DEVICES; do
+    DEVICE_PATH="/org/bluez/hci0/$DEVICE"
+
+    # Check if connected
+    CONNECTED=$(gdbus call --system --dest org.bluez --object-path "$DEVICE_PATH" --method org.freedesktop.DBus.Properties.Get org.bluez.Device1 Connected 2>/dev/null | grep -o 'true\|false')
+
+    if [ "$CONNECTED" = "true" ]; then
+        # Find services
+        SERVICES=$(gdbus introspect --system --only-properties --dest org.bluez --object-path "$DEVICE_PATH" 2>/dev/null | grep -o 'service[0-9]*')
+
+        for SERVICE in $SERVICES; do
+            SERVICE_PATH="$DEVICE_PATH/$SERVICE"
+            UUID_RESP=$(gdbus call --system --dest org.bluez --object-path "$SERVICE_PATH" --method org.freedesktop.DBus.Properties.Get org.bluez.GattService1 UUID 2>/dev/null)
+
+            # Check if it's the Battery Service (0000180f)
+            if echo "$UUID_RESP" | grep -q "0000180f"; then
+                # Find characteristics
+                CHARS=$(gdbus introspect --system --only-properties --dest org.bluez --object-path "$SERVICE_PATH" 2>/dev/null | grep -o 'char[0-9]*')
+
+                for CHAR in $CHARS; do
+                    CHAR_PATH="$SERVICE_PATH/$CHAR"
+                    CHAR_UUID=$(gdbus call --system --dest org.bluez --object-path "$CHAR_PATH" --method org.freedesktop.DBus.Properties.Get org.bluez.GattCharacteristic1 UUID 2>/dev/null)
+
+                    # Check if it's the Battery Level characteristic (00002a19)
+                    if echo "$CHAR_UUID" | grep -q "00002a19"; then
+                        # Read battery value
+                        VALUE=$(gdbus call --system --dest org.bluez --object-path "$CHAR_PATH" --method org.bluez.GattCharacteristic1.ReadValue '{}' 2>/dev/null | grep -oP '0x[0-9a-f]+' | head -1)
+
+                        if [ -n "$VALUE" ]; then
+                            # Convert hex to decimal
+                            BATTERY=$((16#${VALUE:2}))
+                            BATTERIES+=("$BATTERY")
+                        fi
+                    fi
+                done
+            fi
+        done
+    fi
+done
+
+# Output results
+if [ ${#BATTERIES[@]} -ge 2 ]; then
+    echo "${BATTERIES[0]} ${BATTERIES[1]}"
+elif [ ${#BATTERIES[@]} -eq 1 ]; then
+    echo "${BATTERIES[0]} ${BATTERIES[0]}"
+else
+    echo "disconnected"
+fi

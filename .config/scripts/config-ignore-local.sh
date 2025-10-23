@@ -111,6 +111,10 @@ config update-index --assume-unchanged \
     .config/awesome/widget/email/icons/email-unread.svg \
     .config/awesome/widget/email/icons/email.svg \
     .config/awesome/widget/info-center-toggle/icons/info-center.svg \
+    .config/awesome/widget/kbd-battery/icons/kinesis-left-cropped.svg \
+    .config/awesome/widget/kbd-battery/icons/kinesis-left.svg \
+    .config/awesome/widget/kbd-battery/icons/kinesis-right-cropped.svg \
+    .config/awesome/widget/kbd-battery/icons/kinesis-right.svg \
     .config/awesome/widget/notif-center/icons/clear_all.png \
     .config/awesome/widget/notif-center/icons/delete.svg \
     .config/awesome/widget/playerctl-center-toggle/icons/playerctl-center.png \
