@@ -45,15 +45,15 @@ local top_panel = function(s)
     local systray_screen = s
 
     if screen.count() > 1 and s ~= screen.primary then
-        systray_screen = s  -- Show on external monitor
+        systray_screen = s   -- Show on external monitor
     elseif screen.count() == 1 then
-        systray_screen = s  -- Show on the only screen available
+        systray_screen = s   -- Show on the only screen available
     else
-        systray_screen = nil  -- Don't show on laptop screen when external is connected
+        systray_screen = nil -- Don't show on laptop screen when external is connected
     end
 
-    s.systray = wibox.widget {
-        base_size = dpi(24),  -- DPI-scaled icon size (24 @ 96 DPI, 36 @ 144 DPI)
+    s.systray                 = wibox.widget {
+        base_size = dpi(24), -- DPI-scaled icon size (24 @ 96 DPI, 36 @ 144 DPI)
         visible = true,
         horizontal = true,
         screen = systray_screen,
@@ -65,6 +65,7 @@ local top_panel = function(s)
     s.tray_toggler            = require('widget.tray-toggle')()
     s.screen_rec              = require('widget.screen-recorder')()
     s.playerctl_center_toggle = require('widget.playerctl-center-toggle')()
+    s.kbd_battery             = require('widget.kbd-battery')()
     s.battery                 = require('widget.battery')()
     s.control_center_toggle   = require('widget.control-center-toggle')()
     s.info_center_toggle      = require('widget.info-center-toggle')()
@@ -133,6 +134,7 @@ local top_panel = function(s)
                     s.tray_toggler,
                     s.screen_rec,
                     s.playerctl_center_toggle,
+                    s.kbd_battery,
                     s.battery,
                     s.control_center_toggle,
                     layout_box,
