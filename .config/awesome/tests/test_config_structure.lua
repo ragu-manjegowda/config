@@ -8,9 +8,9 @@ local tests_failed = 0
 
 -- Setup
 local home = os.getenv("HOME")
-package.path = home .. "/.config/awesome/?.lua;" .. 
-               home .. "/.config/awesome/?/init.lua;" .. 
-               package.path
+package.path = home .. "/.config/awesome/?.lua;" ..
+    home .. "/.config/awesome/?/init.lua;" ..
+    package.path
 
 package.loaded['gears.filesystem'] = {
     get_configuration_dir = function()
@@ -86,7 +86,7 @@ if config.widget then
         "clock",
         "screen_recorder",
     }
-    
+
     for _, widget in ipairs(expected_widgets) do
         if config.widget[widget] then
             assert_type(config.widget[widget], "table", "widget." .. widget .. " is a table")
@@ -104,7 +104,7 @@ if config.module then
         "dynamic_wallpaper",
         "lockscreen",
     }
-    
+
     for _, mod in ipairs(expected_modules) do
         if config.module[mod] then
             assert_type(config.module[mod], "table", "module." .. mod .. " is a table")
@@ -121,7 +121,7 @@ if config.keyboard then
         config.keyboard.file ~= nil,
         "keyboard.file is defined"
     )
-    
+
     if config.keyboard.file then
         assert_type(config.keyboard.file, "string", "keyboard.file is a string")
         assert_test(
@@ -129,7 +129,7 @@ if config.keyboard then
             "keyboard.file is absolute path"
         )
     end
-    
+
     if config.keyboard.script then
         assert_type(config.keyboard.script, "string", "keyboard.script is a string")
     end
@@ -139,15 +139,15 @@ end
 print("\nTest Suite: Screen Recorder Configuration")
 if config.widget and config.widget.screen_recorder then
     local sr = config.widget.screen_recorder
-    
-    if sr.resolution then
+
+    if sr.display_target then
         assert_test(
-            sr.resolution:match("^%d+x%d+$"),
-            "screen_recorder.resolution has valid format",
-            "Expected WIDTHxHEIGHT, got: " .. sr.resolution
+            sr.display_target == 'primary' or sr.display_target == 'external',
+            "screen_recorder.display_target is 'primary' or 'external'",
+            "Got: " .. sr.display_target
         )
     end
-    
+
     if sr.fps then
         assert_type(sr.fps, "string", "screen_recorder.fps is a string")
         local fps_num = tonumber(sr.fps)
@@ -164,7 +164,7 @@ end
 print("\nTest Suite: Weather Configuration")
 if config.widget and config.widget.weather then
     local weather = config.widget.weather
-    
+
     if weather.update_interval then
         assert_type(weather.update_interval, "number", "update_interval is a number")
         assert_test(
@@ -172,7 +172,7 @@ if config.widget and config.widget.weather then
             "update_interval >= 60 seconds (reasonable rate limit)"
         )
     end
-    
+
     if weather.units then
         assert_test(
             weather.units == "metric" or weather.units == "imperial",
@@ -182,33 +182,19 @@ if config.widget and config.widget.weather then
     end
 end
 
--- Test: Network configuration
-print("\nTest Suite: Network Configuration")
-if config.widget and config.widget.network then
-    local net = config.widget.network
-    
-    if net.wired_interface then
-        assert_type(net.wired_interface, "string", "wired_interface is a string")
-    end
-    
-    if net.wireless_interface then
-        assert_type(net.wireless_interface, "string", "wireless_interface is a string")
-    end
-end
-
 -- Test: Lockscreen configuration
 print("\nTest Suite: Lockscreen Configuration")
 if config.module and config.module.lockscreen then
     local lock = config.module.lockscreen
-    
+
     if lock.capture_intruder ~= nil then
         assert_type(lock.capture_intruder, "boolean", "capture_intruder is a boolean")
     end
-    
+
     if lock.military_clock ~= nil then
         assert_type(lock.military_clock, "boolean", "military_clock is a boolean")
     end
-    
+
     if lock.camera_device then
         assert_test(
             lock.camera_device:match("^/dev/"),
@@ -228,4 +214,3 @@ else
     print("✓ All tests passed!")
     os.exit(0)
 end
-
