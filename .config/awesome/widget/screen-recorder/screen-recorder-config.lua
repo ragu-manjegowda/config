@@ -1,16 +1,24 @@
 local user_preferences = {}
 local config = require('configuration.config')
 
--- Screen	WIDTHxHEIGHT
-user_preferences.user_resolution = config.widget.screen_recorder.resolution or '1366x768'
+-- Determine which display to use based on config
+local display_target = config.widget.screen_recorder.display_target or 'primary'
+local target_display = config.display[display_target] or config.display.primary
 
--- Offset 	x,y
-user_preferences.user_offset = config.widget.screen_recorder.offset or '0,0'
+-- Get resolution from selected display config (single source of truth)
+local display_res = target_display.mode     -- e.g., "3840x2400"
+local display_pos = target_display.position -- e.g., "0x0"
 
--- bool   	true or false
+-- Screen resolution (from display config)
+user_preferences.user_resolution = display_res
+
+-- Offset x,y (from display config)
+user_preferences.user_offset = display_pos
+
+-- bool - true or false
 user_preferences.user_audio = config.widget.screen_recorder.audio or false
 
--- String 	$HOME
+-- String - $HOME
 user_preferences.user_save_directory = config.widget.screen_recorder.save_directory or '$HOME/Videos/Recordings/'
 
 -- String

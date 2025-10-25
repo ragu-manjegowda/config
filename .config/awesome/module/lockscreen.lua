@@ -315,7 +315,7 @@ local locker = function(s)
         )
     end
 
-    -- check_webcam()
+    check_webcam()
 
     -- Snap an image of the intruder
     local intruder_capture = function()
@@ -364,17 +364,17 @@ local locker = function(s)
     -- Login failed
     local stoprightthereyoucriminalscum = function()
         circle_container.bg = red
-        -- if capture_now then
-        --     intruder_capture()
-        -- else
-        gears.timer.start_new(
-            1,
-            function()
-                circle_container.bg = beautiful.transparent
-                type_again = true
-            end
-        )
-        -- end
+        if capture_now then
+            intruder_capture()
+        else
+            gears.timer.start_new(
+                1,
+                function()
+                    circle_container.bg = beautiful.transparent
+                    type_again = true
+                end
+            )
+        end
     end
 
     -- Login successful

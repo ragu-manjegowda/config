@@ -13,18 +13,18 @@ return {
             mode = '3840x2400',
             position = '0x0',
             -- Additional settings
-            rate = nil,  -- Optional: refresh rate (e.g., '60')
+            rate = nil, -- Optional: refresh rate (e.g., '60')
         },
 
         -- External display
         external = {
             name = 'DP-4',
             mode = '3440x1440',
-            position = '3840x0',  -- Position relative to primary
+            position = '3840x0', -- Position relative to primary
             -- Scaling: scale external to match primary height
             -- This makes cursor movement smooth between displays
-            scale_from = '3840x2400',  -- Scale to match primary dimensions
-            rate = nil,  -- Optional: refresh rate
+            scale_from = '3840x2400', -- Scale to match primary dimensions
+            rate = nil,               -- Optional: refresh rate
         },
     },
 
@@ -61,29 +61,22 @@ return {
             update_interval = 1200
         },
 
-        network         = {
-            -- Wired interface
-            wired_interface = 'enp0s31f6',
-            -- Wireless interface
-            wireless_interface = 'wlan0'
-        },
-
         clock           = {
             -- Clock widget format
             military_mode = false
         },
 
         screen_recorder = {
-            -- Default record dimension
-            resolution = '2560x1440',
-            -- X,Y coordinate
-            offset = '0,0',
+            -- Which display to record from: "primary" or "external"
+            display_target = 'external',
+            -- Resolution and offset are automatically detected from display config
+            -- based on the display_target setting above
             -- Enable audio by default
             audio = true,
             -- Recordings directory
             save_directory = '$HOME/Videos/Recordings/',
             -- Mic level
-            mic_level = '20',
+            mic_level = '100',
             -- FPS
             fps = '60'
         }
@@ -152,7 +145,7 @@ return {
             -- Default password if there's no PAM integration
             fallback_password = 'toor',
             -- Capture intruder using webcam
-            capture_intruder = true,
+            capture_intruder = false,
             -- Camera path (Some systemts will have more than one built-in
             -- camera, pick the right one with this command
             -- $ v4l2-ctl --list-devices
