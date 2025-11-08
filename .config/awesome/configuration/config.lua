@@ -72,7 +72,7 @@ return {
             -- Resolution and offset are automatically detected from display config
             -- based on the display_target setting above
             -- Enable audio by default
-            audio = true,
+            audio = false,
             -- Recordings directory
             save_directory = '$HOME/Videos/Recordings/',
             -- Mic level
