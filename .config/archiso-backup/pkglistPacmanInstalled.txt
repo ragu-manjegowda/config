@@ -44,7 +44,6 @@ linux-headers
 linux-lts
 linux-lts-headers
 lld
-lua51-lgi
 lxqt-policykit
 ly
 maim
