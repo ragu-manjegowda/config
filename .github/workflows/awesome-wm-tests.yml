@@ -358,36 +358,6 @@ jobs:
           MAKEFLAGS="-j$(nproc)" makepkg -si --noconfirm
           EOFLGI
 
-      - name: Patch lgi for LuaJIT compatibility
-        run: |
-          # Fix for: /usr/share/lua/5.1/lgi/ffi.lua:83: attempt to call field 'ref' (a nil value)
-          # Issue: https://github.com/awesomeWM/awesome/issues/4031#issuecomment-3408360239
-          # Instead of building glib from source, we patch lgi to not use the missing 'ref' function
-          # Reference: https://github.com/lgi-devs/lgi/blob/a412921fad445bcfc05/lgi/ffi.lua#L83
-
-          LGI_FFI_FILE="/usr/share/lua/5.1/lgi/ffi.lua"
-
-          if [ -f "$LGI_FFI_FILE" ]; then
-            # Check if patch is still needed
-            if grep -q '\.ref' "$LGI_FFI_FILE"; then
-              echo "Patching lgi/ffi.lua to work with LuaJIT..."
-              # Replace '.ref' with '.get' wherever it appears
-              # Example: GObject.TypeClass.ref(gtype) -> GObject.TypeClass.get(gtype)
-              sed -i 's/\.ref/\.get/g' "$LGI_FFI_FILE"
-              echo "✓ lgi patched successfully"
-              # Show what was changed
-              grep -n '\.get' "$LGI_FFI_FILE" | head -3 || true
-            else
-              echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-              echo "✓ lgi/ffi.lua already uses '.get' - patch no longer needed!"
-              echo "  You can safely remove the 'Fix lgi for LuaJIT' step from"
-              echo "  the GitHub Actions workflow file."
-              echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            fi
-          else
-            echo "⚠ Warning: lgi/ffi.lua not found at expected location"
-          fi
-
       - name: Install awesome-luajit-git from AUR
         run: |
           cd /tmp

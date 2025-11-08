@@ -1,7 +1,7 @@
 acpilight
 android-sdk-platform-tools
 anydesk-bin
-awesome-git
+awesome-luajit-git
 awmtt
 check-broken-packages-pacman-hook-git
 claude-code
