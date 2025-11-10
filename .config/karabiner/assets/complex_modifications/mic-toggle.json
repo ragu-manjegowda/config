@@ -1,0 +1,21 @@
+{
+    "title": "Toggle microphone mute with F20",
+    "rules": [
+        {
+            "description": "Press F20 to toggle mic mute/unmute",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "f20"
+                    },
+                    "to": [
+                        {
+                            "shell_command": "/Users/ragu/.config/scripts/toggle-mic.sh"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
