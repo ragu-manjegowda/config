@@ -122,6 +122,8 @@
 /.config/ibus
 /.config/imapnotify
 /.config/indicator-stickynotes
+/.config/karabiner/automatic_backups
+/.config/karabiner/karabiner.json
 /.config/kazam
 /.config/kde.org
 /.config/libaccounts-glib
