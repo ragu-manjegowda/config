@@ -60,3 +60,10 @@ user_pref("browser.fullscreen.exit_on_escape", false);
 user_pref("extensions.pocket.enabled", false);
 user_pref("accessibility.force_disabled", 1);
 user_pref("media.ffmpeg.vaapi.enabled", true);
+
+
+
+// darkman: theme preferences - follow system theme
+user_pref("layout.css.prefers-color-scheme.content-override", 2);
+user_pref("browser.theme.content-theme", 2);
+user_pref("browser.theme.toolbar-theme", 2);

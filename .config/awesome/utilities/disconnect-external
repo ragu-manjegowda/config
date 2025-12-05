@@ -9,6 +9,10 @@ source <("$HOME/.config/awesome/utilities/read-display-config")
 
 echo "Preparing for monitor disconnect..."
 
+# Stop lid brightness manager since external monitor is being disconnected
+echo "Stopping lid brightness manager..."
+systemctl --user stop lid-brightness-manager.service
+
 # Tell AwesomeWM to prepare
 awesome-client "
 local screen_mgr = require('module.screen-manager')
@@ -25,6 +29,7 @@ xrandr --dpi "$DISPLAY_DPI"
 
 echo "✓ External monitor disconnected"
 echo "✓ Windows moved to $PRIMARY_NAME"
+echo "✓ Lid brightness manager stopped (no external monitor)"
 echo ""
 echo "You can now safely unplug the external monitor"
 
