@@ -128,6 +128,7 @@ config update-index --assume-unchanged \
     .config/awesome/widget/screen-recorder/icons/recording-button.svg \
     .config/awesome/widget/screen-recorder/icons/settings.svg \
     .config/awesome/widget/screen-recorder/icons/start-recording-button.svg \
+    .config/awesome/widget/stocks/icons/refresh.svg \
     .config/awesome/widget/tray-toggle/icons/left-arrow.svg \
     .config/awesome/widget/tray-toggle/icons/right-arrow.svg \
     .config/awesome/widget/volume-slider/icons/volume-muted.png \

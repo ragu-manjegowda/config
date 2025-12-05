@@ -66,6 +66,13 @@ return {
             military_mode = false
         },
 
+        stocks          = {
+            -- List of stock symbols to display
+            symbols = { 'NVDA', 'TSLA', 'AAPL' },
+            -- Update interval in seconds
+            update_interval = 300 -- 5 minutes
+        },
+
         screen_recorder = {
             -- Which display to record from: "primary" or "external"
             display_target = 'external',
