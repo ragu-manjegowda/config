@@ -22,6 +22,12 @@ if xrandr | grep -q "^${EXTERNAL_NAME} connected"; then
     awesome-client "awesome.restart()"
 
     echo "✓ Extended display configured"
+
+    # Restart lid brightness manager service now that external monitor is connected
+    echo ""
+    echo "Restarting lid brightness manager..."
+    systemctl --user restart lid-brightness-manager.service
+    echo "✓ Lid brightness manager activated"
 else
     echo "✗ No external monitor detected on $EXTERNAL_NAME"
     echo ""

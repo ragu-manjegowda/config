@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: MPL-2.0 */
-/* SPDX-FileCopyrightText: 2024 awwpotato */
+/* SPDX-FileCopyrightText: 2024 0xda157 */
 
 #identity-box[pageproxystate="valid"]:is(
     .notSecureText,
@@ -25,13 +25,13 @@
   z-index: 9999 !important;
 }
 
-#urlbar-background {
+.urlbar-background {
   border-radius: var(--uc-button-radius) !important;
   box-shadow: none !important;
   background: transparent !important;
 }
 
-#urlbar[breakout-extend] #urlbar-background {
+#urlbar[breakout-extend] .urlbar-background {
   --field: Field;
   --urlbar-bg: var(--toolbar-field-focus-background-color);
   @media (-moz-platform: linux) {
