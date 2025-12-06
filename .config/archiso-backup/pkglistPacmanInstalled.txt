@@ -96,6 +96,8 @@ webkit2gtk-4.1
 woff2
 xcalib
 xclip
+xdg-desktop-portal
+xdg-desktop-portal-gtk
 xorg-bdftopcf
 xorg-docs
 xorg-font-util

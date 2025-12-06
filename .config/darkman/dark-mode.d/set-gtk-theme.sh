@@ -25,6 +25,8 @@ sed -i -e 's/"Numix-Cursor-Light"/"Numix-Cursor"/g' $xdg_config_path
 if ! pgrep -x "gsettings" > /dev/null
 then
     gsettings set org.gnome.desktop.interface icon-theme "Solarized-Dark-Green-Numix"
+    gsettings set org.gnome.desktop.interface gtk-theme "NumixSolarizedDarkGreen"
+    gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
 fi
 
 if ! pgrep -x "xsettingsd" > /dev/null
