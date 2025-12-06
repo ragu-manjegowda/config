@@ -50,12 +50,13 @@ return {
         weather         = {
             -- API Key
             key = '25bc90a1196e6f153eece0bc0b0fc9eb',
-            -- City ID
-            -- SJ
-            city_id = '5392171',
-            -- -- Mys
-            -- city_id = '1262321',
-            -- Units
+            -- City IDs (list of cities to show)
+            -- Find city IDs at: https://openweathermap.org/
+            city_ids = {
+                '5392171', -- San Jose, US
+                '1262321', -- Mysore, IN
+            },
+            -- Units: 'metric' or 'imperial'
             units = 'metric',
             -- Update in N seconds
             update_interval = 1200
