@@ -123,10 +123,19 @@ ui_noti_builder.notifbox_dismiss = function()
     local notifbox_dismiss = wibox.widget {
         dismiss_button,
         visible = false,
-        bg = beautiful.groups_title_bg,
+        bg = beautiful.accent,
         shape = gears.shape.circle,
         widget = wibox.container.background
     }
+
+    -- Change background on hover
+    notifbox_dismiss:connect_signal('mouse::enter', function()
+        notifbox_dismiss.bg = beautiful.groups_title_bg
+    end)
+
+    notifbox_dismiss:connect_signal('mouse::leave', function()
+        notifbox_dismiss.bg = beautiful.accent
+    end)
 
     return notifbox_dismiss
 end
