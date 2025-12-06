@@ -360,6 +360,14 @@ naughty.connect_signal(
         -- Or if the info_center is visible
         local focused = awful.screen.focused()
         if _G.dont_disturb_state or (focused.info_center and focused.info_center.visible) then
+            -- Add ALL active notifications to notification center before destroying
+            local notif_core = require('widget.notif-center.build-notifbox')
+            if notif_core.add_notification then
+                -- Add all existing notifications first
+                for _, notif in ipairs(naughty.active) do
+                    notif_core.add_notification(notif)
+                end
+            end
             naughty.destroy_all_notifications(nil, -1)
         end
     end

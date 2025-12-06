@@ -65,76 +65,187 @@ local notifbox_box = function(notif, icon, title, message, app, bgcolor)
         end
     }
 
+    local notifbox_content = wibox.widget {
+        layout = wibox.layout.fixed.vertical,
+        spacing = dpi(5),
+        {
+            expand = 'none',
+            layout = wibox.layout.align.horizontal,
+            {
+                layout = wibox.layout.fixed.horizontal,
+                spacing = dpi(5),
+                builder.notifbox_icon(icon),
+                builder.notifbox_appname(app),
+            },
+            nil,
+            {
+                notifbox_timepop,
+                notifbox_dismiss,
+                layout = wibox.layout.fixed.horizontal
+            }
+        },
+        {
+            layout = wibox.layout.fixed.vertical,
+            spacing = dpi(5),
+            {
+                builder.notifbox_title(title),
+                builder.notifbox_message(message),
+                layout = wibox.layout.fixed.vertical
+            },
+            builder.notifbox_actions(notif),
+        },
+    }
+
+    -- Inner template with background matching stocks
     local notifbox_template = wibox.widget {
         id = 'notifbox_template',
-        expand = 'none',
         {
-            {
-                layout = wibox.layout.fixed.vertical,
-                spacing = dpi(5),
-                {
-                    expand = 'none',
-                    layout = wibox.layout.align.horizontal,
-                    {
-                        layout = wibox.layout.fixed.horizontal,
-                        spacing = dpi(5),
-                        builder.notifbox_icon(icon),
-                        builder.notifbox_appname(app),
-                    },
-                    nil,
-                    {
-                        notifbox_timepop,
-                        notifbox_dismiss,
-                        layout = wibox.layout.fixed.horizontal
-                    }
-                },
-                {
-                    layout = wibox.layout.fixed.vertical,
-                    spacing = dpi(5),
-                    {
-                        builder.notifbox_title(title),
-                        builder.notifbox_message(message),
-                        layout = wibox.layout.fixed.vertical
-                    },
-                    builder.notifbox_actions(notif),
-                },
-
-            },
+            notifbox_content,
             margins = dpi(10),
             widget = wibox.container.margin
         },
-        bg = bgcolor,
+        bg = beautiful.background,
         shape = function(cr, width, height)
-            gears.shape.partially_rounded_rect(cr, width, height, true, true, true, true, beautiful.groups_radius)
+            gears.shape.rounded_rect(cr, width, height, beautiful.groups_radius)
         end,
         widget = wibox.container.background,
     }
 
-    -- Put the generated template to a container
+    -- Put the generated template to a container with accent-colored left border
     local notifbox = wibox.widget {
-        notifbox_template,
+        {
+            -- Accent left border
+            {
+                forced_width = dpi(4),
+                bg = beautiful.accent,
+                widget = wibox.container.background,
+            },
+            -- Content area with inner background
+            {
+                notifbox_template,
+                left = dpi(8),
+                right = dpi(8),
+                top = 0,
+                bottom = 0,
+                widget = wibox.container.margin,
+            },
+            layout = wibox.layout.align.horizontal,
+        },
+        bg = beautiful.groups_bg,
         shape = function(cr, width, height)
-            gears.shape.partially_rounded_rect(cr, width, height, true, true, true, true, beautiful.groups_radius)
+            gears.shape.rounded_rect(cr, width, height, beautiful.groups_radius)
         end,
         widget = wibox.container.background
     }
+
+    -- Track if mouse is hovering over dismiss button
+    local dismiss_hovered = false
+
+    notifbox_dismiss:connect_signal('mouse::enter', function()
+        dismiss_hovered = true
+    end)
+
+    notifbox_dismiss:connect_signal('mouse::leave', function()
+        dismiss_hovered = false
+    end)
+
+    -- Add click handler to dismiss button (delete only, keep notification center open)
+    notifbox_dismiss:buttons(
+        awful.util.table.join(
+            awful.button(
+                {},
+                1,
+                function()
+                    -- Just delete, don't focus or close notification center
+                    if #notifbox_layout.children == 1 then
+                        reset_notifbox_layout()
+                    else
+                        notifbox_layout:remove_widgets(notifbox, true)
+                        if _G.update_notif_count then
+                            _G.update_notif_count(#notifbox_layout.children)
+                        end
+                    end
+                    collectgarbage('collect')
+                end
+            )
+        )
+    )
 
     -- Delete notification box
     local notifbox_delete = function()
         notifbox_layout:remove_widgets(notifbox, true)
     end
 
-    -- Delete notifbox on LMB
+    -- Focus the client associated with this notification
+    local focus_client = function()
+        -- Try to find and focus the client associated with this notification
+        if notif and notif.clients then
+            for _, c in ipairs(notif.clients) do
+                if c and c.valid then
+                    c:jump_to()
+                    return true
+                end
+            end
+        end
+
+        -- Fallback: try to find client by app name
+        if app and app ~= '' then
+            for _, c in ipairs(client.get()) do
+                if c.class and c.class:lower():find(app:lower()) then
+                    c:jump_to()
+                    return true
+                end
+            end
+        end
+
+        return false
+    end
+
+    -- LMB: Focus client and delete notification
+    -- RMB: Just delete notification without focusing
     notifbox:buttons(
         awful.util.table.join(
             awful.button(
                 {},
-                1,
+                1, -- Left click: focus client then delete
+                function()
+                    -- Skip if hovering over dismiss button (it has its own handler)
+                    if dismiss_hovered then
+                        return
+                    end
+
+                    -- Try to focus the associated client
+                    focus_client()
+
+                    -- Close info center if open
+                    local focused = awful.screen.focused()
+                    if focused.info_center and focused.info_center.visible then
+                        focused.info_center:toggle()
+                    end
+
+                    -- Delete the notification
+                    if #notifbox_layout.children == 1 then
+                        reset_notifbox_layout()
+                    else
+                        notifbox_delete()
+                        if _G.update_notif_count then
+                            _G.update_notif_count(#notifbox_layout.children)
+                        end
+                    end
+                    collectgarbage('collect')
+                end
+            ),
+            awful.button(
+                {},
+                3, -- Right click: just delete without focusing
                 function()
                     if #notifbox_layout.children == 1 then
                         reset_notifbox_layout()
                     else
                         notifbox_delete()
+                        if _G.update_notif_count then
+                            _G.update_notif_count(#notifbox_layout.children)
+                        end
                     end
                     collectgarbage('collect')
                 end
