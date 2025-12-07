@@ -11,6 +11,7 @@ bluez-utils
 broadcom-wl-dkms
 ca-certificates-mozilla
 calibre
+colord
 cups
 darkman
 docker
@@ -98,6 +99,7 @@ xcalib
 xclip
 xdg-desktop-portal
 xdg-desktop-portal-gtk
+xiccd
 xorg-bdftopcf
 xorg-docs
 xorg-font-util

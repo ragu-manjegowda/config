@@ -18,6 +18,7 @@ ca-certificates-mozilla
 calibre
 check-broken-packages-pacman-hook-git
 claude-code
+colord
 cppreference
 cups
 cursor-bin
@@ -137,6 +138,7 @@ xcalib
 xclip
 xdg-desktop-portal
 xdg-desktop-portal-gtk
+xiccd
 xidlehook
 xorg-bdftopcf
 xorg-docs
