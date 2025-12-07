@@ -1,0 +1,701 @@
+#!python3
+
+"""ICC Profile Matcher - Find best matching ICC profile for your display."""
+
+import struct
+import subprocess
+import os
+import sys
+import argparse
+import math
+from pathlib import Path
+
+"""
+Usage:
+    icc-matcher                    # Auto-detect display and find matches
+    icc-matcher --display eDP-1    # Specify display output
+    icc-matcher --list-displays    # List available displays
+    icc-matcher --apply            # Interactive: select and apply a profile
+    icc-matcher --apply 1          # Apply the #1 best matching profile
+    icc-matcher --top 10           # Show 10 best matches
+"""
+
+# =============================================================================
+# CONFIGURATION - Change these for external monitors
+# =============================================================================
+
+# Default display output (change this for external monitors)
+# Examples: "eDP-1" (laptop), "DP-1", "HDMI-1", "DP-2"
+DEFAULT_DISPLAY = "eDP-1"
+
+# Directory containing ICC profiles
+ICC_PROFILE_DIR = "/usr/share/color/icc/colord"
+
+# Additional ICC profile directories to search
+ADDITIONAL_ICC_DIRS = [
+    "/usr/share/color/icc",
+    os.path.expanduser("~/.local/share/icc"),
+    "/var/lib/colord/icc",
+]
+
+# =============================================================================
+# EDID PARSING
+# =============================================================================
+
+
+def find_edid_path(display_output: str) -> str | None:
+    """Find EDID file path for a given display output."""
+    drm_base = Path("/sys/class/drm")
+
+    # Try common card numbers
+    for card in ["card0", "card1", "card2"]:
+        edid_path = drm_base / f"{card}-{display_output}" / "edid"
+        if edid_path.exists():
+            return str(edid_path)
+
+    return None
+
+
+def list_available_displays() -> list[tuple[str, str]]:
+    """List all available display outputs with EDID."""
+    displays = []
+    drm_base = Path("/sys/class/drm")
+
+    for entry in drm_base.iterdir():
+        if entry.is_dir():
+            edid_path = entry / "edid"
+            if edid_path.exists() and edid_path.stat().st_size > 0:
+                # Extract display name (e.g., "eDP-1" from "card1-eDP-1")
+                name = entry.name
+                if "-" in name:
+                    display = name.split("-", 1)[1]
+                    displays.append((display, str(edid_path)))
+
+    return displays
+
+
+def parse_edid_primaries(edid_path: str) -> dict | None:
+    """Parse color primaries from EDID file."""
+    try:
+        with open(edid_path, "rb") as f:
+            edid = f.read()
+
+        if len(edid) < 128:
+            return None
+
+        # EDID color characteristics are at bytes 25-34
+        # Format: RG_xy, BW_xy, Rx_Ry, Gx_Gy, Bx_By, Wx_Wy (each 10 bits)
+
+        # Bytes 25-26: Red/Green low bits, Blue/White low bits
+        rg_low = edid[25]
+        bw_low = edid[26]
+
+        # Extract 10-bit values
+        red_x = ((edid[27] << 2) | ((rg_low >> 6) & 0x03)) / 1024.0
+        red_y = ((edid[28] << 2) | ((rg_low >> 4) & 0x03)) / 1024.0
+        green_x = ((edid[29] << 2) | ((rg_low >> 2) & 0x03)) / 1024.0
+        green_y = ((edid[30] << 2) | (rg_low & 0x03)) / 1024.0
+        blue_x = ((edid[31] << 2) | ((bw_low >> 6) & 0x03)) / 1024.0
+        blue_y = ((edid[32] << 2) | ((bw_low >> 4) & 0x03)) / 1024.0
+        white_x = ((edid[33] << 2) | ((bw_low >> 2) & 0x03)) / 1024.0
+        white_y = ((edid[34] << 2) | (bw_low & 0x03)) / 1024.0
+
+        # Gamma is at byte 23 (stored as (gamma * 100) - 100)
+        gamma_byte = edid[23]
+        gamma = (gamma_byte + 100) / 100.0 if gamma_byte != 0xFF else 2.2
+
+        return {
+            "red": (round(red_x, 4), round(red_y, 4)),
+            "green": (round(green_x, 4), round(green_y, 4)),
+            "blue": (round(blue_x, 4), round(blue_y, 4)),
+            "white": (round(white_x, 4), round(white_y, 4)),
+            "gamma": round(gamma, 2),
+        }
+
+    except Exception as e:
+        print(f"Error parsing EDID: {e}", file=sys.stderr)
+        return None
+
+
+# =============================================================================
+# ICC PROFILE PARSING
+# =============================================================================
+
+
+def read_icc_primaries(filepath: str) -> dict | None:
+    """Read XYZ primaries from ICC profile and convert to xy chromaticity."""
+    try:
+        with open(filepath, "rb") as f:
+            data = f.read()
+
+        if len(data) < 132:
+            return None
+
+        # Get tag count (at offset 128)
+        tag_count = struct.unpack(">I", data[128:132])[0]
+
+        primaries = {}
+        description = ""
+
+        for i in range(tag_count):
+            offset = 132 + i * 12
+            if offset + 12 > len(data):
+                break
+
+            tag_sig = data[offset : offset + 4].decode("ascii", errors="ignore")
+            tag_offset = struct.unpack(">I", data[offset + 4 : offset + 8])[0]
+            tag_size = struct.unpack(">I", data[offset + 8 : offset + 12])[0]
+
+            if tag_sig in ["rXYZ", "gXYZ", "bXYZ", "wtpt"]:
+                # XYZ type: 4 byte sig + 4 byte reserved + 3 x s15Fixed16 values
+                if tag_offset + 20 <= len(data):
+                    xyz_data = data[tag_offset + 8 : tag_offset + 20]
+                    X = struct.unpack(">i", xyz_data[0:4])[0] / 65536.0
+                    Y = struct.unpack(">i", xyz_data[4:8])[0] / 65536.0
+                    Z = struct.unpack(">i", xyz_data[8:12])[0] / 65536.0
+
+                    # Convert XYZ to xy chromaticity
+                    total = X + Y + Z
+                    if total > 0:
+                        x = X / total
+                        y = Y / total
+
+                        key_map = {
+                            "rXYZ": "red",
+                            "gXYZ": "green",
+                            "bXYZ": "blue",
+                            "wtpt": "white",
+                        }
+                        primaries[key_map[tag_sig]] = (round(x, 4), round(y, 4))
+
+            elif tag_sig == "desc":
+                # Try to extract description
+                try:
+                    desc_data = data[tag_offset : tag_offset + tag_size]
+                    # Skip type signature and reserved
+                    if len(desc_data) > 12:
+                        # Try mluc type (multi-localized unicode)
+                        if desc_data[0:4] == b"mluc":
+                            # Find first string
+                            str_offset = struct.unpack(">I", desc_data[16:20])[0]
+                            str_len = struct.unpack(">I", desc_data[20:24])[0]
+                            if str_offset + str_len <= len(desc_data):
+                                description = (
+                                    desc_data[str_offset : str_offset + str_len]
+                                    .decode("utf-16-be", errors="ignore")
+                                    .strip("\x00")
+                                )
+                        # Try desc type (older profiles)
+                        elif desc_data[0:4] == b"desc":
+                            str_len = struct.unpack(">I", desc_data[8:12])[0]
+                            if str_len > 0:
+                                description = desc_data[12 : 12 + str_len - 1].decode(
+                                    "ascii", errors="ignore"
+                                )
+                except Exception:
+                    pass
+
+        if primaries:
+            primaries["description"] = description  # type: ignore[assignment]
+            return primaries
+
+        return None
+
+    except Exception:
+        return None
+
+
+def scan_icc_profiles(directories: list[str]) -> list[tuple[str, dict]]:
+    """Scan directories for ICC profiles and extract their primaries."""
+    profiles = []
+
+    for directory in directories:
+        dir_path = Path(directory)
+        if not dir_path.exists():
+            continue
+
+        for icc_file in dir_path.glob("*.icc"):
+            primaries = read_icc_primaries(str(icc_file))
+            if (
+                primaries
+                and "red" in primaries
+                and "green" in primaries
+                and "blue" in primaries
+            ):
+                profiles.append((str(icc_file), primaries))
+
+    return profiles
+
+
+# =============================================================================
+# MATCHING ALGORITHM
+# =============================================================================
+
+
+def calculate_distance(display: dict, profile: dict) -> float:
+    """Calculate color distance between display and profile primaries."""
+    total_dist = 0.0
+
+    for primary in ["red", "green", "blue"]:
+        if primary in display and primary in profile:
+            dx = display[primary][0] - profile[primary][0]
+            dy = display[primary][1] - profile[primary][1]
+            total_dist += math.sqrt(dx * dx + dy * dy)
+
+    return total_dist
+
+
+def find_best_matches(
+    display_primaries: dict, profiles: list[tuple[str, dict]], top_n: int = 5
+) -> list[tuple[str, dict, float]]:
+    """Find best matching profiles sorted by distance."""
+    matches = []
+
+    for path, primaries in profiles:
+        distance = calculate_distance(display_primaries, primaries)
+        matches.append((path, primaries, distance))
+
+    # Sort by distance (lower is better)
+    matches.sort(key=lambda x: x[2])
+
+    return matches[:top_n]
+
+
+# =============================================================================
+# COLORD INTEGRATION
+# =============================================================================
+
+
+def check_colord_running() -> bool:
+    """Check if colord daemon is running."""
+    try:
+        result = subprocess.run(["pgrep", "-x", "colord"], capture_output=True)
+        return result.returncode == 0
+    except Exception:
+        return False
+
+
+def check_xiccd_running() -> bool:
+    """Check if xiccd is running."""
+    try:
+        result = subprocess.run(["pgrep", "-x", "xiccd"], capture_output=True)
+        return result.returncode == 0
+    except Exception:
+        return False
+
+
+def start_xiccd() -> bool:
+    """Start xiccd if not running."""
+    if check_xiccd_running():
+        return True
+
+    try:
+        subprocess.Popen(
+            ["xiccd"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        )
+        # Wait a bit for xiccd to register devices
+        import time
+
+        time.sleep(2)
+        return True
+    except Exception as e:
+        print(f"Error starting xiccd: {e}", file=sys.stderr)
+        return False
+
+
+def get_colord_device_path() -> str | None:
+    """Get the colord device object path for the display."""
+    try:
+        result = subprocess.run(
+            ["colormgr", "get-devices"], capture_output=True, text=True
+        )
+
+        if result.returncode == 0:
+            for line in result.stdout.split("\n"):
+                if "Object Path:" in line and "devices" in line:
+                    return line.split(":", 1)[1].strip()
+
+        return None
+    except Exception:
+        return None
+
+
+def get_colord_profile_path(icc_file_path: str) -> str | None:
+    """Get the colord profile object path for an ICC file."""
+    try:
+        result = subprocess.run(
+            ["colormgr", "get-profiles"], capture_output=True, text=True
+        )
+
+        if result.returncode != 0:
+            return None
+
+        lines = result.stdout.split("\n")
+        current_object_path = None
+
+        for line in lines:
+            if "Object Path:" in line and "profiles" in line:
+                current_object_path = line.split(":", 1)[1].strip()
+            elif "Filename:" in line:
+                filename = line.split(":", 1)[1].strip()
+                if filename == icc_file_path:
+                    return current_object_path
+
+        return None
+    except Exception:
+        return None
+
+
+def import_profile_to_colord(icc_file_path: str) -> str | None:
+    """Import an ICC profile into colord and return its object path."""
+    try:
+        # First check if already imported
+        existing_path = get_colord_profile_path(icc_file_path)
+        if existing_path:
+            return existing_path
+
+        # Import the profile
+        result = subprocess.run(
+            ["colormgr", "import-profile", icc_file_path],
+            capture_output=True,
+            text=True,
+        )
+
+        if result.returncode == 0:
+            # Get the profile path after import
+            return get_colord_profile_path(icc_file_path)
+
+        return None
+    except Exception:
+        return None
+
+
+def apply_profile_with_colord(device_path: str, profile_path: str) -> bool:
+    """Add profile to device and make it default using colord."""
+    try:
+        # Add profile to device
+        result = subprocess.run(
+            ["colormgr", "device-add-profile", device_path, profile_path],
+            capture_output=True,
+            text=True,
+        )
+
+        if result.returncode != 0:
+            # Profile might already be added, continue to make it default
+            pass
+
+        # Make it the default profile
+        result = subprocess.run(
+            [
+                "colormgr",
+                "device-make-profile-default",
+                device_path,
+                profile_path,
+            ],
+            capture_output=True,
+            text=True,
+        )
+
+        return result.returncode == 0
+
+    except Exception as e:
+        print(f"Error applying profile: {e}", file=sys.stderr)
+        return False
+
+
+def get_current_profile() -> tuple[str | None, str | None]:
+    """Get loaded ICC profile using colormgr.
+
+    Returns:
+        tuple: (profile_path, filename) or (None, None) if not found.
+
+    """
+    try:
+        result = subprocess.run(
+            ["colormgr", "get-devices"], capture_output=True, text=True
+        )
+
+        if result.returncode == 0:
+            lines = result.stdout.split("\n")
+            for i, line in enumerate(lines):
+                if "Profile 1:" in line:
+                    # Next line usually has the filename
+                    profile_id = line.split(":", 1)[1].strip()
+                    if i + 1 < len(lines):
+                        filename = lines[i + 1].strip()
+                        return (profile_id, filename)
+                    return (profile_id, None)
+
+        return (None, None)
+    except Exception:
+        return (None, None)
+
+
+# =============================================================================
+# INTERACTIVE PROFILE SELECTION
+# =============================================================================
+
+
+def apply_profile_interactive(
+    matches: list[tuple[str, dict, float]], selection: int | None = None
+) -> bool:
+    """Interactively select and apply a profile."""
+    if not matches:
+        print("Error: No matching profiles to apply", file=sys.stderr)
+        return False
+
+    # If no selection provided, ask user
+    if selection is None:
+        print(
+            "\nSelect a profile to apply (1-{}) or 'q' to quit: ".format(len(matches)),
+            end="",
+        )
+        try:
+            user_input = input().strip()
+            if user_input.lower() == "q":
+                print("Cancelled.")
+                return False
+            selection = int(user_input)
+        except (ValueError, EOFError):
+            print("Invalid selection.", file=sys.stderr)
+            return False
+
+    # Validate selection
+    if selection < 1 or selection > len(matches):
+        print(
+            f"Error: Selection must be between 1 and {len(matches)}",
+            file=sys.stderr,
+        )
+        return False
+
+    # Get selected profile
+    selected_path, selected_primaries, selected_distance = matches[selection - 1]
+    selected_name = os.path.basename(selected_path)
+
+    print()
+    print("=" * 70)
+    print(f"APPLYING PROFILE: {selected_name}")
+    print("=" * 70)
+
+    # Step 1: Ensure colord is running
+    print("\n[1/4] Checking colord daemon...")
+    if not check_colord_running():
+        print("  ✗ colord is not running. Please start it with:")
+        print("    sudo systemctl start colord")
+        return False
+    print("  ✓ colord is running")
+
+    # Step 2: Ensure xiccd is running
+    print("\n[2/4] Checking xiccd (X11 to colord bridge)...")
+    if not check_xiccd_running():
+        print("  Starting xiccd...")
+        if not start_xiccd():
+            print("  ✗ Failed to start xiccd")
+            return False
+    print("  ✓ xiccd is running")
+
+    # Step 3: Get device path
+    print("\n[3/4] Finding display device in colord...")
+    device_path = get_colord_device_path()
+    if not device_path:
+        print("  ✗ Could not find display device in colord")
+        print("  Try running 'colormgr get-devices' to check")
+        return False
+    print(f"  ✓ Found device: {device_path}")
+
+    # Step 4: Get or import profile
+    print("\n[4/4] Importing and applying profile...")
+    profile_path = get_colord_profile_path(selected_path)
+    if not profile_path:
+        print(f"  Importing {selected_name}...")
+        profile_path = import_profile_to_colord(selected_path)
+        if not profile_path:
+            # Profile might already be in colord but not found by filename
+            # Try to find by scanning all profiles
+            print("  Profile already in colord, searching...")
+            result = subprocess.run(
+                ["colormgr", "get-profiles"], capture_output=True, text=True
+            )
+            # Look for matching profile by name
+            if result.returncode == 0:
+                lines = result.stdout.split("\n")
+                for i, line in enumerate(lines):
+                    if "Object Path:" in line and "profiles" in line:
+                        obj_path = line.split(":", 1)[1].strip()
+                        # Check next few lines for filename match
+                        for j in range(i, min(i + 10, len(lines))):
+                            if selected_path in lines[j]:
+                                profile_path = obj_path
+                                break
+                    if profile_path:
+                        break
+
+    if not profile_path:
+        print("  ✗ Could not find or import profile")
+        return False
+
+    print(f"  ✓ Profile path: {profile_path}")
+
+    # Apply the profile
+    print("  Applying profile to device...")
+    if apply_profile_with_colord(device_path, profile_path):
+        print("  ✓ Profile applied successfully!")
+    else:
+        print("  ✗ Failed to apply profile")
+        return False
+
+    # Summary
+    print()
+    print("=" * 70)
+    print("SUCCESS!")
+    print("=" * 70)
+    print(f"Profile '{selected_name}' is now active for your display.")
+    print()
+    print("Notes:")
+    print("  • Color-managed apps (Firefox, GIMP, etc.) will use this profile")
+    print("  • This profile does NOT include gamma/LUT calibration")
+    print("    (that requires a colorimeter + DisplayCAL)")
+
+    return True
+
+
+# =============================================================================
+# MAIN
+# =============================================================================
+
+
+def main() -> int:
+    """Entry point for the ICC profile matcher."""
+    parser = argparse.ArgumentParser(
+        description="Find best matching ICC profile for your display"
+    )
+    parser.add_argument(
+        "--display",
+        "-d",
+        default=DEFAULT_DISPLAY,
+        help=f"Display output name (default: {DEFAULT_DISPLAY})",
+    )
+    parser.add_argument(
+        "--list-displays",
+        "-l",
+        action="store_true",
+        help="List available displays",
+    )
+    parser.add_argument(
+        "--top",
+        "-n",
+        type=int,
+        default=5,
+        help="Number of top matches to show (default: 5)",
+    )
+    parser.add_argument(
+        "--apply",
+        "-a",
+        nargs="?",
+        const=-1,  # -1 means interactive mode
+        type=int,
+        metavar="N",
+        help="Apply profile: -a for interactive, -a N to apply Nth match",
+    )
+
+    args = parser.parse_args()
+
+    # List displays mode
+    if args.list_displays:
+        print("Available displays:")
+        displays = list_available_displays()
+        for display, _ in displays:
+            print(f"  {display}")
+        return 0
+
+    # Find EDID for the display
+    edid_path = find_edid_path(args.display)
+    if not edid_path:
+        print(
+            f"Error: Could not find EDID for display '{args.display}'",
+            file=sys.stderr,
+        )
+        print("Use --list-displays to see available displays", file=sys.stderr)
+        return 1
+
+    # Parse display primaries
+    display_primaries = parse_edid_primaries(edid_path)
+    if not display_primaries:
+        print("Error: Could not parse EDID primaries", file=sys.stderr)
+        return 1
+
+    # Print display info
+    print("=" * 70)
+    print(f"DISPLAY: {args.display}")
+    print("=" * 70)
+    print(f"  Red:   {display_primaries['red']}")
+    print(f"  Green: {display_primaries['green']}")
+    print(f"  Blue:  {display_primaries['blue']}")
+    print(f"  White: {display_primaries['white']}")
+    print(f"  Gamma: {display_primaries['gamma']}")
+    print()
+
+    # Get current profile
+    current_profile_id, current_profile_file = get_current_profile()
+    print("CURRENT PROFILE:")
+    print("-" * 70)
+    if current_profile_file:
+        print(f"  {current_profile_file}")
+    elif current_profile_id:
+        print(f"  {current_profile_id}")
+    else:
+        print("  None (or colord not detecting device)")
+    print()
+
+    # Scan ICC profiles
+    all_dirs = [ICC_PROFILE_DIR] + ADDITIONAL_ICC_DIRS
+    profiles = scan_icc_profiles(all_dirs)
+
+    if not profiles:
+        print("Error: No ICC profiles found", file=sys.stderr)
+        return 1
+
+    # Find best matches
+    matches = find_best_matches(display_primaries, profiles, args.top)
+
+    # Print matches
+    print(f"TOP {args.top} MATCHING PROFILES:")
+    print("-" * 70)
+
+    for i, (path, primaries, distance) in enumerate(matches, 1):
+        name = os.path.basename(path)
+        desc = primaries.get("description", "")
+
+        print(f"\n{i}. {name} (distance: {distance:.4f})")
+        if desc:
+            print(f"   Description: {desc}")
+        print(f"   Red:   {primaries.get('red', 'N/A')}")
+        print(f"   Green: {primaries.get('green', 'N/A')}")
+        print(f"   Blue:  {primaries.get('blue', 'N/A')}")
+        print(f"   Path:  {path}")
+
+    # Apply mode
+    if args.apply is not None:
+        selection = None if args.apply == -1 else args.apply
+        success = apply_profile_interactive(matches, selection)
+        return 0 if success else 1
+
+    # Print apply instructions
+    print()
+    print("=" * 70)
+    print("TO APPLY A PROFILE:")
+    print("=" * 70)
+
+    if matches:
+        print("\n# Apply best matching profile (#1):")
+        print("  ~/.config/awesome/utilities/icc-matcher --apply 1")
+        print("\n# Apply a specific profile (e.g., #3):")
+        print("  ~/.config/awesome/utilities/icc-matcher --apply 3")
+        print("\n# Interactive selection:")
+        print("  ~/.config/awesome/utilities/icc-matcher --apply")
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
