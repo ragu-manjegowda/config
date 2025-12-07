@@ -94,6 +94,33 @@ function M.config()
             colorscheme default
         endtry
     ]]
+
+    -- Fix terminal colors: solarized.nvim has incorrect ANSI color mapping
+    -- Matches ~/.config/alacritty/themes/solarized_{dark,light}.toml
+    local function set_terminal_colors()
+        -- Accent colors are the same for both light and dark themes
+        -- Normal colors (0-7)
+        vim.g.terminal_color_0 = "#073642"  -- normal.black
+        vim.g.terminal_color_1 = "#dc322f"  -- normal.red
+        vim.g.terminal_color_2 = "#859900"  -- normal.green
+        vim.g.terminal_color_3 = "#b58900"  -- normal.yellow
+        vim.g.terminal_color_4 = "#268bd2"  -- normal.blue
+        vim.g.terminal_color_5 = "#d33682"  -- normal.magenta
+        vim.g.terminal_color_6 = "#2aa198"  -- normal.cyan
+        vim.g.terminal_color_7 = "#eee8d5"  -- normal.white
+        -- Bright colors (8-15)
+        vim.g.terminal_color_8 = "#002b36"  -- bright.black
+        vim.g.terminal_color_9 = "#cb4b16"  -- bright.red (orange)
+        vim.g.terminal_color_10 = "#586e75" -- bright.green
+        vim.g.terminal_color_11 = "#657b83" -- bright.yellow
+        vim.g.terminal_color_12 = "#839496" -- bright.blue
+        vim.g.terminal_color_13 = "#6c71c4" -- bright.magenta (violet)
+        vim.g.terminal_color_14 = "#93a1a1" -- bright.cyan
+        vim.g.terminal_color_15 = "#fdf6e3" -- bright.white
+    end
+
+    -- Set terminal colors now
+    set_terminal_colors()
 end
 
 return M
