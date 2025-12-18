@@ -1,6 +1,7 @@
 local wibox = require('wibox')
 local awful = require('awful')
 local gears = require('gears')
+local naughty = require('naughty')
 local beautiful = require('beautiful')
 
 local dpi = beautiful.xresources.apply_dpi
@@ -22,7 +23,7 @@ local parse_to_seconds = function(time)
     return (hourInSec + minInSec + getSec)
 end
 
-local notifbox_box = function(notif, icon, title, message, app, bgcolor)
+local notifbox_box = function(notif, icon, title, message, app, _)
     local time_of_pop = return_date_time('%H:%M:%S')
     local exact_time = return_date_time('%I:%M %p')
     local exact_date_time = return_date_time('%b %d, %I:%M %p')
@@ -176,19 +177,32 @@ local notifbox_box = function(notif, icon, title, message, app, bgcolor)
         notifbox_layout:remove_widgets(notifbox, true)
     end
 
-    -- Focus the client associated with this notification
+    -- Invoke the notification's default action via D-Bus
+    -- This tells the app to open the relevant content (tab, conversation, etc.)
+    local invoke_default_action = function()
+        if notif and notif._private and notif._private.action_cb then
+            -- Invoke the "default" action - this sends ActionInvoked D-Bus signal
+            notif._private.action_cb("default")
+            -- Then destroy the notification properly
+            naughty.destroy(notif, naughty.notification_closed_reason.dismissed_by_user)
+            return true
+        end
+        return false
+    end
+
+    -- Focus client by various methods
     local focus_client = function()
-        -- Try to find and focus the client associated with this notification
-        if notif and notif.clients then
-            for _, c in ipairs(notif.clients) do
-                if c and c.valid then
-                    c:jump_to()
-                    return true
-                end
-            end
+        -- First, try to invoke the default D-Bus action
+        if invoke_default_action() then
+            return true
         end
 
-        -- Fallback: try to find client by app name
+        -- Fallback: just destroy the notification if it exists
+        if notif then
+            naughty.destroy(notif, naughty.notification_closed_reason.dismissed_by_user)
+        end
+
+        -- Fallback: try to find and focus the client by app name
         if app and app ~= '' then
             for _, c in ipairs(client.get()) do
                 if c.class and c.class:lower():find(app:lower()) then

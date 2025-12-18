@@ -1,6 +1,5 @@
 local wibox = require('wibox')
 local gears = require('gears')
-local naughty = require('naughty')
 local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 
@@ -55,20 +54,8 @@ local notifbox_add = function(n, notif_icon, notifbox_color)
     end
 end
 
-local notifbox_add_expired = function(n, notif_icon, notifbox_color)
-    n:connect_signal(
-        'destroyed',
-        function(_, reason, _)
-            -- reason 1: expired/timed out
-            -- Only add on natural expiration
-            if reason == 1 then
-                notifbox_add(n, notif_icon, notifbox_color)
-            end
-        end
-    )
-end
-
--- Expose notifbox_add for direct adding when info center is visible
+-- Expose notifbox_add for adding notifications to the info center
+-- All notifications are now kept alive (D-Bus connection active) for action invocation
 notif_core.add_notification = function(n)
     local notifbox_color = beautiful.transparent
     if n.urgency == 'critical' then
@@ -82,22 +69,5 @@ notif_core.add_notification = function(n)
 
     notifbox_add(n, notif_icon, notifbox_color)
 end
-
-naughty.connect_signal(
-    'request::display',
-    function(n)
-        local notifbox_color = beautiful.transparent
-        if n.urgency == 'critical' then
-            notifbox_color = n.bg .. '66'
-        end
-
-        local notif_icon = n.icon or n.app_icon
-        if not notif_icon then
-            notif_icon = widget_icon_dir .. 'new-notif' .. '.svg'
-        end
-
-        notifbox_add_expired(n, notif_icon, notifbox_color)
-    end
-)
 
 return notif_core

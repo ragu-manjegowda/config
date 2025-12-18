@@ -13,7 +13,8 @@ local cst = require("naughty.constants")
 -- Defaults
 naughty.config.defaults.ontop = true
 naughty.config.defaults.icon_size = dpi(32)
-naughty.config.defaults.timeout = 5
+-- timeout = 0 to prevent auto-destroy, we manage lifecycle via animation
+naughty.config.defaults.timeout = 0
 naughty.config.defaults.title = 'System Notification'
 naughty.config.defaults.margin = dpi(16)
 naughty.config.defaults.border_width = 0
@@ -61,7 +62,9 @@ ruled.notification.connect_signal(
                 fg               = beautiful.fg_normal,
                 margin           = dpi(16),
                 position         = 'top_left',
-                implicit_timeout = 5
+                -- timeout = 0 to prevent auto-destroy,
+                -- we manage lifecycle ourselves
+                implicit_timeout = 0
             }
         }
 
@@ -74,7 +77,9 @@ ruled.notification.connect_signal(
                 fg               = beautiful.fg_normal,
                 margin           = dpi(16),
                 position         = 'top_left',
-                implicit_timeout = 5
+                -- timeout = 0 to prevent auto-destroy,
+                -- we manage lifecycle ourselves
+                implicit_timeout = 0
             }
         }
 
@@ -169,6 +174,11 @@ end)
 naughty.connect_signal(
     'request::display',
     function(n)
+        -- Animation duration for non-urgent notifications (5 seconds)
+        -- Urgent notifications (from apps that set timeout=0) stay visible until dismissed
+        local POPUP_DURATION = 5
+        local is_urgent = n.urgency == 'critical'
+
         -- Actions Blueprint
         local actions_template = wibox.widget {
             notification = n,
@@ -331,20 +341,32 @@ naughty.connect_signal(
             }
         }
 
+        -- Animation for popup display duration
         local anim = animation:new({
-            duration = n.timeout,
+            duration = POPUP_DURATION,
             target = 100,
             easing = animation.easing.linear,
             reset_on_stop = false,
-            loop = n.timeout == 0,
+            loop = is_urgent, -- urgent notifications loop until dismissed
             update = function(_, pos)
                 timeout_arc.value = pos
             end,
         })
 
-        anim:connect_signal("ended", function()
-            naughty.destroy(n, -1)
-        end)
+        -- Only handle timeout for non-urgent notifications
+        -- Urgent notifications (timeout = 0) stay visible until user dismisses
+        if not is_urgent then
+            anim:connect_signal("ended", function()
+                -- Instead of destroying the notification (which closes D-Bus),
+                -- move it to the info center while keeping it alive
+                local notif_core = require('widget.notif-center.build-notifbox')
+                if notif_core.add_notification then
+                    notif_core.add_notification(n)
+                end
+                -- Just hide the popup widget
+                widget.visible = false
+            end)
+        end
 
         widget:connect_signal("mouse::enter", function()
             anim:stop()
@@ -356,19 +378,18 @@ naughty.connect_signal(
 
         anim:start()
 
-        -- Destroy popups if dont_disturb_state mode is on
+        -- Hide popups if dont_disturb_state mode is on
         -- Or if the info_center is visible
         local focused = awful.screen.focused()
         if _G.dont_disturb_state or (focused.info_center and focused.info_center.visible) then
-            -- Add ALL active notifications to notification center before destroying
+            -- Add this notification to notification center while keeping it alive
             local notif_core = require('widget.notif-center.build-notifbox')
             if notif_core.add_notification then
-                -- Add all existing notifications first
-                for _, notif in ipairs(naughty.active) do
-                    notif_core.add_notification(notif)
-                end
+                notif_core.add_notification(n)
             end
-            naughty.destroy_all_notifications(nil, -1)
+            -- Just hide the popup, don't destroy the notification
+            widget.visible = false
+            anim:stop()
         end
     end
 )
