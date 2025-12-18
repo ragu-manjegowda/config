@@ -99,7 +99,7 @@ find . -path ./html_output -prune -o -type f -newer html_output/.last_run -print
         pandoc --from=gfm --to=html5 --standalone --embed-resources "$file" \
             --output="$output_dir/$(basename "${file%.md}.html")" \
             --lua-filter=html_output/filters.lua --metadata=base_path:/ \
-            --highlight-style="${hl_dir}/solarized.theme" \
+            --syntax-highlighting="${hl_dir}/solarized.theme" \
             --css="${css_dir}/solarized.css" --metadata pagetitle="$title"
     else
         # Copy non-Markdown files to the output directory
