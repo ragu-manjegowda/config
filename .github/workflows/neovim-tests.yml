@@ -1,23 +1,130 @@
 name: Neovim Configuration Tests
 
-# Run tests only when Neovim config files change
 on:
   push:
-    branches: [ main, master, develop ]
+    branches: [main, master, develop]
     paths:
-      - '.config/nvim/**'
-      - '.github/workflows/neovim-tests.yml'
+      - ".config/nvim/**"
+      - ".github/workflows/neovim-tests.yml"
   pull_request:
-    branches: [ main, master, develop ]
+    branches: [main, master, develop]
     paths:
-      - '.config/nvim/**'
-      - '.github/workflows/neovim-tests.yml'
+      - ".config/nvim/**"
+      - ".github/workflows/neovim-tests.yml"
   workflow_dispatch:
 
 jobs:
+  # ============================================================================
+  # SETUP - Runs once, creates artifact for all test jobs
+  # ============================================================================
+  setup:
+    name: Setup Environment
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+
+    steps:
+      - name: Initialize pacman keyring
+        run: |
+          pacman-key --init
+          pacman-key --populate archlinux
+
+      - name: Install system dependencies
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm git neovim base-devel python tar nodejs npm
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install uv and Python providers
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          # uv installs to ~/.local/bin, source the env or add to PATH
+          export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
+          uv tool install pynvim
+
+      - name: Install test dependencies (plenary.nvim)
+        run: |
+          PLENARY_PATH="$HOME/.local/share/nvim/site/pack/vendor/start/plenary.nvim"
+          mkdir -p "$(dirname "$PLENARY_PATH")"
+          git clone --depth=1 https://github.com/nvim-lua/plenary.nvim "$PLENARY_PATH"
+
+      - name: Setup Neovim config
+        run: |
+          mkdir -p ~/.config
+          cp -r "$GITHUB_WORKSPACE/.config/nvim" ~/.config/
+
+      - name: Install Neovim plugins with Lazy
+        run: |
+          # Create directories with correct permissions
+          mkdir -p ~/.local/share/nvim/site/parser
+          mkdir -p ~/.cache/nvim
+          mkdir -p /tmp/nvim-treesitter
+          chmod -R 755 ~/.local/share/nvim
+          chmod -R 755 ~/.cache
+
+          # Set TMPDIR to a writable location
+          export TMPDIR=/tmp
+
+          echo "Installing plugins with Lazy.nvim..."
+          # First install, then restore to lock file versions for compatibility
+          nvim --headless "+Lazy! install" +qa 2>&1 || true
+          nvim --headless "+Lazy! restore" +qa 2>&1 || true
+
+          # Verify textobjects plugin can load (needs configs.lua)
+          if [ -f ~/.local/share/nvim/lazy/nvim-treesitter/lua/nvim-treesitter/configs.lua ]; then
+            echo "✓ nvim-treesitter API compatible"
+          else
+            echo "⚠ nvim-treesitter new API - textobjects may not work"
+          fi
+          echo "Plugins installed successfully"
+
+      - name: Install Treesitter parsers
+        timeout-minutes: 5
+        run: |
+          # Set TMPDIR to a writable location
+          export TMPDIR=/tmp
+
+          # Only install parsers if not already present
+          for parser in lua python; do
+            if find ~/.local/share/nvim -name "${parser}.so" -path "*parser*" 2>/dev/null | grep -q .; then
+              echo "✓ ${parser} parser already installed"
+            else
+              echo "Installing ${parser} parser..."
+              nvim --headless -c "TSInstallSync! ${parser}" -c "qa!" || true
+            fi
+          done
+
+          echo "=== Installed parsers ==="
+          find ~/.local/share/nvim -name "*.so" -path "*parser*" 2>/dev/null | head -10 || echo "No parsers found"
+
+      - name: Create setup artifact
+        run: |
+          # Ensure directories exist
+          mkdir -p ~/.cache/nvim
+          # Bundle nvim data, config, and tools (pynvim) for test jobs
+          # Use --warning=no-file-changed to handle files modified during tar (treesitter compiling)
+          tar --warning=no-file-changed -czf /tmp/nvim-setup.tar.gz \
+            -C $HOME .local/share/nvim .local/bin .config/nvim .cache/nvim || true
+          ls -lh /tmp/nvim-setup.tar.gz
+
+      - name: Upload setup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nvim-setup
+          path: /tmp/nvim-setup.tar.gz
+          retention-days: 1
+
+  # ============================================================================
+  # TEST - Matrix jobs, each runs a different test file
+  # ============================================================================
   test:
     name: ${{ matrix.test_name }}
     runs-on: ubuntu-latest
+    needs: setup
     container:
       image: archlinux:latest
     strategy:
@@ -51,54 +158,27 @@ jobs:
             test_name: "UI Plugins"
 
     steps:
-      - name: Initialize pacman keyring
+      - name: Install minimal dependencies
         run: |
           pacman-key --init
           pacman-key --populate archlinux
-
-      - name: Install Git
-        run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm git
+          pacman -S --noconfirm neovim tar git python
 
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Download setup artifact
+        uses: actions/download-artifact@v4
         with:
-          submodules: recursive
+          name: nvim-setup
+          path: /tmp
 
-      - name: Install Neovim and dependencies
+      - name: Restore setup
         run: |
-          pacman -S --noconfirm neovim base-devel python
-
-      - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-
-      - name: Install Python providers with uv
-        run: |
-          export PATH="$HOME/.cargo/bin:$PATH"
-          uv tool install pynvim
+          tar -xzf /tmp/nvim-setup.tar.gz -C $HOME
+          # Add pynvim to PATH
           echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: Install test dependencies
-        run: |
-          # Install plenary.nvim for testing
-          PLENARY_PATH="$HOME/.local/share/nvim/site/pack/vendor/start/plenary.nvim"
-          mkdir -p "$(dirname "$PLENARY_PATH")"
-          git clone --depth=1 https://github.com/nvim-lua/plenary.nvim "$PLENARY_PATH"
-
-      - name: Copy Neovim config to home directory
-        run: |
-          echo "Copying Neovim config from $GITHUB_WORKSPACE/.config/nvim to ~/.config/nvim"
-          mkdir -p ~/.config
-          cp -r "$GITHUB_WORKSPACE/.config/nvim" ~/.config/
-
-      - name: Install Neovim plugins with Lazy
-        run: |
-          echo "Installing plugins with Lazy.nvim..."
-          nvim --headless "+Lazy! sync" +qa
-          echo "Plugins installed successfully"
+          echo "=== Restored nvim setup ==="
+          ls -la ~/.config/nvim/
+          ls -la ~/.local/share/nvim/lazy/ | head -10
 
       - name: Run test - ${{ matrix.test_name }}
         run: |
@@ -132,6 +212,9 @@ jobs:
           path: /tmp/nvim_test_${{ matrix.test_file }}.log
           retention-days: 7
 
+  # ============================================================================
+  # LINT - Runs in parallel with setup
+  # ============================================================================
   lint:
     name: Lua Syntax Check
     runs-on: ubuntu-latest
@@ -139,42 +222,30 @@ jobs:
       image: archlinux:latest
 
     steps:
-      - name: Initialize pacman keyring
+      - name: Setup
         run: |
           pacman-key --init
           pacman-key --populate archlinux
-
-      - name: Install Git
-        run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm git
+          pacman -S --noconfirm git lua luarocks gcc make
 
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          pacman -S --noconfirm lua luarocks gcc make
-
-      - name: Install luacheck
-        run: luarocks install luacheck
-
-      - name: Copy Neovim config to home directory
-        run: |
-          echo "Copying Neovim config from $GITHUB_WORKSPACE/.config/nvim to ~/.config/nvim"
-          mkdir -p ~/.config
-          cp -r "$GITHUB_WORKSPACE/.config/nvim" ~/.config/
-
       - name: Run luacheck
         run: |
-          cd ~/.config/nvim
+          luarocks install luacheck
+          cd $GITHUB_WORKSPACE/.config/nvim
           luacheck lua/ init.lua --no-unused-args --no-unused-secondaries || true
         continue-on-error: true
 
+  # ============================================================================
+  # SUMMARY - Final status
+  # ============================================================================
   summary:
     name: All Tests Complete
     runs-on: ubuntu-latest
-    needs: [test, lint]
+    needs: [setup, test, lint]
     if: always()
 
     steps:
@@ -182,12 +253,21 @@ jobs:
         run: |
           echo "# Neovim Configuration Tests Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "All test jobs have completed. Check individual job results above." >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ needs.setup.result }}" == "success" ]; then
+            echo "✅ **Setup**: Completed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Setup**: Failed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ "${{ needs.test.result }}" == "success" ]; then
+            echo "✅ **All tests**: Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Some tests**: Failed" >> $GITHUB_STEP_SUMMARY
+          fi
 
           if [ "${{ needs.lint.result }}" == "success" ]; then
             echo "✅ **Lint check**: Passed" >> $GITHUB_STEP_SUMMARY
           else
-            echo "⚠️  **Lint check**: Issues found (non-blocking)" >> $GITHUB_STEP_SUMMARY
+            echo "⚠️ **Lint check**: Issues found (non-blocking)" >> $GITHUB_STEP_SUMMARY
           fi
-
