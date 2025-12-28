@@ -90,6 +90,6 @@
 	branch = main
 [submodule ".config/firefox/potatofox"]
 	path = .config/firefox/potatofox
-	url = https://codeberg.org/awwpotato/potatofox.git
+	url = https://codeberg.org/da157/potatofox.git
 	update = rebase
 	branch = main

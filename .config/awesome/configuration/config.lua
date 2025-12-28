@@ -69,7 +69,7 @@ return {
 
         stocks          = {
             -- List of stock symbols to display
-            symbols = { "NVDA", "TQQQ" },
+            symbols = { "NVDA", "TQQQ", "TECL" },
             -- Update interval in seconds
             update_interval = 300 -- 5 minutes
         },

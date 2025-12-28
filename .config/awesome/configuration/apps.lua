@@ -68,6 +68,11 @@ return {
 
     -- List of apps to start once on start-up
     run_on_start_up = {
+        -- Set environment for portal/Firefox theme detection (DBus + systemd)
+        -- Needed since we are using greetd as login manager and start awesome
+        -- without explicitly starting X
+        'dbus-update-activation-environment --systemd DISPLAY XAUTHORITY ' ..
+        'XDG_CURRENT_DESKTOP=awesome',
         -- Compositor
         'picom -b --dbus --config ' .. config_dir ..
         'configuration/picom.conf',
@@ -77,7 +82,6 @@ return {
         'nm-applet',
         -- Blueman applet
         'blueman-applet',
-        -- Music server
         -- Polkit and keyring
         '/usr/bin/lxqt-policykit-agent &',
         -- '/usr/bin/lxqt-policykit-agent &' ..

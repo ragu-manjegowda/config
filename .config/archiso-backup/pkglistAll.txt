@@ -38,6 +38,8 @@ git
 go
 goimapnotify-git
 google-chrome
+greetd
+greetd-tuigreet
 gst-plugin-pipewire
 gst-plugins-good
 gtk-theme-numix-solarized
@@ -63,7 +65,6 @@ linux-lts-headers
 lld
 lua-pam-git
 lxqt-policykit
-ly
 maim
 masterpdfeditor-free
 mbsync-git
@@ -82,9 +83,8 @@ noto-fonts
 noto-fonts-emoji
 ntp
 numix-cursor-theme
-nvidia
 nvidia-container-toolkit
-nvidia-lts
+nvidia-open-dkms
 openconnect-gp-git
 openconnect-gp-git-debug
 openrazer-daemon
