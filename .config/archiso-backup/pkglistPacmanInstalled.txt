@@ -24,6 +24,8 @@ fuse2
 gcr
 git
 go
+greetd
+greetd-tuigreet
 gst-plugin-pipewire
 gst-plugins-good
 imagemagick
@@ -46,7 +48,6 @@ linux-lts
 linux-lts-headers
 lld
 lxqt-policykit
-ly
 maim
 mpv
 msmtp
@@ -58,9 +59,8 @@ nfs-utils
 noto-fonts
 noto-fonts-emoji
 ntp
-nvidia
 nvidia-container-toolkit
-nvidia-lts
+nvidia-open-dkms
 openrazer-daemon
 openssh
 openssl-1.1
