@@ -1,0 +1,14 @@
+autopep8
+flake8
+mutt-language-server
+nltk
+pip
+pydocstyle
+pylint
+pylsp-mypy
+pynvim
+python-lsp-black
+python-lsp-ruff
+rfc3987-syntax
+rope
+vobject

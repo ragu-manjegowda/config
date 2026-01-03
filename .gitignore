@@ -16,6 +16,7 @@
 !/.local/share/applications
 /.local/share/applications/*
 !/.local/share/applications/nvim-usercreated.desktop
+!/.local/share/applications/sioyek.desktop
 
 ################################################################################
 ################## Regular ignores #############################################
@@ -172,6 +173,7 @@
 /.config/redshift.conf
 /.config/remmina
 /.config/rustup
+/.config/sioyek/extensions/sioyek-dict/target
 /.config/skanpagerc
 /.config/systemd/user/default.target.wants
 /.config/systemd/user/graphical-session.target.wants
@@ -190,7 +192,6 @@
 /.config/unity-monitors-v1-backup.xml
 /.config/unity-monitors.xml
 /.config/update-notifier
-/.config/user-dirs.dirs
 /.config/user-dirs.locale
 /.config/vlc
 /.config/volumeicon
@@ -237,6 +238,7 @@
 /.lesshst
 /.librewolf
 /.lldb
+/.local/bin/sioyek-dict
 /.lyxauth
 /.minirc.dfl
 /.mozilla
