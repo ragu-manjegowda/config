@@ -62,8 +62,11 @@ user_pref("accessibility.force_disabled", 1);
 user_pref("media.ffmpeg.vaapi.enabled", true);
 
 
-
 // darkman: theme preferences - follow system theme
 user_pref("layout.css.prefers-color-scheme.content-override", 2);
 user_pref("browser.theme.content-theme", 2);
 user_pref("browser.theme.toolbar-theme", 2);
+
+
+// sideberry: theme preferences - follow system theme
+user_pref("svg.context-properties.content.enabled", true);

@@ -1,0 +1,17 @@
+[package]
+name = "sioyek-dict"
+version = "0.1.0"
+edition = "2024"
+build = "build.rs"
+
+[build-dependencies]
+zip = "2"
+
+[dependencies]
+wordnet-db = "0.1"
+wordnet-types = "0.1"
+
+[profile.release]
+opt-level = "z"
+lto = true
+strip = true

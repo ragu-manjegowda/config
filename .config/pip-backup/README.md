@@ -1,19 +1,14 @@
 # Manage pip packages
 
-## Backup
+## Using uv
 
+### Restore
 ```shell
-pip list --not-required --format=freeze > requirements.txt
+uv venv --system-site-packages ~/.local/share/venv
+uv pip install -r requirements.in --python ~/.local/share/venv/bin/python
 ```
 
-## Restore
-
+### Upgrade
 ```shell
-pip install -r requirements.txt
-```
-
-## Upgrade
-
-```shell
-pip list --not-required --format=freeze | cut -d= -f1 | xargs -n 1 pip install --upgrade
+uv pip install -r requirements.in --upgrade
 ```
