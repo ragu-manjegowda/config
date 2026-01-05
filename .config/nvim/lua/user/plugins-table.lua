@@ -399,7 +399,7 @@ local all_plugins = vim.list_extend(vim.deepcopy(extra_plugins), {
     {
         "sudo-tee/opencode.nvim",
         config = function()
-            require("opencode").setup({})
+            require("user.opencode").config()
         end,
         dependencies = {
             "nvim-lua/plenary.nvim",
@@ -407,9 +407,9 @@ local all_plugins = vim.list_extend(vim.deepcopy(extra_plugins), {
                 "MeanderingProgrammer/render-markdown.nvim",
                 opts = {
                     anti_conceal = { enabled = false },
-                    file_types = { "markdown", "opencode_output" },
+                    file_types = { "opencode_output" },
                 },
-                ft = { "markdown", "opencode_output" },
+                ft = { "opencode_output" },
             }
         }
     }
