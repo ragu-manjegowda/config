@@ -147,8 +147,7 @@ local core_plugins = {
     }
 }
 
-local extra_plugins = {
-    core_plugins,
+local extra_plugins = vim.list_extend(vim.deepcopy(core_plugins), {
 
     -- Codeium
     {
@@ -208,7 +207,6 @@ local extra_plugins = {
 
     -- Vim Session
     {
-
         "Shatur/neovim-session-manager",
         dependencies = {
             "nvim-lua/plenary.nvim"
@@ -218,10 +216,9 @@ local extra_plugins = {
         end,
         event = "VeryLazy"
     }
-}
+})
 
-local all_plugins = {
-    extra_plugins,
+local all_plugins = vim.list_extend(vim.deepcopy(extra_plugins), {
 
     -- Bazel
     {
@@ -399,14 +396,24 @@ local all_plugins = {
         end,
     },
 
-    -- Sidekick
     {
-        "folke/sidekick.nvim",
-        event = "VeryLazy",
-        opts = require("user.sidekick").opts(),
-        keys = require("user.sidekick").keys()
+        "sudo-tee/opencode.nvim",
+        config = function()
+            require("opencode").setup({})
+        end,
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            {
+                "MeanderingProgrammer/render-markdown.nvim",
+                opts = {
+                    anti_conceal = { enabled = false },
+                    file_types = { "markdown", "opencode_output" },
+                },
+                ft = { "markdown", "opencode_output" },
+            }
+        }
     }
-}
+})
 
 -------------------------------------------------------------------------------
 -- Check if we need to load all plugins
