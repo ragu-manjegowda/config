@@ -1,0 +1,30 @@
+{
+    "$schema": "https://opencode.ai/config.json",
+    "provider": {
+        "nvidia-frontier": {
+            "npm": "@ai-sdk/openai-compatible",
+            "name": "NVIDIA",
+            "options": {
+                "baseURL": "https://inference-api.nvidia.com/v1",
+                "apiKey": "{env:OPENCODE_API_KEY}"
+            },
+            "models": {
+                "opus-frontier": {
+                    "id": "aws/anthropic/claude-opus-4-5",
+                    "name": "Claude 4.5 Opus",
+                    "reasoning": true,
+                    "options": {
+                        "reasoning_effort": "high"
+                    }
+                }
+            }
+        }
+    },
+    "model": "nvidia-frontier/opus-frontier",
+    "theme": "solarized",
+    "permission": {
+        "edit": "ask",
+        "write": "ask",
+        "bash": "ask"
+    }
+}
