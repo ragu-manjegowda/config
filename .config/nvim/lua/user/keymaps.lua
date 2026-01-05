@@ -169,7 +169,7 @@ function M.setup()
     ---------------------------------------------------------------------------
 
     -- Terminal exit insert mode
-    M.keymap("t", "jj", "<C-\\><C-n>", desc("Exit insert mode"))
+    M.keymap("t", "jk", "<C-\\><C-n>", desc("Exit insert mode"))
 
     ---------------------------------------------------------------------------
     -- Copy to system clipboard

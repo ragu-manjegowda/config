@@ -96,6 +96,7 @@ case "$(command -v nvim)" in
         alias vim="nvim"
         alias vimfast="nvim --cmd '+lua vim.g.blazing_fast=1'"
         alias vimfastx="nvim --cmd '+lua vim.g.blazing_fast=2'"
+        alias vimoc='nvim -c "lua require(\"user.opencode\").toggle_in_new_tab()"'
         ;;
     *)
         case "$(command -v vim)" in

@@ -15,13 +15,18 @@ on:
 
 jobs:
   # ============================================================================
-  # SETUP - Runs once, creates artifact for all test jobs
+  # SETUP - Runs once, discovers tests, creates artifact for all test jobs
+  # ============================================================================
+  # To exclude tests, create .config/nvim/tests/.testignore with one filename
+  # per line (e.g., remote_nvim_spec.lua)
   # ============================================================================
   setup:
     name: Setup Environment
     runs-on: ubuntu-latest
     container:
       image: archlinux:latest
+    outputs:
+      test_matrix: ${{ steps.discover.outputs.test_matrix }}
 
     steps:
       - name: Initialize pacman keyring
@@ -32,19 +37,82 @@ jobs:
       - name: Install system dependencies
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm git neovim base-devel python tar nodejs npm
+          pacman -S --noconfirm git neovim base-devel python tar nodejs npm jq
 
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           submodules: recursive
 
+      - name: Discover test files
+        id: discover
+        run: |
+          cd "$GITHUB_WORKSPACE/.config/nvim/tests"
+
+          # Find all test files (plenary convention: *_spec.lua)
+          echo "=== All test files ==="
+          ls -1 *_spec.lua 2>/dev/null || echo "No test files found"
+
+          # Check for blacklist file
+          BLACKLIST_FILE=".testignore"
+          TEST_ENTRIES=()
+
+          # Function to convert filename to display name
+          # e.g., "dap_spec.lua" -> "DAP Config"
+          get_display_name() {
+            local file="$1"
+            # Extract the describe() block from the file for the display name
+            local name=$(grep -m1 '^describe(' "$file" | sed 's/describe("\([^"]*\)".*/\1/' | sed "s/describe('\([^']*\)'.*/\1/")
+            if [ -n "$name" ]; then
+              echo "$name"
+            else
+              # Fallback: convert filename to title case
+              echo "$file" | sed 's/_spec\.lua$//' | sed 's/_/ /g' | sed 's/\b\(.\)/\u\1/g'
+            fi
+          }
+
+          if [ -f "$BLACKLIST_FILE" ]; then
+            echo ""
+            echo "=== Blacklisted tests (from $BLACKLIST_FILE) ==="
+            cat "$BLACKLIST_FILE"
+            echo ""
+
+            for test_file in *_spec.lua; do
+              # Skip comments and empty lines in blacklist check
+              if ! grep -qxF "$test_file" "$BLACKLIST_FILE"; then
+                display_name=$(get_display_name "$test_file")
+                TEST_ENTRIES+=("{\"file\":\"$test_file\",\"name\":\"$display_name\"}")
+                echo "✓ Including: $test_file ($display_name)"
+              else
+                echo "✗ Excluding: $test_file"
+              fi
+            done
+          else
+            echo "No blacklist file found, including all tests"
+            for test_file in *_spec.lua; do
+              display_name=$(get_display_name "$test_file")
+              TEST_ENTRIES+=("{\"file\":\"$test_file\",\"name\":\"$display_name\"}")
+              echo "✓ Including: $test_file ($display_name)"
+            done
+          fi
+
+          # Convert to JSON array for matrix
+          JSON_ARRAY=$(printf '%s\n' "${TEST_ENTRIES[@]}" | jq -s -c '.')
+          echo "test_matrix=$JSON_ARRAY" >> $GITHUB_OUTPUT
+
+          echo ""
+          echo "=== Test matrix JSON ==="
+          echo "$JSON_ARRAY" | jq .
+
       - name: Install uv and Python providers
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
-          # uv installs to ~/.local/bin, source the env or add to PATH
           export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
-          uv tool install pynvim
+          # Create venv and install pynvim (similar to local setup)
+          uv venv ~/.local/share/venv
+          uv pip install pynvim --python ~/.local/share/venv/bin/python
+          # Verify pynvim is importable
+          ~/.local/share/venv/bin/python -c "import pynvim; print('pynvim installed:', pynvim.__file__)"
 
       - name: Install test dependencies (plenary.nvim)
         run: |
@@ -105,10 +173,10 @@ jobs:
         run: |
           # Ensure directories exist
           mkdir -p ~/.cache/nvim
-          # Bundle nvim data, config, and tools (pynvim) for test jobs
+          # Bundle nvim data, config, and venv (pynvim) for test jobs
           # Use --warning=no-file-changed to handle files modified during tar (treesitter compiling)
           tar --warning=no-file-changed -czf /tmp/nvim-setup.tar.gz \
-            -C $HOME .local/share/nvim .local/bin .config/nvim .cache/nvim || true
+            -C $HOME .local/share/nvim .local/share/venv .local/bin .config/nvim .cache/nvim || true
           ls -lh /tmp/nvim-setup.tar.gz
 
       - name: Upload setup artifact
@@ -119,10 +187,10 @@ jobs:
           retention-days: 1
 
   # ============================================================================
-  # TEST - Matrix jobs, each runs a different test file
+  # TEST - Matrix jobs, each runs a different test file (parallel execution)
   # ============================================================================
   test:
-    name: ${{ matrix.test_name }}
+    name: ${{ matrix.test.name }}
     runs-on: ubuntu-latest
     needs: setup
     container:
@@ -130,32 +198,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        test_file:
-          - test_core_behavior.lua
-          - test_utils_behavior.lua
-          - test_treesitter_behavior.lua
-          - test_telescope_behavior.lua
-          - test_lsp_behavior.lua
-          - test_dap_behavior.lua
-          - test_git_behavior.lua
-          - test_ui_behavior.lua
-        include:
-          - test_file: test_core_behavior.lua
-            test_name: "Core Behavior"
-          - test_file: test_utils_behavior.lua
-            test_name: "Utils Module"
-          - test_file: test_treesitter_behavior.lua
-            test_name: "Treesitter"
-          - test_file: test_telescope_behavior.lua
-            test_name: "Telescope"
-          - test_file: test_lsp_behavior.lua
-            test_name: "LSP"
-          - test_file: test_dap_behavior.lua
-            test_name: "DAP"
-          - test_file: test_git_behavior.lua
-            test_name: "Git Integration"
-          - test_file: test_ui_behavior.lua
-            test_name: "UI Plugins"
+        test: ${{ fromJson(needs.setup.outputs.test_matrix) }}
 
     steps:
       - name: Install minimal dependencies
@@ -174,25 +217,28 @@ jobs:
       - name: Restore setup
         run: |
           tar -xzf /tmp/nvim-setup.tar.gz -C $HOME
-          # Add pynvim to PATH
+          # Add venv to PATH so Neovim can find pynvim
+          echo "$HOME/.local/share/venv/bin" >> $GITHUB_PATH
           echo "$HOME/.local/bin" >> $GITHUB_PATH
           echo "=== Restored nvim setup ==="
           ls -la ~/.config/nvim/
           ls -la ~/.local/share/nvim/lazy/ | head -10
+          # Verify pynvim is available
+          ~/.local/share/venv/bin/python -c "import pynvim; print('pynvim available')" || echo "pynvim not found"
 
-      - name: Run test - ${{ matrix.test_name }}
+      - name: Run test - ${{ matrix.test.name }}
         run: |
           cd ~/.config/nvim/tests
-          echo "Running ${{ matrix.test_file }}..."
+          echo "Running ${{ matrix.test.file }}..."
           nvim --headless \
             -u minimal_init.lua \
-            -c "lua require('plenary.busted').run('${{ matrix.test_file }}')" \
+            -c "lua require('plenary.busted').run('${{ matrix.test.file }}')" \
             -c "qa!" \
-            2>&1 | tee "/tmp/nvim_test_${{ matrix.test_file }}.log"
+            2>&1 | tee "/tmp/nvim_test_${{ matrix.test.file }}.log"
 
           # Check for failures
-          failed_count=$(grep "Failed" "/tmp/nvim_test_${{ matrix.test_file }}.log" | sed 's/\x1b\[[0-9;]*m//g' | grep -oE '[0-9]+' | tail -1)
-          error_count=$(grep "Errors" "/tmp/nvim_test_${{ matrix.test_file }}.log" | sed 's/\x1b\[[0-9;]*m//g' | grep -oE '[0-9]+' | tail -1)
+          failed_count=$(grep "Failed" "/tmp/nvim_test_${{ matrix.test.file }}.log" | sed 's/\x1b\[[0-9;]*m//g' | grep -oE '[0-9]+' | tail -1)
+          error_count=$(grep "Errors" "/tmp/nvim_test_${{ matrix.test.file }}.log" | sed 's/\x1b\[[0-9;]*m//g' | grep -oE '[0-9]+' | tail -1)
 
           failed_count=${failed_count:-0}
           error_count=${error_count:-0}
@@ -208,8 +254,8 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: test-logs-${{ matrix.test_file }}
-          path: /tmp/nvim_test_${{ matrix.test_file }}.log
+          name: test-logs-${{ matrix.test.file }}
+          path: /tmp/nvim_test_${{ matrix.test.file }}.log
           retention-days: 7
 
   # ============================================================================
