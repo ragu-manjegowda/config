@@ -5,7 +5,7 @@
 2. Open Nvim
 ```vim
 :Lazy sync
-:MasonToolsInstall 
+:MasonToolsInstall
 ```
 
 ## Unit Tests

@@ -59,13 +59,6 @@ function M.patch_session_for_non_git()
         state.api_client.create_session
 
     if original_create_session then
-        local OpencodeApiClient = require("opencode.api_client")
-
-        -- Store reference to original method from prototype
-        local orig_create = OpencodeApiClient.new().__index and
-            OpencodeApiClient.new().create_session
-
-        -- We need to wrap the api_client's create_session
         local original_api_create = state.api_client.create_session
 
         state.api_client.create_session = function(self, session_data, directory)
@@ -132,12 +125,40 @@ M.keymap = {
 M.ui = {
     position = "right",
     output = {
-        auto_scroll = true
+        auto_scroll = true,
+        rendering = {
+            -- Increase debounce to reduce rendering frequency (default: 250ms)
+            markdown_debounce_ms = 500,
+            -- Increase event throttle to reduce processing load (default: 40ms)
+            event_throttle_ms = 100,
+            -- Enable event collapsing to batch updates
+            event_collapsing = true,
+        }
     }
+}
+
+-- Opencode Context configuration
+M.context = {
+    enabled = false,    -- Enable automatic context capturing
+    cursor_data = {
+        enabled = false -- Include cursor position and line content in the context
+    },
+    diagnostics = {
+        info = true, -- Include diagnostics info in the context (default to false
+        warn = true, -- Include diagnostics warnings in the context
+        error = true -- Include diagnostics errors in the context
+    },
+    current_file = {
+        enabled = false -- Include current file path and content in the context
+    },
+    selection = {
+        enabled = true -- Include selected text in the context
+    },
 }
 
 function M.opts()
     return {
+        context = M.context,
         keymap = M.keymap,
         ui = M.ui
     }
