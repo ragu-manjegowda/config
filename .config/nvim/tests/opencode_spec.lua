@@ -152,7 +152,7 @@ describe("Opencode Config", function()
             ui = opencode_mod.ui
         end)
 
-        it("should set position to current", function()
+        it("should set position to right", function()
             assert.equals("right", ui.position,
                 "position should be 'right' to open in right split")
         end)
@@ -164,6 +164,13 @@ describe("Opencode Config", function()
         it("should enable auto_scroll for output", function()
             assert.is_true(ui.output.auto_scroll,
                 "auto_scroll should be enabled for output")
+        end)
+
+        it("should have rendering configuration for performance", function()
+            assert.is_table(ui.output.rendering)
+            assert.equals(500, ui.output.rendering.markdown_debounce_ms)
+            assert.equals(100, ui.output.rendering.event_throttle_ms)
+            assert.is_true(ui.output.rendering.event_collapsing)
         end)
     end)
 end)

@@ -1,0 +1,31 @@
+{
+    "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
+    "google_auth": false,
+    "sisyphus_agent": {
+        "disabled": true
+    },
+    "disabled_hooks": [],
+    "agents": {
+        "Sisyphus": {
+            "model": "nvidia-frontier/opus-frontier"
+        },
+        "oracle": {
+            "model": "nvidia-frontier/opus-frontier"
+        },
+        "librarian": {
+            "model": "nvidia-frontier/opus-frontier"
+        },
+        "explore": {
+            "model": "nvidia-frontier/opus-frontier"
+        },
+        "frontend-ui-ux-engineer": {
+            "model": "nvidia-frontier/opus-frontier"
+        },
+        "document-writer": {
+            "model": "nvidia-frontier/opus-frontier"
+        },
+        "multimodal-looker": {
+            "model": "nvidia-frontier/opus-frontier"
+        }
+    }
+}
