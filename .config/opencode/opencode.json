@@ -4,28 +4,29 @@
         "oh-my-opencode"
     ],
     "provider": {
-        "nvidia-frontier": {
-            "npm": "@ai-sdk/openai-compatible",
-            "name": "NVIDIA",
+        "nvidia-anthropic": {
+            "npm": "@ai-sdk/anthropic",
+            "name": "NVIDIA Anthropic",
             "options": {
-                "baseURL": "https://inference-api.nvidia.com/v1",
-                "apiKey": "{env:OPENCODE_API_KEY}",
-                "timeout": 600000
+                "baseURL": "https://llm-proxy.perflab.nvidia.com/anthropic/v1",
+                "apiKey": "{env:ONEAPI_KEY}"
             },
             "models": {
-                "opus-frontier": {
-                    "id": "aws/anthropic/claude-opus-4-5",
+                "claude-opus": {
+                    "id": "claude-opus-4-5-20251101",
                     "name": "Claude 4.5 Opus",
-                    "reasoning": true,
                     "options": {
-                        "reasoning_effort": "high"
+                        "thinking": {
+                            "type": "enabled",
+                            "budgetTokens": 16000
+                        }
                     }
                 }
             }
         }
     },
-    "model": "nvidia-frontier/opus-frontier",
-    "theme": "solarized",
+    "model": "nvidia-anthropic/claude-opus",
+    "theme": "solarized-light",
     "permission": {
         "edit": "ask",
         "write": "ask",
