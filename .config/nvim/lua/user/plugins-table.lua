@@ -394,24 +394,6 @@ local all_plugins = vim.list_extend(vim.deepcopy(extra_plugins), {
                 use_bundled_binary = true, -- Use local `mcp-hub` binary
             })
         end,
-    },
-
-    {
-        "sudo-tee/opencode.nvim",
-        config = function()
-            require("user.opencode").config()
-        end,
-        dependencies = {
-            "nvim-lua/plenary.nvim",
-            {
-                "MeanderingProgrammer/render-markdown.nvim",
-                opts = {
-                    anti_conceal = { enabled = false },
-                    file_types = { "opencode_output" },
-                },
-                ft = { "opencode_output" },
-            }
-        }
     }
 })
 

@@ -331,22 +331,6 @@ function M.set_autocommands_using_lua()
         pattern = { "checkhealth", "fugitive", "gitcommit", "text" }
     })
 
-    -- Disable folding for opencode output (markdown rendering)
-    vim.api.nvim_create_augroup("opencode_settings", { clear = true })
-    vim.api.nvim_create_autocmd({ "FileType", "BufWinEnter" }, {
-        callback = function()
-            if vim.bo.filetype == "opencode_output" then
-                vim.opt_local.foldenable = false
-                vim.opt_local.foldmethod = "manual"
-                vim.opt_local.foldlevel = 99
-            end
-        end,
-        desc = "Disable folding for opencode output",
-        group = "opencode_settings",
-        pattern = { "*" }
-    })
-
-
     -- Stop lsp client when no buffer is attached
     -- credit: https://www.reddit.com/r/neovim/s/1Xe19oPOVX
     vim.api.nvim_create_augroup("stop_lsp_with_last_client", { clear = true })

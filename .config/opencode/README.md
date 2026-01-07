@@ -11,4 +11,4 @@ npx oh-my-opencode install --no-tui --claude=no --chatgpt=no --gemini=no
 
 - Using Claude Opus 4.5 via NVIDIA inference API
 - All oh-my-opencode agents configured to use same model
-- Set `OPENCODE_API_KEY` environment variable before use
+- Set `ONEAPI_KEY` environment variable before use
