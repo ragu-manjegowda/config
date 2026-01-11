@@ -3,13 +3,15 @@ use std::fs::{self, File};
 use std::path::PathBuf;
 use std::process::Command;
 
+use nlprule_build::BinaryBuilder;
+
 fn main() {
     let home = env::var("HOME").expect("HOME not set");
-    let nltk_dir = PathBuf::from(&home).join(".cache/nltk_data/corpora");
+    let cache_dir = PathBuf::from(&home).join(".cache");
+    let nltk_dir = cache_dir.join("nltk_data/corpora");
     let zip_path = nltk_dir.join("wordnet.zip");
     let wordnet_dir = nltk_dir.join("wordnet");
 
-    // Check if zip exists, if not download via NLTK
     if !zip_path.exists() {
         println!("cargo:warning=WordNet not found, downloading via NLTK...");
 
@@ -29,7 +31,6 @@ fn main() {
         }
     }
 
-    // Check if extracted, if not unzip
     if !wordnet_dir.join("index.noun").exists() {
         println!("cargo:warning=Extracting WordNet...");
 
@@ -52,5 +53,17 @@ fn main() {
         }
     }
 
+    let nlprule_dir = cache_dir.join("nlprule");
+    fs::create_dir_all(&nlprule_dir).expect("Failed to create nlprule cache dir");
+
+    let _ = BinaryBuilder::new(&["en"], &nlprule_dir)
+        .build()
+        .expect("Failed to download nlprule binaries")
+        .validate();
+
+    println!(
+        "cargo:rustc-env=NLPRULE_CACHE_DIR={}",
+        nlprule_dir.display()
+    );
     println!("cargo:rerun-if-changed=build.rs");
 }
