@@ -807,3 +807,19 @@ function watch-email() {
         ~/.cache/awesome/notify.log 2>&1 &
     disown %eval
 }
+
+###############################################################################
+############################## get-notifications ###################################
+###############################################################################
+
+function get-notifications() {
+    awesome-client '
+    local naughty = require("naughty")
+    local result = ""
+    for _, n in ipairs(naughty.active) do
+        result = result .. "Title: " .. tostring(n.title) .. "\n"
+        result = result .. "Message: " .. tostring(n.message) .. "\n\n"
+    end
+    return result
+    '
+}

@@ -17,7 +17,7 @@ def fetch_stock_data(stock_symbol):
     except ImportError:
         return {
             "error": "yfinance not installed",
-            "hint": "Run ~/.config/awesome/library/setup_stocks.sh",
+            "hint": "Run ~/.config/awesome/library/stocks/stocks_fetcher.sh",
         }
 
     try:
