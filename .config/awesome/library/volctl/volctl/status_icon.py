@@ -1,6 +1,6 @@
 from math import floor
 import gi
-from gi.repository import Gtk, Gdk, GLib, GdkPixbuf
+from gi.repository import Gtk, Gdk, GLib
 
 try:
     gi.require_version("StatusNotifier", "1.0")
@@ -108,6 +108,7 @@ class StatusIcon:
     def _create_gtksi(self):
         self._instance = Gtk.StatusIcon()
         self._instance.set_visible(True)
+        self._instance.set_name("volctl")
         self._instance.set_title("Volume")
         self._instance.set_has_tooltip(True)
         self._instance.connect("popup-menu", self._cb_gtksi_popup)
@@ -256,7 +257,10 @@ class StatusIcon:
             if self._check_embed_timeout:
                 GLib.Source.remove(self._check_embed_timeout)
             try:
-                vol, mute = self._volctl.pulsemgr.volume, self._volctl.pulsemgr.mute
+                vol, mute = (
+                    self._volctl.pulsemgr.volume,
+                    self._volctl.pulsemgr.mute,
+                )
             except AttributeError:
                 return
             self.update(vol, mute)

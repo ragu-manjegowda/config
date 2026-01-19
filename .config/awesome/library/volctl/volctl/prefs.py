@@ -1,4 +1,5 @@
 """volctl preference dialog"""
+
 from math import floor
 from gi.repository import Gtk, Gdk, Gio
 
@@ -54,6 +55,7 @@ class PreferencesDialog(Gtk.Dialog):
 
         # Volume slider window options
         self._create_section_label("Volume sliders")
+        self._add_switch("allow-extra-volume")
         self._add_switch("show-percentage")
         self._add_switch("vu-enabled")
         self._add_switch("auto-close")
@@ -170,7 +172,7 @@ class PreferencesDialog(Gtk.Dialog):
 
     @staticmethod
     def _scale_timeout_format(_, value):
-        return f"{value/1000:.1f} sec"
+        return f"{value / 1000:.1f} sec"
 
     @staticmethod
     def _scale_osd_size_format(_, value):

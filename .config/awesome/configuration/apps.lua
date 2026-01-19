@@ -119,7 +119,7 @@ return {
         -- Sleep hook to update wallpaper when coming back from sleep
         config_dir .. 'utilities/suspend-hook.py &',
         -- Start volctl
-        config_dir .. 'utilities/volctl &',
+        config_dir .. 'utilities/volctl',
         -- Start playerctl daemon
         'playerctld daemon',
         -- Set colemak dh layout and enable right alt key

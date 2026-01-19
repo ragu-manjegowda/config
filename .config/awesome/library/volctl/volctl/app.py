@@ -1,9 +1,10 @@
 """volctl application"""
 
 from subprocess import Popen
-import sys
 from os import system
+import sys
 from gi.repository import Gdk, Gio, Gtk
+import shlex
 
 from volctl.meta import (
     PROGRAM_NAME,
@@ -14,6 +15,7 @@ from volctl.meta import (
     VERSION,
 )
 from volctl.status_icon import StatusIcon
+
 from volctl.prefs import PreferencesDialog
 from volctl.pulsemgr import PulseManager
 from volctl.slider_win import VolumeSliders
@@ -105,12 +107,14 @@ class VolctlApp:
         self._mute = mute
 
         self.status_icon.update(volume, mute)
-        # OSD
+        # OSD - use AwesomeWM's OSD instead of built-in
         if self._first_volume_update:
             self._first_volume_update = False  # Avoid showing on program start
             return
-        system(""" echo "awesome.emit_signal(\'widget::volume\')" | awesome-client """)
-        system(""" echo "awesome.emit_signal(\'module::volume_osd:show\', true)" | awesome-client """)
+        system("echo \"awesome.emit_signal('widget::volume')\" | awesome-client")
+        system(
+            "echo \"awesome.emit_signal('module::volume_osd:show', true)\" | awesome-client"
+        )
 
     # Updates coming from pulseaudio
 
@@ -188,8 +192,11 @@ class VolctlApp:
     def launch_mixer(self):
         """Launch external mixer."""
         mixer_cmd = self.settings.get_string("mixer-command")
-        if mixer_cmd == "":
+        mixer_cmd_str = self.settings.get_string("mixer-command")
+        if mixer_cmd_str == "":
             mixer_cmd = DEFAULT_MIXER_CMD
+        else:
+            mixer_cmd = shlex.split(mixer_cmd_str)
         if self._mixer_process is None or not self._mixer_process.poll() is None:
             self._mixer_process = Popen(mixer_cmd)
         # TODO: bring mixer win to front otherwise
