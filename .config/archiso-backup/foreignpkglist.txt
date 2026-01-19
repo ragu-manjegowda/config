@@ -29,6 +29,7 @@ pam-fprint-grosshack
 paru
 pavucontrol-gtk3
 picom-git
+pinta
 rdrview-git
 reflector-pacman-hook-git
 ruby-neovim
