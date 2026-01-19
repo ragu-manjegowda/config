@@ -1,0 +1,10 @@
+*.svn
+*~
+.DS_Store
+ThumbsDB
+\#*#
+.#*
+*.pyc
+build
+volctl.egg-info
+/venv

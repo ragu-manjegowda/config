@@ -80,7 +80,7 @@ class PulseManager:
         self._monitor_streams = {}
         self._read_cb_ctypes = c.PA_STREAM_REQUEST_CB_T(self._read_cb)
         self._samplespec = c.PA_SAMPLE_SPEC(
-            format=c.PA_SAMPLE_FLOAT32BE, rate=25, channels=1
+            format=c.PA_SAMPLE_FLOAT32NE, rate=25, channels=1
         )
 
         self._connect()
@@ -118,7 +118,13 @@ class PulseManager:
                     self._pulse_loop_paused = False
 
     def _connect(self):
-        self._pulse.connect(wait=True)
+        if self._pulse.connected:
+            return
+        try:
+            self._pulse.connect(wait=True)
+        except Exception:
+            self._pulse = Pulse(client_name=PROGRAM_NAME, connect=False)
+            self._pulse.connect(wait=True)
         print("PulseAudio connected")
         self._start_polling()
         GLib.idle_add(self._volctl.on_connected)
@@ -130,7 +136,11 @@ class PulseManager:
             while self._poller_thread.events:
                 event = self._poller_thread.events.popleft()
 
-                new_tuple = (PulseEventTypeEnum.new, event.facility, event.index)
+                new_tuple = (
+                    PulseEventTypeEnum.new,
+                    event.facility,
+                    event.index,
+                )
                 if event.t == PulseEventTypeEnum.remove and events.pop(
                     new_tuple, False
                 ):
@@ -244,7 +254,7 @@ class PulseManager:
         c.pa.stream_connect_record(
             stream,
             str(sink_idx).encode("utf-8"),
-            c.PA_BUFFER_ATTR(fragsize=4, maxlength=2 ** 32 - 1),
+            c.PA_BUFFER_ATTR(fragsize=4, maxlength=2**32 - 1),
             c.PA_STREAM_DONT_MOVE
             | c.PA_STREAM_PEAK_DETECT
             | c.PA_STREAM_ADJUST_LATENCY
