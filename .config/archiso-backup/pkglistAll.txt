@@ -96,6 +96,7 @@ paru
 pavucontrol-gtk3
 perl-cgi
 picom-git
+pinta
 pipewire-alsa
 pipewire-pulse
 playerctl

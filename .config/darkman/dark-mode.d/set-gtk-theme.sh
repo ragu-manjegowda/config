@@ -3,6 +3,7 @@
 # https://github.com/derat/xsettingsd/wiki/Settings
 gtk2_config_path="$HOME/.gtkrc-2.0"
 gtk3_config_path="$HOME/.config/gtk-3.0/settings.ini"
+gtk4_config_path="$HOME/.config/gtk-4.0"
 icon_config_path="$HOME/.icons/default/index.theme"
 xdg_config_path="$HOME/.config/xsettingsd/xsettingsd.conf"
 
@@ -21,6 +22,9 @@ sed -i -e 's/"Numix-Cursor-Light"/"Numix-Cursor"/g' $gtk2_config_path
 sed -i -e 's/Numix-Cursor-Light$/Numix-Cursor/g' $gtk3_config_path
 sed -i -e 's/Numix-Cursor-Light$/Numix-Cursor/g' $icon_config_path
 sed -i -e 's/"Numix-Cursor-Light"/"Numix-Cursor"/g' $xdg_config_path
+sed -i -e 's/Net\/ColorScheme "prefer-light"/Net\/ColorScheme "prefer-dark"/g' $xdg_config_path
+
+cp "${gtk4_config_path}/gtk-dark.css" "${gtk4_config_path}/gtk.css"
 
 if ! pgrep -x "gsettings" > /dev/null
 then
@@ -45,3 +49,5 @@ then
     sleep 0.2
     killall lxappearance
 fi
+
+systemctl --user restart xdg-desktop-portal-gtk
