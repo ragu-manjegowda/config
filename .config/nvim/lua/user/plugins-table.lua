@@ -378,22 +378,6 @@ local all_plugins = vim.list_extend(vim.deepcopy(extra_plugins), {
         "nacro90/numb.nvim",
         event = "CmdlineEnter",
         opts = {}
-    },
-
-    -- LLMs
-
-    -- MCPhub
-    {
-        "ravitemer/mcphub.nvim",
-        dependencies = {
-            "nvim-lua/plenary.nvim",
-        },
-        build = "bundled_build.lua", -- Bundles `mcp-hub` binary along with the neovim plugin
-        config = function()
-            require("mcphub").setup({
-                use_bundled_binary = true, -- Use local `mcp-hub` binary
-            })
-        end,
     }
 })
 

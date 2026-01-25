@@ -1,0 +1,2 @@
+.config/systemd/user/nvidia-mcp-proxy.service filter=git-crypt diff=git-crypt
+.config/nvidia-mcphub/** filter=git-crypt diff=git-crypt
