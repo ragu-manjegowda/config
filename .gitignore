@@ -79,7 +79,6 @@
 /.config/awesome/widget/email/mails.txt
 /.config/bash/.bash_history
 /.config/bash/bash_custom_homebrew_first
-/.config/bash/bash_extras
 /.config/blender
 /.config/broot/conf.hjson
 /.config/broot/launcher
@@ -145,9 +144,6 @@
 /.config/neomutt/__pycache__
 /.config/neomutt/accounts/*/TOKEN_FILENAME*
 /.config/neomutt/accounts/*/msmtp.log
-/.config/neomutt/accounts/personal/raghudarshan
-/.config/neomutt/accounts/work/outlook
-/.config/neomutt/accounts/work/outlook-offline
 /.config/neomutt/aliases
 /.config/neomutt/cache
 /.config/neomutt/history
@@ -169,7 +165,6 @@
 /.config/ranger/plugins/__init__.py
 /.config/ranger/plugins/__pycache__
 /.config/ranger/rifle.conf
-/.config/rclone/rclone.conf
 /.config/redshift.conf
 /.config/remmina
 /.config/rustup
