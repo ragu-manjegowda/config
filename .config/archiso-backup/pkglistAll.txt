@@ -85,6 +85,7 @@ ntp
 numix-cursor-theme
 nvidia-container-toolkit
 nvidia-open-dkms
+opencode-bin
 openconnect-gp-git
 openconnect-gp-git-debug
 openrazer-daemon

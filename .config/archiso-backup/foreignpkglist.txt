@@ -22,6 +22,7 @@ neomutt-git
 newsboat-git
 nomachine
 numix-cursor-theme
+opencode-bin
 openconnect-gp-git
 openconnect-gp-git-debug
 pacman-cleanup-hook

@@ -3,6 +3,44 @@
     "plugin": [
         "oh-my-opencode"
     ],
+    "mcp": {
+        "colossus-mysql": {
+            "type": "remote",
+            "url": "http://localhost:10356/maas/colossus_mysql/mcp"
+        },
+        "confluence": {
+            "type": "remote",
+            "url": "http://localhost:10356/maas/confluence/mcp"
+        },
+        "gdrive": {
+            "type": "remote",
+            "url": "http://localhost:10356/maas/gdrive/mcp"
+        },
+        "gerrit": {
+            "type": "remote",
+            "url": "http://localhost:10356/maas/gerrit/mcp"
+        },
+        "gitlab": {
+            "type": "remote",
+            "url": "http://localhost:10356/maas/gitlab/mcp"
+        },
+        "jira": {
+            "type": "remote",
+            "url": "http://localhost:10356/maas/jira/mcp"
+        },
+        "nvbugs": {
+            "type": "remote",
+            "url": "http://localhost:10356/maas/nvbugs/mcp"
+        },
+        "sharepoint": {
+            "type": "remote",
+            "url": "http://localhost:10356/maas/sharepoint/mcp"
+        },
+        "maas-onedrive-mcp-server": {
+            "type": "remote",
+            "url": "http://localhost:10356/maas/onedrive/mcp/mcp"
+        }
+    },
     "provider": {
         "nvidia-anthropic": {
             "npm": "@ai-sdk/anthropic",

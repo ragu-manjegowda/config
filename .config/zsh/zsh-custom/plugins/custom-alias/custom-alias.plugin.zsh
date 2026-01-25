@@ -823,3 +823,12 @@ function get-notifications() {
     return result
     '
 }
+
+###############################################################################
+############################## git-crypt ######################################
+###############################################################################
+
+config-crypt-add() {
+    local pattern="$1"
+    echo "$pattern filter=git-crypt diff=git-crypt" >> "${GIT_WORK_TREE:-$HOME}/.gitattributes"
+}
