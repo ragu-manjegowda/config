@@ -21,39 +21,41 @@ function M.dec_width_ind()
     return g.nvim_tree_width
 end
 
-function M.on_attach(_)
-    local res, api = pcall(require, "nvim-tree.api")
+function M.on_attach(bufnr)
+    local res, api, utils
+
+    res, api = pcall(require, "nvim-tree.api")
     if not res then
         vim.notify("nvim-tree.api not found", vim.log.levels.ERROR)
     else
-        local utils
         res, utils = pcall(require, "user.utils")
         if not res then
             vim.notify("Error loading user.utils", vim.log.levels.ERROR)
             return
         end
-
-        local opts = function(desc)
-            return {
-                desc = "nvim-tree: " .. desc
-            }
-        end
-
-        utils.keymap("n", "<leader><Tab>", api.node.open.tab,
-            opts("open in new tab"))
-
-        utils.keymap("n", "<leader>tgr", api.git.reload,
-            opts("reload nvim-tree git"))
-
-        utils.keymap("n", "<leader>tmn", api.marks.navigate.next,
-            opts("navigate to next mark"))
-
-        utils.keymap("n", "<leader>tmp", api.marks.navigate.prev,
-            opts("navigate to previous mark"))
-
-        utils.keymap("n", "<leader>tt", api.tree.toggle,
-            opts("toggle nvim-tree"))
     end
+
+    local function opts(desc)
+        return {
+            desc = "nvim-tree: " .. desc,
+            buffer = bufnr,
+            nowait = true,
+        }
+    end
+
+    api.config.mappings.default_on_attach(bufnr)
+
+    utils.keymap("n", "<leader><Tab>", api.node.open.tab,
+        opts("open in new tab"))
+
+    utils.keymap("n", "<leader>tgr", api.git.reload,
+        opts("reload nvim-tree git"))
+
+    utils.keymap("n", "<leader>tmn", api.marks.navigate.next,
+        opts("navigate to next mark"))
+
+    utils.keymap("n", "<leader>tmp", api.marks.navigate.prev,
+        opts("navigate to previous mark"))
 end
 
 function M.config()
@@ -66,20 +68,17 @@ function M.config()
     vim.g.loaded_netrw = 1
     vim.g.loaded_netrwPlugin = 1
 
+    local api = require("nvim-tree.api")
+    local utils = require("user.utils")
+
+    utils.keymap("n", "<leader>tt", api.tree.toggle,
+        { desc = "Toggle nvim-tree" })
+
     nvim_tree.setup {
-        on_attach = M.on_attach(),
+        on_attach = M.on_attach,
         update_focused_file = {
-            -- enables the feature
-            enable      = true,
-            -- update the root directory of the tree to the one of the
-            -- folder containing the file if the file is not under the
-            -- current root directory only relevant when
-            -- `update_focused_file.enable` is true
-            update_cwd  = false,
-            -- list of buffer names / filetypes that will not update the
-            -- cwd if the file isn't found under the current root directory
-            -- only relevant when `update_focused_file.update_cwd` is true
-            -- and `update_focused_file.enable` is true
+            enable = true,
+            update_cwd = false,
             ignore_list = {}
         },
         view = {

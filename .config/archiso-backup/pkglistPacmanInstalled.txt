@@ -63,7 +63,6 @@ nvidia-container-toolkit
 nvidia-open-dkms
 openrazer-daemon
 openssh
-openssl-1.1
 perl-cgi
 pipewire-alsa
 pipewire-pulse

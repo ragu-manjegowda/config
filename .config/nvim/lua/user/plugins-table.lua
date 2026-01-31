@@ -148,7 +148,6 @@ local core_plugins = {
 }
 
 local extra_plugins = vim.list_extend(vim.deepcopy(core_plugins), {
-
     -- Codeium
     {
         "monkoose/neocodeium",
@@ -219,7 +218,6 @@ local extra_plugins = vim.list_extend(vim.deepcopy(core_plugins), {
 })
 
 local all_plugins = vim.list_extend(vim.deepcopy(extra_plugins), {
-
     -- Bazel
     {
         "alexander-born/bazel.nvim",
@@ -378,6 +376,21 @@ local all_plugins = vim.list_extend(vim.deepcopy(extra_plugins), {
         "nacro90/numb.nvim",
         event = "CmdlineEnter",
         opts = {}
+    },
+
+    {
+        "chrisbra/csv.vim",
+        ft = { "csv", "dat" },
+        config = function()
+            -- Ensure filetype plugins are enabled
+            vim.cmd("filetype plugin on")
+
+            -- Set CSV plugin options
+            vim.g.csv_autocmd_arrange = 1
+            vim.g.csv_autocmd_arrange_size = 1024 * 1024
+
+            vim.g.csv_bind_B = 1
+        end,
     }
 })
 
