@@ -15,10 +15,22 @@ if xrandr | grep -q "^${EXTERNAL_NAME} connected"; then
     # Set up extended display
     "$HOME/.config/awesome/utilities/setup-monitors"
 
-    # Restart AwesomeWM to properly initialize new screen
+    # Wait for xrandr to finish
+    sleep 2
+
+    # Migrate clients to external monitor
     echo ""
+    echo "Migrating windows to external monitor..."
+    awesome-client "
+local screen_mgr = require('module.screen-manager')
+screen_mgr.migrate_to_external()
+"
+
+    # Wait for migration to complete
+    sleep 2
+
+    # Restart AwesomeWM to properly initialize new screen
     echo "Restarting AwesomeWM to initialize new screen..."
-    sleep 1
     awesome-client "awesome.restart()"
 
     echo "✓ Extended display configured"

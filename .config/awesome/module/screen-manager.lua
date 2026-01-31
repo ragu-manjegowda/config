@@ -299,6 +299,92 @@ local restore_windows_to_external = function(new_screen)
     end)
 end
 
+-- Move all clients from primary to external monitor (fresh connect)
+local move_all_clients_to_external = function(external_screen)
+    local primary_screen = screen.primary
+    local clients_by_tag = {}
+    local total_clients = 0
+
+    -- Move systray to external monitor
+    if external_screen and external_screen.systray then
+        external_screen.systray.screen = external_screen
+        external_screen.systray.visible = true
+    end
+
+    -- Get currently focused tag on primary screen
+    local focused_tag_index = nil
+    for _, tag in ipairs(primary_screen.tags) do
+        if tag.selected then
+            focused_tag_index = tag.index
+            break
+        end
+    end
+
+    -- Collect all clients from primary screen grouped by tag
+    for _, tag in ipairs(primary_screen.tags) do
+        local tag_clients = tag:clients()
+        for _, c in ipairs(tag_clients) do
+            if c.valid then
+                local tag_index = tag.index or 1
+                if not clients_by_tag[tag_index] then
+                    clients_by_tag[tag_index] = {}
+                end
+                table.insert(clients_by_tag[tag_index], {
+                    client = c,
+                    was_floating = c.floating,
+                    was_maximized = c.maximized,
+                    was_fullscreen = c.fullscreen,
+                    was_minimized = c.minimized,
+                    geometry = c:geometry()
+                })
+                total_clients = total_clients + 1
+            end
+        end
+    end
+
+    -- Move clients to external screen, preserving tag assignments
+    for tag_index, clients in pairs(clients_by_tag) do
+        local target_tag = external_screen.tags[tag_index]
+        if target_tag then
+            for _, state in ipairs(clients) do
+                local c = state.client
+                pcall(function()
+                    c:move_to_screen(external_screen)
+                    c:tags({})
+                    c:tags({ target_tag })
+
+                    -- Restore window state
+                    if state.was_minimized then
+                        c.minimized = true
+                    elseif state.was_fullscreen then
+                        c.fullscreen = true
+                    elseif state.was_maximized then
+                        c.maximized = true
+                    elseif state.was_floating and state.geometry then
+                        c.floating = true
+                        local geo = state.geometry
+                        if geo.width <= external_screen.geometry.width and
+                           geo.height <= external_screen.geometry.height then
+                            c:geometry(geo)
+                        end
+                    end
+                end)
+            end
+        end
+    end
+
+    awful.layout.arrange(external_screen)
+    awful.layout.arrange(primary_screen)
+
+    -- Focus external screen and restore tag selection
+    awful.screen.focus(external_screen)
+    if focused_tag_index and external_screen.tags[focused_tag_index] then
+        external_screen.tags[focused_tag_index]:view_only()
+    end
+
+    return total_clients
+end
+
 -- Handle screen being removed
 screen.connect_signal(
     'removed',
@@ -330,12 +416,32 @@ screen.connect_signal(
     end
 )
 
--- Prepare for disconnect - this will be called BEFORE xrandr turns off the monitor
 screen_manager.prepare_for_disconnect = function()
-    -- Find and move all windows from non-primary screens NOW
     for s in screen do
         if s ~= screen.primary then
             reorganize_windows_on_remove(s)
+        end
+    end
+end
+
+screen_manager.migrate_to_external = function()
+    local external_screen = nil
+    for s in screen do
+        if s ~= screen.primary then
+            external_screen = s
+            break
+        end
+    end
+
+    if external_screen then
+        local moved = move_all_clients_to_external(external_screen)
+        if moved > 0 then
+            naughty.notification({
+                app_name = 'Screen Manager',
+                title = 'Windows Migrated',
+                message = moved .. ' window(s) moved to external monitor',
+                timeout = 3
+            })
         end
     end
 end
