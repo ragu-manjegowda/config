@@ -41,7 +41,6 @@ end
 
 function M.setup()
     --Remap space as leader key
-    M.keymap("", "<Space>", "<Nop>")
     vim.g.mapleader = " "
     vim.g.maplocalleader = " "
 

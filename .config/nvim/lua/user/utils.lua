@@ -62,26 +62,13 @@ function M.get_colors()
 end
 
 local function restore_nvim_tree()
-    local res, nvim_tree_api, nvim_tree_change_dir
-
-    res, nvim_tree_api = pcall(require, "nvim-tree.api")
+    local res, nvim_tree_api = pcall(require, "nvim-tree.api")
     if not res then
-        -- do best effort, if plugin is not loaded yet, don't bother
-        return
-    end
-
-    res, nvim_tree_change_dir = pcall(require,
-        "nvim-tree.actions.root.change-dir")
-
-    if not res then
-        vim.notify("nvim-tree.actions.root.current-dir not found",
-            vim.log.levels.ERROR)
-
         return
     end
 
     if current_root_dir ~= nil then
-        nvim_tree_change_dir.fn(current_root_dir)
+        nvim_tree_api.tree.change_root(current_root_dir)
         return
     end
 

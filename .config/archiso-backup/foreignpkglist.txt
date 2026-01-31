@@ -25,6 +25,7 @@ numix-cursor-theme
 opencode-bin
 openconnect-gp-git
 openconnect-gp-git-debug
+openssl-1.1
 pacman-cleanup-hook
 pam-fprint-grosshack
 paru
