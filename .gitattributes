@@ -3,6 +3,8 @@
 .config/neomutt/accounts/work/outlook filter=git-crypt diff=git-crypt
 .config/neomutt/accounts/work/outlook-offline filter=git-crypt diff=git-crypt
 .config/nvidia-mcphub/** filter=git-crypt diff=git-crypt
+.config/opencode/oh-my-opencode.json filter=git-crypt diff=git-crypt
+.config/opencode/opencode.json filter=git-crypt diff=git-crypt
 .config/rclone/rclone.conf filter=git-crypt diff=git-crypt
 .config/systemd/user/nvidia-mcp-proxy.service filter=git-crypt diff=git-crypt
 .config/zsh/zsh_history filter=git-crypt diff=git-crypt
