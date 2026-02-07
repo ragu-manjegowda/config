@@ -2,5 +2,5 @@
 Name=awesome
 Comment=Highly configurable framework window manager
 TryExec=awesome
-Exec=awesome >> ~/.cache/awesome/stdout 2>> ~/.cache/awesome/stderr
+Exec=awesome >> ~/.local/state/awesome/stdout 2>> ~/.local/state/awesome/stderr
 Type=Application

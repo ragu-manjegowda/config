@@ -16,7 +16,7 @@ echo "  $test_name"
 echo "========================================="
 echo ""
 
-MAILCAP_FILE="$HOME/.config/neomutt/mailcap"
+MAILCAP_FILE="$HOME/.config/neomutt/config/mailcap"
 
 # Test 1: HTML rendering configured
 echo -n "Testing HTML rendering configured... "
@@ -132,4 +132,3 @@ if [ $failed -gt 0 ]; then
     exit 1
 fi
 exit 0
-

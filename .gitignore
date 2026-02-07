@@ -120,7 +120,6 @@
 /.config/google-chrome
 /.config/gtk-2.0
 /.config/ibus
-/.config/imapnotify
 /.config/indicator-stickynotes
 /.config/karabiner/automatic_backups
 /.config/karabiner/karabiner.json
@@ -141,14 +140,12 @@
 /.config/mpv/scripts/uosc
 /.config/nautilus
 /.config/neofetch/config.conf
-/.config/neomutt/__pycache__
-/.config/neomutt/accounts/*/TOKEN_FILENAME*
+/.config/neomutt/**/.mypy_cache
+/.config/neomutt/**/__pycache__
+/.config/neomutt/.gitignored
 /.config/neomutt/accounts/*/msmtp.log
-/.config/neomutt/aliases
-/.config/neomutt/cache
-/.config/neomutt/history
+/.config/neomutt/credentials/token_*
 /.config/neomutt/maildir
-/.config/neomutt/pass.gpg_decrypted
 /.config/nvim/lua/user/colorscheme.lua-e
 /.config/nvim/lua/user/lualine.lua-e
 /.config/oauth2ms/config.json

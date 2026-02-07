@@ -1,0 +1,69 @@
+###############################################################################
+# Solarized Theme (Dark) for Neomutt (Actual colors are defined in Alacritty config)
+#
+###############################################################################
+## Author       : Ragu Manjegowda
+## Github       : @ragu-manjegowda
+###############################################################################
+
+
+# general ------------ foreground ---- background -----------------------------
+color error         brightred       default
+color indicator     white           black
+color markers       brightred       default
+color message       green           default
+color normal        blue            default
+color prompt        brightblue      default
+color search        brightgreen     default
+color status        white           black
+color status        green           black          ''
+color status        yellow          black          ''
+color status        red             black          ''
+color status        brightblack     blue           '(.*)' 1
+color status        blue            black          '.*()' 1
+color status        black           blue           '\s* [0-9]+\s*'
+color status        blue            black          '().*$' 1
+color status        yellow          black          '()\s*\s*[0-9]+\s*' 1
+color status        black           yellow         '\s*\s*[0-9]+\s*'
+color status        blue            yellow         '() ([0-9]+%|all|end) \s*' 1
+color status        black           blue           ' ([0-9]+%|all|end) \s*'
+color status        yellow          black          '()\s*' 1
+color status        default         black          ''
+color tilde         brightblue      default
+color tree          red             default
+
+# message index ------ foreground ---- background -----------------------------
+color index         red             default     ~D # deleted messages
+color index         yellow          default     ~F # flagged messages
+color index         yellow          default     ~h\ X-Priority.* # messages marked priority
+color index         magenta         default     ~P # messages from me
+color index         magenta         default     ~Q # messages which have been replied to
+color index         brightcyan      default     ~T # tagged messages
+color index         blue            default     ~v~(!~N) # collapsed thread with no unread
+color index         brightgreen     default     ~v~(~N) # collapsed thread with some unread
+color index         brightgreen     default     ~v~(~U) # collapsed thread with unread (cur/ no S)
+color index         brightgreen     default     ~N # new messages
+color index         brightgreen     default     ~U # unread messages
+color index         red             default     ~N~D # deleted new messages
+color index         red             default     ~U~D # deleted unread messages
+color index         red             default     ~v~(~D) # collapsed thread with some or all deleted
+
+# message headers ---- foreground ---- background -----------------------------
+color hdrdefault    blue            default
+color header        brightred       default     ^Subject:.*
+
+# message body ------- foreground ---- background -----------------------------
+color attachment    yellow          default
+color body          white           black       [\-\.+_a-zA-Z0-9]+@[\-\.a-zA-Z0-9]+               # email addresses
+color body          yellow          default     (https?|ftp)://[\-\.,/%~_:?&=\#a-zA-Z0-9]+        # URLs
+color body          white           black       (^|[[:space:]])\\*[^[:space:]]+\\*([[:space:]]|$) # *bold* text
+color body          white           black       (^|[[:space:]])_[^[:space:]]+_([[:space:]]|$)     # _underlined_ text
+color body          white           black       (^|[[:space:]])/[^[:space:]]+/([[:space:]]|$)     # /italic/ text
+color quoted        blue            default
+color quoted1       cyan            default
+color quoted2       green           default
+color quoted3       magenta         default
+color quoted4       red             default
+color signature     red             default
+
+# vim: ft=neomuttrc ts=4 sw=4 sts=4 et

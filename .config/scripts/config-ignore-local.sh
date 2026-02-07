@@ -165,6 +165,7 @@ config update-index --assume-unchanged \
     .config/git/config \
     .config/gtk-3.0/settings.ini \
     .config/gtk-4.0/gtk.css \
+    .config/neomutt/config/colors.muttrc \
     .config/nvim/lua/user/colorscheme.lua \
     .config/opencode/opencode.json \
     .config/ranger/colorschemes/neosolarized.py \

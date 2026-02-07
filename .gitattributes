@@ -1,11 +1,13 @@
 .config/bash/bash_extras filter=git-crypt diff=git-crypt
-.config/neomutt/accounts/personal/raghudarshan filter=git-crypt diff=git-crypt
-.config/neomutt/accounts/work/outlook filter=git-crypt diff=git-crypt
-.config/neomutt/accounts/work/outlook-offline filter=git-crypt diff=git-crypt
+.config/imapnotify/** filter=git-crypt diff=git-crypt
+.config/neomutt/accounts/** filter=git-crypt diff=git-crypt
+.config/neomutt/credentials/** filter=git-crypt diff=git-crypt
 .config/nvidia-mcphub/** filter=git-crypt diff=git-crypt
+.config/opencode/get-models.sh filter=git-crypt diff=git-crypt
 .config/opencode/oh-my-opencode.json filter=git-crypt diff=git-crypt
 .config/opencode/opencode.json filter=git-crypt diff=git-crypt
 .config/rclone/rclone.conf filter=git-crypt diff=git-crypt
+.config/scripts/sync-wiki.sh filter=git-crypt diff=git-crypt
 .config/systemd/user/nvidia-mcp-proxy.service filter=git-crypt diff=git-crypt
 .config/zsh/zsh_history filter=git-crypt diff=git-crypt
 .ssh/config filter=git-crypt diff=git-crypt
