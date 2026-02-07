@@ -799,19 +799,27 @@ function watch-email() {
 
     # Start goimapnotify
     goimapnotify -conf ~/.config/imapnotify/imapnotify.yaml > \
-        ~/.cache/awesome/imapnotify.log 2>&1 &
+        ~/.local/state/awesome/imapnotify.log 2>&1 &
     disown %goimapnotify
 
     # Start notify.sh
-    eval "${HOME}/.config/imapnotify/notify.sh" > \
-        ~/.cache/awesome/notify.log 2>&1 &
+    eval "FULL_SYNC=1 ${HOME}/.config/imapnotify/notify.sh >/dev/null 2>&1" &
     disown %eval
 }
 
 ###############################################################################
-############################## get-notifications ###################################
+############################### sync-wiki #####################################
 ###############################################################################
 
+function sync-wiki() {
+    eval "${HOME}/.config/scripts/sync-wiki.sh"
+}
+
+###############################################################################
+############################## get-notifications ##############################
+###############################################################################
+
+# Print all notifications to stdout
 function get-notifications() {
     awesome-client '
     local naughty = require("naughty")

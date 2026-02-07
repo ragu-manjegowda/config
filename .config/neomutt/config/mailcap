@@ -26,7 +26,7 @@ application/msword ; nvim %s; copiousoutput
 
 # Images ==============================={{{
 
-image/*; firefox %s &
+image/*; firefox -new-window 2> /dev/null %s &
 
 # }}}
 
@@ -43,7 +43,7 @@ video/*; mpv %s &
 #application/pdf; pdftohtml -q -stdout %s | w3m -T text/html; copiousoutput
 
 # See pdf with BROWSER
-application/pdf; zathura 2> /dev/null '%s'
+application/pdf; sioyek 2> /dev/null '%s'
 
 # }}}
 
@@ -51,8 +51,8 @@ application/pdf; zathura 2> /dev/null '%s'
 # Calendar invites ===================== {{{
 
 # show calendar invites
-text/calendar; "$HOME"/.local/share/venv/bin/python $XDG_CONFIG_HOME/neomutt/render-calendar-attachment.py %s; copiousoutput;
-application/ics; "$HOME"/.local/share/venv/bin/python $XDG_CONFIG_HOME/neomutt/render-calendar-attachment.py %s; copiousoutput;
+text/calendar; "$HOME"/.local/share/venv/bin/python $XDG_CONFIG_HOME/neomutt/scripts/render-calendar-attachment.py %s; copiousoutput;
+application/ics; "$HOME"/.local/share/venv/bin/python $XDG_CONFIG_HOME/neomutt/scripts/render-calendar-attachment.py %s; copiousoutput;
 
 
 # }}}

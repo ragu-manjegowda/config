@@ -40,7 +40,7 @@ awesome.connect_signal(
         -- 'darkman run > ~/.cache/awesome/darkman.log 2>&1 &')
         run_once('killall -9 goimapnotify &>/dev/null; ' ..
             'goimapnotify -conf ~/.config/imapnotify/imapnotify.yaml ' ..
-            '> ~/.cache/awesome/imapnotify.log 2>&1 &')
+            '> ~/.local/state/awesome/imapnotify.log 2>&1 &')
 
         -- No need for this since they are now part of start-up apps
         -- Just a fail safe mechanism in case user services fails

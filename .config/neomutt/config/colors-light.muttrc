@@ -1,5 +1,5 @@
 ###############################################################################
-# Solarized Theme for Neomutt (Actual colors are defined in Alacritty config)
+# Solarized Theme (Light) for Neomutt (Actual colors are defined in terminal config)
 #
 ###############################################################################
 ## Author       : Ragu Manjegowda
@@ -9,14 +9,26 @@
 
 # general ------------ foreground ---- background -----------------------------
 color error         brightred       default
-color indicator     white           black
+color indicator     black           white
 color markers       brightred       default
 color message       green           default
 color normal        blue            default
 color prompt        brightblue      default
 color search        brightgreen     default
-color status        white           brightmagenta
-color status        reverse         green         brightmagenta          '|'
+color status        black           white
+color status        green           white          ''
+color status        yellow          white          ''
+color status        red             white          ''
+color status        brightwhite     blue           '(.*)' 1
+color status        blue            white          '.*()' 1
+color status        white           blue           '\s* [0-9]+\s*'
+color status        blue            white          '().*$' 1
+color status        yellow          white          '()\s*\s*[0-9]+\s*' 1
+color status        white           yellow         '\s*\s*[0-9]+\s*'
+color status        blue            yellow         '() ([0-9]+%|all|end) \s*' 1
+color status        white           blue           ' ([0-9]+%|all|end) \s*'
+color status        yellow          white          '()\s*' 1
+color status        default         white          ''
 color tilde         brightblue      default
 color tree          red             default
 
@@ -29,8 +41,11 @@ color index         magenta         default     ~Q # messages which have been re
 color index         brightcyan      default     ~T # tagged messages
 color index         blue            default     ~v~(!~N) # collapsed thread with no unread
 color index         brightgreen     default     ~v~(~N) # collapsed thread with some unread
-color index         brightgreen     default     ~N # Unread messages
-color index         red             default     ~N~D # deleted unread messages
+color index         brightgreen     default     ~v~(~U) # collapsed thread with unread (cur/ no S)
+color index         brightgreen     default     ~N # new messages
+color index         brightgreen     default     ~U # unread messages
+color index         red             default     ~N~D # deleted new messages
+color index         red             default     ~U~D # deleted unread messages
 color index         red             default     ~v~(~D) # collapsed thread with some or all deleted
 
 # message headers ---- foreground ---- background -----------------------------
@@ -39,11 +54,11 @@ color header        brightred       default     ^Subject:.*
 
 # message body ------- foreground ---- background -----------------------------
 color attachment    yellow          default
-color body          white           black       [\-\.+_a-zA-Z0-9]+@[\-\.a-zA-Z0-9]+               # email addresses
+color body          black           white       [\-\.+_a-zA-Z0-9]+@[\-\.a-zA-Z0-9]+               # email addresses
 color body          yellow          default     (https?|ftp)://[\-\.,/%~_:?&=\#a-zA-Z0-9]+        # URLs
-color body          white           black       (^|[[:space:]])\\*[^[:space:]]+\\*([[:space:]]|$) # *bold* text
-color body          white           black       (^|[[:space:]])_[^[:space:]]+_([[:space:]]|$)     # _underlined_ text
-color body          white           black       (^|[[:space:]])/[^[:space:]]+/([[:space:]]|$)     # /italic/ text
+color body          black           white       (^|[[:space:]])\\*[^[:space:]]+\\*([[:space:]]|$) # *bold* text
+color body          black           white       (^|[[:space:]])_[^[:space:]]+_([[:space:]]|$)     # _underlined_ text
+color body          black           white       (^|[[:space:]])/[^[:space:]]+/([[:space:]]|$)     # /italic/ text
 color quoted        blue            default
 color quoted1       cyan            default
 color quoted2       green           default

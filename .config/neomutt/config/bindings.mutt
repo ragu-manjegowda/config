@@ -24,6 +24,7 @@ bind index                          h               collapse-thread
 bind index                          l               collapse-thread
 bind index                          D               delete-thread
 bind index                          U               undelete-thread
+bind index                          z               noop
 bind index                          zz              current-middle
 bind index                          zt              current-top
 bind index                          zb              current-bottom
@@ -83,6 +84,9 @@ bind generic [ noop
 # Normally half-down
 bind generic ] noop
 
+# Normally last-entry (free up for zz, zt, zb, zR)
+bind generic z noop
+
 # Normally bound to show-version
 bind index V noop
 
@@ -93,11 +97,17 @@ macro index,pager ,ol \
 <pipe-message>urlscan -d -w 80<Enter>\
 " "call urlscan to open links"
 
+macro index <BackSpace> "<change-folder>!!<enter>" "go back to previous folder"
+
 macro index,pager,generic <F1> "!w3m /usr/share/doc/neomutt/manual.html\n" "Show Mutt documentation"
 macro attach s '<save-entry><kill-line>~/Downloads/<enter>a' "Save file to ~/Downloads"
 bind index,pager $ imap-fetch-mail # more like a refresh than a sync
 bind index,pager * sync-mailbox # more like a refresh than a sync
-macro index,pager \cr "<tag-pattern>.<enter><tag-prefix><clear-flag>N<untag-pattern>.<enter>"
+macro index,pager \cr "<tag-pattern>~T<enter><tag-prefix><untag-pattern>~T<enter>" "untag all tagged messages"
+macro index,pager \ca "<tag-pattern>.<enter><tag-prefix><clear-flag>N<clear-flag>U<untag-pattern>.<enter>" "clear new/unread for all"
+macro index,pager ,tr "<read-thread>" "mark thread read"
+macro index,pager ,tu "<unread-thread>" "mark thread unread"
+macro index,pager ,tt "<tag-thread>" "tag thread"
 macro index,pager,generic <F5> "<redraw-screen>"
 
 # [m]ove a mail to another folder
@@ -130,11 +140,5 @@ macro attach ,of \
 <save-entry><kill-line>/tmp/mutt-attach<enter>\
 <shell-escape> firefox -new-window 2> /dev/null /tmp/mutt-attach &<enter>\
 " "Open attachment with firefox"
-
-macro index,pager ,of \
-"\
-<enter-command>unset wait_key<enter>\
-<pipe-message>~/.local/share/venv/bin/python ~/.config/neomutt/viewmailattachments.py 2> /dev/null\n &<enter>\
-" "View HTML email in browser"
 
 # vim: filetype=neomuttrc

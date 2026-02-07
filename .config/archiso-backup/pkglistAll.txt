@@ -17,11 +17,9 @@ broadcom-wl-dkms
 ca-certificates-mozilla
 calibre
 check-broken-packages-pacman-hook-git
-claude-code
 colord
 cppreference
 cups
-cursor-bin
 cursor-cli
 cyrus-sasl-xoauth2-git
 darkman
@@ -85,7 +83,6 @@ ntp
 numix-cursor-theme
 nvidia-container-toolkit
 nvidia-open-dkms
-opencode-bin
 openconnect-gp-git
 openconnect-gp-git-debug
 openrazer-daemon

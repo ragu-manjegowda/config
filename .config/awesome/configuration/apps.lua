@@ -114,7 +114,7 @@ return {
         -- Remember to edit ~/.config/awesome/module/auto-start.lua
         'killall -9 goimapnotify &>/dev/null; ' ..
         'goimapnotify -conf ~/.config/imapnotify/imapnotify.yaml ' ..
-        '> ~/.cache/awesome/imapnotify.log 2>&1 &',
+        '> ~/.local/state/awesome/imapnotify.log 2>&1 &',
         '~/.config/imapnotify/notify.sh',
         -- Sleep hook to update wallpaper when coming back from sleep
         config_dir .. 'utilities/suspend-hook.py &',

@@ -89,7 +89,7 @@ check_bool_setting "forward_decode" "yes" "forward decode"
 check_setting "history" "10000" "history size"
 check_bool_setting "pager_stop" "yes" "pager stop at end"
 check_bool_setting "menu_scroll" "yes" "menu scroll"
-check_setting "sidebar_width" "25" "sidebar width"
+check_setting "sidebar_width" "30" "sidebar width"
 check_bool_setting "sidebar_short_path" "yes" "sidebar short path"
 check_bool_setting "sidebar_folder_indent" "yes" "sidebar folder indent"
 
@@ -106,39 +106,76 @@ else
 fi
 
 # Test mailcap_path contains neomutt/mailcap
-echo -n "Testing mailcap path points to neomutt/mailcap... "
+echo -n "Testing mailcap path points to neomutt/config/mailcap... "
 mailcap_path=$(neomutt -F "$CONFIG_FILE" -Q mailcap_path 2>/dev/null | cut -d'=' -f2- | tr -d '"')
-if echo "$mailcap_path" | grep -q "neomutt/mailcap"; then
+if echo "$mailcap_path" | grep -q "neomutt/config/mailcap"; then
     echo -e "${GREEN}✓ PASSED${NC}"
     ((passed++))
 else
     echo -e "${RED}✗ FAILED${NC}"
-    echo "  Mailcap path doesn't point to neomutt/mailcap: $mailcap_path"
+    echo "  Mailcap path doesn't point to neomutt/config/mailcap: $mailcap_path"
     ((failed++))
 fi
 
 # Test alias_file contains neomutt/aliases
-echo -n "Testing alias file path points to neomutt/aliases... "
+echo -n "Testing alias file path points to neomutt/.gitignored/data/aliases... "
 alias_file=$(neomutt -F "$CONFIG_FILE" -Q alias_file 2>/dev/null | cut -d'=' -f2- | tr -d '"')
-if echo "$alias_file" | grep -q "neomutt/aliases"; then
+if echo "$alias_file" | grep -q "neomutt/.gitignored/data/aliases"; then
     echo -e "${GREEN}✓ PASSED${NC}"
     ((passed++))
 else
     echo -e "${RED}✗ FAILED${NC}"
-    echo "  Alias file doesn't point to neomutt/aliases: $alias_file"
+    echo "  Alias file doesn't point to neomutt/.gitignored/data/aliases: $alias_file"
     ((failed++))
 fi
 
 # Test history_file contains neomutt/history
-echo -n "Testing history file path points to neomutt/history... "
+echo -n "Testing history file path points to neomutt/.gitignored/data/history... "
 history_file=$(neomutt -F "$CONFIG_FILE" -Q history_file 2>/dev/null | cut -d'=' -f2- | tr -d '"')
-if echo "$history_file" | grep -q "neomutt/history"; then
+if echo "$history_file" | grep -q "neomutt/.gitignored/data/history"; then
     echo -e "${GREEN}✓ PASSED${NC}"
     ((passed++))
 else
     echo -e "${RED}✗ FAILED${NC}"
-    echo "  History file doesn't point to neomutt/history: $history_file"
+    echo "  History file doesn't point to neomutt/.gitignored/data/history: $history_file"
     ((failed++))
+fi
+
+# Test gitignore patterns for runtime files
+echo -n "Testing gitignore rules for neomutt runtime files... "
+GIT_ROOT=""
+if [ -n "${GITHUB_WORKSPACE:-}" ] && [ -d "$GITHUB_WORKSPACE/.git" ]; then
+    GIT_ROOT="$GITHUB_WORKSPACE"
+else
+    GIT_ROOT=$(git -C "$HOME" rev-parse --show-toplevel 2>/dev/null || true)
+fi
+
+if [ -z "$GIT_ROOT" ] || [ ! -f "$GIT_ROOT/.gitignore" ]; then
+    echo -e "${YELLOW}⚠ SKIPPED${NC}"
+    echo "  .gitignore not found in repo"
+else
+    missing=0
+    required_patterns=(
+        "/.config/neomutt/.gitignored"
+        "/.config/neomutt/credentials/token_*"
+        "/.config/neomutt/**/__pycache__"
+        "/.config/neomutt/**/.mypy_cache"
+    )
+
+    for pattern in "${required_patterns[@]}"; do
+        if ! grep -Fqx "$pattern" "$GIT_ROOT/.gitignore" && ! grep -Fqx "${pattern}/" "$GIT_ROOT/.gitignore"; then
+            missing=1
+        fi
+    done
+
+    if [ $missing -ne 0 ]; then
+        echo -e "${RED}✗ FAILED${NC}"
+        echo "  Missing required neomutt ignore patterns in .gitignore"
+        ((failed++))
+    else
+        echo -e "${GREEN}✓ PASSED${NC}"
+        ((passed++))
+    fi
 fi
 
 echo ""
@@ -150,4 +187,3 @@ if [ $failed -gt 0 ]; then
     exit 1
 fi
 exit 0
-

@@ -51,7 +51,7 @@ set sleep_time = 0
 set ts_enabled = yes
 
 # Headers
-source ~/.config/neomutt/headers
+source $XDG_CONFIG_HOME/neomutt/config/headers
 
 set editor = "nvim +/^$ +nohlsearch -c 'set spell spelllang=en_us fo+=aw' \
               -c 'set noautoindent filetype=mail wm=0 tw=0 digraph nolist' \
@@ -130,7 +130,7 @@ set abort_noattach = ask-yes
 
 # number of input lines for prompts to remember
 set history = 10000
-set history_file = "$XDG_CONFIG_HOME/neomutt/history"
+set history_file = "$XDG_CONFIG_HOME/neomutt/.gitignored/data/history"
 set save_history = 10000
 
 # don't go to next message automatically
@@ -144,28 +144,28 @@ set menu_scroll
 # HTML Rendering
 ########
 
-set mailcap_path = "$XDG_CONFIG_HOME/neomutt/mailcap"
+set mailcap_path = "$XDG_CONFIG_HOME/neomutt/config/mailcap"
 
 auto_view text/calendar
 auto_view application/ics
 auto_view text/html
 auto_view text/plain
 # list html for last
-alternative_order text/calendar application/ics text/html text/plain text/enriched
+alternative_order text/calendar application/ics text/html text/plain text/enriched text/x-amp-html
 
 
 ########
 # Keybidings
 ########
 
-source $XDG_CONFIG_HOME/neomutt/bindings.mutt
+source $XDG_CONFIG_HOME/neomutt/config/bindings.mutt
 
 
 ########
 # Bars
 ########
 
-source "$XDG_CONFIG_HOME/neomutt/styles.muttrc"
+source "$XDG_CONFIG_HOME/neomutt/config/styles.muttrc"
 
 ########
 # Sidebar
@@ -173,12 +173,11 @@ source "$XDG_CONFIG_HOME/neomutt/styles.muttrc"
 
 # Sidebar for neomutt
 set sidebar_visible = no
-set sidebar_width = 25
+set sidebar_width = 30
 set mail_check_stats
 set sidebar_short_path = yes
 set sidebar_delim_chars="/"
 set sidebar_folder_indent = yes
-set sidebar_indent_string = '  ' # Two spaces
 set sidebar_next_new_wrap = yes
 
 
@@ -186,7 +185,7 @@ set sidebar_next_new_wrap = yes
 # Colors
 ########
 
-source "$XDG_CONFIG_HOME/neomutt/colors-custom.muttrc"
+source "$XDG_CONFIG_HOME/neomutt/config/colors.muttrc"
 
 
 ########
@@ -194,8 +193,8 @@ source "$XDG_CONFIG_HOME/neomutt/colors-custom.muttrc"
 ########
 
 # auto create aliases
-set display_filter = $XDG_CONFIG_HOME/neomutt/create-alias.sh
-set alias_file     = $XDG_CONFIG_HOME/neomutt/aliases
+set display_filter = $XDG_CONFIG_HOME/neomutt/scripts/create-alias.sh
+set alias_file     = $XDG_CONFIG_HOME/neomutt/.gitignored/data/aliases
 set sort_alias     = alias
 set reverse_alias  = yes
 # only source if file exists
@@ -205,7 +204,7 @@ source "cat $alias_file 2> /dev/null |"
 # GNUPG settings to encrypt/decrypt/sign email
 ########
 
-source "$XDG_CONFIG_HOME/neomutt/gpg.rc"
+source "$XDG_CONFIG_HOME/neomutt/config/gpg.rc"
 
 
 ########
@@ -213,18 +212,25 @@ source "$XDG_CONFIG_HOME/neomutt/gpg.rc"
 ########
 
 # Default account
-source $XDG_CONFIG_HOME/neomutt/accounts/work/outlook-offline
+source $XDG_CONFIG_HOME/neomutt/accounts/work/config-offline
+
+# Disable 'i' to allow 'i1', 'i2', etc. macros
+bind index,pager i noop
 
 macro index,pager i1 '<sync-mailbox><enter-command>source \
-    $XDG_CONFIG_HOME/neomutt/accounts/work/outlook<enter>\
+    $XDG_CONFIG_HOME/neomutt/accounts/work/config<enter>\
     <change-folder>!<enter>;<check-stats>' "switch to outlook - online"
 
 macro index,pager i2 '<sync-mailbox><enter-command>source \
-    $XDG_CONFIG_HOME/neomutt/accounts/work/outlook-offline<enter>\
+    $XDG_CONFIG_HOME/neomutt/accounts/work/config-offline<enter>\
     <change-folder>!<enter>;<check-stats>' "switch to outlook - offline"
 
 macro index,pager i3 '<sync-mailbox><enter-command>source \
-    $XDG_CONFIG_HOME/neomutt/accounts/personal/raghudarshan<enter>\
-    <change-folder>!<enter>;<check-stats>' "switch to raghu-darshan - online"
+    $XDG_CONFIG_HOME/neomutt/accounts/personal/config<enter>\
+    <change-folder>!<enter>;<check-stats>' "switch to gmail-personal - online"
+
+macro index,pager i4 '<sync-mailbox><enter-command>source \
+    $XDG_CONFIG_HOME/neomutt/accounts/personal/config-offline<enter>\
+    <change-folder>!<enter>;<check-stats>' "switch to gmail-personal - offline"
 
 # vim: filetype=neomuttrc

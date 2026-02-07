@@ -4,9 +4,7 @@ anydesk-bin
 awesome-luajit-git
 awmtt
 check-broken-packages-pacman-hook-git
-claude-code
 cppreference
-cursor-bin
 cursor-cli
 cyrus-sasl-xoauth2-git
 find-cursor
@@ -22,7 +20,6 @@ neomutt-git
 newsboat-git
 nomachine
 numix-cursor-theme
-opencode-bin
 openconnect-gp-git
 openconnect-gp-git-debug
 openssl-1.1
