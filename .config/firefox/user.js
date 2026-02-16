@@ -70,3 +70,46 @@ user_pref("browser.theme.toolbar-theme", 2);
 
 // sideberry: theme preferences - follow system theme
 user_pref("svg.context-properties.content.enabled", true);
+
+
+// ---------------------------------------------------------------------------
+// Privacy hardening
+// ---------------------------------------------------------------------------
+
+// Disable geolocation API entirely
+user_pref("geo.enabled", false);
+
+// Fingerprinting protection (granular alternative to resistFingerprinting)
+// +AllTargets enables all protections, -CSSPrefersColorScheme allows system
+// dark/light theme to flow through (needed for SurfingKeys, darkman, etc.)
+user_pref("privacy.resistFingerprinting", false);
+user_pref("privacy.fingerprintingProtection", true);
+user_pref("privacy.fingerprintingProtection.pbmode", true);
+user_pref("privacy.fingerprintingProtection.overrides", "+AllTargets,-CSSPrefersColorScheme");
+
+// Disable WebGL (prevents GPU fingerprinting -- may break some sites)
+user_pref("webgl.disabled", true);
+
+// Disable beacon analytics (sendBeacon tracking on page unload)
+user_pref("beacon.enabled", false);
+
+// Disable battery status API (can be used for fingerprinting)
+user_pref("dom.battery.enabled", false);
+
+// Disable WebRTC IP leak (prevents exposing local/VPN IP via WebRTC)
+user_pref("media.peerconnection.ice.default_address_only", true);
+user_pref("media.peerconnection.ice.no_host", true);
+
+// Disable speculative connections (preloading/prefetching to third parties)
+user_pref("network.http.speculative-parallel-limit", 0);
+user_pref("network.dns.disablePrefetch", true);
+user_pref("network.prefetch-next", false);
+
+// Disable telemetry
+user_pref("toolkit.telemetry.enabled", false);
+user_pref("toolkit.telemetry.unified", false);
+user_pref("toolkit.telemetry.archive.enabled", false);
+
+// Disable studies and experiments
+user_pref("app.shield.optoutstudies.enabled", false);
+user_pref("app.normandy.enabled", false);

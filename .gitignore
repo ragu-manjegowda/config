@@ -164,6 +164,7 @@
 /.config/ranger/plugins/__init__.py
 /.config/ranger/plugins/__pycache__
 /.config/ranger/rifle.conf
+/.config/rclone
 /.config/redshift.conf
 /.config/remmina
 /.config/rustup
