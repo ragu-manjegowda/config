@@ -1,6 +1,7 @@
 alacritty
 alsa-firmware
 alsa-utils
+apparmor
 arch-install-scripts
 aspell-en
 avidemux-qt
@@ -17,6 +18,7 @@ darkman
 docker
 docker-buildx
 docker-compose
+fail2ban
 firefox
 fprintd
 freecad

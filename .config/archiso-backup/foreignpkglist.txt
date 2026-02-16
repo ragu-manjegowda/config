@@ -18,7 +18,6 @@ mbsync-git
 mu
 neomutt-git
 newsboat-git
-nomachine
 numix-cursor-theme
 openconnect-gp-git
 openconnect-gp-git-debug

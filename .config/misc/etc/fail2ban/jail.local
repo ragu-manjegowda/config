@@ -1,0 +1,17 @@
+# fail2ban local overrides - Applied 2026-02-15
+# Arch Linux uses systemd journal (no /var/log/auth.log)
+
+[DEFAULT]
+# Ban for 1 hour after failures
+bantime = 3600
+# Observation window: 10 minutes
+findtime = 600
+# Ban after 5 failures
+maxretry = 5
+# Use systemd journal as log backend (Arch has no auth.log)
+backend = systemd
+
+[sshd]
+enabled = true
+port = ssh
+filter = sshd

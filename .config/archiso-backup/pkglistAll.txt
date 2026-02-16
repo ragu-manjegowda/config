@@ -4,6 +4,7 @@ alsa-firmware
 alsa-utils
 android-sdk-platform-tools
 anydesk-bin
+apparmor
 arch-install-scripts
 aspell-en
 avidemux-qt
@@ -26,6 +27,7 @@ darkman
 docker
 docker-buildx
 docker-compose
+fail2ban
 find-cursor
 firefox
 fprintd
@@ -76,7 +78,6 @@ networkmanager
 networkmanager-openconnect
 newsboat-git
 nfs-utils
-nomachine
 noto-fonts
 noto-fonts-emoji
 ntp
