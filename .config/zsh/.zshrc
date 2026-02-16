@@ -65,6 +65,14 @@ bindkey \^U backward-kill-line
 # https://github.com/Aloxaf/fzf-tab/issues/137#issuecomment-716627531
 enable-fzf-tab
 
+# Duplicate last word on command line (useful for rename: mv long/path long/path)
+duplicate-last-word() {
+    local last_word="${${(z)LBUFFER}[-1]}"
+    LBUFFER+=" $last_word"
+}
+zle -N duplicate-last-word
+bindkey '\er' duplicate-last-word
+
 # To customize prompt, run `p10k configure` or edit $ZDOTDIR/.p10k.zsh.
 [[ ! -f $ZDOTDIR/p10k.zsh ]] || source $ZDOTDIR/p10k.zsh
 

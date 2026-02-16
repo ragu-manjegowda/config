@@ -230,4 +230,4 @@ fi
 
 # https://github.com/anomalyco/opencode/issues/7749
 # Opencode doesn't support VISUAL with args
-alias oc="VISUAL=nvim opencode"
+alias oc="OPENCODE_DISABLE_AUTOCOMPACT=false VISUAL=nvim opencode"

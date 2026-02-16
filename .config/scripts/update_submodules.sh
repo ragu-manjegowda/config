@@ -21,10 +21,10 @@ git checkout main
 cd ~/.config/rEFInd/refind-theme-regular || exit
 git checkout master
 
-cd ~/.config/ranger/plugins/ranger_fzf_filter || exit
+cd ~/.config/ranger/plugins/ranger_devicons || exit
 git checkout main
 
-cd ~/.config/ranger/plugins/ranger_devicons || exit
+cd ~/.config/ranger/plugins/ranger_fzf_filter || exit
 git checkout main
 
 cd ~/.config/tmux/plugins/tmux-continuum || exit
@@ -35,6 +35,9 @@ git checkout main
 
 cd ~/.config/tmux/plugins/tmux-resurrect || exit
 git checkout master
+
+cd ~/.config/yazi/plugins/relative-motions.yazi || exit
+git checkout main
 
 cd ~/.config/zsh/oh-my-zsh || exit
 git checkout master

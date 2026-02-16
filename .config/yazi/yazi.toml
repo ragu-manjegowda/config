@@ -1,0 +1,213 @@
+# ~/.config/yazi/yazi.toml
+# Ported from ranger rc.conf by @ragu-manjegowda
+
+[mgr]
+# Layout ratio - Parent:Current:Preview
+ratio = [1, 3, 4]
+
+# Sorting (matches ranger's default natural sort)
+sort_by = "natural"
+sort_sensitive = false
+sort_reverse = false
+sort_dir_first = true
+
+# ranger: set show_hidden true
+show_hidden = true
+show_symlink = true
+
+# ranger: set line_numbers relative (handled by relative-motions.yazi plugin)
+# ranger: set wrap_scroll true
+scrolloff = 5
+
+# ranger: set mouse_enabled false
+mouse_events = []
+
+# ranger: set vcs_aware true
+title_format = "Yazi: {cwd}"
+
+[preview]
+# ranger: set preview_images true
+# Yazi handles image preview natively, no need for ueberzug
+wrap = "no"
+tab_size = 4
+max_width = 3840
+max_height = 2400
+image_filter = "lanczos3"
+image_quality = 75
+
+[opener]
+# Ported from rifle.conf
+
+# Text editor
+edit = [
+	{ run = "$EDITOR %s", block = true, for = "unix" },
+]
+
+# Pager
+pager = [
+	{ run = "$PAGER %s", block = true, for = "unix" },
+]
+
+# Generic open (xdg-open fallback)
+open = [
+	{ run = "xdg-open %s", desc = "Open", for = "linux" },
+	{ run = "open %s", desc = "Open", for = "macos" },
+]
+
+# Web browsers
+browser = [
+	{ run = "firefox %s", orphan = true, desc = "Firefox", for = "linux" },
+	{ run = "chromium %s", orphan = true, desc = "Chromium", for = "linux" },
+	{ run = "google-chrome %s", orphan = true, desc = "Chrome", for = "linux" },
+	{ run = "qutebrowser %s", orphan = true, desc = "Qutebrowser", for = "linux" },
+]
+
+# Video/audio players
+play = [
+	{ run = "mpv %s", orphan = true, desc = "mpv", for = "unix" },
+	{ run = "vlc %s", orphan = true, desc = "VLC", for = "unix" },
+]
+
+# Image viewers
+image = [
+	{ run = "viewnior %s", orphan = true, desc = "Viewnior", for = "linux" },
+	{ run = "imv %s", orphan = true, desc = "imv", for = "linux" },
+	{ run = "sxiv %s", orphan = true, desc = "sxiv", for = "linux" },
+	{ run = "feh %s", orphan = true, desc = "feh", for = "linux" },
+	{ run = "eog %s", orphan = true, desc = "Eye of GNOME", for = "linux" },
+	{ run = "gimp %s", orphan = true, desc = "GIMP", for = "linux" },
+]
+
+# PDF viewers
+pdf = [
+	{ run = "sioyek %s", orphan = true, desc = "Sioyek", for = "linux" },
+	{ run = "zathura %s", orphan = true, desc = "Zathura", for = "linux" },
+	{ run = "mupdf %s", orphan = true, desc = "MuPDF", for = "linux" },
+	{ run = "evince %s", orphan = true, desc = "Evince", for = "linux" },
+	{ run = "okular %s", orphan = true, desc = "Okular", for = "linux" },
+]
+
+# Document viewers (djvu, epub)
+document = [
+	{ run = "sioyek %s", orphan = true, desc = "Sioyek", for = "linux" },
+	{ run = "zathura %s", orphan = true, desc = "Zathura", for = "linux" },
+	{ run = "evince %s", orphan = true, desc = "Evince", for = "linux" },
+	{ run = "ebook-viewer %s", orphan = true, desc = "Calibre", for = "linux" },
+]
+
+# Archive handler
+extract = [
+	{ run = "ya pub extract --list %s", desc = "Extract here" },
+]
+
+# Scripts
+python = [
+	{ run = "python -- %s", block = true, desc = "Run Python" },
+]
+node = [
+	{ run = "node -- %s", block = true, desc = "Run Node" },
+]
+shell = [
+	{ run = "sh -- %s", block = true, desc = "Run Shell" },
+]
+
+# Wallpaper setter (from rifle.conf)
+wallpaper = [
+	{ run = "feh --bg-fill %s", orphan = true, desc = "Set wallpaper (fill)", for = "linux" },
+	{ run = "feh --bg-scale %s", orphan = true, desc = "Set wallpaper (scale)", for = "linux" },
+]
+
+[open]
+rules = [
+	# Websites / HTML
+	{ url = "*.html", use = ["browser", "edit"] },
+	{ url = "*.htm", use = ["browser", "edit"] },
+	{ url = "*.xhtml", use = ["browser", "edit"] },
+
+	# Text and code files -> editor first
+	{ mime = "text/*", use = ["edit", "pager"] },
+	{ url = "*.xml", use = ["edit", "pager"] },
+	{ url = "*.json", use = ["edit", "pager"] },
+	{ url = "*.csv", use = ["edit", "pager"] },
+	{ url = "*.tex", use = ["edit", "pager"] },
+	{ url = "*.py", use = ["edit", "python"] },
+	{ url = "*.pl", use = ["edit", "pager"] },
+	{ url = "*.rb", use = ["edit", "pager"] },
+	{ url = "*.rs", use = ["edit", "pager"] },
+	{ url = "*.js", use = ["edit", "node"] },
+	{ url = "*.sh", use = ["edit", "shell"] },
+	{ url = "*.php", use = ["edit", "pager"] },
+	{ url = "*.dart", use = ["edit", "pager"] },
+
+	# Man pages
+	{ url = "*.1", use = "pager" },
+
+	# Makefile
+	{ url = "*Makefile", use = "edit" },
+	{ url = "*makefile", use = "edit" },
+
+	# PDF
+	{ url = "*.pdf", use = ["pdf", "edit"] },
+
+	# DjVu
+	{ url = "*.djvu", use = "document" },
+
+	# eBooks
+	{ url = "*.epub", use = "document" },
+	{ url = "*.mobi", use = "document" },
+	{ url = "*.fb2", use = "document" },
+
+	# Comic books
+	{ url = "*.cbr", use = "document" },
+	{ url = "*.cbz", use = "document" },
+
+	# Office documents (libreoffice)
+	{ url = "*.docx", use = "open" },
+	{ url = "*.doc", use = "open" },
+	{ url = "*.xlsx", use = "open" },
+	{ url = "*.xls", use = "open" },
+	{ url = "*.pptx", use = "open" },
+	{ url = "*.ppt", use = "open" },
+	{ url = "*.odt", use = "open" },
+	{ url = "*.ods", use = "open" },
+	{ url = "*.odp", use = "open" },
+
+	# Images
+	{ mime = "image/*", use = ["image", "open"] },
+	{ url = "*.kra", use = "open" },
+	{ url = "*.xcf", use = "open" },
+
+	# Video
+	{ mime = "video/*", use = ["play", "open"] },
+
+	# Audio
+	{ mime = "audio/*", use = ["play", "open"] },
+
+	# Archives
+	{ mime = "application/zip", use = "extract" },
+	{ mime = "application/gzip", use = "extract" },
+	{ mime = "application/x-tar", use = "extract" },
+	{ mime = "application/x-bzip2", use = "extract" },
+	{ mime = "application/x-xz", use = "extract" },
+	{ mime = "application/x-7z-compressed", use = "extract" },
+	{ mime = "application/x-rar", use = "extract" },
+	{ url = "*.zip", use = "extract" },
+	{ url = "*.tar", use = "extract" },
+	{ url = "*.tar.gz", use = "extract" },
+	{ url = "*.tgz", use = "extract" },
+	{ url = "*.tar.bz2", use = "extract" },
+	{ url = "*.tar.xz", use = "extract" },
+	{ url = "*.7z", use = "extract" },
+	{ url = "*.rar", use = "extract" },
+	{ url = "*.deb", use = "extract" },
+	{ url = "*.rpm", use = "extract" },
+
+	# Executable
+	{ mime = "application/x-executable", use = "open" },
+
+	# Fonts
+	{ mime = "font/*", use = "open" },
+
+	# Fallback
+	{ url = "*", use = ["open", "edit"] },
+]

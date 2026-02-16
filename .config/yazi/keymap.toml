@@ -1,0 +1,82 @@
+# ~/.config/yazi/keymap.toml
+# Ported from ranger rc.conf keybindings
+
+[mgr]
+prepend_keymap = [
+	# ranger: map q quit
+	{ on = "q", run = "quit", desc = "Quit" },
+
+	# ranger: map <A-j> scroll_preview 1 / map <A-k> scroll_preview -1
+	{ on = "<A-j>", run = "seek 1", desc = "Scroll preview down" },
+	{ on = "<A-k>", run = "seek -1", desc = "Scroll preview up" },
+
+	# ranger: map r rename_append
+	{ on = "r", run = "rename", desc = "Rename file" },
+
+	# ranger: map cc cut
+	{ on = ["c", "c"], run = "yank --cut", desc = "Cut selected files" },
+
+	# ranger: map p paste
+	{ on = "p", run = "paste", desc = "Paste files" },
+
+	# ranger: map yx YankContent (handled by init.lua)
+	{ on = ["y", "x"], run = "shell 'xclip -selection clipboard < \"$1\"' --confirm", desc = "Yank file content to clipboard" },
+
+	# ranger: map gc cd ~/.config
+	{ on = ["g", "c"], run = "cd ~/.config", desc = "Cd to ~/.config" },
+
+	# ranger: map gd cd ~/Downloads
+	{ on = ["g", "d"], run = "cd ~/Downloads", desc = "Cd to ~/Downloads" },
+
+	# ranger: map f console fzf_filter
+	{ on = "f", run = "find --via=fd", desc = "Find files (fzf-like)" },
+
+	# ranger: map <backspace> set show_hidden!
+	{ on = "<Backspace>", run = "hidden toggle", desc = "Toggle hidden files" },
+
+	# Sorting keybinds (from ranger rc.conf)
+	# ranger: map sr set sort_reverse!
+	{ on = ["s", "r"], run = "sort reverse", desc = "Sort reverse" },
+
+	# ranger: map sz set sort=random
+	{ on = ["s", "z"], run = "sort random", desc = "Sort randomly" },
+
+	# ranger: map ss chain set sort=size
+	{ on = ["s", "s"], run = "sort size", desc = "Sort by size" },
+
+	# ranger: map sn chain set sort=natural
+	{ on = ["s", "n"], run = "sort natural", desc = "Sort naturally" },
+
+	# ranger: map sm chain set sort=mtime
+	{ on = ["s", "m"], run = "sort mtime", desc = "Sort by mtime" },
+
+	# ranger: map sb chain set sort=basename (alphabetical in yazi)
+	{ on = ["s", "b"], run = "sort alphabetical", desc = "Sort alphabetically" },
+
+	# ranger: map sa chain set sort=atime (not available, use mtime)
+	# ranger: map sc chain set sort=ctime (use btime in yazi)
+	{ on = ["s", "c"], run = "sort btime", desc = "Sort by birth time" },
+
+	# ranger: map se chain set sort=extension
+	{ on = ["s", "e"], run = "sort extension", desc = "Sort by extension" },
+
+	# ranger: map st chain set sort=type (not directly available)
+
+	# vim: gt/gT for tab navigation
+	{ on = ["g", "t"], run = "tab_switch 1 --relative", desc = "Go to next tab" },
+	{ on = ["g", "T"], run = "tab_switch -1 --relative", desc = "Go to previous tab" },
+
+	# Wallpaper setter
+	{ on = ["b", "g"], run = "shell 'feh --bg-fill \"$1\"' --confirm", desc = "Set as wallpaper" },
+
+	# relative-motions.yazi: number keys for relative motion
+	{ on = "1", run = "plugin relative-motions 1", desc = "Move in relative steps" },
+	{ on = "2", run = "plugin relative-motions 2", desc = "Move in relative steps" },
+	{ on = "3", run = "plugin relative-motions 3", desc = "Move in relative steps" },
+	{ on = "4", run = "plugin relative-motions 4", desc = "Move in relative steps" },
+	{ on = "5", run = "plugin relative-motions 5", desc = "Move in relative steps" },
+	{ on = "6", run = "plugin relative-motions 6", desc = "Move in relative steps" },
+	{ on = "7", run = "plugin relative-motions 7", desc = "Move in relative steps" },
+	{ on = "8", run = "plugin relative-motions 8", desc = "Move in relative steps" },
+	{ on = "9", run = "plugin relative-motions 9", desc = "Move in relative steps" },
+]

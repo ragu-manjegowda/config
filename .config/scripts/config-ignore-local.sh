@@ -174,6 +174,7 @@ config update-index --assume-unchanged \
     .config/termshark/termshark.toml \
     .config/tmux/tmux.conf \
     .config/xsettingsd/xsettingsd.conf \
+    .config/yazi/theme.toml \
     .gtkrc-2.0 \
     .icons/default/index.theme \
     .local/bin/render-wiki.sh

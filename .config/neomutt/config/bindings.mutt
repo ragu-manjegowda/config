@@ -141,4 +141,12 @@ macro attach ,of \
 <shell-escape> firefox -new-window 2> /dev/null /tmp/mutt-attach &<enter>\
 " "Open attachment with firefox"
 
+# Accept invitation to calendar
+macro attach ,ai \
+"<shell-escape>rm -vf /tmp/.mutt.ics<enter><save-entry><kill-line>\
+/tmp/.mutt.ics<enter><shell-escape>python \
+$XDG_CONFIG_HOME/neomutt/scripts/mutt-ical.py \
+-e $from -i /tmp/.mutt.ics<enter>\
+" "Accept invitation to calendar"
+
 # vim: filetype=neomuttrc

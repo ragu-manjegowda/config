@@ -1,43 +1,3 @@
-[submodule ".config/zsh/oh-my-zsh"]
-	path = .config/zsh/oh-my-zsh
-	url = https://github.com/ohmyzsh/ohmyzsh.git
-	update = rebase
-	branch = master
-[submodule ".config/zsh/zsh-custom/plugins/zsh-autosuggestions"]
-	path = .config/zsh/zsh-custom/plugins/zsh-autosuggestions
-	url = https://github.com/zsh-users/zsh-autosuggestions.git
-	update = rebase
-	branch = master
-[submodule ".config/zsh/zsh-custom/plugins/zsh-hist"]
-	path = .config/zsh/zsh-custom/plugins/zsh-hist
-	url = https://github.com/marlonrichert/zsh-hist.git
-	update = rebase
-	branch = main
-[submodule ".config/zsh/zsh-custom/themes/powerlevel10k"]
-	path = .config/zsh/zsh-custom/themes/powerlevel10k
-	url = https://github.com/romkatv/powerlevel10k.git
-	update = rebase
-	branch = master
-[submodule ".config/tmux/plugins/tmux-continuum"]
-	path = .config/tmux/plugins/tmux-continuum
-	url = https://github.com/tmux-plugins/tmux-continuum.git
-	update = rebase
-	branch = master
-[submodule ".config/tmux/plugins/tmux-resurrect"]
-	path = .config/tmux/plugins/tmux-resurrect
-	url = https://github.com/tmux-plugins/tmux-resurrect.git
-	update = rebase
-	branch = master
-[submodule ".config/rEFInd/refind-theme-regular"]
-	path = .config/rEFInd/refind-theme-regular
-	url = https://github.com/bobafetthotmail/refind-theme-regular.git
-	update = rebase
-	branch = master
-[submodule ".config/awesome/library/revelation"]
-	path = .config/awesome/library/revelation
-	url = https://github.com/guotsuan/awesome-revelation
-	update = rebase
-	branch = master
 [submodule ".config/awesome/library/battery"]
 	path = .config/awesome/library/battery
 	url = https://github.com/Aire-One/awesome-battery_widget.git
@@ -48,21 +8,66 @@
 	url = https://github.com/BlingCorp/bling.git
 	update = rebase
 	branch = master
-[submodule ".config/zsh/zsh-custom/themes/dircolors-solarized"]
-	path = .config/zsh/zsh-custom/themes/dircolors-solarized
-	url = https://github.com/seebi/dircolors-solarized.git
+[submodule ".config/awesome/library/revelation"]
+	path = .config/awesome/library/revelation
+	url = https://github.com/guotsuan/awesome-revelation
 	update = rebase
 	branch = master
+[submodule ".config/firefox/potatofox"]
+	path = .config/firefox/potatofox
+	url = https://codeberg.org/da157/potatofox.git
+	update = rebase
+	branch = main
+[submodule ".config/fzf-git"]
+	path = .config/fzf-git
+	url = https://github.com/junegunn/fzf-git.sh.git
+	update = rebase
+	branch = main
+[submodule ".config/mpv/scripts/autosubsync"]
+	path = .config/mpv/scripts/autosubsync
+	url = https://github.com/Ajatt-Tools/autosubsync-mpv
+	update = rebase
+	branch = main
+[submodule ".config/rEFInd/refind-theme-regular"]
+	path = .config/rEFInd/refind-theme-regular
+	url = https://github.com/bobafetthotmail/refind-theme-regular.git
+	update = rebase
+	branch = master
+[submodule ".config/ranger/plugins/ranger_devicons"]
+	path = .config/ranger/plugins/ranger_devicons
+	url = https://github.com/alexanderjeurissen/ranger_devicons.git
+	update = rebase
+	branch = main
 [submodule ".config/ranger/plugins/ranger_fzf_filter"]
 	path = .config/ranger/plugins/ranger_fzf_filter
 	url = https://github.com/MuXiu1997/ranger-fzf-filter.git
 	update = rebase
 	branch = main
+[submodule ".config/tmux/plugins/tmux-continuum"]
+	path = .config/tmux/plugins/tmux-continuum
+	url = https://github.com/tmux-plugins/tmux-continuum.git
+	update = rebase
+	branch = master
 [submodule ".config/tmux/plugins/tmux-fuzzback"]
 	path = .config/tmux/plugins/tmux-fuzzback
 	url = https://github.com/roosta/tmux-fuzzback.git
 	update = rebase
 	branch = main
+[submodule ".config/tmux/plugins/tmux-resurrect"]
+	path = .config/tmux/plugins/tmux-resurrect
+	url = https://github.com/tmux-plugins/tmux-resurrect.git
+	update = rebase
+	branch = master
+[submodule ".config/yazi/plugins/relative-motions.yazi"]
+	path = .config/yazi/plugins/relative-motions.yazi
+	url = https://github.com/dedukun/relative-motions.yazi.git
+	update = rebase
+	branch = main
+[submodule ".config/zsh/oh-my-zsh"]
+	path = .config/zsh/oh-my-zsh
+	url = https://github.com/ohmyzsh/ohmyzsh.git
+	update = rebase
+	branch = master
 [submodule ".config/zsh/zsh-custom/plugins/fzf-tab"]
 	path = .config/zsh/zsh-custom/plugins/fzf-tab
 	url = https://github.com/Aloxaf/fzf-tab
@@ -72,24 +77,24 @@
 	path = .config/zsh/zsh-custom/plugins/fzf-tab-source
 	url = https://github.com/Freed-Wu/fzf-tab-source.git
 	update = rebase
+	branch = main
+[submodule ".config/zsh/zsh-custom/plugins/zsh-autosuggestions"]
+	path = .config/zsh/zsh-custom/plugins/zsh-autosuggestions
+	url = https://github.com/zsh-users/zsh-autosuggestions.git
+	update = rebase
 	branch = master
-[submodule ".config/fzf-git"]
-	path = .config/fzf-git
-	url = https://github.com/junegunn/fzf-git.sh.git
+[submodule ".config/zsh/zsh-custom/plugins/zsh-hist"]
+	path = .config/zsh/zsh-custom/plugins/zsh-hist
+	url = https://github.com/marlonrichert/zsh-hist.git
+	update = rebase
+	branch = main
+[submodule ".config/zsh/zsh-custom/themes/dircolors-solarized"]
+	path = .config/zsh/zsh-custom/themes/dircolors-solarized
+	url = https://github.com/seebi/dircolors-solarized.git
 	update = rebase
 	branch = master
-[submodule "/home/ragu/.config/ranger/plugins/ranger_devicons"]
-	path = .config/ranger/plugins/ranger_devicons
-	url = https://github.com/alexanderjeurissen/ranger_devicons.git
+[submodule ".config/zsh/zsh-custom/themes/powerlevel10k"]
+	path = .config/zsh/zsh-custom/themes/powerlevel10k
+	url = https://github.com/romkatv/powerlevel10k.git
 	update = rebase
-	branch = main
-[submodule "/home/ragu/.config/mpv/scripts/autosubsync"]
-	path = .config/mpv/scripts/autosubsync
-	url = https://github.com/Ajatt-Tools/autosubsync-mpv
-	update = rebase
-	branch = main
-[submodule ".config/firefox/potatofox"]
-	path = .config/firefox/potatofox
-	url = https://codeberg.org/da157/potatofox.git
-	update = rebase
-	branch = main
+	branch = master

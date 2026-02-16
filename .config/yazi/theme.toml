@@ -1,0 +1,115 @@
+# NeoSolarized Light theme - ported from ranger colorschemes/neosolarized.py
+# Reference: https://ethanschoonover.com/solarized
+#
+# Solarized Light palette (swapped base tones):
+#   base3   #fdf6e3 (bg)       base2   #eee8d5 (bg emphasis)
+#   base1   #93a1a1 (comments) base0   #839496
+#   base00  #657b83 (body)     base01  #586e75 (emphasis)
+#   base02  #073642            base03  #002b36
+#   yellow  #b58900    orange  #cb4b16
+#   red     #dc322f    magenta #d33682
+#   violet  #6c71c4    blue    #268bd2
+#   cyan    #2aa198    green   #859900
+
+[app]
+overall = { bg = "#fdf6e3" }
+
+[mgr]
+cwd = { fg = "#268bd2" }
+
+marker_selected = { fg = "#859900", bg = "#859900" }
+marker_copied = { fg = "#b58900", bg = "#b58900" }
+marker_cut = { fg = "#dc322f", bg = "#dc322f" }
+
+find_keyword = { fg = "#b58900", bold = true }
+find_position = { fg = "#d33682", italic = true }
+
+border_symbol = "│"
+border_style = { fg = "#93a1a1" }
+
+tab_active = { fg = "#268bd2", bg = "#fdf6e3", bold = true }
+tab_inactive = { fg = "#93a1a1", bg = "#fdf6e3" }
+tab_width = 1
+
+[tabs]
+active = { fg = "#268bd2", bg = "#fdf6e3", bold = true }
+inactive = { fg = "#93a1a1", bg = "#fdf6e3" }
+sep_inner = { open = "[", close = "]" }
+sep_outer = { open = "", close = "" }
+
+count_selected = { fg = "#fdf6e3", bg = "#859900" }
+count_copied = { fg = "#fdf6e3", bg = "#b58900" }
+count_cut = { fg = "#fdf6e3", bg = "#dc322f" }
+
+[mode]
+normal_main = { fg = "#fdf6e3", bg = "#268bd2", bold = true }
+normal_alt = { fg = "#268bd2", bg = "#eee8d5" }
+select_main = { fg = "#fdf6e3", bg = "#859900", bold = true }
+select_alt = { fg = "#859900", bg = "#eee8d5" }
+unset_main = { fg = "#fdf6e3", bg = "#d33682", bold = true }
+unset_alt = { fg = "#d33682", bg = "#eee8d5" }
+
+[status]
+sep_left = { open = "", close = "" }
+sep_right = { open = "", close = "" }
+
+perm_read = { fg = "#2aa198" }
+perm_write = { fg = "#dc322f" }
+perm_exec = { fg = "#859900" }
+perm_sep = { fg = "#93a1a1" }
+
+[input]
+border = { fg = "#268bd2" }
+title = { fg = "#268bd2" }
+value = {}
+selected = { reversed = true }
+
+[pick]
+border = { fg = "#268bd2" }
+active = { fg = "#d33682", bold = true }
+inactive = {}
+
+[confirm]
+border = { fg = "#268bd2" }
+title = { fg = "#268bd2" }
+content = {}
+list = {}
+btn_yes = { fg = "#859900" }
+btn_no = { fg = "#dc322f" }
+btn_labels = [ "  [Y]es  ", "  (N)o  " ]
+
+[completion]
+border = { fg = "#268bd2" }
+active = { fg = "#d33682", bold = true }
+inactive = {}
+
+[tasks]
+border = { fg = "#268bd2" }
+title = { fg = "#2aa198" }
+hovered = { fg = "#d33682" }
+
+[which]
+mask = { bg = "#eee8d5" }
+cand = { fg = "#2aa198" }
+rest = { fg = "#93a1a1" }
+desc = { fg = "#657b83" }
+separator = "  "
+separator_style = { fg = "#93a1a1" }
+
+[filetype]
+rules = [
+	{ url = "*/", fg = "#268bd2" },
+	{ mime = "image/*", fg = "#b58900" },
+	{ mime = "{audio,video}/*", fg = "#cb4b16" },
+	{ mime = "application/zip", fg = "#6c71c4" },
+	{ mime = "application/gzip", fg = "#6c71c4" },
+	{ mime = "application/x-tar", fg = "#6c71c4" },
+	{ mime = "application/x-bzip2", fg = "#6c71c4" },
+	{ mime = "application/x-xz", fg = "#6c71c4" },
+	{ mime = "application/x-7z-compressed", fg = "#6c71c4" },
+	{ mime = "application/x-rar", fg = "#6c71c4" },
+	{ mime = "application/x-executable", fg = "#859900", bold = true },
+	{ url = "*", is = "orphan", fg = "#dc322f" },
+	{ url = "*.sock", fg = "#b58900", bold = true },
+	{ url = "*.fifo", fg = "#b58900", bold = true },
+]
