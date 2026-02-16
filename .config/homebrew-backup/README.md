@@ -1,97 +1,54 @@
-# Migrate homebrew
+# Homebrew Packages
 
 <!--toc:start-->
-- [Migrate homebrew](#migrate-homebrew)
-  - [Backup existing homebrew formulas](#backup-existing-homebrew-formulas)
-  - [Install homebrew on new machine](#install-homebrew-on-new-machine)
-    - [Mac OS](#mac-os)
-    - [Ubuntu](#ubuntu)
-  - [Restore homebrew formulas](#restore-homebrew-formulas)
-  - [Install Alacritty and Zsh](#install-alacritty-and-zsh)
-    - [Mac OS](#mac-os)
-    - [Ubuntu](#ubuntu)
+- [Homebrew Packages](#homebrew-packages)
+  - [Install Homebrew](#install-homebrew)
+    - [macOS](#macos)
+    - [Linux (Ubuntu/Debian)](#linux-ubuntudebian)
+  - [Install packages](#install-packages)
+  - [Check what is missing](#check-what-is-missing)
+  - [Adding or removing packages](#adding-or-removing-packages)
   - [Change default shell](#change-default-shell)
 <!--toc:end-->
 
+Manually curated `Brewfile` for macOS and Linux. The file uses `OS.mac?` /
+`OS.linux?` guards so a single Brewfile works on both platforms. Dependencies
+are resolved automatically by Homebrew; only top-level formulae are listed.
 
-## Backup existing homebrew formulas
+## Install Homebrew
 
-```sh
-brew bundle dump --force --file Brewfile_{OS}
-
-# Example:
-brew bundle dump --file ~/.config/homebrew-backup/Brewfile_linux --force
-
-# Install backup formulas
-brew bundle install --file ~/.config/homebrew-backup/Brewfile_linux
-
-
-# Custom script
-./backup-homebrew.sh > restore-homebrew_{OS}.sh
-chmod u+x restore-homebrew_{OS}.sh
-```
-
-## Install homebrew on new machine
-
-### Mac OS
+### macOS
 
 ```sh
-$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-### Ubuntu
+### Linux (Ubuntu/Debian)
 
 ```sh
-$ sudo apt-get install build-essential procps curl file git
+sudo apt-get install build-essential procps curl file git
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
+
+## Install packages
 
 ```sh
-$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+brew bundle install --file=~/.config/homebrew-backup/Brewfile
 ```
+
+## Check what is missing
 
 ```sh
-$ brew install gcc
+brew bundle check --file=~/.config/homebrew-backup/Brewfile --verbose
 ```
 
-## Restore homebrew formulas
+## Adding or removing packages
 
-```sh
-brew bundle install --file Brewfile_{OS}
-./restore-homebrew_{OS}.sh
-```
-
-## Install Alacritty and Zsh
-
-### Mac OS
-
-```sh
-$ # zsh comes out of the box
-```
-
-```sh
-$ brew install alacritty
-```
-
-### Ubuntu
-
-```sh
-$ sudo apt-get update && sudo apt-get install zsh
-```
-
-```sh
-$ sudo add-apt-repository ppa:mmstick76/alacritty
-```
-
-```sh
-$ sudo apt-get update && sudo apt-get install alacritty
-```
-
-```sh
-$ sudo apt-get update && sudo apt-get install awesome
-```
+Edit the `Brewfile` directly and commit the change. To add a new formula,
+append it to the appropriate section. To remove one, delete the line.
 
 ## Change default shell
 
 ```sh
-$ chsh -s $(which zsh)
+chsh -s $(which zsh)
 ```

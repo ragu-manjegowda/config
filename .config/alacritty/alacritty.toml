@@ -62,13 +62,14 @@ bindings = [
     { action = "SearchDeleteWord", key = "W", mode = "Search", mods = "Control" },
     { action = "Paste", key = "V", mode = "~Vi", mods = "Control|Shift" },
     { action = "Copy", key = "C", mods = "Control|Shift" },
+    { chars = "\n", key = "Enter", mods = "Shift" },
     # Needed for MacOS
     { chars = "\u001F", key = "Slash", mods = "Control" },
     { chars = "\u001C", key = "Backslash", mods = "Control" },
     { chars = "\u001B\\", key = "Backslash", mods = "Alt" },
     { chars = "\u001BF", key = "Right", mods = "Alt" },
     { chars = "\u001BB", key = "Left", mods = "Alt" },
-    { action = "SpawnNewInstance", key = "N", mods = "Command" },
+    { action = "SpawnNewInstance", key = "N", mods = "Command" }
 ]
 
 [mouse]

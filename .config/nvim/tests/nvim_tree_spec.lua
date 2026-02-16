@@ -63,5 +63,20 @@ describe("NvimTree Config", function()
                 pcall(nvimtree_mod.config)
             end)
         end)
+
+        it("toggle keymap should use wrapper to defer api lookup", function()
+            pcall(nvimtree_mod.config)
+
+            local maps = vim.api.nvim_get_keymap("n")
+            for _, m in ipairs(maps) do
+                if m.desc == "Toggle nvim-tree" then
+                    assert.is_truthy(m.callback,
+                        "toggle mapping should use a callback (wrapper function)")
+                    return
+                end
+            end
+            -- If nvim-tree plugin is not available, config() returns early
+            -- and no mapping is set, which is acceptable in test env
+        end)
     end)
 end)

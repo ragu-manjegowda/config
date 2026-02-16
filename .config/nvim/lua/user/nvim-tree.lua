@@ -71,7 +71,7 @@ function M.config()
     local api = require("nvim-tree.api")
     local utils = require("user.utils")
 
-    utils.keymap("n", "<leader>tt", api.tree.toggle,
+    utils.keymap("n", "<leader>tt", function() api.tree.toggle() end,
         { desc = "Toggle nvim-tree" })
 
     nvim_tree.setup {

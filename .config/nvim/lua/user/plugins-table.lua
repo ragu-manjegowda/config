@@ -47,7 +47,10 @@ local core_plugins = {
         config = function()
             require("user.nvim-tree").config()
         end,
-        event = "VeryLazy"
+        cmd = { "NvimTreeToggle", "NvimTreeOpen", "NvimTreeFocus" },
+        keys = {
+            { "<leader>tt", desc = "Toggle nvim-tree" },
+        }
     },
 
     {

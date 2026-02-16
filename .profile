@@ -86,6 +86,12 @@ if [ -d "$HOME"/.local/share/venv/bin ]; then
     export PATH="$HOME"/.local/share/venv/bin:"$PATH"
 fi
 
+## Activate system-wide Python venv (created with uv)
+if [ -d "$HOME"/.local/share/npm/node_modules/.bin ]; then
+    # shellcheck disable=SC1091
+    export PATH="$HOME"/.local/share/npm/node_modules/.bin:"$PATH"
+fi
+
 # use nvim if installed,
 # if not use vim
 # else vi
@@ -217,3 +223,11 @@ if [ -f "/etc/arch-release" ]; then
     alias pacr="pacman --color always -Q | cut -f 1 -d ' ' | \
         fzf --multi --ansi --preview 'pacman -Qi {1}' | xargs -ro sudo pacman -Rns"
 fi
+
+###############################################################################
+########################             Aliases                 #################
+###############################################################################
+
+# https://github.com/anomalyco/opencode/issues/7749
+# Opencode doesn't support VISUAL with args
+alias oc="VISUAL=nvim opencode"

@@ -152,6 +152,8 @@
 /.config/oauth2ms/oauth2ms
 /.config/okularpartrc
 /.config/okularrc
+/.config/opencode/dcp.jsonc
+/.config/opencode/opencode.json-e
 /.config/openrazer
 /.config/pavucontrol.ini
 /.config/pip
@@ -246,6 +248,7 @@
 /.nv
 /.nvcccache
 /.nx
+/.opencode
 /.p4enviro
 /.p4qt
 /.p4tickets

@@ -1,0 +1,105 @@
+###############################################################################
+#  Author: Ragu Manjegowda
+#  Github: ragu-manjegowda
+###############################################################################
+
+# ── Taps ─────────────────────────────────────────────────────────────────────
+tap "anomalyco/tap"
+tap "brewsci/science"
+tap "homebrew/bundle"
+tap "homebrew/services"
+tap "jstkdng/programs"
+
+
+# ── CLI Tools & Utilities ────────────────────────────────────────────────────
+brew "bat"                          # cat clone with syntax highlighting
+brew "coreutils"                    # GNU core utilities
+brew "dateutils"                    # date/time utilities
+brew "diff-so-fancy"                # better diff output
+brew "diffnav"                      # diff navigator
+brew "exiftool"                     # image metadata tool
+brew "fastfetch"                    # system info tool
+brew "fd"                           # find alternative
+brew "feh"                          # image viewer
+brew "fzf"                          # fuzzy finder
+brew "htop"                         # interactive process viewer
+brew "hyperfine"                    # command benchmarking
+brew "jq"                           # JSON processor
+brew "dua-cli"                      # disk usage analyzer (fast, parallel)
+brew "ripgrep"                      # fast grep
+brew "tokei"                        # code statistics
+brew "tree"                         # directory listing
+brew "urlscan"                      # URL extractor
+brew "wget"                         # HTTP downloader
+brew "xdotool"                      # X11 automation
+brew "yazi"                         # terminal file manager
+brew "yq"                           # YAML processor
+
+# ── Git & Version Control ───────────────────────────────────────────────────
+brew "git-crypt"                    # git file encryption
+brew "git-delta"                    # better git diffs
+
+# ── Development: Compilers & Build Tools ─────────────────────────────────────
+brew "cmake"                        # build system generator
+brew "gdb"                          # GNU debugger
+brew "luarocks"                     # Lua package manager
+brew "meson"                        # build system
+brew "node"                         # Node.js
+brew "rustup"                       # Rust toolchain manager
+
+# ── Development: Python ──────────────────────────────────────────────────────
+brew "poetry"                       # Python dependency manager
+brew "pyenv"                        # Python version manager
+brew "pygments"                     # syntax highlighter
+brew "pygobject3"                   # Python GObject bindings
+brew "uv"                           # Python package manager
+brew "virtualenv"                   # Python virtual environments
+
+# ── Media ────────────────────────────────────────────────────────────────────
+brew "alass"                        # subtitle synchronizer
+
+# ── Document Processing ──────────────────────────────────────────────────────
+brew "img2pdf"                      # image to PDF converter
+brew "ocrmypdf"                     # OCR for PDFs
+brew "pandoc"                       # document converter
+brew "tesseract-lang"               # OCR language data
+
+# ── Networking ───────────────────────────────────────────────────────────────
+brew "mosh"                         # mobile shell (SSH alternative)
+brew "rclone"                       # cloud storage sync
+
+# ── Other ────────────────────────────────────────────────────────────────────
+brew "anomalyco/tap/opencode"       # OpenCode CLI
+brew "keyring"                      # credential storage
+
+# ── macOS only (installed via pacman on Arch) ────────────────────────────────
+if OS.mac?
+  brew "bash"                       # Bash shell
+  brew "bash-completion"            # Bash completions
+  brew "docker"                     # container runtime
+  brew "ffmpeg"                     # media transcoder (legacy)
+  brew "git"                        # version control
+  brew "gnupg"                      # GPG encryption
+  brew "go"                         # Go language
+  brew "mpv"                        # media player
+  brew "neovim"                     # text editor
+  brew "ranger"                     # terminal file manager
+  brew "redshift"                   # screen color temperature
+  brew "rsync"                      # file sync
+  brew "rust"                       # Rust language
+  brew "termshark"                  # terminal Wireshark
+  brew "tmux"                       # terminal multiplexer
+  brew "jstkdng/programs/ueberzugpp" # terminal image display
+
+  cask "alacritty"
+  cask "firefox"
+  cask "font-hack-nerd-font"
+  cask "google-chrome"
+  cask "nomachine"
+  cask "sioyek"
+  cask "slack"
+  cask "whatsapp"
+end
+
+# ── Casks (both platforms) ───────────────────────────────────────────────────
+cask "ngrok"
