@@ -55,7 +55,7 @@ PY
 )
 
 # We never want to create some aliases
-NOALIAS_PAT="facebook|twitter|amazon|paypal|ops@exoscale.ch|noreply|no_reply|no-reply|slack|gerrit"
+NOALIAS_PAT="facebook|twitter|amazon|paypal|ops@exoscale.ch|noreply|no_reply|no-reply|slack|gerrit|gitlab@gitlab-master"
 
 if grep -Eq "$NOALIAS_PAT" <<< "$NEWALIAS"; then
     :

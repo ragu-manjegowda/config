@@ -11,4 +11,5 @@ python-lsp-black
 python-lsp-ruff
 rfc3987-syntax
 rope
+types-vobject
 vobject
