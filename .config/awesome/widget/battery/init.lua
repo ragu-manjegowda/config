@@ -10,8 +10,8 @@ local config_dir = gears.filesystem.get_configuration_dir()
 local widget_icon_dir = config_dir .. 'widget/battery/icons/'
 
 -- Try to load battery library, return dummy widget if it fails (CI environment)
-local battery_ok, battery = pcall(require, 'library.battery')
-if not battery_ok then
+local battery_lib, battery = pcall(require, 'library.battery')
+if not battery_lib then
     return function()
         return wibox.widget {
             {
@@ -167,6 +167,15 @@ local return_button = function()
                     return
                 end
 
+                -- Normalize status for icon lookup: only 'charging' and
+                -- 'discharging' icon variants exist. Map other UPower states
+                -- to the closest visual equivalent.
+                local icon_status = status
+                if status == 'fully-charged' or status == 'pending-charge' or
+                    status == 'not charging' then
+                    icon_status = 'charging'
+                end
+
                 if (battery_percentage > 0 and battery_percentage < 20) then
                     -- Critical level warning message
                     if status == 'discharging' then
@@ -184,24 +193,24 @@ local return_button = function()
                                 widget_icon_dir .. icon_name .. '.svg'))
                         return
                     else
-                        icon_name = icon_name .. '-' .. status .. '-' .. '10'
+                        icon_name = icon_name .. '-' .. icon_status .. '-' .. '10'
                     end
                 end
 
                 if battery_percentage >= 20 and battery_percentage < 30 then
-                    icon_name = icon_name .. '-' .. status .. '-' .. '20'
+                    icon_name = icon_name .. '-' .. icon_status .. '-' .. '20'
                 elseif battery_percentage >= 30 and battery_percentage < 50 then
-                    icon_name = icon_name .. '-' .. status .. '-' .. '30'
+                    icon_name = icon_name .. '-' .. icon_status .. '-' .. '30'
                 elseif battery_percentage >= 50 and battery_percentage < 60 then
-                    icon_name = icon_name .. '-' .. status .. '-' .. '50'
+                    icon_name = icon_name .. '-' .. icon_status .. '-' .. '50'
                 elseif battery_percentage >= 60 and battery_percentage < 80 then
-                    icon_name = icon_name .. '-' .. status .. '-' .. '60'
+                    icon_name = icon_name .. '-' .. icon_status .. '-' .. '60'
                 elseif battery_percentage >= 80 and battery_percentage < 90 then
-                    icon_name = icon_name .. '-' .. status .. '-' .. '80'
+                    icon_name = icon_name .. '-' .. icon_status .. '-' .. '80'
                 elseif battery_percentage >= 90 and battery_percentage < 100 then
-                    icon_name = icon_name .. '-' .. status .. '-' .. '90'
+                    icon_name = icon_name .. '-' .. icon_status .. '-' .. '90'
                 elseif battery_percentage == 100 then
-                    icon_name = icon_name .. '-' .. status .. '-' .. '100'
+                    icon_name = icon_name .. '-' .. icon_status .. '-' .. '100'
                 end
 
                 battery_imagebox.icon:set_image(

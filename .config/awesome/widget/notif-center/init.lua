@@ -118,6 +118,7 @@ local notif_center = function(s)
 
     -- Function to update scrollbar and height
     local function update_scrollbar()
+        if not s.notifbox_layout then return end
         local child_count = #s.notifbox_layout.children
         content_height = child_count * NOTIF_HEIGHT
 
@@ -161,6 +162,7 @@ local notif_center = function(s)
 
     -- Layout change handler
     local function on_layout_changed()
+        if not s.notifbox_layout then return end
         local child_count = #s.notifbox_layout.children
         if child_count == 1 and notif_core.remove_notifbox_empty then
             update_notif_count(0)

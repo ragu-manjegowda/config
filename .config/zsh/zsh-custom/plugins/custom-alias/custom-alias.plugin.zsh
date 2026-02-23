@@ -814,18 +814,7 @@ function scale-gtk-app() {
 ###############################################################################
 
 function watch-email() {
-    # Kill old processes
-    killall goimapnotify 2>/dev/null
-    killall notify.sh 2>/dev/null
-
-    # Start goimapnotify
-    goimapnotify -conf ~/.config/imapnotify/imapnotify.yaml > \
-        ~/.local/state/awesome/imapnotify.log 2>&1 &
-    disown %goimapnotify
-
-    # Start notify.sh
-    eval "FULL_SYNC=1 ${HOME}/.config/imapnotify/notify.sh >/dev/null 2>&1" &
-    disown %eval
+    ~/.config/imapnotify/watch-email.sh
 }
 
 ###############################################################################

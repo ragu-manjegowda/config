@@ -38,17 +38,11 @@ awesome.connect_signal(
         -- run_once('killall darkman; ' ..
         -- 'XDG_DATA_DIRS=~/.config/darkman ' ..
         -- 'darkman run > ~/.cache/awesome/darkman.log 2>&1 &')
-        run_once('killall -9 goimapnotify &>/dev/null; ' ..
-            'goimapnotify -conf ~/.config/imapnotify/imapnotify.yaml ' ..
-            '> ~/.local/state/awesome/imapnotify.log 2>&1 &')
-
         -- No need for this since they are now part of start-up apps
         -- Just a fail safe mechanism in case user services fails
         run_once('systemctl --user reload-or-restart --now darkman.service')
-        -- awful.spawn('systemctl --user reload-or-restart --now goimapnotify.service')
 
-        -- Update email's list when we come back from sleep
-        run_once('~/.config/imapnotify/notify.sh')
+        run_once('~/.config/imapnotify/watch-email.sh')
     end
 )
 

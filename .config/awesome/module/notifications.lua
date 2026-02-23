@@ -10,6 +10,12 @@ local clickable_container = require('widget.clickable-container')
 local animation = require("library.tween")
 local cst = require("naughty.constants")
 
+-- Keep strong references to notification popup widgets so they are not
+-- garbage-collected while naughty still tracks them internally (the
+-- internal by_position table uses weak references).  Entries are removed
+-- in the 'destroyed' signal handler below.
+local active_boxes = {}
+
 -- Defaults
 naughty.config.defaults.ontop = true
 naughty.config.defaults.icon_size = dpi(32)
@@ -144,6 +150,9 @@ end)
 -- Raise client, if destroyed by user
 -- https://github.com/awesomeWM/awesome/issues/3182#issuecomment-1753211773
 naughty.connect_signal("destroyed", function(n, reason)
+    -- Release strong reference to prevent memory leak
+    active_boxes[n] = nil
+
     if not n.clients then
         return
     end
@@ -239,6 +248,7 @@ naughty.connect_signal(
         })
 
         -- Notifbox Blueprint
+        -- Store a strong reference to prevent GC (see active_boxes above)
         local widget = naughty.layout.box {
             notification = n,
             type = 'notification',
@@ -340,6 +350,10 @@ naughty.connect_signal(
                 widget = wibox.container.background
             }
         }
+
+        -- Hold a strong reference so the wibox is not garbage-collected
+        -- while naughty's internal weak-value table still tracks it.
+        active_boxes[n] = widget
 
         -- Animation for popup display duration
         local anim = animation:new({

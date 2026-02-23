@@ -31,7 +31,7 @@ end
 -- Notification title container
 ui_noti_builder.notifbox_title = function(title)
     return wibox.widget {
-        markup = title,
+        markup = gears.string.xml_escape(title),
         font   = beautiful.font_bold(8),
         align  = 'left',
         valign = 'center',
@@ -42,7 +42,7 @@ end
 -- Notification message container
 ui_noti_builder.notifbox_message = function(msg)
     return wibox.widget {
-        markup = msg,
+        markup = gears.string.xml_escape(msg),
         font   = beautiful.font_regular(6),
         align  = 'left',
         valign = 'center',
@@ -53,7 +53,7 @@ end
 -- Notification app name container
 ui_noti_builder.notifbox_appname = function(app)
     return wibox.widget {
-        markup = app,
+        markup = gears.string.xml_escape(app),
         font   = beautiful.font_bold(10),
         align  = 'left',
         valign = 'center',

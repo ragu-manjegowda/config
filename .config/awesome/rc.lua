@@ -1,8 +1,3 @@
--- ░█▀▀░█░█░█▀▄░█▀▄░█▀▀░█▀█░█░░
--- ░▀▀█░█░█░█▀▄░█▀▄░█▀▀░█▀█░█░░
--- ░▀▀▀░▀▀▀░▀░▀░▀░▀░▀▀▀░▀░▀░▀▀▀
--- Banner generated using `toilet -f pagga AwesomeWM"
-
 local gears = require('gears')
 local beautiful = require('beautiful')
 local awful = require('awful')
@@ -10,15 +5,30 @@ local naughty = require('naughty')
 local revelation = require("library.revelation")
 
 -- {{{ Error handling
+-- Log errors to stderr so they persist in ~/.local/state/awesome/stderr
+-- in addition to the popup notifications shown by module/notifications.lua.
+local function log_error(msg, is_startup)
+    local prefix = is_startup and '[STARTUP ERROR]' or '[RUNTIME ERROR]'
+    io.stderr:write(prefix .. ' ' .. os.date('%Y-%m-%d %H:%M:%S') .. ': ' .. tostring(msg) .. '\n')
+    io.stderr:flush()
+end
+
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
 if awesome.startup_errors then
+    log_error(awesome.startup_errors, true)
     naughty.notification {
         urgency = "critical",
-        title   = "Oops, an error happened" .. (startup and " during startup!" or "!"),
-        message = message
+        title   = "Oops, an error happened during startup!",
+        message = awesome.startup_errors
     }
 end
+
+-- Log all runtime errors to stderr (popup display is handled separately
+-- by module/notifications.lua via the request::display_error signal).
+awesome.connect_signal('debug::error', function(err)
+    log_error(tostring(err), false)
+end)
 -- }}}
 
 -- ░█▀▀░█░█░█▀▀░█░░░█░░
@@ -183,7 +193,7 @@ local load_last_active_tag = function()
     end
 end
 
-awesome.connect_signal("exit", function(reason_restart)
+awesome.connect_signal("exit", function(_)
     -- Save on any exit (restart or logout)
     -- reason_restart is true when restarting, false when exiting
     save_current_tag()
