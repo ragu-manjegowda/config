@@ -9,8 +9,8 @@ set folder_format = '%4C %t %f'
 
 set my_account = "mail"
 
-set index_format=" %zs %zc %zt %{!%d %b} . %-28.28L  %?M?(%1M)&  ? %?X?&·? %s"
-set pager_format=" %n %zc  %T %s%*  %{!%d %b · %H:%M} %?X?  %X ? %P  "
+set index_format=" %zs %zc %zt %[%d %b] . %-28.28L  %?M?(%1M)&  ? %?X?&·? %s"
+set pager_format=" %n %zc  %T %s%*  %[%d %b · %H:%M] %?X?  %X ? %P  "
 set status_format = " $my_account  %D%?r? %r?   %m   %n   %d   %t   %F %>   %p"
 
 set forward_format = "Fwd: %s"
