@@ -14,6 +14,9 @@ on:
       - '.github/workflows/neomutt-tests.yml'
   workflow_dispatch:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   test:
     name: ${{ matrix.test_name }}
@@ -50,7 +53,7 @@ jobs:
           pacman -S --noconfirm git
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
 
@@ -78,7 +81,7 @@ jobs:
 
       - name: Upload test logs (on failure)
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: test-logs-${{ matrix.test_suite }}
           path: ~/.config/neomutt/tests/*.log
@@ -103,4 +106,3 @@ jobs:
           else
             echo "❌ **Some tests failed**" >> $GITHUB_STEP_SUMMARY
           fi
-

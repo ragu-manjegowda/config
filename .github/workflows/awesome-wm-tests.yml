@@ -25,6 +25,7 @@ on:
   workflow_dispatch:
 
 env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   AWESOME_CONFIG_DIR: .config/awesome
 
 jobs:
@@ -40,17 +41,14 @@ jobs:
           pacman -S --noconfirm git
 
       - name: Checkout dotfiles
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
 
       - name: Install dependencies
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm lua luarocks gcc make
-
-      - name: Install luacheck
-        run: luarocks install luacheck
+          pacman -S --noconfirm lua luacheck
 
       - name: Run luacheck on all Lua files
         run: |
@@ -84,7 +82,7 @@ jobs:
 
       - name: Upload Lua syntax validation logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: lua-syntax-logs
           path: test-logs/
@@ -95,6 +93,8 @@ jobs:
     name: AwesomeWM Configuration Load Test (Lua)
     runs-on: ubuntu-latest
     needs: lua-syntax-check
+    outputs:
+      awesome_git_workaround_used: ${{ steps.awesome_git_workaround_status.outputs.used }}
     container:
       image: archlinux:latest
     steps:
@@ -109,7 +109,7 @@ jobs:
           pacman -S --noconfirm git
 
       - name: Checkout dotfiles
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
 
@@ -131,8 +131,8 @@ jobs:
       - name: Install dependencies
         run: |
           pacman -S --noconfirm \
-            lua \
-            lua-lgi \
+            lua54 \
+            lua54-lgi \
             cairo \
             pango \
             gdk-pixbuf2 \
@@ -150,17 +150,70 @@ jobs:
             upower \
             playerctl \
             libcanberra \
-            gtk3
+            gtk3 \
+            python
 
-      - name: Install awesome-git from AUR
+      - name: Clone awesome-git AUR
         run: |
           cd /tmp
+          sudo -u builder git clone https://aur.archlinux.org/awesome-git.git
+
+      - name: Try awesome-git unpatched
+        id: awesome_git_unpatched
+        continue-on-error: true
+        run: |
+          sudo -u builder bash -lc 'cd /tmp/awesome-git && MAKEFLAGS="-j$(nproc)" makepkg -si --noconfirm'
+
+      - name: Notice awesome-git workaround removable
+        if: steps.awesome_git_unpatched.outcome == 'success'
+        run: |
+          echo "::warning title=AUR Workaround Can Be Removed::Unpatched awesome-git build succeeded; remove Lua/doc workaround from CI."
+          echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+          echo "!!! UNPATCHED awesome-git BUILD SUCCEEDED; REVERT CI WORKAROUND !!!"
+          echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+
+      - name: Apply awesome-git workaround
+        id: awesome_git_workaround_apply
+        if: steps.awesome_git_unpatched.outcome == 'failure'
+        run: |
           sudo -u builder bash << 'EOFAUR'
           set -e
-          git clone https://aur.archlinux.org/awesome-git.git
-          cd awesome-git
+          cd /tmp/awesome-git
+
+          # awesome-git supports Lua up to 5.4 and docs fail with ldoc on Lua 5.5.
+          git checkout -- PKGBUILD
+          rm -rf src pkg ./*.pkg.tar.* ./*.pkg.tar.*.sig
+          sed -i 's/^_LUA_VER=.*/_LUA_VER=5.4/' PKGBUILD
+
+          python - << 'PY'
+          from pathlib import Path
+          p = Path('PKGBUILD')
+          text = p.read_text()
+          continuation = chr(92) + "\n"
+          needle = "    -DLUA_EXECUTABLE=/usr/bin/lua${_LUA_VER} " + continuation
+          if needle in text and "-DGENERATE_DOC=OFF" not in text:
+              text = text.replace(
+                  needle,
+                  needle
+                  + "    -DGENERATE_DOC=OFF " + continuation
+                  + "    -DGENERATE_MANPAGES=OFF " + continuation,
+                  1,
+              )
+          p.write_text(text)
+          PY
+
           MAKEFLAGS="-j$(nproc)" makepkg -si --noconfirm
           EOFAUR
+
+      - name: Record awesome-git workaround status
+        id: awesome_git_workaround_status
+        if: always()
+        run: |
+          if [ "${{ steps.awesome_git_unpatched.outcome }}" = "failure" ]; then
+            echo "used=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "used=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Test configuration with awesome --check
         run: |
@@ -285,7 +338,7 @@ jobs:
 
       - name: Upload awmtt error logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: awmtt-logs
           path: test-logs/
@@ -296,6 +349,8 @@ jobs:
     name: AwesomeWM Configuration Load Test (LuaJIT)
     runs-on: ubuntu-latest
     needs: lua-syntax-check
+    outputs:
+      awesome_luajit_workaround_used: ${{ steps.awesome_luajit_workaround_status.outputs.used }}
     container:
       image: archlinux:latest
     steps:
@@ -310,7 +365,7 @@ jobs:
           pacman -S --noconfirm git
 
       - name: Checkout dotfiles
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
 
@@ -358,15 +413,49 @@ jobs:
           MAKEFLAGS="-j$(nproc)" makepkg -si --noconfirm
           EOFLGI
 
-      - name: Install awesome-luajit-git from AUR
+      - name: Clone awesome-luajit-git AUR
         run: |
           cd /tmp
+          sudo -u builder git clone https://aur.archlinux.org/awesome-luajit-git.git
+
+      - name: Try awesome-luajit-git unpatched
+        id: awesome_luajit_unpatched
+        continue-on-error: true
+        run: |
+          sudo -u builder bash -lc 'cd /tmp/awesome-luajit-git && MAKEFLAGS="-j$(nproc)" makepkg -si --noconfirm'
+
+      - name: Notice awesome-luajit-git workaround removable
+        if: steps.awesome_luajit_unpatched.outcome == 'success'
+        run: |
+          echo "::warning title=AUR Workaround Can Be Removed::Unpatched awesome-luajit-git build succeeded; remove docs workaround from CI."
+          echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+          echo "!!! UNPATCHED awesome-luajit-git BUILD SUCCEEDED; REVERT CI WORKAROUND !!!"
+          echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+
+      - name: Apply awesome-luajit-git workaround
+        id: awesome_luajit_workaround_apply
+        if: steps.awesome_luajit_unpatched.outcome == 'failure'
+        run: |
           sudo -u builder bash << 'EOFAUR'
           set -e
-          git clone https://aur.archlinux.org/awesome-luajit-git.git
-          cd awesome-luajit-git
+          cd /tmp/awesome-luajit-git
+
+          # ldoc currently breaks with Lua 5.5 on Arch; skip docs in CI build.
+          git checkout -- PKGBUILD
+          rm -rf src pkg ./*.pkg.tar.* ./*.pkg.tar.*.sig
+          sed -i 's/^_BUILD_DOCS=.*/_BUILD_DOCS=0/' PKGBUILD
           MAKEFLAGS="-j$(nproc)" makepkg -si --noconfirm
           EOFAUR
+
+      - name: Record awesome-luajit-git workaround status
+        id: awesome_luajit_workaround_status
+        if: always()
+        run: |
+          if [ "${{ steps.awesome_luajit_unpatched.outcome }}" = "failure" ]; then
+            echo "used=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "used=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Test configuration with awesome --check
         run: |
@@ -491,12 +580,39 @@ jobs:
 
       - name: Upload awmtt error logs (LuaJIT)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: awmtt-logs-luajit
           path: test-logs/
           retention-days: 30
           if-no-files-found: ignore
+
+  workaround:
+    name: Workaround Status
+    runs-on: ubuntu-latest
+    needs: [awesome-config-load, awesome-luajit-config-load]
+    if: always()
+    steps:
+      - name: Show workaround usage
+        run: |
+          AWESOME_GIT_WAR='${{ needs.awesome-config-load.outputs.awesome_git_workaround_used }}'
+          AWESOME_LUAJIT_WAR='${{ needs.awesome-luajit-config-load.outputs.awesome_luajit_workaround_used }}'
+
+          echo "awesome-git workaround used: ${AWESOME_GIT_WAR}"
+          echo "awesome-luajit-git workaround used: ${AWESOME_LUAJIT_WAR}"
+
+          if [ "${AWESOME_GIT_WAR}" = "true" ] || [ "${AWESOME_LUAJIT_WAR}" = "true" ]; then
+            APPLIED=()
+            if [ "${AWESOME_GIT_WAR}" = "true" ]; then
+              APPLIED+=("awesome-git (Lua 5.4 + docs/manpages disabled)")
+            fi
+            if [ "${AWESOME_LUAJIT_WAR}" = "true" ]; then
+              APPLIED+=("awesome-luajit-git (_BUILD_DOCS=0)")
+            fi
+            echo "::notice title=Workaround Active::Applied workarounds: ${APPLIED[*]}"
+          else
+            echo "::warning title=Workarounds Not Needed::Unpatched builds passed; consider removing workaround logic."
+          fi
 
   bash-scripts-validation:
     name: Bash Scripts Validation
@@ -510,7 +626,7 @@ jobs:
           pacman -S --noconfirm git
 
       - name: Checkout dotfiles
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
 
@@ -615,7 +731,7 @@ jobs:
 
       - name: Upload bash script validation logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: bash-validation-logs
           path: test-logs/
@@ -635,7 +751,7 @@ jobs:
           pacman -S --noconfirm git
 
       - name: Checkout dotfiles
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
 
@@ -717,7 +833,7 @@ jobs:
 
       - name: Upload display config test logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: display-config-logs
           path: test-logs/
@@ -737,7 +853,7 @@ jobs:
           pacman -S --noconfirm git
 
       - name: Checkout dotfiles
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
 
@@ -800,7 +916,7 @@ jobs:
 
       - name: Upload module import test logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: module-imports-logs
           path: test-logs/
@@ -820,7 +936,7 @@ jobs:
           pacman -S --noconfirm git
 
       - name: Checkout dotfiles
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
 
@@ -882,7 +998,7 @@ jobs:
 
       - name: Upload integration test logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: integration-logs
           path: test-logs/
@@ -901,7 +1017,7 @@ jobs:
           pacman -S --noconfirm git
 
       - name: Checkout dotfiles
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
 
@@ -948,7 +1064,7 @@ jobs:
 
       - name: Upload security scan logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: security-scan-logs
           path: test-logs/
@@ -988,4 +1104,3 @@ jobs:
           else
             echo "✓ All tests passed!"
           fi
-
