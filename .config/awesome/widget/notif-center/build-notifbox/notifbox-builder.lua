@@ -233,7 +233,7 @@ local notifbox_box = function(notif, icon, title, message, app, _)
 
                     -- Close info center if open
                     local focused = awful.screen.focused()
-                    if focused.info_center and focused.info_center.visible then
+                    if focused and focused.valid and focused.info_center and focused.info_center.visible then
                         focused.info_center:toggle()
                     end
 

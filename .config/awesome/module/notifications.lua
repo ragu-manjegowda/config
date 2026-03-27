@@ -16,6 +16,36 @@ local cst = require("naughty.constants")
 -- in the 'destroyed' signal handler below.
 local active_boxes = {}
 
+local function release_popup_box(notification, box)
+    if box then
+        pcall(function()
+            box.visible = false
+        end)
+    end
+
+    active_boxes[notification] = nil
+end
+
+screen.connect_signal("removed", function(s)
+    for notification, box in pairs(active_boxes) do
+        local ok, box_screen = pcall(function()
+            return box.screen
+        end)
+
+        local is_valid_screen = false
+        if ok and box_screen ~= nil then
+            local valid_ok, valid = pcall(function()
+                return box_screen.valid
+            end)
+            is_valid_screen = valid_ok and valid
+        end
+
+        if (not ok) or box_screen == nil or box_screen == s or (not is_valid_screen) then
+            release_popup_box(notification, box)
+        end
+    end
+end)
+
 -- Defaults
 naughty.config.defaults.ontop = true
 naughty.config.defaults.icon_size = dpi(32)
@@ -249,10 +279,18 @@ naughty.connect_signal(
 
         -- Notifbox Blueprint
         -- Store a strong reference to prevent GC (see active_boxes above)
+        -- Use awful.screen.preferred() so notifications follow focus, but
+        -- guard against it returning an invalid/about-to-be-removed screen.
+        local notif_screen = awful.screen.preferred()
+        if not notif_screen or not notif_screen.valid then
+            notif_screen = screen.primary
+        end
+        local notif_w = notif_screen.geometry.width
+        local notif_h = notif_screen.geometry.height
         local widget = naughty.layout.box {
             notification = n,
             type = 'notification',
-            screen = awful.screen.preferred(),
+            screen = notif_screen,
             shape = gears.shape.rectangle,
             widget_template = {
                 {
@@ -337,12 +375,12 @@ naughty.connect_signal(
                             widget = naughty.container.background,
                         },
                         strategy = 'min',
-                        width    = awful.screen.preferred().geometry.width / 6,
+                        width    = notif_w / 6,
                         widget   = wibox.container.constraint,
                     },
                     strategy = 'max',
-                    height   = awful.screen.preferred().geometry.height / 4,
-                    width    = awful.screen.preferred().geometry.width / 6,
+                    height   = notif_h / 4,
+                    width    = notif_w / 6,
                     widget   = wibox.container.constraint
                 },
                 bg = beautiful.background,
@@ -377,8 +415,7 @@ naughty.connect_signal(
                 if notif_core.add_notification then
                     notif_core.add_notification(n)
                 end
-                -- Just hide the popup widget
-                widget.visible = false
+                release_popup_box(n, widget)
             end)
         end
 
@@ -395,14 +432,13 @@ naughty.connect_signal(
         -- Hide popups if dont_disturb_state mode is on
         -- Or if the info_center is visible
         local focused = awful.screen.focused()
-        if _G.dont_disturb_state or (focused.info_center and focused.info_center.visible) then
+        if _G.dont_disturb_state or (focused and focused.valid and focused.info_center and focused.info_center.visible) then
             -- Add this notification to notification center while keeping it alive
             local notif_core = require('widget.notif-center.build-notifbox')
             if notif_core.add_notification then
                 notif_core.add_notification(n)
             end
-            -- Just hide the popup, don't destroy the notification
-            widget.visible = false
+            release_popup_box(n, widget)
             anim:stop()
         end
     end

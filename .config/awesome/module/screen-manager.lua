@@ -36,6 +36,11 @@ end
 local reorganize_windows_on_remove = function(removed_screen)
     local primary_screen = screen.primary
 
+    -- Guard: if screen is no longer valid, bail out
+    if not removed_screen.valid then
+        return
+    end
+
     -- Move systray to primary screen when external is disconnected
     if primary_screen and primary_screen.systray then
         primary_screen.systray.screen = primary_screen
@@ -386,10 +391,16 @@ local move_all_clients_to_external = function(external_screen)
 end
 
 -- Handle screen being removed
+-- Note: prepare_for_disconnect() already reorganizes windows BEFORE xrandr
+-- removes the screen, so we guard against double-processing here.
 screen.connect_signal(
     'removed',
     function(s)
-        if s ~= screen.primary then
+        -- If prepare_for_disconnect already handled this screen,
+        -- external_clients will have entries and the screen is now invalid.
+        -- Only reorganize if there are clients still on this screen that
+        -- were NOT already moved by prepare_for_disconnect.
+        if s.valid and s ~= screen.primary then
             reorganize_windows_on_remove(s)
         end
     end
