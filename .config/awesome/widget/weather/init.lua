@@ -6,15 +6,48 @@ local dpi = beautiful.xresources.apply_dpi
 local config_dir = gears.filesystem.get_configuration_dir()
 local widget_icon_dir = config_dir .. 'widget/weather/icons/'
 local clickable_container = require('widget.clickable-container')
-local json = require('library.json')
 
 local config = require('configuration.config')
+
+local weather_cfg = config.widget.weather or {}
+local open_weather_cfg = weather_cfg.open_weather or {}
+
+if not open_weather_cfg.key and weather_cfg.key then
+    open_weather_cfg.key = weather_cfg.key
+end
+
+if not open_weather_cfg.city_ids then
+    if weather_cfg.city_ids then
+        open_weather_cfg.city_ids = weather_cfg.city_ids
+    elseif weather_cfg.city_id then
+        open_weather_cfg.city_ids = { weather_cfg.city_id }
+    else
+        open_weather_cfg.city_ids = {}
+    end
+end
+
 local secrets = {
-    key = config.widget.weather.key,
-    -- Support both single city_id and list of city_ids
-    city_ids = config.widget.weather.city_ids or { config.widget.weather.city_id },
-    units = config.widget.weather.units,
-    update_interval = config.widget.weather.update_interval
+    units = weather_cfg.units or 'metric',
+    update_interval = weather_cfg.update_interval or 1200,
+    providers = weather_cfg.providers or { 'open-meteo', 'wttr', 'open-weather' },
+    locations = weather_cfg.locations or {},
+    open_weather = open_weather_cfg,
+}
+
+if #secrets.locations == 0 then
+    for _, city_id in ipairs(secrets.open_weather.city_ids) do
+        table.insert(secrets.locations, {
+            openweather_city_id = tostring(city_id),
+            name = 'City ' .. tostring(city_id),
+            wttr_query = tostring(city_id),
+        })
+    end
+end
+
+local weather_providers = {
+    ['open-meteo'] = require('widget.weather.open-meteo'),
+    ['wttr'] = require('widget.weather.wttr'),
+    ['open-weather'] = require('widget.weather.open-weather'),
 }
 
 -- Constants for scrollable weather list
@@ -53,6 +86,77 @@ local get_weather_symbol = function()
         ['imperial'] = '°F'
     }
     return symbol_tbl[secrets.units]
+end
+
+local function normalize_provider_name(name)
+    if not name then
+        return nil
+    end
+
+    local normalized = tostring(name):lower():gsub('_', '-')
+    if normalized == 'openweather' then
+        normalized = 'open-weather'
+    elseif normalized == 'openmeteo' then
+        normalized = 'open-meteo'
+    end
+
+    return normalized
+end
+
+local function get_fallback_providers()
+    local ordered = {}
+
+    for _, provider_name in ipairs(secrets.providers) do
+        local normalized = normalize_provider_name(provider_name)
+        if normalized and weather_providers[normalized] then
+            table.insert(ordered, normalized)
+        end
+    end
+
+    if #ordered == 0 then
+        ordered = { 'open-meteo', 'wttr', 'open-weather' }
+    end
+
+    return ordered
+end
+
+local provider_order = get_fallback_providers()
+
+local function get_location_label(location)
+    return location.display_name or location.name or ('City ' .. tostring(location.openweather_city_id or '?'))
+end
+
+local function fetch_weather_with_fallback(location, callback)
+    local function try_provider(index, last_error)
+        if index > #provider_order then
+            callback(false, nil, last_error)
+            return
+        end
+
+        local provider_name = provider_order[index]
+        local provider = weather_providers[provider_name]
+        if not provider then
+            try_provider(index + 1, last_error)
+            return
+        end
+
+        if provider.is_available and not provider.is_available(location, secrets) then
+            try_provider(index + 1, last_error)
+            return
+        end
+
+        provider.fetch(location, secrets, function(ok, data, err)
+            if ok and data then
+                data.provider = provider_name
+                callback(true, data, nil)
+                return
+            end
+
+            try_provider(index + 1, err or last_error)
+        end)
+    end
+
+    try_provider(1, nil)
 end
 
 local weather_header = wibox.widget {
@@ -102,8 +206,7 @@ local weather_list_layout = wibox.widget {
 -- Store weather card widgets for updating
 local weather_cards = {}
 
--- Create a weather card for a city
-local function create_weather_card(city_id)
+local function create_weather_card(location)
     local weather_icon_widget = wibox.widget {
         id = 'icon',
         image = widget_icon_dir .. 'weather-error.svg',
@@ -244,7 +347,7 @@ local function create_weather_card(city_id)
 
     return {
         card = weather_card,
-        city_id = city_id,
+        location = location,
         weather_icon = weather_icon_widget,
         weather_location = weather_location,
         weather_desc_temp = weather_desc_temp,
@@ -253,9 +356,8 @@ local function create_weather_card(city_id)
     }
 end
 
--- Initialize weather cards for all cities
-for i, city_id in ipairs(secrets.city_ids) do
-    weather_cards[i] = create_weather_card(city_id)
+for i, location in ipairs(secrets.locations) do
+    weather_cards[i] = create_weather_card(location)
     weather_list_layout:add(weather_cards[i].card)
 end
 
@@ -378,24 +480,6 @@ scroll_area:buttons(gears.table.join(
     awful.button({}, 5, function() do_scroll('down') end)
 ))
 
--- Create weather script for a specific city
-local create_weather_script = function(city_id)
-    local weather_script = [[
-        KEY="]] .. secrets.key .. [["
-        CITY="]] .. city_id .. [["
-        UNITS="]] .. secrets.units .. [["
-
-        weather=$(curl -sf "https://api.openweathermap.org/data/2.5/weather?APPID=${KEY}&id=${CITY}&units=${UNITS}")
-
-        if [ ! -z "$weather" ]; then
-            printf "${weather}"
-        else
-            printf "error"
-        fi
-    ]]
-    return weather_script
-end
-
 -- Set refreshing state for all cards
 local function set_refreshing_state()
     for _, widget_set in ipairs(weather_cards) do
@@ -405,50 +489,38 @@ end
 
 -- Update a single weather card
 local function update_weather_card(widget_set)
-    awful.spawn.easy_async_with_shell(
-        create_weather_script(widget_set.city_id),
-        function(stdout)
-            if stdout:match('error') then
-                widget_set.weather_icon:set_image(widget_icon_dir .. 'weather-error.svg')
-                widget_set.weather_location:set_markup('Error')
-                widget_set.weather_desc_temp:set_markup('Failed to fetch')
-                widget_set.weather_sunrise:set_markup('--:--')
-                widget_set.weather_sunset:set_markup('--:--')
-                return
-            end
-
-            local weather_data = json.parse(stdout)
-            if not weather_data then
-                widget_set.weather_desc_temp:set_markup('Parse error')
-                return
-            end
-
-            -- Process weather data
-            local location = weather_data.name
-            local country = weather_data.sys.country
-            local sunrise = os.date('%H:%M', weather_data.sys.sunrise)
-            local sunset = os.date('%H:%M', weather_data.sys.sunset)
-            local temperature = math.floor(weather_data.main.temp + 0.5)
-            local weather_desc = weather_data.weather[1].description
-            local weather_icon_code = weather_data.weather[1].icon
-
-            -- Capitalize weather description
-            local desc = weather_desc:sub(1, 1):upper() .. weather_desc:sub(2)
-            local weather_description = desc .. ', ' .. temperature .. get_weather_symbol()
-            local loc = location .. ', ' .. country
-
-            -- Update widgets
-            local icon_file = icon_tbl[weather_icon_code] or 'weather-error.svg'
-            widget_set.weather_icon:set_image(widget_icon_dir .. icon_file)
-            widget_set.weather_location:set_markup(loc)
-            widget_set.weather_desc_temp:set_markup(weather_description)
-            widget_set.weather_sunrise:set_markup(sunrise)
-            widget_set.weather_sunset:set_markup(sunset)
-
-            -- Update header time (same for all cities)
-            header_time:set_markup(os.date('%H:%M'))
+    fetch_weather_with_fallback(widget_set.location, function(ok, weather_data)
+        if not ok or not weather_data then
+            widget_set.weather_icon:set_image(widget_icon_dir .. 'weather-error.svg')
+            widget_set.weather_location:set_markup(get_location_label(widget_set.location))
+            widget_set.weather_desc_temp:set_markup('Failed to fetch')
+            widget_set.weather_sunrise:set_markup('--:--')
+            widget_set.weather_sunset:set_markup('--:--')
+            return
         end
-    )
+
+        local location = weather_data.location or get_location_label(widget_set.location)
+        local country = weather_data.country
+        local sunrise = weather_data.sunrise or '--:--'
+        local sunset = weather_data.sunset or '--:--'
+        local temp_number = tonumber(weather_data.temperature) or 0
+        local temperature = math.floor(temp_number + 0.5)
+        local weather_desc = weather_data.description or 'Unknown'
+        local weather_icon_code = weather_data.icon_code or '...'
+
+        local desc = weather_desc:sub(1, 1):upper() .. weather_desc:sub(2)
+        local weather_description = desc .. ', ' .. temperature .. get_weather_symbol()
+        local loc = country and (location .. ', ' .. country) or location
+
+        local icon_file = icon_tbl[weather_icon_code] or 'weather-error.svg'
+        widget_set.weather_icon:set_image(widget_icon_dir .. icon_file)
+        widget_set.weather_location:set_markup(loc)
+        widget_set.weather_desc_temp:set_markup(weather_description)
+        widget_set.weather_sunrise:set_markup(sunrise)
+        widget_set.weather_sunset:set_markup(sunset)
+
+        header_time:set_markup(os.date('%H:%M'))
+    end)
 end
 
 -- Update all weather cards

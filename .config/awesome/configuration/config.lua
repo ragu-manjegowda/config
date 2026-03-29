@@ -48,13 +48,34 @@ return {
         },
 
         weather         = {
-            -- API Key
-            key = '25bc90a1196e6f153eece0bc0b0fc9eb',
-            -- City IDs (list of cities to show)
-            -- Find city IDs at: https://openweathermap.org/
-            city_ids = {
-                '5392171', -- San Jose, US
-                '1262321', -- Mysore, IN
+            providers = { 'open-meteo', 'wttr', 'open-weather' },
+            locations = {
+                {
+                    name = 'San Jose',
+                    country = 'US',
+                    latitude = 37.3382,
+                    longitude = -121.8863,
+                    timezone = 'America/Los_Angeles',
+                    wttr_query = 'San Jose',
+                    openweather_city_id = '5392171',
+                },
+                {
+                    name = 'Mysore',
+                    country = 'IN',
+                    latitude = 12.2958,
+                    longitude = 76.6394,
+                    timezone = 'Asia/Kolkata',
+                    wttr_query = 'Mysore',
+                    openweather_city_id = '1262321',
+                },
+            },
+            open_weather = {
+                -- API Key
+                key = '25bc90a1196e6f153eece0bc0b0fc9eb',
+                city_ids = {
+                    '5392171', -- San Jose, US
+                    '1262321', -- Mysore, IN
+                },
             },
             -- Units: 'metric' or 'imperial'
             units = 'metric',
