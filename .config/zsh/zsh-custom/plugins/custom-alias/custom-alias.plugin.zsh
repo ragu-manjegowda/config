@@ -312,6 +312,7 @@ function toggle-alacritty-theme () {
     wiki_script_path="$HOME/.local/bin/render-wiki.sh"
     ranger_colors_path="$HOME/.config/ranger/colorschemes/neosolarized.py"
     opencode_config_path="$HOME/.config/opencode/opencode.json"
+    opencode_tui_config_path="$HOME/.config/opencode/tui.json"
     yazi_config_path="$HOME/.config/yazi/theme.toml"
 
     # Get current mode
@@ -342,6 +343,7 @@ function toggle-alacritty-theme () {
             sed -i -e "s#solarized_light#solarized_dark#g" $ranger_colors_path
 
             sed -i -e "s#solarized-light#solarized-dark#g" $opencode_config_path
+            sed -i -e "s#solarized-light#solarized-dark#g" $opencode_tui_config_path
 
             yazi_theme_dark_path="$HOME/.config/yazi/themes/solarized_dark.toml"
             cp $yazi_theme_dark_path $yazi_config_path
@@ -377,6 +379,7 @@ function toggle-alacritty-theme () {
             sed -i -e "s#solarized_dark#solarized_light#g" $ranger_colors_path
 
             sed -i -e "s#solarized-dark#solarized-light#g" $opencode_config_path
+            sed -i -e "s#solarized-dark#solarized-light#g" $opencode_tui_config_path
 
             yazi_theme_light_path="$HOME/.config/yazi/themes/solarized_light.toml"
             cp $yazi_theme_light_path $yazi_config_path
@@ -437,6 +440,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
         wiki_script_path="$HOME/.local/bin/render-wiki.sh"
         ranger_colors_path="$HOME/.config/ranger/colorschemes/neosolarized.py"
         opencode_config_path="$HOME/.config/opencode/opencode.json"
+        opencode_tui_config_path="$HOME/.config/opencode/tui.json"
         yazi_config_path="$HOME/.config/yazi/theme.toml"
 
         mode=$(awk -F'/' '/solarized/ {gsub(/\[|"|\]|solarized_|.toml/,""); print $(NF)}' $config_path)
@@ -463,6 +467,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
             sed -i -e "s#solarized_light#solarized_dark#g" $ranger_colors_path
 
             sed -i -e "s#solarized-light#solarized-dark#g" $opencode_config_path
+            sed -i -e "s#solarized-light#solarized-dark#g" $opencode_tui_config_path
 
             yazi_theme_dark_path="$HOME/.config/yazi/themes/solarized_dark.toml"
             cp $yazi_theme_dark_path $yazi_config_path
@@ -492,6 +497,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
             sed -i -e "s#solarized_dark#solarized_light#g" $ranger_colors_path
 
             sed -i -e "s#solarized-dark#solarized-light#g" $opencode_config_path
+            sed -i -e "s#solarized-dark#solarized-light#g" $opencode_tui_config_path
 
             yazi_theme_light_path="$HOME/.config/yazi/themes/solarized_light.toml"
             cp $yazi_theme_light_path $yazi_config_path
@@ -517,6 +523,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         wiki_script_path="$HOME/.local/bin/render-wiki.sh"
         ranger_colors_path="$HOME/.config/ranger/colorschemes/neosolarized.py"
         opencode_config_path="$HOME/.config/opencode/opencode.json"
+        opencode_tui_config_path="$HOME/.config/opencode/tui.json"
         yazi_config_path="$HOME/.config/yazi/theme.toml"
 
         # Get current mode
@@ -547,6 +554,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
                 sed -i -e "s#solarized_light#solarized_dark#g" $ranger_colors_path
 
                 sed -i -e "s#solarized-light#solarized-dark#g" $opencode_config_path
+                sed -i -e "s#solarized-light#solarized-dark#g" $opencode_tui_config_path
 
                 yazi_theme_dark_path="$HOME/.config/yazi/themes/solarized_dark.toml"
                 cp $yazi_theme_dark_path $yazi_config_path
@@ -578,6 +586,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
                 sed -i -e "s#solarized_dark#solarized_light#g" $ranger_colors_path
 
                 sed -i -e "s#solarized-dark#solarized-light#g" $opencode_config_path
+                sed -i -e "s#solarized-dark#solarized-light#g" $opencode_tui_config_path
 
                 yazi_theme_light_path="$HOME/.config/yazi/themes/solarized_light.toml"
                 cp $yazi_theme_light_path $yazi_config_path

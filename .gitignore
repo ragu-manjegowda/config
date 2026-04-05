@@ -154,6 +154,7 @@
 /.config/okularrc
 /.config/opencode/dcp.jsonc
 /.config/opencode/opencode.json-e
+/.config/opencode/package-lock.json
 /.config/openrazer
 /.config/pavucontrol.ini
 /.config/pip
@@ -209,6 +210,7 @@
 /.dbus
 /.dmrc
 /.docker
+/.dotnet
 /.dw-dkb-extra-mount-volumes
 /.dw_docker
 /.eggs
@@ -246,6 +248,7 @@
 /.npm
 /.npmrc
 /.nucleus
+/.nuget
 /.nv
 /.nvcccache
 /.nx
