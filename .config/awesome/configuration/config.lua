@@ -95,6 +95,13 @@ return {
             update_interval = 300 -- 5 minutes
         },
 
+        calendar_events = {
+            script = config_dir .. 'utilities/outlook-calendar',
+            window_days = 2,
+            max_items = 0,
+            show_cancelled = false,
+        },
+
         screen_recorder = {
             -- Which display to record from: "primary" or "external"
             display_target = 'external',

@@ -57,7 +57,7 @@ local time            = {
 
 local calendar_center = function(s)
     -- Set the calendar center geometry
-    local panel_width = s.geometry.width / 5
+    local panel_width = s.geometry.width / 6
 
     local panel       = awful.popup {
         widget         = {
@@ -66,7 +66,6 @@ local calendar_center = function(s)
                     {
                         {
                             {
-                                forced_width = dpi(panel_width),
                                 spacing = dpi(10),
                                 {
                                     nil,

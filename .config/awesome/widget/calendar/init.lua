@@ -109,6 +109,29 @@ local function decorate_cell(widget, flag, date)
     return ret
 end
 
+local function days_in_month(year, month)
+    return os.date('*t', os.time({ year = year, month = month + 1, day = 0 })).day
+end
+
+local function month_weeks_count(year, month)
+    local first_weekday = tonumber(os.date('%w', os.time({ year = year, month = month, day = 1 })))
+    local leading_days = first_weekday
+    if not start_sunday then
+        leading_days = (first_weekday + 6) % 7
+    end
+
+    local total_cells = leading_days + days_in_month(year, month)
+    return math.ceil(total_cells / 7)
+end
+
+local function month_widget_height(date)
+    local weeks = month_weeks_count(date.year, date.month)
+    local header_height = dpi(66)
+    local week_row_height = dpi(24)
+    local top_bottom_padding = dpi(8)
+    return header_height + (weeks * week_row_height) + top_bottom_padding
+end
+
 local cal = wibox.widget {
     date = os.date('*t'),
     font = beautiful.font_regular(14),
@@ -118,91 +141,56 @@ local cal = wibox.widget {
     widget = wibox.widget.calendar.month
 }
 
-local icon_left = wibox.widget {
-    layout = wibox.layout.align.vertical,
-    expand = 'none',
-    nil,
-    {
-        image = widget_icon_dir .. 'left-arrow' .. '.svg',
-        resize = true,
-        widget = wibox.widget.imagebox
-    },
-    nil
-}
+local function move_month(delta)
+    local current = cal:get_date()
+    local month = current.month + delta
+    local year = current.year
 
-local icon_right = wibox.widget {
-    layout = wibox.layout.align.vertical,
-    expand = 'none',
-    nil,
-    {
-        image = widget_icon_dir .. 'right-arrow' .. '.svg',
-        resize = true,
-        widget = wibox.widget.imagebox
-    },
-    nil
-}
+    while month < 1 do
+        month = month + 12
+        year = year - 1
+    end
 
-local action_level_left = wibox.widget {
-    {
+    while month > 12 do
+        month = month - 12
+        year = year + 1
+    end
+
+    local today = os.date('*t')
+    local day = 1
+    if year == today.year and month == today.month then
+        day = today.day
+    end
+
+    cal:set_date(nil)
+    cal:set_date({ year = year, month = month, day = day })
+end
+
+local function nav_button(icon_path)
+    return wibox.widget {
         {
-            icon_left,
-            widget = wibox.container.margin
+            {
+                {
+                    image = icon_path,
+                    resize = true,
+                    widget = wibox.widget.imagebox,
+                },
+                halign = 'center',
+                valign = 'center',
+                widget = wibox.container.place,
+            },
+            widget = clickable_container,
         },
-        widget = clickable_container,
-    },
-    bg = beautiful.groups_bg,
-    shape = function(cr, width, height)
-        gears.shape.rounded_rect(cr, width, height, beautiful.groups_radius)
-    end,
-    widget = wibox.container.background
-}
+        bg = beautiful.groups_bg,
+        shape = function(cr, width, height)
+            gears.shape.rounded_rect(cr, width, height, beautiful.groups_radius)
+        end,
+        widget = wibox.container.background,
+    }
+end
 
-action_level_left:buttons(
-    awful.util.table.join(
-        awful.button(
-            {},
-            1,
-            nil,
-            function()
-                local a = cal:get_date()
-                a.month = a.month - 1
-                cal:set_date(nil)
-                cal:set_date(a)
-            end
-        )
-    )
-)
-
-local action_level_right = wibox.widget {
-    {
-        {
-            icon_right,
-            widget = wibox.container.margin
-        },
-        widget = clickable_container,
-    },
-    bg = beautiful.groups_bg,
-    shape = function(cr, width, height)
-        gears.shape.rounded_rect(cr, width, height, beautiful.groups_radius)
-    end,
-    widget = wibox.container.background
-}
-
-action_level_right:buttons(
-    awful.util.table.join(
-        awful.button(
-            {},
-            1,
-            nil,
-            function()
-                local a = cal:get_date()
-                a.month = a.month + 1
-                cal:set_date(nil)
-                cal:set_date(a)
-            end
-        )
-    )
-)
+local action_level_left = nav_button(widget_icon_dir .. 'left-arrow.svg')
+local action_level_right = nav_button(widget_icon_dir .. 'right-arrow.svg')
 
 local w = wibox.widget {
     action_level_left,
@@ -211,13 +199,22 @@ local w = wibox.widget {
     layout = wibox.layout.ratio.horizontal
 }
 
-w:inc_ratio(2, 0.5)
+w:adjust_ratio(2, 0.08, 0.84, 0.08)
+
+local calendar_body = wibox.widget {
+    w,
+    forced_height = month_widget_height(cal:get_date()),
+    widget = wibox.container.background,
+}
+
+local function apply_month_height()
+    calendar_body.forced_height = month_widget_height(cal:get_date())
+end
 
 local cal_widget = wibox.widget {
     {
-        w,
-        forced_height = dpi(200),
-        widget        = wibox.container.background,
+        calendar_body,
+        widget = wibox.container.background,
     },
     bg = beautiful.transparent,
     widget = wibox.container.background
@@ -226,6 +223,25 @@ local cal_widget = wibox.widget {
 function cal_widget:update()
     local date = os.date('*t')
     cal:set_date(date)
+    apply_month_height()
 end
+
+action_level_left:buttons(
+    awful.util.table.join(
+        awful.button({}, 1, nil, function()
+            move_month(-1)
+            apply_month_height()
+        end)
+    )
+)
+
+action_level_right:buttons(
+    awful.util.table.join(
+        awful.button({}, 1, nil, function()
+            move_month(1)
+            apply_month_height()
+        end)
+    )
+)
 
 return cal_widget

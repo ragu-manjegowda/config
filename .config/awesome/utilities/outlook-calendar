@@ -1,0 +1,219 @@
+#!/usr/bin/env python3
+
+"""Outlook Calendar Sync Utility.
+
+Author - Ragu Manjegowda
+Github - @ragu-manjegowda
+"""
+
+import argparse
+import datetime
+import json
+import os
+import subprocess
+import sys
+import urllib.error
+import urllib.parse
+import urllib.request
+from zoneinfo import ZoneInfo
+
+
+def print_error(message):
+    """Print error message and exit."""
+    print(json.dumps({"ok": False, "error": message}))
+
+
+def get_access_token(oauth_script, token_file):
+    """Get access token from oauth script."""
+    result = subprocess.run(
+        ["python3", oauth_script, token_file],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    if result.returncode != 0:
+        details = (
+            result.stderr or result.stdout or "oauth2 token command failed"
+        ).strip()
+        raise RuntimeError(details)
+
+    token = (
+        result.stdout.strip().splitlines()[-1].strip() if result.stdout.strip() else ""
+    )
+    if not token:
+        raise RuntimeError("oauth2 script returned empty access token")
+
+    return token
+
+
+def parse_graph_time(value, is_all_day):
+    """Parse Graph time."""
+    if is_all_day:
+        return None, "All Day"
+
+    dt_text = value.get("dateTime")
+    if not dt_text:
+        return None, "--:--"
+
+    if dt_text.endswith("Z"):
+        dt_text = dt_text[:-1] + "+00:00"
+
+    try:
+        dt = datetime.datetime.fromisoformat(dt_text)
+    except ValueError:
+        return None, "--:--"
+
+    if dt.tzinfo is None:
+        tz_name = (value.get("timeZone") or "").strip()
+        tzinfo = None
+        if tz_name:
+            if tz_name.upper() == "UTC":
+                tzinfo = datetime.timezone.utc
+            else:
+                try:
+                    tzinfo = ZoneInfo(tz_name)
+                except Exception:
+                    tzinfo = None
+        if tzinfo is None:
+            tzinfo = datetime.datetime.now().astimezone().tzinfo
+        dt = dt.replace(tzinfo=tzinfo)
+
+    local_dt = dt.astimezone()
+    return local_dt, local_dt.strftime("%H:%M")
+
+
+def fetch_events(access_token, start_dt, end_dt):
+    """Fetch events from Graph API."""
+    params = {
+        "startDateTime": start_dt.isoformat(),
+        "endDateTime": end_dt.isoformat(),
+        "$select": "id,subject,start,end,location,organizer,isAllDay,responseStatus,showAs,isCancelled",
+        "$orderby": "start/dateTime",
+        "$top": "100",
+    }
+    url = "https://graph.microsoft.com/v1.0/me/calendarview?" + urllib.parse.urlencode(
+        params
+    )
+    request = urllib.request.Request(
+        url,
+        headers={
+            "Authorization": f"Bearer {access_token}",
+            "Accept": "application/json",
+        },
+    )
+
+    try:
+        with urllib.request.urlopen(request, timeout=20) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as error:
+        body = error.read().decode("utf-8", "replace")
+        try:
+            details = json.loads(body)
+            message = details.get("error", {}).get("message", body)
+        except json.JSONDecodeError:
+            message = body
+        raise RuntimeError(f"graph_http_{error.code}: {message}")
+    except urllib.error.URLError as error:
+        raise RuntimeError(f"graph_network_error: {error.reason}")
+
+    return payload.get("value", [])
+
+
+def normalize_event(item):
+    """Normalize event data."""
+    is_all_day = bool(item.get("isAllDay"))
+    start_dt, start_label = parse_graph_time(item.get("start", {}), is_all_day)
+    end_dt, end_label = parse_graph_time(item.get("end", {}), is_all_day)
+
+    location = ""
+    if isinstance(item.get("location"), dict):
+        location = item.get("location", {}).get("displayName") or ""
+
+    organizer = ""
+    organizer_data = item.get("organizer", {})
+    if isinstance(organizer_data, dict):
+        organizer = organizer_data.get("emailAddress", {}).get("name") or ""
+
+    return {
+        "id": item.get("id"),
+        "subject": item.get("subject") or "(No title)",
+        "is_all_day": is_all_day,
+        "start": start_dt.isoformat() if start_dt else None,
+        "end": end_dt.isoformat() if end_dt else None,
+        "start_label": start_label,
+        "end_label": end_label,
+        "location": location,
+        "organizer": organizer,
+        "show_as": item.get("showAs") or "",
+        "is_cancelled": bool(item.get("isCancelled")),
+        "response": (item.get("responseStatus") or {}).get("response") or "",
+    }
+
+
+def main():
+    """Entry point."""
+    parser = argparse.ArgumentParser(
+        description="Fetch Outlook calendar events via Microsoft Graph"
+    )
+    parser.add_argument(
+        "--oauth-script",
+        default=os.path.expanduser("~/.config/neomutt/accounts/work/oauth2.py"),
+        help="Path to oauth2.py",
+    )
+    parser.add_argument(
+        "--token-file",
+        default=os.path.expanduser("~/.config/neomutt/credentials/token_outlook_graph"),
+        help="Path to Graph token file",
+    )
+    parser.add_argument(
+        "--date",
+        help="Local date in YYYY-MM-DD. Defaults to today.",
+    )
+    parser.add_argument(
+        "--days",
+        type=int,
+        default=1,
+        help="Number of days to include starting from --date/today.",
+    )
+    args = parser.parse_args()
+
+    try:
+        if args.date:
+            base_date = datetime.date.fromisoformat(args.date)
+        else:
+            base_date = datetime.datetime.now().date()
+
+        days = max(1, args.days)
+        end_date = base_date + datetime.timedelta(days=days - 1)
+
+        local_tz = datetime.datetime.now().astimezone().tzinfo
+        start_dt = datetime.datetime.combine(base_date, datetime.time.min, local_tz)
+        end_dt = datetime.datetime.combine(end_date, datetime.time.max, local_tz)
+
+        token = get_access_token(args.oauth_script, args.token_file)
+        raw_events = fetch_events(token, start_dt, end_dt)
+
+        events = [normalize_event(event) for event in raw_events]
+        events.sort(key=lambda event: event["start"] or "")
+
+        output = {
+            "ok": True,
+            "generated_at": datetime.datetime.now().astimezone().isoformat(),
+            "window": {
+                "start": start_dt.isoformat(),
+                "end": end_dt.isoformat(),
+            },
+            "count": len(events),
+            "events": events,
+        }
+        print(json.dumps(output))
+    except Exception as error:  # pylint: disable=broad-except
+        print_error(str(error))
+        return 1
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

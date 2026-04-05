@@ -16,66 +16,59 @@ echo "  $test_name"
 echo "========================================="
 echo ""
 
-# Test 1: create-alias.sh exists and executable
-echo -n "Testing scripts/create-alias.sh exists and executable... "
-if [ -x ~/.config/neomutt/scripts/create-alias.sh ]; then
-    echo -e "${GREEN}✓ PASSED${NC}"
-    ((passed++))
-else
-    echo -e "${RED}✗ FAILED${NC}"
-    echo "  scripts/create-alias.sh not found or not executable"
-    ((failed++))
-fi
+is_git_crypt_locked() {
+    local file="$1"
+    [ -f "$file" ] && head -c9 "$file" 2>/dev/null | LC_ALL=C tr -d '\0' | grep -q "GITCRYPT"
+}
 
-# Test 2: get-mailboxes.sh exists and executable
-echo -n "Testing scripts/get-mailboxes.sh exists and executable... "
-if [ -x ~/.config/neomutt/scripts/get-mailboxes.sh ]; then
-    echo -e "${GREEN}✓ PASSED${NC}"
-    ((passed++))
-else
-    echo -e "${RED}✗ FAILED${NC}"
-    echo "  scripts/get-mailboxes.sh not found or not executable"
-    ((failed++))
-fi
+# --- Executable shell scripts ---
+for script in create-alias.sh get-mailboxes.sh mu-search.sh \
+              fzf-notmuch-search.sh setup-paths.sh sync-notmuch-flags.sh; do
+    echo -n "Testing scripts/$script exists and executable... "
+    if [ -x ~/.config/neomutt/scripts/$script ]; then
+        echo -e "${GREEN}✓ PASSED${NC}"
+        ((passed++))
+    else
+        echo -e "${RED}✗ FAILED${NC}"
+        echo "  scripts/$script not found or not executable"
+        ((failed++))
+    fi
+done
 
-# Test 3: mu-search.sh exists and executable
-echo -n "Testing scripts/mu-search.sh exists and executable... "
-if [ -x ~/.config/neomutt/scripts/mu-search.sh ]; then
-    echo -e "${GREEN}✓ PASSED${NC}"
-    ((passed++))
-else
-    echo -e "${RED}✗ FAILED${NC}"
-    echo "  scripts/mu-search.sh not found or not executable"
-    ((failed++))
-fi
-
-# Test 4: render-calendar-attachment.py exists and readable
-echo -n "Testing scripts/render-calendar-attachment.py exists... "
-if [ -r ~/.config/neomutt/scripts/render-calendar-attachment.py ]; then
-    echo -e "${GREEN}✓ PASSED${NC}"
-    ((passed++))
-else
-    echo -e "${RED}✗ FAILED${NC}"
-    echo "  scripts/render-calendar-attachment.py not found"
-    ((failed++))
-fi
-
-# Test 5: mutt-ical.py exists and readable
-echo -n "Testing scripts/mutt-ical.py exists... "
-if [ -r ~/.config/neomutt/scripts/mutt-ical.py ]; then
-    echo -e "${GREEN}✓ PASSED${NC}"
-    ((passed++))
-else
-    echo -e "${RED}✗ FAILED${NC}"
-    echo "  scripts/mutt-ical.py not found"
-    ((failed++))
-fi
-
-# Test 6: Python scripts have valid syntax
-for script in viewmailattachments.py render-calendar-attachment.py mutt-ical.py; do
+# --- Readable Python scripts ---
+for script in render-calendar-attachment.py mutt-ical.py; do
+    echo -n "Testing scripts/$script exists... "
     if [ -r ~/.config/neomutt/scripts/$script ]; then
+        echo -e "${GREEN}✓ PASSED${NC}"
+        ((passed++))
+    else
+        echo -e "${RED}✗ FAILED${NC}"
+        echo "  scripts/$script not found"
+        ((failed++))
+    fi
+done
+
+# --- OAuth2 scripts (git-crypt encrypted, skip if locked) ---
+for account in work personal; do
+    file=~/.config/neomutt/accounts/$account/oauth2.py
+    echo -n "Testing accounts/$account/oauth2.py exists and executable... "
+    if is_git_crypt_locked "$file"; then
+        echo -e "${YELLOW}⚠ SKIPPED${NC} (git-crypt locked)"
+    elif [ -x "$file" ]; then
+        echo -e "${GREEN}✓ PASSED${NC}"
+        ((passed++))
+    else
+        echo -e "${RED}✗ FAILED${NC}"
+        echo "  accounts/$account/oauth2.py not found or not executable"
+        ((failed++))
+    fi
+done
+
+# --- Python script syntax validation ---
+for script in scripts/render-calendar-attachment.py scripts/mutt-ical.py; do
+    if [ -r ~/.config/neomutt/$script ]; then
         echo -n "Testing $script syntax... "
-        if python -m py_compile ~/.config/neomutt/scripts/$script 2>/dev/null; then
+        if python -m py_compile ~/.config/neomutt/$script 2>/dev/null; then
             echo -e "${GREEN}✓ PASSED${NC}"
             ((passed++))
         else
@@ -86,8 +79,26 @@ for script in viewmailattachments.py render-calendar-attachment.py mutt-ical.py;
     fi
 done
 
-# Test 7: Shell scripts have valid syntax
-for script in create-alias.sh get-mailboxes.sh mu-search.sh; do
+for script in accounts/work/oauth2.py accounts/personal/oauth2.py; do
+    file=~/.config/neomutt/$script
+    if is_git_crypt_locked "$file"; then
+        echo -e "Testing $script syntax... ${YELLOW}⚠ SKIPPED${NC} (git-crypt locked)"
+    elif [ -r "$file" ]; then
+        echo -n "Testing $script syntax... "
+        if python -m py_compile "$file" 2>/dev/null; then
+            echo -e "${GREEN}✓ PASSED${NC}"
+            ((passed++))
+        else
+            echo -e "${RED}✗ FAILED${NC}"
+            echo "  $script has syntax errors"
+            ((failed++))
+        fi
+    fi
+done
+
+# --- Shell script syntax validation ---
+for script in create-alias.sh get-mailboxes.sh mu-search.sh \
+              fzf-notmuch-search.sh setup-paths.sh sync-notmuch-flags.sh; do
     if [ -r ~/.config/neomutt/scripts/$script ]; then
         echo -n "Testing $script syntax... "
         if bash -n ~/.config/neomutt/scripts/$script 2>/dev/null; then

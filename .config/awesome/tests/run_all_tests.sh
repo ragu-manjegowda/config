@@ -49,8 +49,25 @@ for test in "$SCRIPT_DIR"/test_*.lua; do
     fi
 done
 
+# Run bash test scripts
+echo -e "\n${BLUE}Running Bash Test Scripts...${NC}"
+for test in "$SCRIPT_DIR"/test_*.sh; do
+    if [ -f "$test" ] && [ -x "$test" ]; then
+        test_name="$(basename "$test" .sh | sed 's/_/ /g' | sed 's/test //')"
+        echo -e "\n${YELLOW}▶ Running: $test_name${NC}"
+        echo "$(printf '─%.0s' {1..60})"
+        if bash "$test"; then
+            echo -e "${GREEN}✓ $test_name passed${NC}"
+            ((TESTS_PASSED++))
+        else
+            echo -e "${RED}✗ $test_name failed${NC}"
+            ((TESTS_FAILED++))
+        fi
+    fi
+done
+
 # Run bash script tests
-echo -e "\n${BLUE}Running Bash Script Tests...${NC}"
+echo -e "\n${BLUE}Running Static Checks...${NC}"
 echo "$(printf '─%.0s' {1..60})"
 
 # Test 1: Check all scripts are executable

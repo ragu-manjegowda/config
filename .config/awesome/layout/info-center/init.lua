@@ -20,6 +20,7 @@ local info_center = function(s)
                     require('widget.notif-center')(s),
                     require('widget.email'),
                     require('widget.stocks'),
+                    require('widget.calendar-events'),
                     (require('widget.weather'))
                     -- require('widget.email')
                 },

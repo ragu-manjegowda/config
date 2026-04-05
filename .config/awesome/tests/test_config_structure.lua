@@ -82,9 +82,10 @@ if config.widget then
     local expected_widgets = {
         "email",
         "weather",
-        "network",
         "clock",
         "screen_recorder",
+        "stocks",
+        "calendar_events",
     }
 
     for _, widget in ipairs(expected_widgets) do
@@ -93,6 +94,68 @@ if config.widget then
         else
             print("  ⚠ widget." .. widget .. " not configured (may be optional)")
         end
+    end
+end
+
+-- Test: Stocks configuration
+print("\nTest Suite: Stocks Configuration")
+if config.widget and config.widget.stocks then
+    local stocks = config.widget.stocks
+
+    if stocks.symbols then
+        assert_type(stocks.symbols, "table", "stocks.symbols is a table")
+        assert_test(#stocks.symbols > 0, "stocks.symbols is not empty")
+    end
+
+    if stocks.update_interval then
+        assert_type(stocks.update_interval, "number", "stocks.update_interval is a number")
+        assert_test(
+            stocks.update_interval >= 60,
+            "stocks.update_interval >= 60 seconds (reasonable rate limit)"
+        )
+    end
+end
+
+-- Test: Calendar Events configuration
+print("\nTest Suite: Calendar Events Configuration")
+if config.widget and config.widget.calendar_events then
+    local cal = config.widget.calendar_events
+
+    assert_not_nil(cal.script, "calendar_events.script is defined")
+    if cal.script then
+        assert_type(cal.script, "string", "calendar_events.script is a string")
+        assert_test(
+            cal.script:match("outlook%-calendar$") ~= nil,
+            "calendar_events.script points to outlook-calendar"
+        )
+
+        local f = io.open(cal.script, "r")
+        if f then
+            local first_line = f:read("*l") or ""
+            f:close()
+            assert_test(
+                first_line:match("python") ~= nil,
+                "calendar_events.script is a Python script (not git-crypt blob)"
+            )
+        else
+            print("  ⚠ calendar_events.script file not found at: " .. cal.script)
+        end
+    end
+
+    if cal.window_days then
+        assert_type(cal.window_days, "number", "calendar_events.window_days is a number")
+        assert_test(
+            cal.window_days >= 1 and cal.window_days <= 14,
+            "calendar_events.window_days is in reasonable range (1-14)"
+        )
+    end
+
+    if cal.max_items ~= nil then
+        assert_type(cal.max_items, "number", "calendar_events.max_items is a number")
+    end
+
+    if cal.show_cancelled ~= nil then
+        assert_type(cal.show_cancelled, "boolean", "calendar_events.show_cancelled is a boolean")
     end
 end
 

@@ -631,7 +631,7 @@ jobs:
           submodules: recursive
 
       - name: Install shellcheck and dependencies
-        run: pacman -Syu --noconfirm && pacman -S --noconfirm shellcheck file
+        run: pacman -Syu --noconfirm && pacman -S --noconfirm shellcheck file python
 
       - name: Find all bash scripts
         run: |
@@ -695,6 +695,29 @@ jobs:
           fi
           exit $EXIT_CODE
 
+      - name: Validate Python scripts syntax
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE"/test-logs
+          echo "Checking Python scripts..." | tee "$GITHUB_WORKSPACE"/test-logs/python-syntax.log
+          EXIT_CODE=0
+
+          while IFS= read -r script; do
+            if head -n1 "$script" 2>/dev/null | grep -qE '^#!/.*python'; then
+              echo "Checking: $script" | tee -a "$GITHUB_WORKSPACE"/test-logs/python-syntax.log
+              if ! python -m py_compile "$script" 2>&1 | tee -a "$GITHUB_WORKSPACE"/test-logs/python-syntax.log; then
+                echo "❌ $script has syntax errors" | tee -a "$GITHUB_WORKSPACE"/test-logs/python-syntax.log
+                EXIT_CODE=1
+              else
+                echo "✓ $script" | tee -a "$GITHUB_WORKSPACE"/test-logs/python-syntax.log
+              fi
+            fi
+          done < <(find ${{ env.AWESOME_CONFIG_DIR }}/utilities -type f)
+
+          if [ $EXIT_CODE -eq 0 ]; then
+            echo "✓ All Python scripts passed syntax check" | tee -a "$GITHUB_WORKSPACE"/test-logs/python-syntax.log
+          fi
+          exit $EXIT_CODE
+
       - name: Check script executability
         run: |
           echo "Checking script permissions..."
@@ -708,6 +731,7 @@ jobs:
             "utilities/kbd-bkl"
             "utilities/capture"
             "utilities/location"
+            "utilities/outlook-calendar"
             "utilities/snap"
             "utilities/time"
             "utilities/touchpad-toggle"
