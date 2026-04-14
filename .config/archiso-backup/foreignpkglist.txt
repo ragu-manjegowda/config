@@ -36,6 +36,7 @@ solarized-colors-iconpack-git
 sync-pacman-hook-git
 teams
 warpd
+webkit2gtk
 xidlehook
 zoom
 zram-hibernate-git
