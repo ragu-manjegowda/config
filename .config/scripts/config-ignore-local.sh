@@ -168,6 +168,7 @@ config update-index --assume-unchanged \
     .config/neomutt/config/colors.muttrc \
     .config/nvim/lua/user/colorscheme.lua \
     .config/opencode/opencode.json \
+    .config/opencode/tui.json \
     .config/ranger/colorschemes/neosolarized.py \
     .config/rofi/config.rasi \
     .config/sioyek/prefs_user.config \

@@ -247,8 +247,7 @@ function M.setup()
                 -- Construct command to open image in Preview
                 local command
 
-                ---@diagnostic disable-next-line: undefined-field
-                if not vim.loop.os_uname().sysname == "Darwin" then
+                if not vim.uv.os_uname().sysname == "Darwin" then
                     command = "open "
                 else
                     command = "xdg-open "

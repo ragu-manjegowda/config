@@ -39,13 +39,15 @@ function M.define_lsp_attach_keymap(client, bufnr)
     -- <c-x><c-o> is also mapped to <c-d> in options.lua via wildchar
     vim.opt.omnifunc = "v:lua.vim.lsp.omnifunc"
 
-    if client:supports_method("textDocument/implementation") then
+    ---@diagnostic disable-next-line: param-type-mismatch
+    if client.supports_method and client.supports_method(client, "textDocument/implementation", { bufnr = bufnr }) then
         utils.keymap({ "n", "v" }, "<leader>lD",
             "<cmd>lua vim.lsp.buf.declaration()<CR>",
             opts("LSP goto declaration", bufnr))
     end
 
-    if client:supports_method("textDocument/formatting") then
+    ---@diagnostic disable-next-line: param-type-mismatch
+    if client.supports_method and client.supports_method(client, "textDocument/formatting", { bufnr = bufnr }) then
         utils.keymap({ "n", "v" }, "<leader>lf",
             "<cmd>lua vim.lsp.buf.format()<CR>",
             opts("LSP formatting", bufnr))
@@ -261,8 +263,7 @@ function M.clangd_setup()
         -- "--std=c11",
     }
 
-    ---@diagnostic disable-next-line: undefined-field
-    if not vim.loop.os_uname().sysname == "Darwin" then
+    if not vim.uv.os_uname().sysname == "Darwin" then
         -- Linux specific exclude this on Mac
         table.insert(clangd_cmd, "--enable-config")
         table.insert(clangd_cmd, "--malloc-trim")

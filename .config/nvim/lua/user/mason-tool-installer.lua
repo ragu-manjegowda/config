@@ -18,13 +18,12 @@ function M.config()
         -- start; they should be the names Mason uses for each tool
         ensure_installed = {
             "bash-language-server",
-            "biome",                           -- typescript formatting/linting
-            "bzl",                             -- starlark
+            "biome", -- typescript formatting/linting
             "clangd",
             "cmake-language-server",
-            "cpptools",                        -- c/cpp/rust debugging
-            "debugpy",                         -- python debugging
-            "delve",                           -- golang debugging
+            "cpptools", -- c/cpp/rust debugging
+            "debugpy",  -- python debugging
+            "delve",    -- golang debugging
             "gopls",
             "harper-ls",
             "json-lsp",
@@ -34,6 +33,7 @@ function M.config()
             "rust-analyzer",
             "shellcheck", -- sh linting
             "standardrb", -- ruby linting / formatting
+            "starpls",    -- starlark
             "vim-language-server",
             "yaml-language-server"
         },

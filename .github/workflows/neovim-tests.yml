@@ -212,7 +212,7 @@ jobs:
           pacman -S --noconfirm neovim tar git python
 
       - name: Download setup artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: nvim-setup
           path: /tmp

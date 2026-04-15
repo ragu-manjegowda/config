@@ -194,6 +194,7 @@ function M.set_autocommands_using_lua()
         { "BufWritePre" },
         {
             callback = function()
+                if not vim.bo.modifiable then return end
                 local ft = vim.bo.filetype
                 if ft == "mail" or ft == "markdown" or ft == "rmd" or ft == "text"
                     or ft == "rst" then

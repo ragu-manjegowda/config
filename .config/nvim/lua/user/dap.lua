@@ -166,8 +166,7 @@ function M.setup_cpp_adapters()
     local lldb_debugger_path
     local lldb_dap_debugger_path = "lldb-dap"
 
-    ---@diagnostic disable-next-line: undefined-field
-    if vim.loop.os_uname().sysname == "Darwin" then
+    if vim.uv.os_uname().sysname == "Darwin" then
         -- On Mac lldb is at `/usr/local/opt/llvm/bin`
         lldb_debugger_path = "/usr/local/opt/llvm/bin/lldb"
         lldb_dap_debugger_path = "/usr/local/opt/llvm/bin/lldb-dap"
@@ -290,8 +289,7 @@ function M.setup_cpp_adapters()
     }
 
     -- GDB needs code signing on mac, stick to lldb
-    ---@diagnostic disable-next-line: undefined-field
-    if vim.loop.os_uname().sysname ~= "Darwin" then
+    if vim.uv.os_uname().sysname ~= "Darwin" then
         ---@diagnostic disable-next-line: undefined-field
         table.insert(dap.configurations.cpp, cppdbg_config)
         ---@diagnostic disable-next-line: undefined-field
@@ -329,16 +327,17 @@ function M.setup_go_adapters()
             detached = true
         }
         -- https://neovim.io/doc/user/luvref.html#uv.spawn()
-        ---@diagnostic disable-next-line: undefined-field
-        handle, pid_or_err = vim.loop.spawn("dlv", opts, function(code)
+        handle, pid_or_err = vim.uv.spawn("dlv", opts, function(code)
+            ---@diagnostic disable-next-line: need-check-nil
             stdout:close()
+            ---@diagnostic disable-next-line: need-check-nil
             handle:close()
             if code ~= 0 then
                 print("dlv exited with code " .. code)
             end
         end)
         assert(handle, "Error running dlv: " .. tostring(pid_or_err))
-        ---@diagnostic disable-next-line: undefined-field
+        ---@diagnostic disable-next-line: undefined-field, need-check-nil
         stdout:read_start(function(err, chunk)
             assert(not err, err)
             if chunk then
