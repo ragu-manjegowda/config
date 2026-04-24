@@ -32,6 +32,10 @@ function M.config()
             signature = { enabled = false }
         },
         messages = {
+            -- Disabled to work around Neovim 0.12.1 core bug
+            -- (github.com/neovim/neovim/issues/38777 and folke/noice.nvim#1205):
+            -- floating windows with winhighlight + ruler crash `redraw_ruler`.
+            enabled = false,
             view_search = false,
         },
         notify = {

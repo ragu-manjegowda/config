@@ -330,15 +330,27 @@ local all_plugins = vim.list_extend(vim.deepcopy(extra_plugins), {
         ft = "markdown"
     },
 
-    -- Treesitter
+    -- Treesitter (on `main` branch; `master` was archived and is broken on nvim 0.12).
+    -- Requires `tree-sitter-cli` 0.26.1+ system-wide (e.g. `pacman -S tree-sitter-cli`).
     {
         "nvim-treesitter/nvim-treesitter",
-        dependencies = {
-            "nvim-treesitter/nvim-treesitter-textobjects"
-        },
+        branch = "main",
         build = ":TSUpdate",
+        lazy = false,
         config = function()
             require("user.treesitter").config()
+        end
+    },
+
+    {
+        "nvim-treesitter/nvim-treesitter-textobjects",
+        branch = "main",
+        dependencies = {
+            "nvim-treesitter/nvim-treesitter"
+        },
+        event = "VeryLazy",
+        config = function()
+            require("user.treesitter-textobjects").config()
         end
     },
 

@@ -5,147 +5,107 @@
 
 local M = {}
 
+local ensure_installed = {
+    "bash",
+    "c",
+    "cmake",
+    "cpp",
+    "css",
+    "csv",
+    "desktop",
+    "devicetree",
+    "diff",
+    "dockerfile",
+    "git_config",
+    "git_rebase",
+    "gitcommit",
+    "gitignore",
+    "go",
+    "gomod",
+    "gosum",
+    "html",
+    "htmldjango",
+    "ini",
+    "javascript",
+    "json",
+    "kconfig",
+    "lua",
+    "make",
+    "markdown",
+    "markdown_inline",
+    "muttrc",
+    "php",
+    "proto",
+    "python",
+    "query",
+    "rasi",
+    "regex",
+    "requirements",
+    "ruby",
+    "rust",
+    "ssh_config",
+    "starlark",
+    "textproto",
+    "tmux",
+    "toml",
+    "tsx",
+    "typescript",
+    "udev",
+    "usd",
+    "vim",
+    "vimdoc",
+    "xml",
+    "xresources",
+    "yaml",
+}
+
 M.config = function()
-    local res, _ = pcall(require, "nvim-treesitter")
-    if not res then
+    local ok, nts = pcall(require, "nvim-treesitter")
+    if not ok then
         vim.notify("nvim-treesitter not found", vim.log.levels.ERROR)
         return
     end
 
-    require "nvim-treesitter.configs".setup {
-        auto_install = true,
-        ensure_installed = {
-            "bash",
-            "c",
-            "cmake",
-            "cpp",
-            "css",
-            "csv",
-            "desktop",
-            "devicetree",
-            "diff",
-            "dockerfile",
-            "git_config",
-            "git_rebase",
-            "gitcommit",
-            "gitignore",
-            "go",
-            "gomod",
-            "gosum",
-            "html",
-            "htmldjango",
-            "ini",
-            "javascript",
-            "json",
-            "jsonc",
-            "kconfig",
-            "lua",
-            "make",
-            "markdown",
-            "markdown_inline",
-            "muttrc",
-            "php",
-            "proto",
-            "python",
-            "query",
-            "rasi",
-            "regex",
-            "requirements",
-            "ruby",
-            "rust",
-            "ssh_config",
-            "starlark",
-            "textproto",
-            "tmux",
-            "toml",
-            "tsx",
-            "typescript",
-            "udev",
-            "usd",
-            "vim",
-            "vimdoc",
-            "xml",
-            "xresources",
-            "yaml",
-        },
-        highlight = {
-            enable = true,               -- false will disable the whole extension
-            disable = function(_, bufnr) -- disable in BigFile
-                return vim.bo[bufnr].filetype == "BigFile"
-            end,
-            additional_vim_regex_highlighting = false,
-        },
-        ignore_install = {},
-        incremental_selection = {
-            enable = true,
-            keymaps = {
-                init_selection = "<M-/>",
-                node_incremental = "<M-/>",
-                scope_incremental = false,
-                node_decremental = "<bs>",
-            },
-        },
-        indent = {
-            enable = false,
-            disable = {},
-        },
-        modules = {},
-        sync_install = false,
-        textobjects = {
-            select = {
-                enable = true,
+    nts.setup({ install_dir = vim.fn.stdpath("data") .. "/site" })
 
-                -- Automatically jump forward to textobj, similar to targets.vim
-                lookahead = true,
+    local cfg_ok, nts_cfg = pcall(require, "nvim-treesitter.config")
+    if cfg_ok then
+        local installed = nts_cfg.get_installed() or {}
+        local to_install = vim.iter(ensure_installed)
+            :filter(function(p) return not vim.tbl_contains(installed, p) end)
+            :totable()
+        if #to_install > 0 then
+            pcall(nts.install, to_install)
+        end
+    end
 
-                keymaps = {
-                    -- You can use the capture groups defined in textobjects.scm
-                    ["af"] = "@function.outer",
-                    ["if"] = "@function.inner",
-                    ["ac"] = "@class.outer",
-                    ["ic"] = "@class.inner",
-                },
-            },
+    vim.api.nvim_create_autocmd("FileType", {
+        group = vim.api.nvim_create_augroup("user_treesitter_start", { clear = true }),
+        callback = function(args)
+            if vim.bo[args.buf].filetype == "BigFile" then
+                return
+            end
+            local lang = vim.treesitter.language.get_lang(vim.bo[args.buf].filetype)
+            if not lang or not vim.treesitter.language.add(lang) then
+                return
+            end
+            pcall(vim.treesitter.start, args.buf)
+            vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+        end,
+    })
 
-            move = {
-                enable = true,
-                set_jumps = true, -- whether to set jumps in the jumplist
-                goto_next_start = {
-                    ["]m"] = "@function.outer",
-                    ["]c"] = "@class.outer",
-                },
-                goto_next_end = {
-                    ["]M"] = "@function.outer",
-                    ["]C"] = "@class.outer",
-                },
-                goto_previous_start = {
-                    ["[m"] = "@function.outer",
-                    ["[c"] = "@class.outer",
-                },
-                goto_previous_end = {
-                    ["[M"] = "@function.outer",
-                    ["[C"] = "@class.outer",
-                },
-            },
+    vim.keymap.set("n", "<M-/>", function()
+        vim.cmd("normal! van")
+    end, { silent = true, desc = "Treesitter: select parent node" })
 
-            lsp_interop = {
-                enable = false,
-                border = "none",
-                peek_definition_code = {
-                    -- Offload this to lspsaga
-                    -- ["<leader>lpf"] = "@function.outer",
-                    -- ["<leader>lpc"] = "@class.outer",
-                },
-            }
-        }
-    }
+    vim.keymap.set("x", "<M-/>", function()
+        vim.cmd("normal! an")
+    end, { silent = true, desc = "Treesitter: extend to parent node" })
 
-    vim.opt["foldexpr"] = "nvim_treesitter#foldexpr()"
-    -- vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
-    -- vim.opt.foldtext = "v:lua.vim.treesitter.foldtext()"
+    vim.keymap.set("x", "<bs>", function()
+        vim.cmd("normal! in")
+    end, { silent = true, desc = "Treesitter: shrink to child node" })
 
-    -- Setup new symantic highlighting
-    -- Reference: reddit.com/r/neovim/comments/12gvms4
     local links = {
         ["@lsp.type.namespace"] = "@namespace",
         ["@lsp.type.type"] = "@type",

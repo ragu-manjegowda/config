@@ -28,7 +28,7 @@
         "info": "blue",
         "text": "base0",
         "textMuted": "base01",
-        "background": "none",
+        "background": "base03",
         "backgroundPanel": "base02",
         "backgroundElement": "base02",
         "border": "cyan",
