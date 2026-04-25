@@ -30,6 +30,7 @@ docker-compose
 fail2ban
 find-cursor
 firefox
+firejail
 fprintd
 freecad
 fuse2
@@ -99,6 +100,7 @@ pinta
 pipewire-alsa
 pipewire-pulse
 playerctl
+prisma-access-browser-bin
 python-typing_extensions
 ranger
 rdrview-git

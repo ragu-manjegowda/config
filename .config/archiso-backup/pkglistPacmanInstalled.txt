@@ -20,6 +20,7 @@ docker-buildx
 docker-compose
 fail2ban
 firefox
+firejail
 fprintd
 freecad
 fuse2

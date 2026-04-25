@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 02-security.sh - Firewall, SSH hardening, fail2ban, sysctl, apparmor
+# 02-security.sh - Firewall, SSH hardening, fail2ban, sysctl, apparmor, firejail
 
 log_step "Security Hardening"
 
@@ -71,3 +71,5 @@ if [[ -f /sys/module/apparmor/parameters/enabled ]]; then
 else
     log_warn "AppArmor not active -- ensure lsm=landlock,lockdown,yama,integrity,apparmor,bpf is in rEFInd kernel options"
 fi
+
+source "${SCRIPTS_DIR}/02-01-firejail.sh"

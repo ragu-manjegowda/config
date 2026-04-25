@@ -18,7 +18,7 @@ Options:
 Steps:
   0  Dotfiles     Clone repo, submodules, git worktree config
   1  Packages     paru, pacman restore, homebrew, zsh
-  2  Security     Firewall, SSH hardening, fail2ban, sysctl, apparmor
+  2  Security     Firewall, SSH hardening, fail2ban, sysctl, apparmor, firejail
   3  System       Deploy system config files from ~/.config/misc/
   4  Hardware     Power management, hibernate, backlight, USB wakeup
   5  Services     Enable system and user systemd services

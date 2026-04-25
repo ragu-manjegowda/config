@@ -1,0 +1,9 @@
+include globals.local
+
+ignore nou2f
+ignore private-dev
+
+noblacklist /run/pcscd
+whitelist /run/pcscd
+
+keep-dev-shm

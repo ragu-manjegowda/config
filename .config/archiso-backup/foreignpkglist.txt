@@ -28,6 +28,7 @@ paru
 pavucontrol-gtk3
 picom-git
 pinta
+prisma-access-browser-bin
 rdrview-git
 reflector-pacman-hook-git
 ruby-neovim
