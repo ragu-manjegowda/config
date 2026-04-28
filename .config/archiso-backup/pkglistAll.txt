@@ -21,7 +21,6 @@ check-broken-packages-pacman-hook-git
 colord
 cppreference
 cups
-cursor-cli
 cyrus-sasl-xoauth2-git
 darkman
 docker
@@ -133,7 +132,6 @@ ueberzugpp
 upower
 vlc
 warpd
-webkit2gtk
 webkit2gtk-4.1
 woff2
 xcalib
