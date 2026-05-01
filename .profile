@@ -34,6 +34,23 @@ export GNUPGHOME="${XDG_CONFIG_HOME:-$HOME/.config}/gnupg"
 # Not thoroughly tested for all side effectes
 export COLORTERM="truecolor"
 
+# Idempotent PATH helpers (POSIX-compatible).
+# Add $1 to PATH only if not already present. prepend=put first, append=put last.
+_path_prepend() {
+    [ -d "$1" ] || return 0
+    case ":$PATH:" in
+        *":$1:"*) ;;
+        *) PATH="$1:$PATH" ;;
+    esac
+}
+_path_append() {
+    [ -d "$1" ] || return 0
+    case ":$PATH:" in
+        *":$1:"*) ;;
+        *) PATH="$PATH:$1" ;;
+    esac
+}
+
 # if running bash
 if [ -n "$BASH_VERSION" ]; then
 
@@ -75,22 +92,15 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 fi
 
 ## Export local bin folder
-if [ -d "$HOME"/.local/bin ]; then
-    # shellcheck disable=SC1091
-    export PATH="$HOME"/.local/bin:"$PATH"
-fi
+_path_prepend "$HOME/.local/bin"
 
 ## Activate system-wide Python venv (created with uv)
-if [ -d "$HOME"/.local/share/venv/bin ]; then
-    # shellcheck disable=SC1091
-    export PATH="$HOME"/.local/share/venv/bin:"$PATH"
-fi
+_path_prepend "$HOME/.local/share/venv/bin"
 
 ## Activate system-wide Python venv (created with uv)
-if [ -d "$HOME"/.local/share/npm/node_modules/.bin ]; then
-    # shellcheck disable=SC1091
-    export PATH="$HOME"/.local/share/npm/node_modules/.bin:"$PATH"
-fi
+_path_prepend "$HOME/.local/share/npm/node_modules/.bin"
+
+export PATH
 
 # use nvim if installed,
 # if not use vim

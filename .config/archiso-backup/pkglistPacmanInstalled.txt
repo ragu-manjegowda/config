@@ -11,7 +11,6 @@ blueman
 bluez-utils
 broadcom-wl-dkms
 ca-certificates-mozilla
-calibre
 colord
 cups
 darkman
@@ -22,7 +21,6 @@ fail2ban
 firefox
 firejail
 fprintd
-freecad
 fuse2
 gcr
 git

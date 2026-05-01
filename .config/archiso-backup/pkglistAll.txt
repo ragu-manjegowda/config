@@ -16,7 +16,7 @@ blueman
 bluez-utils
 broadcom-wl-dkms
 ca-certificates-mozilla
-calibre
+calibre-bin
 check-broken-packages-pacman-hook-git
 colord
 cppreference
@@ -31,7 +31,6 @@ find-cursor
 firefox
 firejail
 fprintd
-freecad
 fuse2
 gcr
 git

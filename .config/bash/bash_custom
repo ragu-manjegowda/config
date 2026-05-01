@@ -1,9 +1,22 @@
 # vim: filetype=sh
 
+# Idempotent PATH append helper: only adds if not already present.
+# Defined in ~/.profile; re-define here for safety if this file is sourced
+# independently (e.g. directly by a non-login shell).
+if ! command -v _path_append >/dev/null 2>&1; then
+    _path_append() {
+        [ -d "$1" ] || return 0
+        case ":$PATH:" in
+            *":$1:"*) ;;
+            *) PATH="$PATH:$1" ;;
+        esac
+    }
+fi
+
 # Homebrew Path
 export HOMEBREW_PATH="/home/linuxbrew/.linuxbrew"
-export PATH="$PATH:$HOMEBREW_PATH/bin"
-export PATH="$PATH:$HOMEBREW_PATH/sbin"
+_path_append "$HOMEBREW_PATH/bin"
+_path_append "$HOMEBREW_PATH/sbin"
 
 # Broot
 if [ -f "$HOME/.config/broot/launcher/bash/br" ]; then
@@ -26,7 +39,7 @@ export GOPATH="$HOME/.cache/go"
 export GOBIN="$HOME/.local/bin"
 
 # Java
-export PATH="$PATH:$HOMEBREW_PATH/opt/openjdk@11/bin"
+_path_append "$HOMEBREW_PATH/opt/openjdk@11/bin"
 export CPPFLAGS="-I$HOMEBREW_PATH/opt/openjdk@11/include:$CPPFLAGS"
 export JAVA_HOME="$HOMEBREW_PATH/opt/openjdk@11"
 
@@ -39,14 +52,16 @@ export RUSTUP_HOME="$HOME/.config/rustup"
 export CARGO_NAME="Ragu Manjegowda"
 export CARGO_EMAIL="raghavendrahm0410@gmail.com"
 export CARGO_HOME="$HOME/.config/cargo"
-export PATH="$PATH:$CARGO_HOME/bin"
+_path_append "$CARGO_HOME/bin"
 
 # Sphinx-doc
-export PATH="$PATH:$HOMEBREW_PATH/opt/sphinx-doc/bin"
+_path_append "$HOMEBREW_PATH/opt/sphinx-doc/bin"
 
 # Ruby
 export GEM_HOME="$(gem env user_gemhome)"
-export PATH="$PATH:$GEM_HOME/bin"
+_path_append "$GEM_HOME/bin"
+
+export PATH
 
 if [ -f "$BASH_DIR/bash_extras" ]; then
     source "$BASH_DIR/bash_extras"

@@ -3,6 +3,7 @@ android-sdk-platform-tools
 anydesk-bin
 awesome-luajit-git
 awmtt
+calibre-bin
 check-broken-packages-pacman-hook-git
 cppreference
 cyrus-sasl-xoauth2-git
