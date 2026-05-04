@@ -89,6 +89,7 @@ if OS.mac?
   brew "rust"                       # Rust language
   brew "termshark"                  # terminal Wireshark
   brew "tmux"                       # terminal multiplexer
+  brew "tree-sitter-cli"             # tree-sitter CLI
   brew "jstkdng/programs/ueberzugpp" # terminal image display
   brew "yazi"                       # terminal file manager
 

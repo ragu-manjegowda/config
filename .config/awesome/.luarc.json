@@ -12,6 +12,7 @@
             "clientbuttons",
             "clientkeys",
             "dbus",
+            "dpi",
             "drawable",
             "drawin",
             "key",

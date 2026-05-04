@@ -62,8 +62,12 @@ return {
             ' -theme ' .. config_dir ..
             'configuration/rofi/calc/rofi.rasi' ..
             ' -normal-window -show calc -modi calc -no-show-match -no-sort' ..
-            ' -calc-command "echo -n \'{result}\' | xclip -sel clip"'
-        -- You can add more default applications here
+            ' -calc-command "echo -n \'{result}\' | xclip -sel clip"',
+
+        -- Searchable keybinding help
+        rofi_help = 'rofi -dpi ' .. dpi ..
+            ' -dmenu -i -matching fuzzy -p "Keys" -theme ' .. config_dir ..
+            'configuration/rofi/help/rofi.rasi'
     },
 
     -- List of apps to start once on start-up

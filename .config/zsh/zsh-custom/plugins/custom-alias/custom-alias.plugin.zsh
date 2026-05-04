@@ -314,6 +314,14 @@ function toggle-alacritty-theme () {
     opencode_config_path="$HOME/.config/opencode/opencode.json"
     opencode_tui_config_path="$HOME/.config/opencode/tui.json"
     yazi_config_path="$HOME/.config/yazi/theme.toml"
+    rofi_config_paths=(
+        "$HOME/.config/awesome/configuration/rofi/appmenu/rofi.rasi"
+        "$HOME/.config/awesome/configuration/rofi/calc/rofi.rasi"
+        "$HOME/.config/awesome/configuration/rofi/emojimenu/rofi.rasi"
+        "$HOME/.config/awesome/configuration/rofi/runmenu/rofi.rasi"
+        "$HOME/.config/awesome/configuration/rofi/time/rofi.rasi"
+        "$HOME/.config/awesome/configuration/rofi/help/rofi.rasi"
+    )
 
     # Get current mode
     mode=$(awk -F'/' '/solarized/ {gsub(/\[|"|\]|solarized_|.toml/,""); print $(NF)}' $config_path)
@@ -347,6 +355,10 @@ function toggle-alacritty-theme () {
 
             yazi_theme_dark_path="$HOME/.config/yazi/themes/solarized_dark.toml"
             cp $yazi_theme_dark_path $yazi_config_path
+
+            for rofi_config_path in $rofi_config_paths; do
+                sed -i -e "s#-light#-dark#g" $rofi_config_path
+            done
 
             dircolors_dark_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-dark"
             if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -383,6 +395,10 @@ function toggle-alacritty-theme () {
 
             yazi_theme_light_path="$HOME/.config/yazi/themes/solarized_light.toml"
             cp $yazi_theme_light_path $yazi_config_path
+
+            for rofi_config_path in $rofi_config_paths; do
+                sed -i -e "s#-dark#-light#g" $rofi_config_path
+            done
 
             dircolors_light_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-light"
             if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -442,6 +458,14 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
         opencode_config_path="$HOME/.config/opencode/opencode.json"
         opencode_tui_config_path="$HOME/.config/opencode/tui.json"
         yazi_config_path="$HOME/.config/yazi/theme.toml"
+        rofi_config_paths=(
+            "$HOME/.config/awesome/configuration/rofi/appmenu/rofi.rasi"
+            "$HOME/.config/awesome/configuration/rofi/calc/rofi.rasi"
+            "$HOME/.config/awesome/configuration/rofi/emojimenu/rofi.rasi"
+            "$HOME/.config/awesome/configuration/rofi/runmenu/rofi.rasi"
+            "$HOME/.config/awesome/configuration/rofi/time/rofi.rasi"
+            "$HOME/.config/awesome/configuration/rofi/help/rofi.rasi"
+        )
 
         mode=$(awk -F'/' '/solarized/ {gsub(/\[|"|\]|solarized_|.toml/,""); print $(NF)}' $config_path)
         if [[ "$mode" == "dark" ]]; then
@@ -472,6 +496,10 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
             yazi_theme_dark_path="$HOME/.config/yazi/themes/solarized_dark.toml"
             cp $yazi_theme_dark_path $yazi_config_path
 
+            for rofi_config_path in $rofi_config_paths; do
+                sed -i -e "s#-light#-dark#g" $rofi_config_path
+            done
+
             dircolors_dark_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-dark"
             eval `dircolors ${dircolors_dark_path}`
         else
@@ -501,6 +529,10 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 
             yazi_theme_light_path="$HOME/.config/yazi/themes/solarized_light.toml"
             cp $yazi_theme_light_path $yazi_config_path
+
+            for rofi_config_path in $rofi_config_paths; do
+                sed -i -e "s#-dark#-light#g" $rofi_config_path
+            done
 
             dircolors_light_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-light"
             eval `dircolors ${dircolors_light_path}`

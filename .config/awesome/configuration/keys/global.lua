@@ -4,15 +4,114 @@ local naughty = require("naughty")
 local gears = require('gears')
 local revelation = require("library.revelation")
 local playerctl_daemon = require("library.bling").signal.playerctl.cli()
+local keyboard = require('awful.keyboard')
 
 require('awful.autofocus')
-
-local hotkeys_popup = require('awful.hotkeys_popup').widget.new({
-    width = 2500, height = 1350 })
 
 local modkey = require('configuration.keys.mod').mod_key
 local apps = require('configuration.apps')
 local config = require('configuration.config')
+
+local modifier_labels = {
+    Control = 'Ctrl',
+    Mod1 = 'Alt',
+    Mod4 = 'Super'
+}
+
+local modifier_sort_order = {
+    Super = 1,
+    Ctrl = 2,
+    Alt = 3,
+    Shift = 4
+}
+
+local function shell_quote(value)
+    return "'" .. tostring(value):gsub("'", "'\\''") .. "'"
+end
+
+local function hotkey_sort_key(hotkey)
+    return table.concat(
+        { hotkey.group, hotkey.modifiers, hotkey.key, hotkey.description },
+        '\t')
+end
+
+local function format_modifiers(modifiers)
+    local labels = {}
+
+    for _, modifier in ipairs(modifiers or {}) do
+        labels[#labels + 1] = modifier_labels[modifier] or modifier
+    end
+
+    table.sort(labels, function(left, right)
+        local left_order = modifier_sort_order[left] or 99
+        local right_order = modifier_sort_order[right] or 99
+
+        if left_order == right_order then
+            return left < right
+        end
+
+        return left_order < right_order
+    end)
+
+    return table.concat(labels, ' + ')
+end
+
+local function format_key(key)
+    local keysym, keyprint = keyboard.get_key_name(key)
+    local label = keyprint or keysym or key
+
+    if not label or tostring(label):match('^%s*$') then
+        return key:sub(1, 1):upper() .. key:sub(2)
+    end
+
+    return label
+end
+
+local function show_rofi_hotkeys()
+    local hotkeys = {}
+
+    for _, data in ipairs(awful.key.hotkeys) do
+        if data.description and data.description ~= '' then
+            local modifiers = format_modifiers(data.mod)
+
+            for _, key_pair in ipairs(data.keys) do
+                hotkeys[#hotkeys + 1] = {
+                    group = data.group or 'none',
+                    modifiers = modifiers,
+                    key = format_key(key_pair[1]),
+                    description = data.description
+                }
+            end
+        end
+    end
+
+    table.sort(hotkeys, function(left, right)
+        return hotkey_sort_key(left) < hotkey_sort_key(right)
+    end)
+
+    local lines = {}
+
+    for _, hotkey in ipairs(hotkeys) do
+        local shortcut = hotkey.key
+
+        if hotkey.modifiers ~= '' then
+            shortcut = hotkey.modifiers .. ' + ' .. shortcut
+        end
+
+        lines[#lines + 1] = string.format(
+            '%-12s  %-24s  %s',
+            hotkey.group,
+            shortcut,
+            hotkey.description
+        )
+    end
+
+    awful.spawn.easy_async_with_shell(
+        'printf %s ' .. shell_quote(table.concat(lines, '\n') .. '\n') ..
+        ' | ' .. apps.default.rofi_help,
+        function() end
+    )
+end
 
 local function print_awesome_memory_stats(message)
     print(os.date(), "\nLua memory usage:", collectgarbage("count"))
@@ -402,10 +501,8 @@ local global_keys = awful.util.table.join(
     awful.key(
         { modkey },
         's',
-        function()
-            hotkeys_popup:show_help(nil, awful.screen.focused())
-        end,
-        { description = 'show help', group = 'awesome' }
+        show_rofi_hotkeys,
+        { description = 'show searchable help', group = 'awesome' }
     ),
 
     awful.key(
@@ -658,7 +755,6 @@ local global_keys = awful.util.table.join(
         {},
         'XF86AudioMicMute',
         function()
-
             awful.spawn('wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle', false)
             awesome.emit_signal('widget::microphone')
             awesome.emit_signal('module::mic_osd:show', true)
