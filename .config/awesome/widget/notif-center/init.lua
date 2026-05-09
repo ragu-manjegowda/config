@@ -59,6 +59,19 @@ local notif_center = function(s)
 
     local notif_core = require('widget.notif-center.build-notifbox')
     s.notifbox_layout = notif_core.notifbox_layout
+    local screen_active = true
+
+    local function is_screen_active()
+        if not screen_active then
+            return false
+        end
+
+        local ok, valid = pcall(function()
+            return s.valid
+        end)
+
+        return ok and valid
+    end
 
     -- Scroll state (per screen)
     local scroll_offset = 0
@@ -118,7 +131,7 @@ local notif_center = function(s)
 
     -- Function to update scrollbar and height
     local function update_scrollbar()
-        if not s.notifbox_layout then return end
+        if not is_screen_active() or not s.notifbox_layout then return end
         local child_count = #s.notifbox_layout.children
         content_height = child_count * NOTIF_HEIGHT
 
@@ -162,7 +175,7 @@ local notif_center = function(s)
 
     -- Layout change handler
     local function on_layout_changed()
-        if not s.notifbox_layout then return end
+        if not is_screen_active() or not s.notifbox_layout then return end
         local child_count = #s.notifbox_layout.children
         if child_count == 1 and notif_core.remove_notifbox_empty then
             update_notif_count(0)
@@ -176,6 +189,15 @@ local notif_center = function(s)
     end
 
     s.notifbox_layout:connect_signal('widget::layout_changed', on_layout_changed)
+
+    screen.connect_signal('removed', function(removed)
+        if removed ~= s then
+            return
+        end
+
+        screen_active = false
+        notif_core.notifbox_layout:disconnect_signal('widget::layout_changed', on_layout_changed)
+    end)
 
     -- Stack scrollbar on top of clipped content
     local scroll_area = wibox.widget {

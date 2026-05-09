@@ -1,0 +1,55 @@
+use_default_settings:
+  engines:
+    remove:
+      - google
+      - startpage
+      - mullvad leta
+      - wikicommons.images
+      - wikicommons.videos
+      - wikicommons.audio
+      - wikicommons.files
+      - radio browser
+      - wikidata
+      - ahmia
+      - torch
+
+server:
+  secret_key: "ed0538dfa1fc6af16658f013d4e8914c4c20d68090ea7a2f341e824755990e66"
+  limiter: false
+  image_proxy: false
+  public_instance: false
+  bind_address: "0.0.0.0"
+
+search:
+  safe_search: 0
+  autocomplete: ""
+  formats:
+    - html
+    - json
+
+outgoing:
+  request_timeout: 6.0
+  max_request_timeout: 15.0
+  pool_connections: 100
+  pool_maxsize: 20
+  enable_http2: true
+
+engines:
+  - name: duckduckgo
+    disabled: false
+    timeout: 6.0
+  - name: brave
+    disabled: false
+    timeout: 6.0
+  - name: bing
+    disabled: false
+    timeout: 6.0
+  - name: qwant
+    disabled: false
+    timeout: 6.0
+  - name: mojeek
+    disabled: false
+    timeout: 6.0
+  - name: wikipedia
+    disabled: false
+    timeout: 6.0

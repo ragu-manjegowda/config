@@ -1,0 +1,147 @@
+#!/usr/bin/env bash
+
+set -u
+
+name=searxng
+mcp_name=searxng-mcp
+settings="${XDG_CONFIG_HOME:-$HOME/.config}/opencode/searxng/settings.yml"
+
+usage() {
+    cat <<'EOF'
+Usage: oc [--no-searxng] [opencode args...]
+
+Launch OpenCode with local SearXNG MCP support.
+
+Options:
+  --no-searxng, --no-search, --no-docker
+      Launch OpenCode without starting Docker/SearXNG and disable only the
+      SearXNG MCP via OPENCODE_CONFIG_CONTENT.
+  -h, --help
+      Show this help.
+EOF
+}
+
+cleanup() {
+    if command -v docker >/dev/null 2>&1; then
+        docker rm -f "$mcp_name" "$name" >/dev/null 2>&1 || true
+    fi
+    trap - EXIT INT TERM HUP
+}
+
+launch_without_searxng() {
+    cleanup
+    OPENCODE_DISABLE_AUTOCOMPACT=false \
+        VISUAL=nvim \
+        OPENCODE_CONFIG_CONTENT='{"mcp":{"searxng":{"enabled":false}}}' \
+        opencode "$@"
+}
+
+ensure_settings() {
+    if [ -f "$settings" ]; then
+        return 0
+    fi
+
+    mkdir -p "$(dirname "$settings")"
+    local secret
+    secret=$(openssl rand -hex 32 2>/dev/null || head -c 32 /dev/urandom | xxd -p -c 64)
+    cat >"$settings" <<EOF
+use_default_settings:
+  engines:
+    remove:
+      - google
+      - startpage
+      - mullvad leta
+      - wikicommons.images
+      - wikicommons.videos
+      - wikicommons.audio
+      - wikicommons.files
+      - radio browser
+      - wikidata
+      - ahmia
+      - torch
+
+server:
+  secret_key: "$secret"
+  limiter: false
+  image_proxy: false
+  public_instance: false
+  bind_address: "0.0.0.0"
+
+search:
+  safe_search: 0
+  autocomplete: ""
+  formats:
+    - html
+    - json
+
+outgoing:
+  request_timeout: 6.0
+  max_request_timeout: 15.0
+  pool_connections: 100
+  pool_maxsize: 20
+  enable_http2: true
+EOF
+}
+
+case "${1:-}" in
+    -h|--help)
+        usage
+        exit 0
+        ;;
+    --no-searxng|--no-search|--no-docker)
+        shift
+        launch_without_searxng "$@"
+        exit $?
+        ;;
+esac
+
+if ! command -v docker >/dev/null 2>&1; then
+    echo "oc: docker not found; launching opencode without SearXNG" >&2
+    launch_without_searxng "$@"
+    exit $?
+fi
+
+ensure_settings
+
+trap cleanup EXIT INT TERM HUP
+
+# Host networking avoids bridge egress timeouts in this environment. The MCP
+# bridge uses host networking too and reaches SearXNG on 127.0.0.1.
+cleanup
+trap cleanup EXIT INT TERM HUP
+
+cid=$(docker run -d --rm \
+        --name "$name" \
+        --network host \
+        -v "$settings":/etc/searxng/settings.yml:ro \
+        searxng/searxng:latest)
+if [ -z "$cid" ]; then
+    echo "oc: failed to start SearXNG container; aborting" >&2
+    exit 1
+fi
+echo "oc: SearXNG started ($name, ${cid:0:12}); waiting for JSON API..."
+
+ready=0
+for _ in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+    if docker run --rm --network host curlimages/curl:latest \
+            -sf -o /dev/null --max-time 2 \
+            "http://127.0.0.1:8080/healthz" 2>/dev/null; then
+        ready=1
+        break
+    fi
+    sleep 1
+done
+
+if [ "$ready" -ne 1 ]; then
+    echo "oc: SearXNG did not become healthy in 15s. Recent container logs:" >&2
+    docker logs --tail 100 "$name" >&2 || true
+    echo "oc: tearing down and aborting." >&2
+    cleanup
+    exit 1
+fi
+echo "oc: SearXNG ready. Launching opencode..."
+
+OPENCODE_DISABLE_AUTOCOMPACT=false VISUAL=nvim opencode "$@"
+rc=$?
+cleanup
+exit $rc

@@ -58,7 +58,7 @@ _path_append "$CARGO_HOME/bin"
 _path_append "$HOMEBREW_PATH/opt/sphinx-doc/bin"
 
 # Ruby
-export GEM_HOME="$(gem env user_gemhome)"
+export GEM_HOME="$(ruby -e 'print Gem.user_dir')"
 _path_append "$GEM_HOME/bin"
 
 export PATH
@@ -66,4 +66,3 @@ export PATH
 if [ -f "$BASH_DIR/bash_extras" ]; then
     source "$BASH_DIR/bash_extras"
 fi
-
