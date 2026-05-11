@@ -97,6 +97,7 @@ if OS.mac?
   cask "firefox"
   cask "font-hack-nerd-font"
   cask "google-chrome"
+  cask "ngrok"
   cask "nomachine"
   cask "sioyek"
   cask "slack"
@@ -104,4 +105,3 @@ if OS.mac?
 end
 
 # ── Casks (both platforms) ───────────────────────────────────────────────────
-cask "ngrok"

@@ -84,7 +84,6 @@ numix-cursor-theme
 nvidia-container-toolkit
 nvidia-open-dkms
 openconnect-gp-git
-openconnect-gp-git-debug
 openrazer-daemon
 openssh
 openssl-1.1

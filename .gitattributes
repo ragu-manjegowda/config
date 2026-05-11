@@ -12,3 +12,4 @@
 .config/zsh/zsh_history filter=git-crypt diff=git-crypt
 .ssh/config filter=git-crypt diff=git-crypt
 .ssh/config_remote filter=git-crypt diff=git-crypt
+.config/openconnect-gp/gateways filter=git-crypt diff=git-crypt

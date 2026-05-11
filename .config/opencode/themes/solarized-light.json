@@ -28,9 +28,11 @@
         "info": "blue",
         "text": "base00",
         "textMuted": "base1",
+        "selectedListItemText": "base03",
         "background": "base3",
         "backgroundPanel": "base2",
         "backgroundElement": "base2",
+        "backgroundMenu": "base2",
         "border": "cyan",
         "borderActive": "green",
         "borderSubtle": "blue",
@@ -68,6 +70,7 @@
         "syntaxNumber": "magenta",
         "syntaxType": "yellow",
         "syntaxOperator": "green",
-        "syntaxPunctuation": "base00"
+        "syntaxPunctuation": "base00",
+        "thinkingOpacity": 0.65
     }
 }
