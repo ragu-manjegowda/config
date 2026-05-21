@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 02-security.sh - Firewall, SSH hardening, fail2ban, sysctl, apparmor, firejail
+# 02-security.sh - Firewall, SSH hardening, fail2ban, sysctl, AppArmor, Firejail, Prisma Access Browser sandboxing
 
 log_step "Security Hardening"
 

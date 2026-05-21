@@ -59,7 +59,7 @@ def del_if_present(dic, key):
 
 
 def set_accept_state(attendees, state):
-    """Set accept state for all attendees."""
+    """Set accept state for reply attendees."""
     for attendee in attendees:
         attendee.params["PARTSTAT"] = [str(state)]
         for i in ["RSVP", "ROLE", "X-NUM-GUESTS", "CUTYPE"]:
@@ -67,21 +67,32 @@ def set_accept_state(attendees, state):
     return attendees
 
 
-def check_if_user_invited(ans, attendees, email_address) -> int:
-    """Check if user is invited."""
+def attendee_email(attendee):
+    """Return the bare email address from an attendee line."""
+    if hasattr(attendee, "EMAIL_param"):
+        return extract_email(attendee.EMAIL_param)
+    if not getattr(attendee, "value", None):
+        return None
+    return extract_email(attendee.value.split(":", 1)[-1])
+
+
+def set_reply_attendee(ans, attendees, email_address) -> bool:
+    """Set the attendee to reply as; return True if it exactly matched."""
     ans.vevent.attendee_list = []
-    flag = 1
-    email_lower = email_address.lower()
+    email_lower = email_address.lower() if email_address else None
+
     for attendee in attendees:
-        if hasattr(attendee, "EMAIL_param"):
-            if attendee.EMAIL_param.lower() == email_lower:
-                ans.vevent.attendee_list.append(attendee)
-                flag = 0
-        else:
-            if attendee.value.split(":")[1].strip().lower() == email_lower:
-                ans.vevent.attendee_list.append(attendee)
-                flag = 0
-    return flag
+        current_email = attendee_email(attendee)
+        if current_email and email_lower and current_email.lower() == email_lower:
+            ans.vevent.attendee_list.append(attendee)
+            return True
+
+    if email_address:
+        attendee = ans.vevent.add("attendee")
+        attendee.value = "mailto:" + email_address
+        attendee.params["CN"] = [email_address]
+
+    return False
 
 
 def get_accept_decline():
@@ -272,20 +283,16 @@ if __name__ == "__main__":
         attendees = invitation.vevent.contents["attendee"]
     else:
         attendees = ""
-    set_accept_state(attendees, accept_decline)
-    ans.vevent.add("attendee")
-    ans.vevent.attendee_list.pop()
-    flag = 1
-    flag = check_if_user_invited(ans, attendees, email_address)
-    if flag:
-        sys.stderr.write("Seems like you have not been invited to this event!\n")
-        # Debug: show what was compared
-        sys.stderr.write("\nLooking for email: '%s'\n" % email_address)
-        if attendees:
-            for a in attendees:
-                val = a.EMAIL_param if hasattr(a, "EMAIL_param") else a.value
-                sys.stderr.write("  Attendee: '%s'\n" % val)
+    if not email_address:
+        sys.stderr.write("Unable to determine which email address to reply as.\n")
         sys.exit(1)
+
+    matched_attendee = set_reply_attendee(ans, attendees, email_address)
+    set_accept_state(ans.vevent.attendee_list, accept_decline)
+    if not matched_attendee:
+        sys.stderr.write(
+            "No exact attendee match found; replying as '%s'.\n" % email_address
+        )
 
     icsfile, tempdir = write_to_tempfile(ans)
 

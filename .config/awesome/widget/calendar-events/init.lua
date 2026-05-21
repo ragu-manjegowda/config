@@ -152,17 +152,25 @@ local function date_to_timestamp(date_text, time_text)
     }
 end
 
+local function event_time_text(value)
+    if type(value) == 'table' then
+        return value.dateTime or value.date or ''
+    end
+
+    return value or ''
+end
+
 local function event_date_text(event)
-    return (event.start or ''):match('^(%d%d%d%d%-%d%d%-%d%d)')
+    return event_time_text(event.start):match('^(%d%d%d%d%-%d%d%-%d%d)')
 end
 
 local function event_end_timestamp(event)
-    local end_date, end_time = (event['end'] or ''):match('^(%d%d%d%d%-%d%d%-%d%d)T(%d%d:%d%d:%d%d)')
+    local end_date, end_time = event_time_text(event['end']):match('^(%d%d%d%d%-%d%d%-%d%d)T(%d%d:%d%d:%d%d)')
     if end_date then
         return date_to_timestamp(end_date, end_time)
     end
 
-    local start_date, start_time = (event.start or ''):match('^(%d%d%d%d%-%d%d%-%d%d)T(%d%d:%d%d:%d%d)')
+    local start_date, start_time = event_time_text(event.start):match('^(%d%d%d%d%-%d%d%-%d%d)T(%d%d:%d%d:%d%d)')
     if start_date then
         return date_to_timestamp(start_date, start_time)
     end
@@ -171,7 +179,7 @@ local function event_end_timestamp(event)
 end
 
 local function event_start_timestamp(event)
-    local start_date, start_time = (event.start or ''):match('^(%d%d%d%d%-%d%d%-%d%d)T(%d%d:%d%d:%d%d)')
+    local start_date, start_time = event_time_text(event.start):match('^(%d%d%d%d%-%d%d%-%d%d)T(%d%d:%d%d:%d%d)')
     if start_date then
         return date_to_timestamp(start_date, start_time)
     end
@@ -348,10 +356,11 @@ local function concurrent_detail_row(event, idx)
 end
 
 local function event_group_key(event)
+    local start_text = event_time_text(event.start)
     if event.is_all_day then
-        return 'allday|' .. (event.start or event.start_label or event.subject or '')
+        return 'allday|' .. (start_text ~= '' and start_text or event.start_label or event.subject or '')
     end
-    return 'timed|' .. (event.start or ((event_date_text(event) or '') .. '|' .. (event.start_label or '')))
+    return 'timed|' .. (start_text ~= '' and start_text or ((event_date_text(event) or '') .. '|' .. (event.start_label or '')))
 end
 
 local function group_visible_events(visible, limit)

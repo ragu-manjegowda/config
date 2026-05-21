@@ -8,14 +8,13 @@ settings="${XDG_CONFIG_HOME:-$HOME/.config}/opencode/searxng/settings.yml"
 
 usage() {
     cat <<'EOF'
-Usage: oc [--no-searxng] [opencode args...]
+Usage: oc [--searxng] [opencode args...]
 
-Launch OpenCode with local SearXNG MCP support.
+Launch OpenCode. Local SearXNG MCP support is opt-in.
 
 Options:
-  --no-searxng, --no-search, --no-docker
-      Launch OpenCode without starting Docker/SearXNG and disable only the
-      SearXNG MCP via OPENCODE_CONFIG_CONTENT.
+  --searxng, --search, --docker
+      Start Docker/SearXNG and launch OpenCode with SearXNG MCP support.
   -h, --help
       Show this help.
 EOF
@@ -29,7 +28,6 @@ cleanup() {
 }
 
 launch_without_searxng() {
-    cleanup
     OPENCODE_DISABLE_AUTOCOMPACT=false \
         VISUAL=nvim \
         OPENCODE_CONFIG_CONTENT='{"mcp":{"searxng":{"enabled":false}}}' \
@@ -88,8 +86,11 @@ case "${1:-}" in
         usage
         exit 0
         ;;
-    --no-searxng|--no-search|--no-docker)
+    --searxng|--search|--docker)
         shift
+        ;;
+    *)
+        # Default behavior: launch OpenCode without SearXNG.
         launch_without_searxng "$@"
         exit $?
         ;;
