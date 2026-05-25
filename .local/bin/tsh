@@ -1,0 +1,3 @@
+#!/bin/sh
+export TELEPORT_HOME="${TELEPORT_HOME:-${XDG_CONFIG_HOME:-$HOME/.config}/tsh}"
+exec /usr/bin/tsh "$@"

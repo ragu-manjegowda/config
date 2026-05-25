@@ -18,6 +18,7 @@ broadcom-wl-dkms
 ca-certificates-mozilla
 calibre-bin
 check-broken-packages-pacman-hook-git
+codex-app-unofficial
 colord
 cppreference
 cups
@@ -119,6 +120,7 @@ swig
 sync-pacman-hook-git
 system-config-printer
 teams
+teleport-bin
 termshark
 thermald
 thunar

@@ -38,10 +38,11 @@ export COLORTERM="truecolor"
 # Add $1 to PATH only if not already present. prepend=put first, append=put last.
 _path_prepend() {
     [ -d "$1" ] || return 0
-    case ":$PATH:" in
-        *":$1:"*) ;;
-        *) PATH="$1:$PATH" ;;
-    esac
+    PATH=$(printf '%s' "$PATH" | awk -v path="$1" '
+        BEGIN { RS = ":"; ORS = "" }
+        $0 != "" && $0 != path { print sep $0; sep = ":" }
+    ')
+    PATH="$1${PATH:+:$PATH}"
 }
 _path_append() {
     [ -d "$1" ] || return 0
@@ -91,14 +92,17 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 
 fi
 
-## Export local bin folder
-_path_prepend "$HOME/.local/bin"
+## npm global executables installed with prefix=$HOME/.local/share/npm
+_path_prepend "$HOME/.local/share/npm/bin"
+
+## npm package-local executables installed with prefix=$HOME/.local/share/npm
+_path_prepend "$HOME/.local/share/npm/node_modules/.bin"
 
 ## Activate system-wide Python venv (created with uv)
 _path_prepend "$HOME/.local/share/venv/bin"
 
-## Activate system-wide Python venv (created with uv)
-_path_prepend "$HOME/.local/share/npm/node_modules/.bin"
+## Export local bin folder last so it wins over generated package shims.
+_path_prepend "$HOME/.local/bin"
 
 export PATH
 

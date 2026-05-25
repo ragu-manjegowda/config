@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Codex
+Comment=Launch Codex on Linux
+Exec=sh -lc 'exec env PATH="$HOME/.local/bin:$PATH" codex-url-handler "$@"' sh %U
+Terminal=false
+Type=Application
+Icon=codex-app-linux
+Categories=Development;
+MimeType=x-scheme-handler/codex;
+StartupNotify=true

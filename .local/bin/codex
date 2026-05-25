@@ -1,0 +1,3 @@
+#!/bin/sh
+export CODEX_HOME="${CODEX_HOME:-${XDG_CONFIG_HOME:-$HOME/.config}/codex}"
+exec "$HOME/.local/share/npm/bin/codex" "$@"

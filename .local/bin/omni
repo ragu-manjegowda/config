@@ -1,0 +1,2 @@
+#!/bin/sh
+exec "${XDG_CONFIG_HOME:-$HOME/.config}/omni/omni.sh" "$@"

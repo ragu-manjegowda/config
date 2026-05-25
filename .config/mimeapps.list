@@ -5,6 +5,7 @@ x-scheme-handler/http=firefox.desktop
 x-scheme-handler/https=firefox.desktop
 video/mp4=firefox.desktop
 application/pdf=firefox.desktop
+x-scheme-handler/codex=codex-app-linux.desktop
 
 [Added Associations]
 text/plain=nvim-usercreated.desktop

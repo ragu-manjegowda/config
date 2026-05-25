@@ -1,1 +1,10 @@
+include globals.local
+
+ignore nou2f
+ignore private-dev
 ignore blacklist ${MUSIC}
+
+noblacklist /run/pcscd
+whitelist /run/pcscd
+
+keep-dev-shm

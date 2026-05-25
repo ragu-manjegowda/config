@@ -5,6 +5,7 @@ awesome-luajit-git
 awmtt
 calibre-bin
 check-broken-packages-pacman-hook-git
+codex-app-unofficial
 cppreference
 cyrus-sasl-xoauth2-git
 find-cursor
@@ -35,6 +36,7 @@ sioyek-git
 solarized-colors-iconpack-git
 sync-pacman-hook-git
 teams
+teleport-bin
 warpd
 xidlehook
 zoom

@@ -1,0 +1,25 @@
+#!/bin/sh
+set -eu
+
+log_file="${XDG_STATE_HOME:-$HOME/.local/state}/codex-url-handler.log"
+mkdir -p "$(dirname "$log_file")"
+
+export CODEX_HOME="${CODEX_HOME:-${XDG_CONFIG_HOME:-$HOME/.config}/codex}"
+export CODEX_CLI_PATH="${CODEX_CLI_PATH:-$HOME/.local/bin/codex}"
+
+if [ "$#" -eq 0 ]; then
+  exec /usr/bin/codex-app-linux
+fi
+
+arg="$1"
+original_arg="$arg"
+case "$arg" in
+  codex//:*) arg="codex://${arg#codex//:}" ;;
+  codex:/:*) arg="codex://${arg#codex:/:}" ;;
+esac
+case "$arg" in
+  codex://new) arg="codex://threads/new" ;;
+esac
+
+printf '%s received: %s forwarded: %s\n' "$(date -Is)" "$original_arg" "$arg" >> "$log_file"
+exec /usr/bin/codex-app-linux "$arg"

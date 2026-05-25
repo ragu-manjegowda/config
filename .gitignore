@@ -15,6 +15,7 @@
 /.local/share/*
 !/.local/share/applications
 /.local/share/applications/*
+!/.local/share/applications/codex-app-linux.desktop
 !/.local/share/applications/nvim-usercreated.desktop
 !/.local/share/applications/sioyek.desktop
 
@@ -47,6 +48,7 @@
 /.conda
 /.config.git
 /.config/Atom
+/.config/Codex
 /.config/Cursor
 /.config/Epic
 /.config/Fonts/.uuid
@@ -90,6 +92,7 @@
 /.config/cargo
 /.config/catt
 /.config/coc
+/.config/codex
 /.config/compiz-1
 /.config/configstore
 /.config/conky
@@ -154,6 +157,7 @@
 /.config/oauth2ms/oauth2ms
 /.config/okularpartrc
 /.config/okularrc
+/.config/omni
 /.config/opencode/dcp.jsonc
 /.config/opencode/opencode.json-e
 /.config/opencode/package-lock.json
@@ -186,6 +190,7 @@
 /.config/tmux/session-restore
 /.config/tmux/tmux.conf-e
 /.config/totem
+/.config/tsh
 /.config/unity
 /.config/unity-monitors-v1-backup.xml
 /.config/unity-monitors.xml
