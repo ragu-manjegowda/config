@@ -5,16 +5,30 @@ set -u
 name=searxng
 mcp_name=searxng-mcp
 settings="${XDG_CONFIG_HOME:-$HOME/.config}/opencode/searxng/settings.yml"
+sandbox=0
+use_searxng=0
+select_session=0
+git_root=
+sandbox_config='{"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"},"agent":{"build":{"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}},"general":{"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}},"plan":{"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}}}}'
+sandbox_config_no_searxng='{"mcp":{"searxng":{"enabled":false}},"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"},"agent":{"build":{"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}},"general":{"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}},"plan":{"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}}}}'
 
 usage() {
     cat <<'EOF'
-Usage: oc [--searxng] [opencode args...]
+Usage: oc [--searxng] [--sandbox] [--session] [opencode args...]
 
 Launch OpenCode. Local SearXNG MCP support is opt-in.
 
 Options:
   --searxng, --search, --docker
       Start Docker/SearXNG and launch OpenCode with SearXNG MCP support.
+  --sandbox
+      Require the current directory to be a Git repository root, launch OpenCode
+      through firejail, auto-allow OpenCode permissions, keep OpenCode's normal
+      state visible, and limit home-directory writes to this repository,
+      OpenCode config, XDG cache/share/state, and common developer tool state.
+  --session
+      Pick an OpenCode session with fzf. Press Enter to continue the selected
+      session, or Ctrl-D to delete the selected session and refresh the list.
   -h, --help
       Show this help.
 EOF
@@ -27,11 +41,200 @@ cleanup() {
     trap - EXIT INT TERM HUP
 }
 
+session_json() {
+    local started=0 line
+
+    opencode session list --format json 2>/dev/null | while IFS= read -r line; do
+        if [ "$started" -eq 0 ]; then
+            case "$line" in
+                \[* ) started=1 ;;
+                * ) continue ;;
+            esac
+        fi
+        printf '%s\n' "$line"
+    done
+}
+
+session_list_for_fzf() {
+    local data_home db
+
+    data_home="${XDG_DATA_HOME:-$HOME/.local/share}"
+    db="$data_home/opencode/opencode.db"
+
+    if command -v sqlite3 >/dev/null 2>&1 && [ -f "$db" ]; then
+        sqlite3 -readonly -separator $'\t' "$db" \
+            "select id, printf('%-16s  %-44s  %s', datetime(time_updated / 1000, 'unixepoch', 'localtime'), substr(coalesce(nullif(title, ''), 'Untitled'), 1, 44), coalesce(directory, '')) from \"session\" where parent_id is null order by time_updated desc;"
+        return
+    fi
+
+    if ! command -v jq >/dev/null 2>&1; then
+        echo "oc: jq not found; cannot format OpenCode sessions" >&2
+        return 1
+    fi
+
+    session_json | jq -r '.[] | [.id, (((.updated // 0) / 1000) | strftime("%Y-%m-%d %H:%M")) + "  " + ((.title // "Untitled")[:44]) + "  " + (.directory // "")] | @tsv'
+}
+
+select_opencode_session() {
+    if ! command -v fzf >/dev/null 2>&1; then
+        echo "oc: fzf not found; cannot select OpenCode session" >&2
+        return 1
+    fi
+
+    local selected session_id header
+    header=$(printf '\033[35m%-19s\033[0m  \033[35m%-44s\033[0m  \033[35m%s\033[0m\n\033[36mEnter\033[0m: continue selected session  \033[36mCtrl-D\033[0m: delete selected session' 'Updated' 'Title' 'Path')
+    selected=$(session_list_for_fzf | fzf \
+        --delimiter=$'\t' \
+        --with-nth=2 \
+        --prompt='OpenCode session> ' \
+        --ansi \
+        --header="$header" \
+        --bind "ctrl-d:execute-silent(opencode session delete {1})+reload($0 --session-list-for-fzf)") || return $?
+
+    session_id=${selected%%$'\t'*}
+    if [ -z "$session_id" ]; then
+        return 1
+    fi
+
+    printf '%s\n' "$session_id"
+}
+
 launch_without_searxng() {
+    local config
+
+    config='{"mcp":{"searxng":{"enabled":false}}}'
+    if [ "$sandbox" -eq 1 ]; then
+        config="$sandbox_config_no_searxng"
+    fi
+
     OPENCODE_DISABLE_AUTOCOMPACT=false \
         VISUAL=nvim \
-        OPENCODE_CONFIG_CONTENT='{"mcp":{"searxng":{"enabled":false}}}' \
-        opencode "$@"
+        OPENCODE_CONFIG_CONTENT="$config" \
+        launch_opencode "$@"
+}
+
+launch_opencode() {
+    if [ "$sandbox" -eq 1 ]; then
+        if ! command -v firejail >/dev/null 2>&1; then
+            echo "oc: firejail not found; cannot launch sandboxed opencode" >&2
+            exit 1
+        fi
+
+        local opencode_bin
+        if ! opencode_bin=$(command -v opencode 2>/dev/null); then
+            echo "oc: opencode not found" >&2
+            exit 1
+        fi
+
+        local config_home data_home state_home cache_home claude_config_dir
+        local -a firejail_args opencode_paths sandbox_create_paths sandbox_optional_paths
+
+        config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
+        data_home="${XDG_DATA_HOME:-$HOME/.local/share}"
+        state_home="${XDG_STATE_HOME:-$HOME/.local/state}"
+        cache_home="${XDG_CACHE_HOME:-$HOME/.cache}"
+        claude_config_dir="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+
+        sandbox_create_paths=(
+            "$cache_home"
+            "$data_home"
+            "$state_home"
+            "$state_home/nvim"
+            "$state_home/nvim/shada"
+            "$state_home/nvim/swap"
+            "$HOME/.npm"
+            "$HOME/.local/bin"
+            "$HOME/.local/lib"
+            "$config_home/nvim"
+            "$data_home/nvim"
+            "$cache_home/nvim"
+            "$HOME/.config/npm"
+            "$HOME/.config/pnpm"
+            "$HOME/.config/yarn"
+            "$HOME/.config/uv"
+            "$HOME/.config/pip"
+            "$HOME/.config/pypoetry"
+            "$HOME/.config/bun"
+            "$HOME/.config/cargo"
+            "$HOME/.config/rustup"
+            "$HOME/.config/go"
+            "$HOME/.cargo"
+            "$HOME/.rustup"
+            "$HOME/.bun"
+            "$HOME/.bundle"
+            "$HOME/.pnpm-store"
+            "$HOME/.yarn"
+            "$HOME/.m2"
+            "$HOME/.gradle"
+            "$HOME/.java"
+            "$HOME/.nuget"
+            "$HOME/.dotnet"
+            "$HOME/go"
+            "$claude_config_dir/transcripts"
+            "$claude_config_dir/todos"
+        )
+
+        for path in "${sandbox_create_paths[@]}"; do
+            mkdir -p "$path"
+        done
+
+        opencode_paths=(
+            "$config_home/opencode"
+            "${sandbox_create_paths[@]}"
+        )
+
+        sandbox_optional_paths=(
+            "$HOME/.npmrc"
+            "$HOME/.yarnrc"
+            "$HOME/.yarnrc.yml"
+            "$HOME/.pypirc"
+        )
+
+        for path in "${sandbox_optional_paths[@]}"; do
+            if [ -e "$path" ]; then
+                opencode_paths+=("$path")
+            fi
+        done
+
+        firejail_args=(
+            --quiet
+            --allusers
+            --read-only="$HOME"
+            --read-write="$git_root"
+            --private-cwd="$git_root"
+            --noblacklist="$config_home/nvim"
+            --noblacklist="$data_home/nvim"
+            --noblacklist="$state_home/nvim"
+            --noblacklist="$cache_home/nvim"
+        )
+
+        for path in "${opencode_paths[@]}"; do
+            if [ -e "$path" ]; then
+                firejail_args+=(--read-write="$path")
+            fi
+        done
+
+        firejail "${firejail_args[@]}" "$opencode_bin" "$@"
+        return $?
+    fi
+
+    opencode "$@"
+}
+
+ensure_git_root() {
+    local root current
+
+    if ! root=$(git rev-parse --show-toplevel 2>/dev/null); then
+        echo "oc: this is not a root of a git repository" >&2
+        exit 1
+    fi
+
+    git_root=$(cd "$root" && pwd -P)
+    current=$(pwd -P)
+    if [ "$git_root" != "$current" ]; then
+        echo "oc: this is not a root of a git repository" >&2
+        exit 1
+    fi
 }
 
 ensure_settings() {
@@ -81,24 +284,65 @@ outgoing:
 EOF
 }
 
-case "${1:-}" in
-    -h|--help)
-        usage
-        exit 0
-        ;;
-    --searxng|--search|--docker)
-        shift
-        ;;
-    *)
-        # Default behavior: launch OpenCode without SearXNG.
-        launch_without_searxng "$@"
-        exit $?
-        ;;
-esac
+opencode_args=()
+if [ "${1:-}" = "--session-list-for-fzf" ]; then
+    session_list_for_fzf
+    exit $?
+fi
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        --searxng|--search|--docker)
+            use_searxng=1
+            ;;
+        --sandbox)
+            sandbox=1
+            ;;
+        --session)
+            if [ -n "${2:-}" ] && [ "${2#-}" = "$2" ]; then
+                opencode_args+=(--session "$2")
+                shift
+            else
+                select_session=1
+            fi
+            ;;
+        --)
+            shift
+            opencode_args+=("$@")
+            break
+            ;;
+        *)
+            opencode_args+=("$1")
+            ;;
+    esac
+    shift
+done
+
+if [ "$select_session" -eq 1 ]; then
+    selected_session=$(select_opencode_session) || exit $?
+    opencode_args=(--session "$selected_session" "${opencode_args[@]}")
+fi
+
+if [ "$sandbox" -eq 1 ]; then
+    ensure_git_root
+    if [ "${opencode_args[0]:-}" = "run" ]; then
+        opencode_args=(run --dangerously-skip-permissions "${opencode_args[@]:1}")
+    fi
+fi
+
+if [ "$use_searxng" -ne 1 ]; then
+    # Default behavior: launch OpenCode without SearXNG.
+    launch_without_searxng "${opencode_args[@]}"
+    exit $?
+fi
 
 if ! command -v docker >/dev/null 2>&1; then
     echo "oc: docker not found; launching opencode without SearXNG" >&2
-    launch_without_searxng "$@"
+    launch_without_searxng "${opencode_args[@]}"
     exit $?
 fi
 
@@ -142,7 +386,14 @@ if [ "$ready" -ne 1 ]; then
 fi
 echo "oc: SearXNG ready. Launching opencode..."
 
-OPENCODE_DISABLE_AUTOCOMPACT=false VISUAL=nvim opencode "$@"
+if [ "$sandbox" -eq 1 ]; then
+    OPENCODE_DISABLE_AUTOCOMPACT=false \
+        VISUAL=nvim \
+        OPENCODE_CONFIG_CONTENT="$sandbox_config" \
+        launch_opencode "${opencode_args[@]}"
+else
+    OPENCODE_DISABLE_AUTOCOMPACT=false VISUAL=nvim launch_opencode "${opencode_args[@]}"
+fi
 rc=$?
 cleanup
 exit $rc

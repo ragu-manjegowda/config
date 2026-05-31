@@ -7,5 +7,12 @@
         "metis",
         "momus",
         "atlas"
+    ],
+    "disabled_hooks": [
+        "todo-continuation-enforcer"
+    ],
+    "disabled_commands": [
+        "ralph-loop",
+        "ulw-loop"
     ]
 }
