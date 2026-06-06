@@ -136,6 +136,9 @@
 /.config/maglev
 /.config/mcphub
 /.config/menus
+/.config/misc/mac-apps/.build
+/.config/misc/mac-apps/Click.app/Contents/MacOS/Click
+/.config/misc/mac-apps/Zim.app/Contents/MacOS/Zim
 /.config/monitors-v1-backup.xml
 /.config/monitors.xml
 /.config/monitors.xml~
@@ -161,6 +164,7 @@
 /.config/opencode/dcp.jsonc
 /.config/opencode/opencode.json-e
 /.config/opencode/package-lock.json
+/.config/opencode/tui.json-e
 /.config/openrazer
 /.config/pavucontrol.ini
 /.config/pip

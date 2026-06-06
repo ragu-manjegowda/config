@@ -27,6 +27,7 @@ darkman
 docker
 docker-buildx
 docker-compose
+exfatprogs
 fail2ban
 find-cursor
 firefox

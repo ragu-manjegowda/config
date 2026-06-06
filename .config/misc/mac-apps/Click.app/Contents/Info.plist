@@ -4,9 +4,21 @@
 <dict>
 	<key>CFBundleExecutable</key>
 	<string>Click</string>
+	<key>CFBundleDisplayName</key>
+	<string>Click</string>
 	<key>CFBundleIconFile</key>
 	<string>click.icns</string>
+	<key>CFBundleIdentifier</key>
+	<string>local.ragu.Click</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>Click</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
 </dict>
 </plist>

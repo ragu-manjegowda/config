@@ -26,6 +26,7 @@ brew "htop"                         # interactive process viewer
 brew "hyperfine"                    # command benchmarking
 brew "jq"                           # JSON processor
 brew "dua-cli"                      # disk usage analyzer (fast, parallel)
+brew "rdfind"                       # fast duplicate finder
 brew "ripgrep"                      # fast grep
 brew "tokei"                        # code statistics
 brew "tree"                         # directory listing

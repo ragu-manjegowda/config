@@ -1,0 +1,180 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+WIKI_DIR="${HOME}/wiki"
+REMOTE="raghudarshan:wiki"
+MAX_COMMITS=10
+MAX_ROLLBACK_TAGS=3
+TIMESTAMP="$(date +%Y%m%d-%H%M%S)"
+HUMAN_TIMESTAMP="$(date '+%Y-%m-%d %H:%M:%S')"
+ROLLBACK_TAG="pre-sync-${TIMESTAMP}"
+
+if [[ ! -d "${WIKI_DIR}" ]]; then
+    echo "Wiki directory not found: ${WIKI_DIR}" >&2
+    exit 1
+fi
+
+if ! command -v git >/dev/null 2>&1; then
+    echo "git is required but was not found" >&2
+    exit 1
+fi
+
+if ! command -v rclone >/dev/null 2>&1; then
+    echo "rclone is required but was not found" >&2
+    exit 1
+fi
+
+git_wiki() {
+    git -C "${WIKI_DIR}" "$@"
+}
+
+ensure_git_repo() {
+    if [[ ! -d "${WIKI_DIR}/.git" ]]; then
+        git_wiki init
+    fi
+}
+
+ensure_gitignore() {
+    local gitignore="${WIKI_DIR}/.gitignore"
+
+    touch "${gitignore}"
+
+    if ! grep -qxF 'html_output/' "${gitignore}"; then
+        printf '%s\n' 'html_output/' >> "${gitignore}"
+    fi
+}
+
+has_head_commit() {
+    git_wiki rev-parse --verify HEAD >/dev/null 2>&1
+}
+
+has_staged_changes() {
+    ! git_wiki diff --cached --quiet --exit-code
+}
+
+has_worktree_changes() {
+    [[ -n "$(git_wiki status --porcelain)" ]]
+}
+
+commit_if_needed() {
+    local message="$1"
+
+    git_wiki add -A
+
+    if has_staged_changes; then
+        git_wiki commit -m "${message}"
+    fi
+}
+
+commit_count() {
+    git_wiki rev-list --count HEAD 2>/dev/null || printf '0\n'
+}
+
+prune_old_rollback_tags() {
+    local tags=()
+    local i
+
+    mapfile -t tags < <(
+        git_wiki for-each-ref --sort=-creatordate \
+            --format='%(refname:short)' 'refs/tags/pre-sync-*'
+    )
+
+    for ((i = MAX_ROLLBACK_TAGS; i < ${#tags[@]}; i++)); do
+        git_wiki tag -d "${tags[$i]}" >/dev/null
+    done
+}
+
+trim_history_if_needed() {
+    local count
+    local current_branch
+    local commits=()
+    local i
+    local old_commit
+    local tree
+    local new_commit
+    local new_parent
+    local author_name
+    local author_email
+    local author_date
+
+    count="$(commit_count)"
+    if ((count <= MAX_COMMITS)); then
+        return
+    fi
+
+    current_branch="$(git_wiki branch --show-current)"
+    if [[ -z "${current_branch}" ]]; then
+        echo "Skipping history trimming because the wiki repo is not on a branch." >&2
+        return
+    fi
+
+    mapfile -t commits < <(git_wiki rev-list --max-count="${MAX_COMMITS}" HEAD)
+    if ((${#commits[@]} == 0)); then
+        return
+    fi
+
+    new_parent=""
+    for ((i = ${#commits[@]} - 1; i >= 0; i--)); do
+        old_commit="${commits[$i]}"
+        tree="$(git_wiki show -s --format=%T "${old_commit}")"
+        author_name="$(git_wiki show -s --format=%an "${old_commit}")"
+        author_email="$(git_wiki show -s --format=%ae "${old_commit}")"
+        author_date="$(git_wiki show -s --format=%aI "${old_commit}")"
+
+        if [[ -z "${new_parent}" ]]; then
+            new_commit="$(env \
+                GIT_AUTHOR_NAME="${author_name}" \
+                GIT_AUTHOR_EMAIL="${author_email}" \
+                GIT_AUTHOR_DATE="${author_date}" \
+                git -C "${WIKI_DIR}" commit-tree "${tree}" \
+                    -F <(git_wiki show -s --format=%B "${old_commit}"))"
+        else
+            new_commit="$(env \
+                GIT_AUTHOR_NAME="${author_name}" \
+                GIT_AUTHOR_EMAIL="${author_email}" \
+                GIT_AUTHOR_DATE="${author_date}" \
+                git -C "${WIKI_DIR}" commit-tree "${tree}" \
+                    -p "${new_parent}" \
+                    -F <(git_wiki show -s --format=%B "${old_commit}"))"
+        fi
+
+        new_parent="${new_commit}"
+    done
+
+    git_wiki update-ref "refs/heads/${current_branch}" "${new_parent}"
+    git_wiki reset --hard "${new_parent}" >/dev/null
+
+    echo "Trimmed wiki Git history from ${count} commits to the newest ${MAX_COMMITS} commits."
+}
+
+ensure_git_repo
+ensure_gitignore
+
+if ! has_head_commit; then
+    commit_if_needed "Initial wiki snapshot"
+fi
+
+if has_head_commit; then
+    git_wiki tag "${ROLLBACK_TAG}"
+    prune_old_rollback_tags
+fi
+
+if has_worktree_changes; then
+    commit_if_needed "wiki snapshot before sync: ${HUMAN_TIMESTAMP}"
+fi
+
+echo "Syncing ${WIKI_DIR} to ${REMOTE}"
+rclone sync "${WIKI_DIR}" "${REMOTE}" -vP \
+    --exclude 'html_output*/**' \
+    --exclude '.gitignore' \
+    --exclude '.git/**'
+
+trim_history_if_needed
+
+echo
+echo "Sync complete."
+echo "Rollback to the pre-sync committed state with:"
+echo "  git -C \"${WIKI_DIR}\" reset --hard ${ROLLBACK_TAG}"
+echo
+echo "To push that rollback back to Google Drive, run sync-wiki again after reviewing the state."

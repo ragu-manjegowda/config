@@ -17,6 +17,7 @@ darkman
 docker
 docker-buildx
 docker-compose
+exfatprogs
 fail2ban
 firefox
 firejail
