@@ -161,6 +161,7 @@
 /.config/okularpartrc
 /.config/okularrc
 /.config/omni
+/.config/opencode/.npm-cache
 /.config/opencode/dcp.jsonc
 /.config/opencode/opencode.json-e
 /.config/opencode/package-lock.json
@@ -263,6 +264,7 @@
 /.nv
 /.nvcccache
 /.nx
+/.omo
 /.opencode
 /.p4enviro
 /.p4qt

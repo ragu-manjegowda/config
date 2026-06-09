@@ -15,6 +15,7 @@ base-devel
 blueman
 bluez-utils
 broadcom-wl-dkms
+bun
 ca-certificates-mozilla
 calibre-bin
 check-broken-packages-pacman-hook-git

@@ -1,3 +1,4 @@
 skills-installer
 clawhub
 @openai/codex
+@playwright/mcp@latest

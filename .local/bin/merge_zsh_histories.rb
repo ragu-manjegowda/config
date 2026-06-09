@@ -17,10 +17,35 @@
 # source - https://unix.stackexchange.com/a/632345
 #
 
+require "optparse"
+
 MULTILINE_COMMAND = "TO_BE_REMOVED_#{Time.now.to_i}"
 
+options = OptionParser.new do |parser|
+  parser.banner = <<~USAGE
+    Usage: #{File.basename($PROGRAM_NAME)} [OPTIONS] ZSH_HISTORY...
+
+    Merge one or more zsh extended history files, remove duplicate commands,
+    and keep the newest timestamp for each duplicate command.
+
+    Output is written to stdout, so redirect it to a new file:
+      #{File.basename($PROGRAM_NAME)} zsh_history_*.bak ~/.zsh_history > merged_zsh_history
+  USAGE
+
+  parser.on("-h", "--help", "Show this help message") do
+    puts parser
+    exit
+  end
+end
+
+options.parse!
+
+if ARGV.empty?
+  warn options
+  exit 1
+end
+
 commands = Hash.new([0, 0])
-seen_commands = Set.new
 
 ARGV.sort.each do |hist|
   warn "Parsing '#{hist}'"
@@ -37,10 +62,6 @@ ARGV.sort.each do |hist|
   content.each_line do |line|
     description, command = line.split(";", 2)
     _, time, duration = description.split(":").map(&:to_i)
-
-    # Check if the command has already been processed
-    next if seen_commands.include?(command)
-    seen_commands.add(command)
 
     old_time, _old_duration = commands[command]
     if time > old_time

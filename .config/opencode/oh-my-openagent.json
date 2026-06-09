@@ -1,18 +1,123 @@
 {
     "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
-    "disabled_agents": [
-        "sisyphus",
-        "prometheus",
-        "oracle",
-        "metis",
-        "momus",
-        "atlas"
-    ],
+    "disabled_agents": [],
     "disabled_hooks": [
-        "todo-continuation-enforcer"
+        "todo-continuation-enforcer",
+        "model-fallback",
+        "runtime-fallback"
     ],
+    "disabled_providers": [
+        "openai"
+    ],
+    "model_fallback": false,
+    "runtime_fallback": {
+        "enabled": false,
+        "retry_on_errors": [
+            401,
+            403,
+            429,
+            500,
+            502,
+            503,
+            504
+        ],
+        "max_fallback_attempts": 3,
+        "cooldown_seconds": 60,
+        "timeout_seconds": 30,
+        "notify_on_fallback": true
+    },
     "disabled_commands": [
         "ralph-loop",
         "ulw-loop"
-    ]
+    ],
+    "sisyphus_agent": {
+        "disabled": true,
+        "default_builder_enabled": true,
+        "planner_enabled": false,
+        "replace_plan": false
+    },
+    "agents": {
+        "sisyphus": {
+            "mode": "subagent",
+            "hidden": true,
+            "model": "nvidia-openai/gpt-5.5",
+            "fallback_models": []
+        },
+        "hephaestus": {
+            "mode": "subagent",
+            "hidden": true,
+            "model": "nvidia-openai/gpt-5.5",
+            "fallback_models": []
+        },
+        "prometheus": {
+            "mode": "subagent",
+            "hidden": true,
+            "model": "nvidia-openai/gpt-5.5",
+            "fallback_models": []
+        },
+        "atlas": {
+            "mode": "subagent",
+            "hidden": true,
+            "model": "nvidia-openai/gpt-5.5",
+            "fallback_models": []
+        },
+        "oracle": {
+            "mode": "subagent",
+            "hidden": true,
+            "model": "nvidia-openai/gpt-5.5",
+            "fallback_models": []
+        },
+        "metis": {
+            "mode": "subagent",
+            "hidden": true,
+            "model": "nvidia-openai/gpt-5.5",
+            "fallback_models": []
+        },
+        "momus": {
+            "mode": "subagent",
+            "hidden": true,
+            "model": "nvidia-openai/gpt-5.5",
+            "fallback_models": []
+        },
+        "explore": {
+            "mode": "subagent",
+            "hidden": true,
+            "model": "nvidia-openai/gpt-5.5",
+            "fallback_models": []
+        },
+        "librarian": {
+            "mode": "subagent",
+            "hidden": true,
+            "model": "nvidia-openai/gpt-5.5",
+            "fallback_models": []
+        },
+        "multimodal-looker": {
+            "mode": "subagent",
+            "hidden": true,
+            "model": "nvidia-openai/gpt-5.5",
+            "fallback_models": []
+        },
+        "sisyphus-junior": {
+            "mode": "subagent",
+            "hidden": true,
+            "model": "nvidia-openai/gpt-5.5",
+            "fallback_models": []
+        },
+        "OpenCode-Builder": {
+            "mode": "subagent",
+            "hidden": true,
+            "model": "nvidia-openai/gpt-5.5",
+            "fallback_models": []
+        }
+    },
+    "categories": {
+        "explore": {
+            "model": "nvidia-openai/gpt-5.5",
+            "fallback_models": []
+        },
+        "librarian": {
+            "model": "nvidia-openai/gpt-5.5",
+            "fallback_models": []
+        }
+    }
 }

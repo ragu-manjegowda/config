@@ -9,8 +9,11 @@ sandbox=0
 use_searxng=0
 select_session=0
 git_root=
-sandbox_config='{"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"},"agent":{"build":{"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}},"general":{"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}},"plan":{"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}}}}'
-sandbox_config_no_searxng='{"mcp":{"searxng":{"enabled":false}},"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"},"agent":{"build":{"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}},"general":{"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}},"plan":{"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}}}}'
+plugin_cache="${XDG_CACHE_HOME:-$HOME/.cache}/opencode"
+plugin_update_stamp="$plugin_cache/.oc-plugin-update"
+plugin_update_interval=${OC_PLUGIN_UPDATE_INTERVAL_SECONDS:-86400}
+sandbox_config='{"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"},"agent":{"build":{"mode":"primary","permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}},"general":{"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}},"plan":{"mode":"primary","permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}}}}'
+sandbox_config_no_searxng='{"mcp":{"searxng":{"enabled":false}},"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"},"agent":{"build":{"mode":"primary","permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}},"general":{"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}},"plan":{"mode":"primary","permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}}}}'
 
 usage() {
     cat <<'EOF'
@@ -28,7 +31,11 @@ Options:
       OpenCode config, XDG cache/share/state, and common developer tool state.
   --session
       Pick an OpenCode session with fzf. Press Enter to continue the selected
-      session, or Ctrl-D to delete the selected session and refresh the list.
+      session, or Ctrl-D twice to delete the selected session and refresh the list.
+  Plugin updates:
+      OpenCode plugin cache dependencies are updated at most once per day before
+      launch. Set OC_DISABLE_PLUGIN_AUTOUPDATE=1 to skip, or set
+      OC_PLUGIN_UPDATE_INTERVAL_SECONDS=0 to check every launch.
   -h, --help
       Show this help.
 EOF
@@ -36,7 +43,11 @@ EOF
 
 cleanup() {
     if command -v docker >/dev/null 2>&1; then
-        docker rm -f "$mcp_name" "$name" >/dev/null 2>&1 || true
+        if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -qx "$mcp_name\|$name"; then
+            echo "oc: tearing down Docker containers: $mcp_name $name" >&2
+            docker rm -f "$mcp_name" "$name" >/dev/null 2>&1 || true
+            echo "oc: Docker teardown complete" >&2
+        fi
     fi
     trap - EXIT INT TERM HUP
 }
@@ -63,7 +74,7 @@ session_list_for_fzf() {
 
     if command -v sqlite3 >/dev/null 2>&1 && [ -f "$db" ]; then
         sqlite3 -readonly -separator $'\t' "$db" \
-            "select id, printf('%-16s  %-44s  %s', datetime(time_updated / 1000, 'unixepoch', 'localtime'), substr(coalesce(nullif(title, ''), 'Untitled'), 1, 44), coalesce(directory, '')) from \"session\" where parent_id is null order by time_updated desc;"
+            "select id, printf('%-16s  %-44s  %s', datetime(time_updated / 1000, 'unixepoch', 'localtime'), substr(coalesce(nullif(title, ''), 'Untitled'), 1, 44), coalesce(directory, '')), coalesce(nullif(title, ''), 'Untitled') from \"session\" where parent_id is null order by time_updated desc;"
         return
     fi
 
@@ -72,7 +83,88 @@ session_list_for_fzf() {
         return 1
     fi
 
-    session_json | jq -r '.[] | [.id, (((.updated // 0) / 1000) | strftime("%Y-%m-%d %H:%M")) + "  " + ((.title // "Untitled")[:44]) + "  " + (.directory // "")] | @tsv'
+    session_json | jq -r '.[] | [.id, (((.updated // 0) / 1000) | strftime("%Y-%m-%d %H:%M")) + "  " + ((.title // "Untitled")[:44]) + "  " + (.directory // ""), (.title // "Untitled")] | @tsv'
+}
+
+session_fzf_short_header() {
+    printf 'Enter: continue selected session  Ctrl-D: delete selected session'
+}
+
+session_fzf_header_text() {
+    local text color
+
+    text=$(printf '%s' "$1" | tr '+[]\n\r\t' ' ')
+    color=${2:-36}
+    printf '\033[%sm%s\033[0m' "$color" "$text"
+}
+
+session_ctrl_d_action_for_fzf() {
+    local confirm_file script session_id display pending confirm_file_q script_q session_id_q display_q header_text
+
+    confirm_file=${1:-}
+    script=${2:-}
+    session_id=${3:-}
+    display=${4:-$session_id}
+
+    if [ -z "$session_id" ]; then
+        printf 'change-header[%s]\n' "$(session_fzf_header_text 'oc: no session selected' 31)"
+        return 0
+    fi
+
+    pending=$(cat "$confirm_file" 2>/dev/null || true)
+    if [ "$pending" = "$session_id" ]; then
+        : >"$confirm_file"
+        confirm_file_q=$(printf '%q' "$confirm_file")
+        script_q=$(printf '%q' "$script")
+        session_id_q=$(printf '%q' "$session_id")
+        display_q=$(printf '%q' "$display")
+        header_text=$(session_fzf_header_text "oc: deleting session ${display}..." 33)
+        printf 'change-header[%s]+bg-transform[%s --session-delete-for-fzf %s %s %s %s]\n' \
+            "$header_text" "$script_q" "$confirm_file_q" "$script_q" "$session_id_q" "$display_q"
+        return 0
+    fi
+
+    printf '%s' "$session_id" >"$confirm_file"
+    header_text=$(session_fzf_header_text "Ctrl-D: press ctrl-d again to confirm deletion of ${display}" 36)
+    printf 'change-header[%s]\n' "$header_text"
+}
+
+session_focus_action_for_fzf() {
+    local confirm_file session_id pending
+
+    confirm_file=${1:-}
+    session_id=${2:-}
+
+    pending=$(cat "$confirm_file" 2>/dev/null || true)
+    if [ -n "$pending" ] && [ -n "$session_id" ] && [ "$pending" != "$session_id" ]; then
+        : >"$confirm_file"
+        printf 'change-header[%s]\n' "$(session_fzf_header_text "$(session_fzf_short_header)" 36)"
+    fi
+}
+
+session_delete_for_fzf() {
+    local confirm_file script session_id display script_q header_text
+
+    confirm_file=${1:-}
+    script=${2:-}
+    session_id=${3:-}
+    display=${4:-$session_id}
+
+    if [ -z "$session_id" ]; then
+        printf 'change-header[%s]\n' "$(session_fzf_header_text 'oc: no session selected' 31)"
+        return 0
+    fi
+
+    : >"$confirm_file"
+
+    script_q=$(printf '%q' "$script")
+    if opencode session delete "$session_id" >/dev/null 2>&1; then
+        header_text=$(session_fzf_header_text "oc: deleted session ${display}. $(session_fzf_short_header)" 32)
+        printf 'reload[%s --session-list-for-fzf]+change-header[%s]\n' "$script_q" "$header_text"
+    else
+        header_text=$(session_fzf_header_text "oc: failed to delete session ${display}. Ctrl-D: try again" 31)
+        printf 'change-header[%s]\n' "$header_text"
+    fi
 }
 
 select_opencode_session() {
@@ -81,22 +173,97 @@ select_opencode_session() {
         return 1
     fi
 
-    local selected session_id header
+    local selected session_id header fzf_out confirm_file rc script_q confirm_file_q
     header=$(printf '\033[35m%-19s\033[0m  \033[35m%-44s\033[0m  \033[35m%s\033[0m\n\033[36mEnter\033[0m: continue selected session  \033[36mCtrl-D\033[0m: delete selected session' 'Updated' 'Title' 'Path')
-    selected=$(session_list_for_fzf | fzf \
+
+    confirm_file=$(mktemp "${TMPDIR:-/tmp}/oc-session-confirm.XXXXXX") || return 1
+    script_q=$(printf '%q' "$0")
+    confirm_file_q=$(printf '%q' "$confirm_file")
+
+    fzf_out=$(session_list_for_fzf | fzf \
         --delimiter=$'\t' \
         --with-nth=2 \
         --prompt='OpenCode session> ' \
         --ansi \
         --header="$header" \
-        --bind "ctrl-d:execute-silent(opencode session delete {1})+reload($0 --session-list-for-fzf)") || return $?
+        --bind "ctrl-d:transform:$script_q --session-ctrl-d-action-for-fzf $confirm_file_q $script_q {1} {3}" \
+        --bind "focus:transform:$script_q --session-focus-action-for-fzf $confirm_file_q {1}")
+    rc=$?
+    rm -f "$confirm_file"
+    if [ "$rc" -ne 0 ]; then
+        return "$rc"
+    fi
 
+    selected=$fzf_out
     session_id=${selected%%$'\t'*}
     if [ -z "$session_id" ]; then
         return 1
     fi
 
     printf '%s\n' "$session_id"
+}
+
+update_opencode_plugins() {
+    local now last package_dir update_failed cache_found
+
+    if [ "${OC_DISABLE_PLUGIN_AUTOUPDATE:-0}" = "1" ]; then
+        return 0
+    fi
+
+    cache_found=0
+    if [ -f "$plugin_cache/package.json" ]; then
+        cache_found=1
+    else
+        for package_dir in "$plugin_cache"/packages/*; do
+            if [ -f "$package_dir/package.json" ]; then
+                cache_found=1
+                break
+            fi
+        done
+    fi
+    if [ "$cache_found" -eq 0 ]; then
+        return 0
+    fi
+
+    if ! command -v bun >/dev/null 2>&1; then
+        printf '%s\n' "oc: OpenCode plugins are not being updated because bun was not found"
+        return 0
+    fi
+
+    now=$(date +%s)
+    last=0
+    if [ -f "$plugin_update_stamp" ]; then
+        last=$(date -r "$plugin_update_stamp" +%s 2>/dev/null || printf '0')
+    fi
+
+    if [ "$plugin_update_interval" -gt 0 ] 2>/dev/null && [ $((now - last)) -lt "$plugin_update_interval" ]; then
+        return 0
+    fi
+
+    update_failed=0
+    echo "oc: updating OpenCode plugins..." >&2
+
+    if [ -f "$plugin_cache/package.json" ]; then
+        if ! (cd "$plugin_cache" && SHARP_IGNORE_GLOBAL_LIBVIPS=1 bun update --latest >/dev/null); then
+            update_failed=1
+            echo "oc: root plugin cache update failed; launching with existing plugins" >&2
+        fi
+    fi
+
+    for package_dir in "$plugin_cache"/packages/*; do
+        if [ ! -f "$package_dir/package.json" ]; then
+            continue
+        fi
+        if ! (cd "$package_dir" && SHARP_IGNORE_GLOBAL_LIBVIPS=1 bun update --latest >/dev/null); then
+            update_failed=1
+            echo "oc: plugin cache update failed for $package_dir" >&2
+            echo "oc: consider deleting $package_dir to force OpenCode to reinstall it" >&2
+        fi
+    done
+
+    if [ "$update_failed" -eq 0 ]; then
+        : >"$plugin_update_stamp"
+    fi
 }
 
 launch_without_searxng() {
@@ -126,8 +293,8 @@ launch_opencode() {
             exit 1
         fi
 
-        local config_home data_home state_home cache_home claude_config_dir
-        local -a firejail_args opencode_paths sandbox_create_paths sandbox_optional_paths
+        local config_home data_home state_home cache_home claude_config_dir docker_available
+        local -a firejail_args opencode_paths sandbox_create_paths sandbox_optional_paths sandbox_readonly_paths sandbox_docker_socket_paths
 
         config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
         data_home="${XDG_DATA_HOME:-$HOME/.local/share}"
@@ -190,6 +357,16 @@ launch_opencode() {
             "$HOME/.pypirc"
         )
 
+        sandbox_readonly_paths=(
+            "$config_home/git"
+        )
+
+        sandbox_docker_socket_paths=(
+            "/var/run/docker.sock"
+            "/run/docker.sock"
+        )
+        docker_available=0
+
         for path in "${sandbox_optional_paths[@]}"; do
             if [ -e "$path" ]; then
                 opencode_paths+=("$path")
@@ -202,15 +379,33 @@ launch_opencode() {
             --read-only="$HOME"
             --read-write="$git_root"
             --private-cwd="$git_root"
+            --noblacklist="$config_home/git"
             --noblacklist="$config_home/nvim"
             --noblacklist="$data_home/nvim"
             --noblacklist="$state_home/nvim"
             --noblacklist="$cache_home/nvim"
         )
 
+        if [ "${OC_SANDBOX_DOCKER:-auto}" != "0" ] && command -v docker >/dev/null 2>&1 && timeout 2 docker info >/dev/null 2>&1; then
+            docker_available=1
+        fi
+        if [ "$docker_available" -eq 1 ]; then
+            for path in "${sandbox_docker_socket_paths[@]}"; do
+                if [ -S "$path" ]; then
+                    firejail_args+=(--noblacklist="$path" --read-write="$path")
+                fi
+            done
+        fi
+
         for path in "${opencode_paths[@]}"; do
             if [ -e "$path" ]; then
                 firejail_args+=(--read-write="$path")
+            fi
+        done
+
+        for path in "${sandbox_readonly_paths[@]}"; do
+            if [ -e "$path" ]; then
+                firejail_args+=(--read-only="$path")
             fi
         done
 
@@ -285,10 +480,27 @@ EOF
 }
 
 opencode_args=()
-if [ "${1:-}" = "--session-list-for-fzf" ]; then
-    session_list_for_fzf
-    exit $?
-fi
+case "${1:-}" in
+    --session-list-for-fzf)
+        session_list_for_fzf
+        exit $?
+        ;;
+    --session-ctrl-d-action-for-fzf)
+        shift
+        session_ctrl_d_action_for_fzf "$@"
+        exit $?
+        ;;
+    --session-focus-action-for-fzf)
+        shift
+        session_focus_action_for_fzf "$@"
+        exit $?
+        ;;
+    --session-delete-for-fzf)
+        shift
+        session_delete_for_fzf "$@"
+        exit $?
+        ;;
+esac
 
 while [ "$#" -gt 0 ]; do
     case "$1" in
@@ -333,6 +545,8 @@ if [ "$sandbox" -eq 1 ]; then
         opencode_args=(run --dangerously-skip-permissions "${opencode_args[@]:1}")
     fi
 fi
+
+update_opencode_plugins
 
 if [ "$use_searxng" -ne 1 ]; then
     # Default behavior: launch OpenCode without SearXNG.
