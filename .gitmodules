@@ -15,7 +15,7 @@
 	branch = master
 [submodule ".config/firefox/potatofox"]
 	path = .config/firefox/potatofox
-	url = https://codeberg.org/da157/potatofox.git
+	url = https://github.com/ragu-manjegowda/potatofox.git
 	update = rebase
 	branch = main
 [submodule ".config/fzf-git"]
