@@ -47,6 +47,25 @@ local type_again = true
 local capture_now = locker_config.capture_intruder
 local locked_tag = nil
 local client_focused = nil
+local MAX_RESUMED_NOTIFICATIONS = 10
+
+local function destroy_notification(notification)
+    local reason = naughty.notification_closed_reason and
+        naughty.notification_closed_reason.expired or 1
+    naughty.destroy(notification, reason)
+end
+
+local function trim_pending_notifications_for_resume()
+    local queued = {}
+
+    for _, notification in ipairs(naughty.notifications or {}) do
+        table.insert(queued, notification)
+    end
+
+    for index = MAX_RESUMED_NOTIFICATIONS + 1, #queued do
+        destroy_notification(queued[index])
+    end
+end
 
 local uname_text = wibox.widget {
     id = 'uname_text',
@@ -410,11 +429,7 @@ local locker = function(s)
                 -- Or if the info_center is visible
                 local focused = awful.screen.focused()
                 if not (_G.dont_disturb_state or (focused.info_center and focused.info_center.visible)) then
-                    -- get active notifications with naughty.active
-                    local num_notifications = #naughty.notifications
-                    if num_notifications > 10 then
-                        naughty.destroy_all_notifications(nil, 1)
-                    end
+                    trim_pending_notifications_for_resume()
                     naughty.suspended = false
                 end
 

@@ -16,6 +16,28 @@ local cst = require("naughty.constants")
 -- in the 'destroyed' signal handler below.
 local active_boxes = {}
 
+local function contains_text(value, needle)
+    return tostring(value or ''):lower():find(needle, 1, true) ~= nil
+end
+
+local function is_prisma_teams_web_notification(n)
+    return tostring(n.app_name or ''):lower() == 'prisma browser' and
+        contains_text(n.message, 'teams.microsoft.com')
+end
+
+local function normalize_notification_urgency(n)
+    if is_prisma_teams_web_notification(n) then
+        n.urgency = 'normal'
+    end
+end
+
+local function add_to_notification_center(n)
+    local notif_core = require('widget.notif-center.build-notifbox')
+    if notif_core.add_notification then
+        notif_core.add_notification(n)
+    end
+end
+
 local function release_popup_box(notification, box)
     if box then
         pcall(function()
@@ -216,6 +238,7 @@ naughty.connect_signal(
         -- Animation duration for non-urgent notifications (5 seconds)
         -- Urgent notifications (from apps that set timeout=0) stay visible until dismissed
         local POPUP_DURATION = 5
+        normalize_notification_urgency(n)
         local is_urgent = n.urgency == 'critical'
 
         -- Actions Blueprint
@@ -411,10 +434,7 @@ naughty.connect_signal(
             anim:connect_signal("ended", function()
                 -- Instead of destroying the notification (which closes D-Bus),
                 -- move it to the info center while keeping it alive
-                local notif_core = require('widget.notif-center.build-notifbox')
-                if notif_core.add_notification then
-                    notif_core.add_notification(n)
-                end
+                add_to_notification_center(n)
                 release_popup_box(n, widget)
             end)
         end
@@ -434,10 +454,7 @@ naughty.connect_signal(
         local focused = awful.screen.focused()
         if _G.dont_disturb_state or (focused and focused.valid and focused.info_center and focused.info_center.visible) then
             -- Add this notification to notification center while keeping it alive
-            local notif_core = require('widget.notif-center.build-notifbox')
-            if notif_core.add_notification then
-                notif_core.add_notification(n)
-            end
+            add_to_notification_center(n)
             release_popup_box(n, widget)
             anim:stop()
         end
