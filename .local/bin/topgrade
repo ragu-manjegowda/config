@@ -1,0 +1,148 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+config_home=${XDG_CONFIG_HOME:-$HOME/.config}
+data_home=${XDG_DATA_HOME:-$HOME/.local/share}
+
+npm_packages="$config_home/npm-backup/packages.in"
+npm_tool_commands="$config_home/npm-backup/package-tools.in"
+pip_packages="$config_home/pip-backup/packages.in"
+brewfile="$config_home/homebrew-backup/Brewfile"
+
+log() {
+    printf '\n==> %s\n' "$*"
+}
+
+warn() {
+    printf 'topgrade: %s\n' "$*" >&2
+}
+
+have() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+prefer_homebrew_node() {
+    local node_prefix
+
+    if have brew && node_prefix=$(brew --prefix node 2>/dev/null) && [ -x "$node_prefix/bin/node" ]; then
+        case ":$PATH:" in
+            *":$node_prefix/bin:"*) ;;
+            *) PATH="$node_prefix/bin:$PATH" ;;
+        esac
+    fi
+}
+
+brew_utf8() {
+    LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 HOMEBREW_NO_ASK=1 brew "$@"
+}
+
+read_manifest() {
+    local manifest=$1 line
+
+    [ -f "$manifest" ] || return 0
+    while IFS= read -r line || [ -n "$line" ]; do
+        case "$line" in
+            ''|'#'*) continue ;;
+        esac
+        printf '%s\0' "$line"
+    done <"$manifest"
+}
+
+upgrade_npm_packages() {
+    local npm_prefix package
+    local -a packages=()
+
+    [ -f "$npm_packages" ] || return 0
+    prefer_homebrew_node
+    if ! have npm; then
+        warn "npm not found; skipping $npm_packages"
+        return 0
+    fi
+
+    while IFS= read -r -d '' package; do
+        packages+=("$package")
+    done < <(read_manifest "$npm_packages")
+
+    [ "${#packages[@]}" -gt 0 ] || return 0
+
+    npm_prefix="$data_home/npm"
+    mkdir -p "$npm_prefix"
+
+    log "Upgrading npm packages from $npm_packages"
+    npm_config_prefix="$npm_prefix" npm install -g "${packages[@]}"
+    npm cache verify
+}
+
+upgrade_pip_packages() {
+    local venv
+
+    [ -f "$pip_packages" ] || return 0
+
+    log "Upgrading pip packages from $pip_packages"
+
+    if have uv; then
+        venv="$data_home/venv"
+        if [ ! -x "$venv/bin/python" ]; then
+            uv venv --system-site-packages "$venv"
+        fi
+        uv pip install --upgrade -r "$pip_packages" --python "$venv/bin/python"
+        uv cache prune
+        return 0
+    fi
+
+    if have python3; then
+        python3 -m pip install --user --upgrade -r "$pip_packages"
+        return 0
+    fi
+
+    warn "uv and python3 not found; skipping $pip_packages"
+}
+
+upgrade_homebrew_packages() {
+    local package
+    local -a greedy_outdated=()
+
+    [ -f "$brewfile" ] || return 0
+    if ! have brew; then
+        warn "brew not found; skipping $brewfile"
+        return 0
+    fi
+
+    log "Upgrading Homebrew packages from $brewfile"
+    brew_utf8 update -v
+    brew_utf8 bundle install --file="$brewfile"
+    brew_utf8 upgrade -y -v
+    brew_utf8 cleanup --prune=1 -s
+
+    while IFS= read -r package; do
+        [ -n "$package" ] && greedy_outdated+=("$package")
+    done < <(brew_utf8 outdated --greedy --quiet)
+
+    if [ "${#greedy_outdated[@]}" -gt 0 ]; then
+        PROMPT_EOL_MARK=' ' brew_utf8 upgrade -y -v "${greedy_outdated[@]}"
+    fi
+}
+
+run_npm_tool_commands() {
+    local command_line
+
+    [ -f "$npm_tool_commands" ] || return 0
+    prefer_homebrew_node
+
+    log "Running npm package tool commands from $npm_tool_commands"
+    while IFS= read -r command_line || [ -n "$command_line" ]; do
+        case "$command_line" in
+            ''|'#'*) continue ;;
+        esac
+        printf '>> %s\n' "$command_line"
+        bash -lc "$command_line"
+    done <"$npm_tool_commands"
+}
+
+upgrade_npm_packages
+upgrade_pip_packages
+upgrade_homebrew_packages
+run_npm_tool_commands
+
+log "Topgrade complete"

@@ -5,10 +5,8 @@
 
 # ── Taps ─────────────────────────────────────────────────────────────────────
 tap "anomalyco/tap"
-tap "brewsci/science"
 tap "homebrew/bundle"
 tap "homebrew/services"
-tap "jstkdng/programs"
 
 
 # ── CLI Tools & Utilities ────────────────────────────────────────────────────

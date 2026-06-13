@@ -1,0 +1,3 @@
+# One shell command per line. These run after npm packages are installed/upgraded.
+# Use this for package-managed tools that need a second install/update step.
+playwright-mcp install-browser chromium

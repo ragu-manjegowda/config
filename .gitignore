@@ -123,7 +123,9 @@
 /.config/gnupg/trustdb.gpg
 /.config/go
 /.config/google-chrome
+/.config/google-chrome-for-testing
 /.config/gtk-2.0
+/.config/homebrew/trust.json.lock
 /.config/ibus
 /.config/indicator-stickynotes
 /.config/karabiner/automatic_backups
