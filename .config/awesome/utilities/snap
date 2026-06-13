@@ -14,6 +14,9 @@
 
 screenshot_dir=~/Pictures/Screenshots/
 
+# Read display names/modes/positions and screenshot target from config.lua
+source <("$HOME/.config/awesome/utilities/read-display-config")
+
 # Check save directory
 # Create it if it doesn't exist
 function check_dir() {
@@ -21,6 +24,87 @@ function check_dir() {
 	then
 		mkdir -p "$screenshot_dir"
 	fi
+}
+
+function is_connected() {
+    xrandr | grep -q "^$1 connected"
+}
+
+function parse_size() {
+    local size="$1"
+    DISPLAY_WIDTH="${size%x*}"
+    DISPLAY_HEIGHT="${size#*x}"
+}
+
+function parse_position() {
+    local position="$1"
+    DISPLAY_X="${position%x*}"
+    DISPLAY_Y="${position#*x}"
+}
+
+function geometry_for_display() {
+    local mode="$1"
+    local position="$2"
+
+    parse_size "$mode"
+    parse_position "$position"
+    printf '%sx%s+%s+%s' "$DISPLAY_WIDTH" "$DISPLAY_HEIGHT" "$DISPLAY_X" "$DISPLAY_Y"
+}
+
+function geometry_for_both() {
+    local external_mode="$EXTERNAL_MODE"
+    if [ -n "$EXTERNAL_SCALE_FROM" ]; then
+        external_mode="$EXTERNAL_SCALE_FROM"
+    fi
+
+    parse_size "$PRIMARY_MODE"
+    local primary_width="$DISPLAY_WIDTH"
+    local primary_height="$DISPLAY_HEIGHT"
+    parse_position "$PRIMARY_POS"
+    local primary_x="$DISPLAY_X"
+    local primary_y="$DISPLAY_Y"
+
+    parse_size "$external_mode"
+    local external_width="$DISPLAY_WIDTH"
+    local external_height="$DISPLAY_HEIGHT"
+    parse_position "$EXTERNAL_POS"
+    local external_x="$DISPLAY_X"
+    local external_y="$DISPLAY_Y"
+
+    local min_x=$(( primary_x < external_x ? primary_x : external_x ))
+    local min_y=$(( primary_y < external_y ? primary_y : external_y ))
+    local max_x=$(( primary_x + primary_width > external_x + external_width ? primary_x + primary_width : external_x + external_width ))
+    local max_y=$(( primary_y + primary_height > external_y + external_height ? primary_y + primary_height : external_y + external_height ))
+
+    printf '%sx%s+%s+%s' "$(( max_x - min_x ))" "$(( max_y - min_y ))" "$min_x" "$min_y"
+}
+
+function target_geometry() {
+    local target="${2:-${SCREENSHOT_TARGET:-both}}"
+    local external_mode="$EXTERNAL_MODE"
+    if [ -n "$EXTERNAL_SCALE_FROM" ]; then
+        external_mode="$EXTERNAL_SCALE_FROM"
+    fi
+
+    case "$target" in
+        external)
+            if is_connected "$EXTERNAL_NAME"; then
+                geometry_for_display "$external_mode" "$EXTERNAL_POS"
+            else
+                geometry_for_display "$PRIMARY_MODE" "$PRIMARY_POS"
+            fi
+            ;;
+        both)
+            if is_connected "$EXTERNAL_NAME"; then
+                geometry_for_both
+            else
+                geometry_for_display "$PRIMARY_MODE" "$PRIMARY_POS"
+            fi
+            ;;
+        primary|*)
+            geometry_for_display "$PRIMARY_MODE" "$PRIMARY_POS"
+            ;;
+    esac
 }
 
 # Main function
@@ -104,17 +188,20 @@ then
 	area 	- Area screenshot
 	full 	- Fullscreen screenshot
 
+	Optional second argument for full screenshots:
+	primary | external | both
+
 	Example:
 	./snap area
 	./snap full
+	./snap full external
 	"
 elif [ "$1" = 'full' ];
 then
 	msg="Full screenshot saved and copied to clipboard!"
-	shot 'maim -u -m 1' "${msg}"
+	shot "maim -u -m 1 -g $(target_geometry "$@")" "${msg}"
 elif [ "$1" = 'area' ];
 then
 	msg='Area screenshot saved and copied to clipboard!'
 	shot 'maim -u -s -n -m 1' "${msg}"
 fi
-

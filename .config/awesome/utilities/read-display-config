@@ -41,6 +41,8 @@ package.loaded['gears.filesystem'] = {
 -- Load the configuration
 local config = require('configuration.config')
 local d = config.display
+local screen_recorder = config.widget and config.widget.screen_recorder or {}
+local screenshot = config.widget and config.widget.screenshot or {}
 
 -- Output bash-compatible variable assignments
 print(string.format('export DISPLAY_DPI=%d', d.dpi))
@@ -51,4 +53,5 @@ print(string.format('export EXTERNAL_NAME="%s"', d.external.name))
 print(string.format('export EXTERNAL_MODE="%s"', d.external.mode))
 print(string.format('export EXTERNAL_POS="%s"', d.external.position))
 print(string.format('export EXTERNAL_SCALE_FROM="%s"', d.external.scale_from or ''))
-
+print(string.format('export SCREEN_RECORDER_TARGET="%s"', screen_recorder.display_target or 'primary'))
+print(string.format('export SCREENSHOT_TARGET="%s"', screenshot.display_target or 'both'))

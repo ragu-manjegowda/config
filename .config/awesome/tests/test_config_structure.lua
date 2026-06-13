@@ -205,8 +205,8 @@ if config.widget and config.widget.screen_recorder then
 
     if sr.display_target then
         assert_test(
-            sr.display_target == 'primary' or sr.display_target == 'external',
-            "screen_recorder.display_target is 'primary' or 'external'",
+            sr.display_target == 'primary' or sr.display_target == 'external' or sr.display_target == 'both',
+            "screen_recorder.display_target is 'primary', 'external', or 'both'",
             "Got: " .. sr.display_target
         )
     end
@@ -220,6 +220,20 @@ if config.widget and config.widget.screen_recorder then
                 "FPS is in reasonable range (24-120)"
             )
         end
+    end
+end
+
+-- Test: Screenshot configuration
+print("\nTest Suite: Screenshot Configuration")
+if config.widget and config.widget.screenshot then
+    local ss = config.widget.screenshot
+
+    if ss.display_target then
+        assert_test(
+            ss.display_target == 'primary' or ss.display_target == 'external' or ss.display_target == 'both',
+            "screenshot.display_target is 'primary', 'external', or 'both'",
+            "Got: " .. ss.display_target
+        )
     end
 end
 

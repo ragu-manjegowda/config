@@ -103,8 +103,10 @@ return {
         },
 
         screen_recorder = {
-            -- Which display to record from: "primary" or "external"
-            display_target = 'external',
+            -- Which display to record from: "primary", "external", or "both"
+            -- If "external"/"both" is selected and the external display is not
+            -- connected, recording falls back to the primary display.
+            display_target = "external",
             -- Resolution and offset are automatically detected from display config
             -- based on the display_target setting above
             -- Enable audio by default
@@ -115,6 +117,13 @@ return {
             mic_level = '100',
             -- FPS
             fps = '60'
+        },
+
+        screenshot      = {
+            -- Which display to capture for full screenshots: "primary", "external", or "both"
+            -- If "external"/"both" is selected and the external display is not
+            -- connected, screenshots fall back to the primary display.
+            display_target = "external"
         }
     },
 
