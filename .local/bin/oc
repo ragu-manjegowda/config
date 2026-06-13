@@ -280,6 +280,45 @@ launch_without_searxng() {
         launch_opencode "$@"
 }
 
+prune_sandbox_home_user_markers() {
+    local users_dir=$1 marker pid
+
+    [ -d "$users_dir" ] || return 0
+    for marker in "$users_dir"/*; do
+        [ -e "$marker" ] || continue
+        pid=${marker##*/}
+        case "$pid" in
+            ''|*[!0-9]*) rm -f "$marker" ;;
+            *)
+                if ! kill -0 "$pid" 2>/dev/null; then
+                    rm -f "$marker"
+                fi
+                ;;
+        esac
+    done
+}
+
+cleanup_sandbox_home_if_unused() {
+    local sandbox_home=$1 users_dir=$2 marker
+
+    case "$sandbox_home" in
+        "$state_home"/opencode/sandbox-home) ;;
+        *)
+            echo "oc: refusing to clean unexpected sandbox home: $sandbox_home" >&2
+            return 0
+            ;;
+    esac
+
+    prune_sandbox_home_user_markers "$users_dir"
+    for marker in "$users_dir"/*; do
+        [ -e "$marker" ] && return 0
+    done
+
+    if [ -d "$sandbox_home" ]; then
+        (shopt -s dotglob nullglob; rm -rf -- "$sandbox_home"/*)
+    fi
+}
+
 launch_opencode() {
     if [ "$sandbox" -eq 1 ]; then
         if ! command -v firejail >/dev/null 2>&1; then
@@ -293,7 +332,7 @@ launch_opencode() {
             exit 1
         fi
 
-        local config_home data_home state_home cache_home claude_config_dir docker_available
+        local config_home data_home state_home cache_home claude_config_dir sandbox_home sandbox_users_dir sandbox_user_marker docker_available rc
         local -a firejail_args opencode_paths sandbox_create_paths sandbox_optional_paths sandbox_readonly_paths sandbox_docker_socket_paths
 
         config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
@@ -301,11 +340,16 @@ launch_opencode() {
         state_home="${XDG_STATE_HOME:-$HOME/.local/state}"
         cache_home="${XDG_CACHE_HOME:-$HOME/.cache}"
         claude_config_dir="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+        sandbox_home="$state_home/opencode/sandbox-home"
+        sandbox_users_dir="$state_home/opencode/sandbox-home-users"
+        sandbox_user_marker="$sandbox_users_dir/$$"
 
         sandbox_create_paths=(
             "$cache_home"
             "$data_home"
             "$state_home"
+            "$sandbox_home"
+            "$sandbox_users_dir"
             "$state_home/nvim"
             "$state_home/nvim/shada"
             "$state_home/nvim/swap"
@@ -316,6 +360,7 @@ launch_opencode() {
             "$data_home/nvim"
             "$cache_home/nvim"
             "$HOME/.config/npm"
+            "$config_home/bundler"
             "$HOME/.config/pnpm"
             "$HOME/.config/yarn"
             "$HOME/.config/uv"
@@ -329,6 +374,8 @@ launch_opencode() {
             "$HOME/.rustup"
             "$HOME/.bun"
             "$HOME/.bundle"
+            "$data_home/bundler"
+            "$cache_home/bundler"
             "$HOME/.pnpm-store"
             "$HOME/.yarn"
             "$HOME/.m2"
@@ -344,6 +391,8 @@ launch_opencode() {
         for path in "${sandbox_create_paths[@]}"; do
             mkdir -p "$path"
         done
+
+        printf '%s\n' "$$" >"$sandbox_user_marker"
 
         opencode_paths=(
             "$config_home/opencode"
@@ -379,6 +428,14 @@ launch_opencode() {
             --read-only="$HOME"
             --read-write="$git_root"
             --private-cwd="$git_root"
+            --env="HOME=$sandbox_home"
+            --env="XDG_CONFIG_HOME=$config_home"
+            --env="XDG_DATA_HOME=$data_home"
+            --env="XDG_STATE_HOME=$state_home"
+            --env="XDG_CACHE_HOME=$cache_home"
+            --env="BUNDLE_USER_HOME=$data_home/bundler"
+            --env="BUNDLE_USER_CACHE=$cache_home/bundler"
+            --env="BUNDLE_USER_CONFIG=$config_home/bundler/config"
             --noblacklist="$config_home/git"
             --noblacklist="$config_home/nvim"
             --noblacklist="$data_home/nvim"
@@ -410,7 +467,10 @@ launch_opencode() {
         done
 
         firejail "${firejail_args[@]}" "$opencode_bin" "$@"
-        return $?
+        rc=$?
+        rm -f "$sandbox_user_marker"
+        cleanup_sandbox_home_if_unused "$sandbox_home" "$sandbox_users_dir"
+        return "$rc"
     fi
 
     opencode "$@"
