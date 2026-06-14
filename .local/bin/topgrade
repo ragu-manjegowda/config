@@ -4,6 +4,7 @@ set -euo pipefail
 
 config_home=${XDG_CONFIG_HOME:-$HOME/.config}
 data_home=${XDG_DATA_HOME:-$HOME/.local/share}
+cache_home=${XDG_CACHE_HOME:-$HOME/.cache}
 
 npm_packages="$config_home/npm-backup/packages.in"
 npm_tool_commands="$config_home/npm-backup/package-tools.in"
@@ -35,6 +36,21 @@ prefer_homebrew_node() {
 
 brew_utf8() {
     LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 HOMEBREW_NO_ASK=1 brew "$@"
+}
+
+refresh_brew_description_cache() {
+    local brew_cache
+
+    brew_cache=$(HOMEBREW_NO_AUTO_UPDATE=1 brew --cache 2>/dev/null) || return 0
+    case "$brew_cache" in
+        "$cache_home"/Homebrew|"$cache_home"/Homebrew/) ;;
+        *)
+            warn "unexpected Homebrew cache path; keeping description cache: $brew_cache"
+            return 0
+            ;;
+    esac
+
+    rm -f "$brew_cache/descriptions.json" "$brew_cache/cask_descriptions.json"
 }
 
 read_manifest() {
@@ -110,6 +126,7 @@ upgrade_homebrew_packages() {
     fi
 
     log "Upgrading Homebrew packages from $brewfile"
+    refresh_brew_description_cache
     brew_utf8 update -v
     brew_utf8 bundle install --file="$brewfile"
     brew_utf8 upgrade -y -v

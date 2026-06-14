@@ -8,7 +8,6 @@ tap "anomalyco/tap"
 tap "homebrew/bundle"
 tap "homebrew/services"
 
-
 # ── CLI Tools & Utilities ────────────────────────────────────────────────────
 brew "bat"                          # cat clone with syntax highlighting
 brew "coreutils"                    # GNU core utilities
