@@ -242,3 +242,7 @@ fi
 ########################             Aliases                 #################
 ###############################################################################
 
+# Avoid "\xE2" on US-ASCII failure with brew
+alias brew="HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_ASK=1 \
+LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 \
+brew"

@@ -1,0 +1,38 @@
+# Firefox WebExtension manifest for ~/.config/scripts/firefox-install-extensions.sh
+#
+# Accepted formats:
+# - AMO slug: ublock-origin
+# - AMO add-on URL: https://addons.mozilla.org/en-US/firefox/addon/ublock-origin/
+# - Exact XPI URL: https://addons.mozilla.org/firefox/downloads/file/.../addon-version.xpi
+# - Source plus stable extension ID: ublock-origin uBlock0@raymondhill.net
+#
+https://addons.mozilla.org/firefox/downloads/file/4732105/ghostvolume-1.5.1.xpi ghostvolume@androdom # GhostVolume
+https://addons.mozilla.org/firefox/downloads/file/3768188/sticky_window_containers-1.0.4.xpi {a263f1ee-2fa8-4caf-be73-7421b54efa39} # Sticky Window Containers
+https://addons.mozilla.org/firefox/downloads/file/4341014/userchrome_toggle_extended-2.0.1.xpi userchrome-toggle-extended@n2ezr.ru # Userchrome Toggle Extended
+https://addons.mozilla.org/firefox/downloads/file/4186249/markdown_viewer_chrome-5.2.2.xpi markdown-viewer@outofindex.com # Markdown Viewer
+https://addons.mozilla.org/firefox/downloads/file/4275237/play_with-1.3.3resigned1.xpi {29607f9b-5198-4832-9ea9-16085d102734} # play-with
+https://addons.mozilla.org/firefox/downloads/file/3578393/online_pdf_editor_pdf2go_com-4.2.xpi {5fe0e3b1-ef04-41af-aae8-4653d2dbd0eb} # Online PDF Editor (pdf2go.com)
+https://addons.mozilla.org/firefox/downloads/file/4215857/autoclicker_automatic_tap-2.0.xpi {67794639-d1c6-4b41-a189-4f99f80237d2} # IO Auto Clicker
+https://addons.mozilla.org/firefox/downloads/file/3692640/zen_fox-1.9.9.xpi {4b7db180-f46c-4955-afaf-a03913751acc} # Zen Fox
+https://addons.mozilla.org/firefox/downloads/file/4232531/automa-1.28.27.xpi {26ef8318-6349-483c-affa-6c6db6d30517} # Automa
+https://addons.mozilla.org/firefox/downloads/file/4274207/absolute_enable_right_click-1.3.9resigned1.xpi {9350bc42-47fb-4598-ae0f-825e3dd9ceba} # Absolute Enable Right Click & Copy
+https://addons.mozilla.org/firefox/downloads/file/4451874/facebook_container-2.3.12.xpi @contain-facebook # Facebook Container
+https://addons.mozilla.org/firefox/downloads/file/4455681/traduzir_paginas_web-10.1.1.1.xpi {036a55b4-5e72-4d05-a06c-cba2dfcc134a} # TWP - Translate Web Pages
+https://addons.mozilla.org/firefox/downloads/file/3578470/online_convert-4.2.xpi firefox@online-convert.com # File Converter - By Online-Convert.com
+https://addons.mozilla.org/firefox/downloads/file/4515369/consent_o_matic-1.1.5.xpi gdpr@cavi.au.dk # Consent-O-Matic
+https://addons.mozilla.org/firefox/downloads/file/4570192/raindropio-6.6.91.xpi jid0-adyhmvsP91nUO8pRv0Mn2VKeB84@jetpack # Raindrop.io
+https://addons.mozilla.org/firefox/downloads/file/4573120/surfingkeys_ff-1.17.11.xpi {a8332c60-5b6d-41ee-bfc8-e9bb331d34ad} # Surfingkeys
+https://addons.mozilla.org/firefox/downloads/file/4297951/buster_captcha_solver-3.1.0.xpi {e58d3966-3d76-4cd9-8552-1582fbc800c1} # Buster: Captcha Solver for Humans
+https://addons.mozilla.org/firefox/downloads/file/4624727/cookies_txt-1.0.xpi {12cf650b-1822-40aa-bff0-996df6948878} # cookies.txt
+https://addons.mozilla.org/firefox/downloads/file/4733069/multi_account_containers-8.3.7.xpi @testpilot-containers # Firefox Multi-Account Containers
+https://addons.mozilla.org/firefox/downloads/file/4773733/user_agent_string_switcher-0.6.7.xpi {a6c4a591-f1b2-4f03-b3ff-767e5bedf4e7} # User-Agent Switcher and Manager
+https://addons.mozilla.org/firefox/downloads/file/4766841/sidebery-5.5.2.xpi {3c078156-979c-498b-8990-85f7987dd929} # Sidebery
+https://addons.mozilla.org/firefox/downloads/file/4797143/tampermonkey-5.5.0.xpi firefox@tampermonkey.net # Tampermonkey
+https://addons.mozilla.org/firefox/downloads/file/4822648/duckduckgo_for_firefox-2026.5.22.xpi jid1-ZAdIEUB7XOzOJw@jetpack # DuckDuckGo Search & Tracker Protection
+https://addons.mozilla.org/firefox/downloads/file/4827922/styl_us-2.3.30.xpi {7a7a4a92-a2a0-41d1-9fd7-1e92480d612d} # Stylus
+https://addons.mozilla.org/firefox/downloads/file/4814095/ublock_origin-1.71.0.xpi uBlock0@raymondhill.net # uBlock Origin
+https://addons.mozilla.org/firefox/downloads/file/4837294/darkreader-4.9.127.xpi addon@darkreader.org # Dark Reader
+https://addons.mozilla.org/firefox/downloads/file/4835863/video_downloadhelper-10.2.71.2.xpi {b9db16a4-6edc-47ec-a1f4-b86292ed211d} # Video DownloadHelper
+https://addons.mozilla.org/firefox/downloads/file/4840220/view_page_archive-7.3.1.xpi {d07ccf11-c0cd-4938-a265-2a4d6ad01189} # Web Archives
+https://addons.mozilla.org/firefox/downloads/file/4841998/proton_vpn_firefox_extension-1.3.4.xpi vpn@proton.ch # Proton VPN: Fast & Secure
+https://addons.mozilla.org/firefox/downloads/file/4842111/bitwarden_password_manager-2026.5.1.xpi {446900e4-71c2-419f-a6a7-df9c091e268b} # Bitwarden Password Manager

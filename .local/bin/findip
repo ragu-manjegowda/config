@@ -1,0 +1,48 @@
+#!/usr/bin/env python
+
+"""Utility to find IP addresses that are open on a port."""
+
+import socket
+import concurrent.futures
+
+prefix = "192.168.1."
+ips = [prefix + str(i) for i in range(1, 255) if i != 100]
+ports = [22, 8022]
+
+
+def check(ip):
+    """Check if an IP is open on a port."""
+    open_ports = []
+    for p in ports:
+        s = socket.socket()
+        s.settimeout(0.22)
+        try:
+            s.connect((ip, p))
+            open_ports.append(p)
+        except Exception:
+            pass
+        finally:
+            s.close()
+
+    if not open_ports:
+        return None
+
+    try:
+        hostname = socket.gethostbyaddr(ip)[0]
+    except Exception:
+        hostname = "-"
+
+    return (ip, hostname, open_ports)
+
+
+with concurrent.futures.ThreadPoolExecutor(max_workers=160) as ex:
+    results = [r for r in ex.map(check, ips) if r]
+
+# header
+print(f"{'IP':<15} {'HOSTNAME':<35} {'PORTS':<10}")
+print(f"{'-' * 15} {'-' * 35} {'-' * 10}")
+
+# rows
+for ip, hostname, ports in results:
+    ports_text = ",".join(map(str, ports))
+    print(f"{ip:<15} {hostname:<35} {ports_text:<10}")
