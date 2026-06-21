@@ -43,6 +43,7 @@
 /.claude.json
 /.claude.json.backup
 /.cmake
+/.codegraph
 /.codeium
 /.compiz
 /.conda

@@ -1,48 +1,230 @@
-#!/usr/bin/env python
+#!/usr/bin/env bash
 
-"""Utility to find IP addresses that are open on a port."""
+set -u
 
-import socket
-import concurrent.futures
+prefix=""
+ports="22"
+timeout="2"
+workers="32"
+hostname_timeout="1"
+hostname_attempts="2"
+excludes=()
+port_list=()
+excluded_ips=()
+accent_color=""
+bold=""
+log_style=""
+reset=""
 
-prefix = "192.168.1."
-ips = [prefix + str(i) for i in range(1, 255) if i != 100]
-ports = [22, 8022]
+alacritty_uses_dark_theme() {
+    local config="${XDG_CONFIG_HOME:-$HOME/.config}/alacritty/alacritty.toml"
+    local line
 
+    [[ -r "$config" ]] || return 1
 
-def check(ip):
-    """Check if an IP is open on a port."""
-    open_ports = []
-    for p in ports:
-        s = socket.socket()
-        s.settimeout(0.22)
-        try:
-            s.connect((ip, p))
-            open_ports.append(p)
-        except Exception:
-            pass
-        finally:
-            s.close()
+    while IFS= read -r line; do
+        line="${line,,}"
+        [[ "$line" == *import* && "$line" == *dark* ]] && return 0
+    done < "$config"
 
-    if not open_ports:
-        return None
+    return 1
+}
 
-    try:
-        hostname = socket.gethostbyaddr(ip)[0]
-    except Exception:
-        hostname = "-"
+accent_index=4
+log_index=14
+if alacritty_uses_dark_theme; then
+    accent_index=2
+    log_index=10
+fi
 
-    return (ip, hostname, open_ports)
+if [[ -t 1 ]] && command -v tput >/dev/null 2>&1; then
+    accent_color="$(tput setaf "$accent_index" 2>/dev/null || true)"
+    bold="$(tput bold 2>/dev/null || true)"
+fi
 
+if [[ -t 2 ]] && command -v tput >/dev/null 2>&1; then
+    log_style="$(tput setaf "$log_index" 2>/dev/null || true)"
+fi
 
-with concurrent.futures.ThreadPoolExecutor(max_workers=160) as ex:
-    results = [r for r in ex.map(check, ips) if r]
+if [[ -n "$accent_color" || -n "$bold" || -n "$log_style" ]]; then
+    reset="$(tput sgr0 2>/dev/null || true)"
+fi
 
-# header
-print(f"{'IP':<15} {'HOSTNAME':<35} {'PORTS':<10}")
-print(f"{'-' * 15} {'-' * 35} {'-' * 10}")
+log() {
+    printf '%sfindip: %s%s\n' "$log_style" "$*" "$reset" >&2
+}
 
-# rows
-for ip, hostname, ports in results:
-    ports_text = ",".join(map(str, ports))
-    print(f"{ip:<15} {hostname:<35} {ports_text:<10}")
+usage() {
+    printf 'Usage: findip [--prefix PREFIX] [--ports PORTS] [--timeout SECONDS] [--workers N] [--exclude IP]\n'
+    printf 'Default prefix is auto-detected from the active 192.168.x.y address.\n'
+}
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --prefix)
+            prefix="$2"
+            shift 2
+            ;;
+        --ports)
+            ports="$2"
+            shift 2
+            ;;
+        --timeout)
+            timeout="$2"
+            shift 2
+            ;;
+        --workers)
+            workers="$2"
+            shift 2
+            ;;
+        --exclude)
+            excludes+=("$2")
+            shift 2
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            printf 'findip: unknown argument: %s\n' "$1" >&2
+            usage >&2
+            exit 2
+            ;;
+    esac
+done
+
+local_ips() {
+    ip -o -4 addr show scope global 2>/dev/null | while read -r _ _ _ address _; do
+        address="${address%%/*}"
+        [[ "$address" == 192.168.* ]] && printf '%s\n' "$address"
+    done
+}
+
+detect_prefix() {
+    local address
+
+    while read -r address; do
+        [[ -z "$address" ]] && continue
+        printf '%s.\n' "${address%.*}"
+        return
+    done < <(local_ips)
+
+    return 1
+}
+
+IFS=',' read -r -a port_list <<< "$ports"
+if [[ -z "$prefix" ]]; then
+    log 'detecting active 192.168.x.y network prefix'
+    if ! prefix="$(detect_prefix)"; then
+        printf 'findip: could not detect a 192.168.x.y address; pass --prefix manually\n' >&2
+        exit 2
+    fi
+else
+    log "using prefix from --prefix: $prefix"
+fi
+log "using scan prefix: $prefix"
+
+is_excluded() {
+    local ip="$1"
+    local excluded
+
+    for excluded in "${excluded_ips[@]}"; do
+        [[ "$ip" == "$excluded" ]] && return 0
+    done
+
+    return 1
+}
+
+hostname_for() {
+    local ip="$1"
+    local host=""
+    local attempt
+
+    for ((attempt = 1; attempt <= hostname_attempts; attempt += 1)); do
+        host="$(timeout "$hostname_timeout" getent hosts "$ip" 2>/dev/null | { read -r _ name _; printf '%s' "${name:-}"; })"
+        if [[ -n "$host" ]]; then
+            printf '%s\n' "$host"
+            return
+        fi
+
+        if command -v avahi-resolve-address >/dev/null 2>&1; then
+            host="$(timeout "$hostname_timeout" avahi-resolve-address "$ip" 2>/dev/null | { read -r _ name _; printf '%s' "${name%.}"; })"
+            if [[ -n "$host" ]]; then
+                printf '%s\n' "$host"
+                return
+            fi
+        fi
+    done
+
+    printf -- '-\n'
+}
+
+open_ports_for() {
+    local ip="$1"
+    local port
+    local open=()
+
+    for port in "${port_list[@]}"; do
+        port="${port//[[:space:]]/}"
+        [[ -z "$port" ]] && continue
+        if timeout "$timeout" bash -c '</dev/tcp/$1/$2' _ "$ip" "$port" 2>/dev/null; then
+            open+=("$port")
+        fi
+    done
+
+    local IFS=','
+    printf '%s\n' "${open[*]}"
+}
+
+candidate_ips() {
+    for i in {1..254}; do
+        printf '%s%s\n' "$prefix" "$i"
+    done
+}
+
+scan_one() {
+    local ip="$1"
+    local open_ports
+    local host
+
+    is_excluded "$ip" && return
+
+    open_ports="$(open_ports_for "$ip")"
+    [[ -z "$open_ports" ]] && return
+
+    host="$(hostname_for "$ip")"
+    printf '%s\t%s\t%s\n' "$ip" "$host" "$open_ports"
+}
+
+tmpfile="$(mktemp)"
+trap 'rm -f "$tmpfile"' EXIT
+log 'detecting local IPs to exclude from results'
+mapfile -t excluded_ips < <(
+    for excluded in "${excludes[@]}"; do
+        printf '%s\n' "$excluded"
+    done
+    local_ips
+)
+log "excluding ${#excluded_ips[@]} IP(s): ${excluded_ips[*]:-(none)}"
+log "scanning ${prefix}1-${prefix}254 on port(s) $ports with timeout ${timeout}s and $workers workers"
+active_jobs=0
+
+while read -r ip; do
+    [[ -z "$ip" ]] && continue
+    scan_one "$ip" >> "$tmpfile" &
+    ((active_jobs += 1))
+    while (( active_jobs >= workers )); do
+        wait -n
+        ((active_jobs -= 1))
+    done
+done < <(candidate_ips)
+
+wait
+log 'scan complete; formatting matching hosts'
+
+printf '\n%s%sSSH Hosts%s\n\n' "$bold" "$accent_color" "$reset"
+printf '%s%s%-15s %-35s %-10s%s\n' "$bold" "$accent_color" IP HOSTNAME PORTS "$reset"
+printf '%-15s %-35s %-10s\n' '---------------' '-----------------------------------' '----------'
+sort -u -t $'\t' -k 1,1V "$tmpfile" | while IFS=$'\t' read -r ip host open_ports; do
+    printf '%-15s %-35s %-10s\n' "$ip" "$host" "$open_ports"
+done
