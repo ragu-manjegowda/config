@@ -4,7 +4,11 @@
     "disabled_hooks": [
         "todo-continuation-enforcer",
         "model-fallback",
-        "runtime-fallback"
+        "runtime-fallback",
+        "anthropic-context-window-limit-recovery",
+        "preemptive-compaction",
+        "compaction-context-injector",
+        "compaction-todo-preserver"
     ],
     "disabled_providers": [
         "openai"

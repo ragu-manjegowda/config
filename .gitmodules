@@ -60,7 +60,7 @@
 	branch = master
 [submodule ".config/yazi/plugins/relative-motions.yazi"]
 	path = .config/yazi/plugins/relative-motions.yazi
-	url = https://github.com/dedukun/relative-motions.yazi.git
+	url = https://github.com/Jormala/relative-motions.yazi.git
 	update = rebase
 	branch = main
 [submodule ".config/zsh/oh-my-zsh"]

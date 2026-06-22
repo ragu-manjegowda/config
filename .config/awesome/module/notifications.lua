@@ -341,8 +341,14 @@ naughty.connect_signal(
                                                     margins = beautiful.notification_margin,
                                                     widget  = wibox.container.margin,
                                                 },
-                                                bg     = beautiful.bg_focus,
+                                                bg     = beautiful.background:sub(1, 7),
                                                 widget = wibox.container.background,
+                                            },
+                                            {
+                                                forced_height = dpi(2),
+                                                color         = beautiful.accent,
+                                                orientation   = 'horizontal',
+                                                widget        = wibox.widget.separator,
                                             },
                                             {
                                                 {
@@ -377,7 +383,7 @@ naughty.connect_signal(
                                                 layout = wibox.layout.fixed.horizontal,
                                             },
                                             fill_space = true,
-                                            spacing    = beautiful.notification_margin,
+                                            spacing    = dpi(0),
                                             layout     = wibox.layout.fixed.vertical,
                                         },
                                         -- Margin between the fake background
@@ -408,6 +414,9 @@ naughty.connect_signal(
                 },
                 bg = beautiful.background,
                 shape = gears.shape.rounded_rect,
+                border_width = dpi(2),
+                border_color = beautiful.accent,
+                border_strategy = 'inner',
                 widget = wibox.container.background
             }
         }

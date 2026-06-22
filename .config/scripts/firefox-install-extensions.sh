@@ -320,6 +320,57 @@ extension_id_from_xpi() {
         | grep -Eo -m1 '\{[0-9A-Fa-f-]{36}\}'
 }
 
+remember_desired_extension_id() {
+    local extension_id="$1"
+
+    [[ -n "$extension_id" ]] || return 0
+    desired_extension_ids+=("$extension_id")
+}
+
+enable_restored_extensions() {
+    local extensions_json="$profile_path/extensions.json"
+    local ids_json enabled_count tmp
+
+    (( ${#desired_extension_ids[@]} > 0 )) || return 0
+
+    if command -v pgrep >/dev/null 2>&1 && pgrep -u "$(id -u)" -x firefox >/dev/null 2>&1; then
+        printf 'Firefox is running; skipping extension activation update. Close Firefox and rerun this script to enable restored extensions.\n' >&2
+        return 0
+    fi
+
+    if [[ ! -f "$extensions_json" ]]; then
+        printf 'Firefox extension database not found yet; restored extensions will be enabled on next Firefox startup.\n'
+        return 0
+    fi
+
+    ids_json="$(printf '%s\n' "${desired_extension_ids[@]}" | jq -Rsc 'split("\n")[:-1] | unique')"
+    enabled_count="$(jq --argjson ids "$ids_json" '
+        [.addons[]?
+            | select((.id as $id | $ids | index($id)) and ((.userDisabled // false) or (.active != true)))]
+        | length
+    ' "$extensions_json")"
+
+    tmp="$(mktemp)"
+    jq --argjson ids "$ids_json" '
+        .addons |= map(
+            if (.id as $id | $ids | index($id)) then
+                .userDisabled = false
+                | .active = (((.appDisabled // false) | not)
+                    and ((.embedderDisabled // false) | not)
+                    and ((.softDisabled // false) | not))
+                | .seen = true
+                | .foreignInstall = false
+            else
+                .
+            end
+        )
+    ' "$extensions_json" >"$tmp"
+    install -m 0600 "$tmp" "$extensions_json"
+    rm -f "$tmp"
+
+    printf 'Enabled %s restored extension record(s) in %s\n' "$enabled_count" "$extensions_json"
+}
+
 need curl
 need grep
 need install
@@ -353,6 +404,7 @@ skipped=0
 processed=0
 failed=0
 failed_extensions=()
+desired_extension_ids=()
 
 while IFS= read -r raw_line || [[ -n "$raw_line" ]]; do
     line="$(trim "${raw_line%%#*}")"
@@ -360,6 +412,7 @@ while IFS= read -r raw_line || [[ -n "$raw_line" ]]; do
     read -r item manifest_extension_id _ <<<"$line"
 
     if [[ -n "${manifest_extension_id:-}" && -e "$extensions_dir/$manifest_extension_id.xpi" ]]; then
+        remember_desired_extension_id "$manifest_extension_id"
         printf 'Extension already installed; skipping %s\n' "$manifest_extension_id"
         skipped=$((skipped + 1))
         continue
@@ -393,6 +446,7 @@ while IFS= read -r raw_line || [[ -n "$raw_line" ]]; do
     fi
 
     if [[ -e "$extensions_dir/$extension_id.xpi" ]]; then
+        remember_desired_extension_id "$extension_id"
         printf 'Extension already installed; skipping %s\n' "$extension_id"
         skipped=$((skipped + 1))
         continue
@@ -405,8 +459,11 @@ while IFS= read -r raw_line || [[ -n "$raw_line" ]]; do
         continue
     fi
     printf 'Installed %s\n' "$extension_id"
+    remember_desired_extension_id "$extension_id"
     installed=$((installed + 1))
 done < "$manifest_path"
+
+enable_restored_extensions
 
 printf 'Installed %s extension(s), skipped %s existing extension(s), failed %s extension(s) in %s\n' "$installed" "$skipped" "$failed" "$extensions_dir"
 if (( failed > 0 )); then
