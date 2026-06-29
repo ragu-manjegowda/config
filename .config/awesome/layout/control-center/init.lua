@@ -88,7 +88,8 @@ local main_control_row_two = wibox.widget {
             spacing = dpi(5),
             require('widget.airplane-mode'),
             require('widget.bluetooth-toggle'),
-            (require('widget.blue-light'))
+            require('widget.blue-light'),
+            (require('widget.microphone-toggle'))
         }
     ),
     {
@@ -117,7 +118,7 @@ local main_control_row_two = wibox.widget {
                 layout = wibox.layout.align.vertical,
                 expand = 'none',
                 nil,
-                require('widget.microphone-toggle'),
+                require('widget.presentation-mode'),
                 nil
             }
         )

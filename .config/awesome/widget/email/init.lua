@@ -376,20 +376,20 @@ local function parse_emails(email_data)
     -- Each email has: From: ...\nSubject: ...\nLocal Date: ...
     for from, subject, date in email_data:gmatch('From: (.-)\nSubject: (.-)\nLocal Date: (.-)\n') do
         -- Clean up the values
-        from = from:gsub('%s+$', ''):gsub('\n', '')
-        subject = subject:gsub('%s+$', ''):gsub('\n', '')
-        date = date:gsub('%s+$', ''):gsub('\n', '')
+        local sender = from:gsub('%s+$', ''):gsub('\n', '')
+        local clean_subject = subject:gsub('%s+$', ''):gsub('\n', '')
+        local clean_date = date:gsub('%s+$', ''):gsub('\n', '')
 
         -- Extract email from angle brackets if present
-        local email_addr = from:match('<(.*)>') or from:match('&lt;(.*)&gt;')
+        local email_addr = sender:match('<(.*)>') or sender:match('&lt;(.*)&gt;')
         if email_addr then
-            from = email_addr
+            sender = email_addr
         end
 
         table.insert(emails, {
-            from = from,
-            subject = subject,
-            date = date
+            from = sender,
+            subject = clean_subject,
+            date = clean_date
         })
     end
 

@@ -9,6 +9,7 @@ local widget_dir = config_dir .. 'widget/blur-toggle/'
 local widget_icon_dir = widget_dir .. 'icons/'
 local icons = require('theme.icons')
 local blur_status = true
+_G.blur_effects_state = true
 
 local action_name = wibox.widget {
     text = 'Blur Effects',
@@ -80,6 +81,7 @@ local check_blur_status = function()
             else
                 blur_status = true
             end
+            _G.blur_effects_state = blur_status
             update_widget()
         end
     )
@@ -102,20 +104,18 @@ local toggle_blur = function(togglemode)
 		sed -i -e 's/method = \"dual_kawase\"/method = \"none\"/g' \"]] .. config_dir .. [[configuration/picom.conf\"
 		;;
 	esac
+
+	pkill -x picom || true
+	picom -b --dbus --config ]] .. config_dir .. [[configuration/picom.conf
 	"]]
 
     awful.spawn.with_shell(toggle_blur_script)
 end
 
 local toggle_blur_fx = function()
-    local state = nil
-    if blur_status then
-        blur_status = false
-        state = 'disable'
-    else
-        blur_status = true
-        state = 'enable'
-    end
+    local state = blur_status and 'disable' or 'enable'
+    blur_status = not blur_status
+    _G.blur_effects_state = blur_status
     toggle_blur(state)
     update_widget()
 end
@@ -163,6 +163,21 @@ awesome.connect_signal(
     'widget::blur:toggle',
     function()
         toggle_blur_fx()
+    end
+)
+
+awesome.connect_signal(
+    'widget::blur:set',
+    function(enabled)
+        if blur_status == enabled then
+            update_widget()
+            return
+        end
+
+        blur_status = enabled
+        _G.blur_effects_state = enabled
+        toggle_blur(enabled and 'enable' or 'disable')
+        update_widget()
     end
 )
 

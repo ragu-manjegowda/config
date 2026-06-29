@@ -168,6 +168,8 @@ local hibernate_command = function()
     awful.spawn.with_shell(apps.default.lock .. ' & systemctl hibernate')
 end
 
+awesome.connect_signal('module::hibernate', hibernate_command)
+
 -------------------------------------------------------------------------------
 -- Wait till lock screen is displayed, otherwise clients are visible for
 -- brief time when we come back from sleep.
@@ -352,7 +354,7 @@ local exit_screen_grabber = awful.keygrabber {
     stop_event = 'release',
     keypressed_callback = function(_, _, key, _)
         if key == 'h' then
-            hibernate_command()
+            awesome.emit_signal('module::hibernate')
         elseif key == 's' then
             suspend_command()
         elseif key == 'e' then

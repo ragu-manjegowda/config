@@ -1,18 +1,17 @@
 local awful = require('awful')
 local wibox = require('wibox')
 local gears = require('gears')
-local naughty = require('naughty')
 local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 local clickable_container = require('widget.clickable-container')
-local config_dir = gears.filesystem.get_configuration_dir()
-local widget_dir = config_dir .. 'widget/dont-disturb/'
-local widget_icon_dir = widget_dir .. 'icons/'
+local icons = require('theme.icons')
 
-_G.dont_disturb_state = false
+local presentation_enabled = false
+local previous_dont_disturb_state = false
+local previous_blur_state = true
 
 local action_name = wibox.widget {
-    text = 'Don\'t Disturb',
+    text = 'Presentation',
     font = beautiful.font_bold(11),
     align = 'left',
     widget = wibox.widget.textbox
@@ -34,7 +33,7 @@ local action_info = wibox.widget {
 local button_widget = wibox.widget {
     {
         id = 'icon',
-        image = widget_icon_dir .. 'notify.svg',
+        image = icons.toggled_off,
         widget = wibox.widget.imagebox,
         resize = true
     },
@@ -58,52 +57,39 @@ local widget_button = wibox.widget {
 }
 
 local update_widget = function()
-    if _G.dont_disturb_state then
+    if presentation_enabled then
         action_status:set_text('On')
         widget_button.bg = beautiful.accent
-        button_widget.icon:set_image(widget_icon_dir .. 'dont-disturb.svg')
+        button_widget.icon:set_image(icons.toggled_on)
     else
         action_status:set_text('Off')
         widget_button.bg = beautiful.groups_bg
-        button_widget.icon:set_image(widget_icon_dir .. 'notify.svg')
+        button_widget.icon:set_image(icons.toggled_off)
     end
 end
 
-local check_disturb_status = function()
-    awful.spawn.easy_async_with_shell(
-        'cat ' .. widget_dir .. 'disturb_status',
-        function(stdout)
-            local status = stdout
+local set_presentation_mode = function(enabled)
+    if presentation_enabled == enabled then
+        update_widget()
+        return
+    end
 
-            if status:match('true') then
-                _G.dont_disturb_state = true
-            elseif status:match('false') then
-                _G.dont_disturb_state = false
-            else
-                _G.dont_disturb_state = false
-                awful.spawn.with_shell('echo \'false\' > ' .. widget_dir .. 'disturb_status')
-            end
+    if enabled then
+        previous_dont_disturb_state = _G.dont_disturb_state == true
+        previous_blur_state = _G.blur_effects_state ~= false
+        awesome.emit_signal('widget::dont_disturb:set', true)
+        awesome.emit_signal('widget::blur:set', false)
+    else
+        awesome.emit_signal('widget::dont_disturb:set', previous_dont_disturb_state)
+        awesome.emit_signal('widget::blur:set', previous_blur_state)
+    end
 
-            update_widget()
-        end
-    )
+    presentation_enabled = enabled
+    update_widget()
 end
 
-check_disturb_status()
-
-local set_disturb_status = function(enabled)
-    _G.dont_disturb_state = enabled
-
-    awful.spawn.easy_async_with_shell(
-        'echo ' .. tostring(dont_disturb_state) .. ' > ' .. widget_dir .. 'disturb_status',
-        function()
-            update_widget()
-        end
-    )
-end
-
-local toggle_action = function()
-    set_disturb_status(not dont_disturb_state)
+local toggle_presentation_mode = function()
+    set_presentation_mode(not presentation_enabled)
 end
 
 widget_button:buttons(
@@ -113,7 +99,7 @@ widget_button:buttons(
             1,
             nil,
             function()
-                toggle_action()
+                toggle_presentation_mode()
             end
         )
     )
@@ -126,7 +112,7 @@ action_info:buttons(
             1,
             nil,
             function()
-                toggle_action()
+                toggle_presentation_mode()
             end
         )
     )
@@ -145,20 +131,17 @@ local action_widget = wibox.widget {
     }
 }
 
--- Create a notification sound
-naughty.connect_signal(
-    'request::display',
-    function(_)
-        if not dont_disturb_state then
-            awful.spawn.with_shell('canberra-gtk-play -i message 2>/dev/null')
-        end
+awesome.connect_signal(
+    'widget::presentation_mode:set',
+    function(enabled)
+        set_presentation_mode(enabled)
     end
 )
 
 awesome.connect_signal(
-    'widget::dont_disturb:set',
-    function(enabled)
-        set_disturb_status(enabled)
+    'widget::presentation_mode:toggle',
+    function()
+        toggle_presentation_mode()
     end
 )
 

@@ -15,6 +15,12 @@ local update_client = function(c)
     end
 end
 
+local place_transient_floating_client = function(c)
+    if c.floating and c.transient_for and c.transient_for.valid then
+        awful.placement.centered(c, { parent = c.transient_for })
+    end
+end
+
 -- Signal function to execute when a new client appears.
 client.connect_signal(
     'manage',
@@ -45,6 +51,7 @@ client.connect_signal(
 
         -- Update client shape
         update_client(c)
+        place_transient_floating_client(c)
     end
 )
 

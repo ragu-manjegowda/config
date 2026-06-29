@@ -41,18 +41,18 @@ echo ""
 echo -n "Testing Open-Meteo API... "
 if [ "$NETWORK" = false ]; then
     echo -e "${YELLOW}⚠ SKIPPED${NC} (no network)"
-    ((skipped++))
+    ((skipped += 1))
 else
     RESPONSE=$(curl -sf --connect-timeout 5 --max-time 10 \
         "https://api.open-meteo.com/v1/forecast?latitude=37.3382&longitude=-121.8863&current=temperature_2m,weather_code,is_day&daily=sunrise,sunset&timezone=America/Los_Angeles&forecast_days=1" 2>/dev/null || true)
 
     if echo "$RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); assert 'current' in d and 'temperature_2m' in d['current']" 2>/dev/null; then
         echo -e "${GREEN}✓ PASSED${NC}"
-        ((passed++))
+        ((passed += 1))
     else
         echo -e "${RED}✗ FAILED${NC}"
         echo "  Open-Meteo returned invalid or empty response"
-        ((failed++))
+        ((failed += 1))
     fi
 fi
 
@@ -60,18 +60,18 @@ fi
 echo -n "Testing wttr.in API... "
 if [ "$NETWORK" = false ]; then
     echo -e "${YELLOW}⚠ SKIPPED${NC} (no network)"
-    ((skipped++))
+    ((skipped += 1))
 else
     RESPONSE=$(curl -sf --connect-timeout 5 --max-time 10 \
         "https://wttr.in/San+Jose?format=j1" 2>/dev/null || true)
 
     if echo "$RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); assert 'current_condition' in d" 2>/dev/null; then
         echo -e "${GREEN}✓ PASSED${NC}"
-        ((passed++))
+        ((passed += 1))
     else
         echo -e "${RED}✗ FAILED${NC}"
         echo "  wttr.in returned invalid or empty response"
-        ((failed++))
+        ((failed += 1))
     fi
 fi
 
@@ -82,10 +82,10 @@ STOCKS_SCRIPT="$AWESOME_DIR/library/stocks/stocks_fetcher.py"
 echo -n "Testing stocks fetcher (yfinance)... "
 if [ ! -x "$STOCKS_VENV/bin/python3" ]; then
     echo -e "${YELLOW}⚠ SKIPPED${NC} (venv not set up at $STOCKS_VENV)"
-    ((skipped++))
+    ((skipped += 1))
 elif [ "$NETWORK" = false ]; then
     echo -e "${YELLOW}⚠ SKIPPED${NC} (no network)"
-    ((skipped++))
+    ((skipped += 1))
 else
     RESPONSE=$("$STOCKS_VENV/bin/python3" "$STOCKS_SCRIPT" "NVDA" 2>/dev/null || true)
 
@@ -97,11 +97,11 @@ assert d['symbol'] == 'NVDA', 'wrong symbol'
 assert 'error' not in d or d.get('price') is not None, 'got error with no price'
 " 2>/dev/null; then
         echo -e "${GREEN}✓ PASSED${NC}"
-        ((passed++))
+        ((passed += 1))
     else
         echo -e "${RED}✗ FAILED${NC}"
         echo "  stocks_fetcher.py returned invalid response: $RESPONSE"
-        ((failed++))
+        ((failed += 1))
     fi
 fi
 
@@ -120,16 +120,16 @@ echo -n "Testing outlook-calendar utility... "
 if [ ! -x "$CALENDAR_SCRIPT" ]; then
     echo -e "${RED}✗ FAILED${NC}"
     echo "  $CALENDAR_SCRIPT not found or not executable"
-    ((failed++))
+    ((failed += 1))
 elif is_git_crypt_locked "$OAUTH_SCRIPT" || is_git_crypt_locked "$TOKEN_FILE"; then
     echo -e "${YELLOW}⚠ SKIPPED${NC} (oauth2.py or token file is git-crypt locked)"
-    ((skipped++))
+    ((skipped += 1))
 elif [ ! -f "$TOKEN_FILE" ]; then
     echo -e "${YELLOW}⚠ SKIPPED${NC} (token file not found - run oauth2.py --authorize first)"
-    ((skipped++))
+    ((skipped += 1))
 elif [ "$NETWORK" = false ]; then
     echo -e "${YELLOW}⚠ SKIPPED${NC} (no network)"
-    ((skipped++))
+    ((skipped += 1))
 else
     RESPONSE=$("$CALENDAR_SCRIPT" --days 1 2>/dev/null || true)
 
@@ -143,11 +143,11 @@ if d['ok']:
     assert isinstance(d['events'], list), 'events is not a list'
 " 2>/dev/null; then
         echo -e "${GREEN}✓ PASSED${NC}"
-        ((passed++))
+        ((passed += 1))
     else
         echo -e "${RED}✗ FAILED${NC}"
         echo "  outlook-calendar returned invalid JSON structure"
-        ((failed++))
+        ((failed += 1))
     fi
 fi
 

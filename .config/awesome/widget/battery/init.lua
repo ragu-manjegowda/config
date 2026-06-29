@@ -118,6 +118,7 @@ local return_button = function()
 
     local last_battery_check = os.time()
     local notify_critcal_battery = true
+    local hibernate_critical_battery = true
 
     local show_battery_warning = function()
         naughty.notification({
@@ -128,6 +129,10 @@ local return_button = function()
                 'Save your work before reaching the oblivion.',
             urgency = 'critical'
         })
+    end
+
+    local hibernate_on_critical_battery = function()
+        awesome.emit_signal('module::hibernate')
     end
 
     local update_battery = function(battery_percentage)
@@ -154,7 +159,19 @@ local return_button = function()
                 battery_percentage_text.visible = true
                 battery_percentage_text:set_text(battery_percentage .. '%')
 
+                if status ~= 'discharging' or battery_percentage > 5 then
+                    hibernate_critical_battery = true
+                end
+
                 local icon_name = 'battery'
+
+                if status == 'discharging' and battery_percentage <= 5 and
+                    hibernate_critical_battery then
+                    hibernate_critical_battery = false
+                    show_battery_warning()
+                    hibernate_on_critical_battery()
+                    return
+                end
 
                 -- Fully charged
                 if (status == 'fully-charged' or status == 'charging') and

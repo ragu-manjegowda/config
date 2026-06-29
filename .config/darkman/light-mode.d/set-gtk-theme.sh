@@ -7,6 +7,16 @@ gtk4_config_path="$HOME/.config/gtk-4.0"
 icon_config_path="$HOME/.icons/default/index.theme"
 xdg_config_path="$HOME/.config/xsettingsd/xsettingsd.conf"
 
+set_xsettings_color_scheme() {
+    local scheme="$1"
+
+    if grep -q '^Net/ColorScheme ' "$xdg_config_path"; then
+        sed -i -e "s#^Net/ColorScheme .*#Net/ColorScheme \"$scheme\"#g" "$xdg_config_path"
+    else
+        printf '\nNet/ColorScheme "%s"\n' "$scheme" >> "$xdg_config_path"
+    fi
+}
+
 sed -i -e "s#DarkGreen#LightBlue#g" $gtk2_config_path
 sed -i -e "s#Solarized-Dark-Green-Numix#Solarized-FLAT-Blue#g" $gtk2_config_path
 
@@ -22,7 +32,7 @@ sed -i -e 's/"Numix-Cursor"/"Numix-Cursor-Light"/g' $gtk2_config_path
 sed -i -e 's/Numix-Cursor$/Numix-Cursor-Light/g' $gtk3_config_path
 sed -i -e 's/Numix-Cursor$/Numix-Cursor-Light/g' $icon_config_path
 sed -i -e 's/"Numix-Cursor"/"Numix-Cursor-Light"/g' $xdg_config_path
-sed -i -e 's/Net\/ColorScheme "prefer-dark"/Net\/ColorScheme "prefer-light"/g' $xdg_config_path
+set_xsettings_color_scheme "prefer-light"
 
 cp "${gtk4_config_path}/gtk-light.css" "${gtk4_config_path}/gtk.css"
 

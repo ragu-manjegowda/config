@@ -25,6 +25,7 @@ fi
 
 log_info "Deploying PAM config..."
 check_copy "${MISC_DIR}/etc/pam.d/system-local-login" /etc/pam.d/system-local-login
+check_copy "${MISC_DIR}/etc/pam.d/sudo" /etc/pam.d/sudo
 
 log_info "Deploying NFS exports..."
 check_copy "${MISC_DIR}/etc/exports" /etc/exports

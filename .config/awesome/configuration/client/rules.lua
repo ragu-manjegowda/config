@@ -73,8 +73,7 @@ ruled.client.connect_signal(
                 titlebars_enabled = true,
                 floating = true,
                 above = true,
-                skip_decoration = true,
-                placement = awful.placement.centered
+                placement = awful.placement.no_overlap + awful.placement.no_offscreen
             }
         }
 
@@ -88,8 +87,7 @@ ruled.client.connect_signal(
                 titlebars_enabled = true,
                 floating = true,
                 above = true,
-                skip_decoration = true,
-                placement = awful.placement.centered
+                placement = awful.placement.no_overlap + awful.placement.no_offscreen
             }
         }
 
@@ -143,7 +141,6 @@ ruled.client.connect_signal(
             rule_any   = {
                 instance = {
                     'stocks',
-                    'Toolkit'
                 },
             },
             properties = {
@@ -152,8 +149,6 @@ ruled.client.connect_signal(
                 floating = true,
                 placement = awful.placement.centered,
                 sticky = true,
-                width = 1200,
-                height = 550,
                 ontop = true,
             }
         }
