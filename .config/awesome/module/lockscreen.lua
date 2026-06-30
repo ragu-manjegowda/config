@@ -48,6 +48,10 @@ local capture_now = locker_config.capture_intruder
 local locked_tag = nil
 local client_focused = nil
 local MAX_RESUMED_NOTIFICATIONS = 10
+local pam_module_loaded = false
+local pam_module = nil
+local current_user_name = '$USER'
+local current_profile_image = widget_icon_dir .. 'default.svg'
 
 local function destroy_notification(notification)
     local reason = naughty.notification_closed_reason and
@@ -65,6 +69,50 @@ local function trim_pending_notifications_for_resume()
     for index = MAX_RESUMED_NOTIFICATIONS + 1, #queued do
         destroy_notification(queued[index])
     end
+end
+
+local function load_pam_module()
+    if pam_module_loaded then
+        return pam_module
+    end
+
+    pam_module_loaded = true
+    local ok, module = pcall(require, 'liblua_pam')
+    if ok and module and type(module.auth_current_user) == 'function' then
+        pam_module = module
+    end
+
+    return pam_module
+end
+
+local function authenticate_with_pam(password)
+    local module = load_pam_module()
+    if not module then
+        return nil
+    end
+
+    local ok, authenticated = pcall(function()
+        return module:auth_current_user(password)
+    end)
+
+    if not ok then
+        return nil
+    end
+
+    return authenticated == true
+end
+
+local function authenticate_password(password)
+    if not password or password == '' then
+        return false
+    end
+
+    local authenticated = authenticate_with_pam(password)
+    if authenticated ~= nil then
+        return authenticated
+    end
+
+    return password == locker_config.fallback_password()
 end
 
 local uname_text = wibox.widget {
@@ -215,7 +263,9 @@ local locker = function(s)
 		]],
         function(stdout)
             stdout = stdout:gsub('%\n', '')
+            current_user_name = stdout
             uname_text:set_markup(stdout)
+            awesome.emit_signal('module::lockscreen_user_name', stdout)
         end
     )
 
@@ -225,9 +275,14 @@ local locker = function(s)
             function(stdout)
                 stdout = stdout:gsub('%\n', '')
                 if not stdout:match('default') then
+                    current_profile_image = stdout
                     profile_imagebox:set_image(stdout)
+                    awesome.emit_signal('module::lockscreen_profile_image', stdout)
                 else
-                    profile_imagebox:set_image(widget_icon_dir .. 'default.svg')
+                    local default_image = widget_icon_dir .. 'default.svg'
+                    current_profile_image = default_image
+                    profile_imagebox:set_image(default_image)
+                    awesome.emit_signal('module::lockscreen_profile_image', default_image)
                 end
             end
         )
@@ -290,7 +345,8 @@ local locker = function(s)
         awful.spawn.easy_async_with_shell(
             'xset q | grep Caps | cut -d: -f3 | cut -d0 -f1 | tr -d \' \'',
             function(stdout)
-                if stdout:match('on') then
+                local caps_on = stdout:match('on') ~= nil
+                if caps_on then
                     caps_text.opacity = 1.0
                     caps_text_widget.bg = beautiful.accent
                 else
@@ -298,6 +354,7 @@ local locker = function(s)
                     caps_text_widget.bg = beautiful.transparent
                 end
                 caps_text:emit_signal('widget::redraw_needed')
+                awesome.emit_signal('module::lockscreen_caps_state', caps_on)
             end
         )
     end
@@ -313,6 +370,7 @@ local locker = function(s)
         rotate_container:emit_signal('widget::redraw_needed')
         locker_arc:emit_signal('widget::redraw_needed')
         locker_widget:emit_signal('widget::redraw_needed')
+        awesome.emit_signal('module::lockscreen_ring_feedback', direction, color)
     end
 
     -- Check webcam
@@ -359,6 +417,7 @@ local locker = function(s)
             capture_image,
             function(stdout)
                 circle_container.bg = beautiful.transparent
+                awesome.emit_signal('module::lockscreen_auth_feedback', beautiful.transparent)
 
                 -- Humiliate the intruder by showing his/her hideous face
                 wanted_image:set_image(stdout:gsub('%\n', ''))
@@ -383,6 +442,7 @@ local locker = function(s)
     -- Login failed
     local stoprightthereyoucriminalscum = function()
         circle_container.bg = red
+        awesome.emit_signal('module::lockscreen_auth_feedback', red)
         if capture_now then
             intruder_capture()
         else
@@ -390,6 +450,7 @@ local locker = function(s)
                 1,
                 function()
                     circle_container.bg = beautiful.transparent
+                    awesome.emit_signal('module::lockscreen_auth_feedback', beautiful.transparent)
                     type_again = true
                 end
             )
@@ -399,6 +460,7 @@ local locker = function(s)
     -- Login successful
     local generalkenobi_ohhellothere = function()
         circle_container.bg = beautiful.accent
+        awesome.emit_signal('module::lockscreen_auth_feedback', beautiful.accent)
 
         -- Add a little delay before unlocking completely
         gears.timer.start_new(
@@ -420,6 +482,7 @@ local locker = function(s)
                 end
 
                 circle_container.bg = beautiful.transparent
+                awesome.emit_signal('module::lockscreen_auth_feedback', beautiful.transparent)
                 lock_again = true
                 type_again = true
 
@@ -442,10 +505,9 @@ local locker = function(s)
 
                 if client_focused then
                     client_focused.minimized = false
-                    ---@diagnostic disable-next-line: undefined-global
-                    c:emit_signal('request::activate')
-                    ---@diagnostic disable-next-line: undefined-global
-                    c:raise()
+                    client_focused:emit_signal('request::activate')
+                    client_focused:raise()
+                    client_focused = nil
                 end
             end
         )
@@ -455,23 +517,6 @@ local locker = function(s)
     -- Sometimes my genius is... it's almost frightening.
     local back_door = function()
         generalkenobi_ohhellothere()
-    end
-
-    -- Check module if valid
-    local module_check = function(name)
-        if package.loaded[name] then
-            return true
-        else
-            ---@diagnostic disable-next-line: deprecated
-            for _, searcher in ipairs(package.searchers or package.loaders) do
-                local loader = searcher(name)
-                if type(loader) == 'function' then
-                    package.preload[name] = loader
-                    return true
-                end
-            end
-            return false
-        end
     end
 
     -- Password/key grabber
@@ -494,9 +539,8 @@ local locker = function(s)
                     if not type_again then
                         return
                     end
-                    self:stop()
 
-                    -- Call backdoor
+                    self:stop()
                     back_door()
                 end
             }
@@ -510,6 +554,17 @@ local locker = function(s)
             if key == 'Escape' then
                 -- Clear input threshold
                 input_password = nil
+                return
+            end
+
+            if key == 'BackSpace' then
+                if input_password then
+                    input_password = input_password:sub(1, -2)
+                    if input_password == '' then
+                        input_password = nil
+                    end
+                end
+                locker_arc_rotate()
                 return
             end
 
@@ -528,6 +583,7 @@ local locker = function(s)
         keyreleased_callback = function(self, _, key, _)
             locker_arc.bg = beautiful.transparent
             locker_arc:emit_signal('widget::redraw_needed')
+            awesome.emit_signal('module::lockscreen_ring_feedback', rotate_container.direction, beautiful.transparent)
 
             if key == 'Caps_Lock' then
                 check_caps()
@@ -541,18 +597,7 @@ local locker = function(s)
             -- Validation
             if key == 'Return' then
                 -- Validate password
-                local authenticated = false
-                if input_password ~= nil then
-                    -- If lua-pam library is 'okay'
-                    if module_check('liblua_pam') then
-                        local pam = require('liblua_pam')
-                        authenticated = pam:auth_current_user(input_password)
-                    else
-                        -- Library doesn't exist or returns an error due to some reasons (read the manual)
-                        -- Use fallback password data
-                        authenticated = input_password == locker_config.fallback_password()
-                    end
-                end
+                local authenticated = authenticate_password(input_password)
 
                 if authenticated then
                     -- Come in!
@@ -735,7 +780,7 @@ local locker_ext = function(s)
         screen = s,
         visible = false,
         ontop = true,
-        ontype = 'true',
+        type = 'splash',
         x = s.geometry.x,
         y = s.geometry.y,
         width = s.geometry.width,
@@ -743,6 +788,185 @@ local locker_ext = function(s)
         bg = beautiful.bg_focus,
         fg = beautiful.fg_normal
     }
+
+    local ext_uname_text = wibox.widget {
+        markup = current_user_name,
+        font = beautiful.font_bold(18),
+        align = 'center',
+        valign = 'center',
+        widget = wibox.widget.textbox
+    }
+
+    local ext_caps_text = wibox.widget {
+        markup = 'Caps Lock is on',
+        font = beautiful.font_italic(18),
+        align = 'center',
+        valign = 'center',
+        opacity = 0.0,
+        widget = wibox.widget.textbox
+    }
+
+    local ext_caps_text_widget = wibox.widget {
+        widget = wibox.container.background,
+        ext_caps_text
+    }
+
+    local ext_profile_imagebox = wibox.widget {
+        image = current_profile_image,
+        resize = true,
+        forced_height = dpi(130),
+        forced_width = dpi(130),
+        clip_shape = gears.shape.circle,
+        widget = wibox.widget.imagebox
+    }
+
+    local ext_circle_container = wibox.widget {
+        bg = beautiful.transparent,
+        forced_width = dpi(140),
+        forced_height = dpi(140),
+        shape = gears.shape.circle,
+        widget = wibox.container.background
+    }
+
+    local ext_locker_arc = wibox.widget {
+        bg = beautiful.transparent,
+        forced_width = dpi(140),
+        forced_height = dpi(140),
+        shape = function(cr, width, height)
+            gears.shape.arc(cr, width, height, dpi(5), 0, (math.pi / 2), false, false)
+        end,
+        widget = wibox.container.background
+    }
+
+    local ext_rotate_container = wibox.container.rotate()
+    local ext_locker_widget = wibox.widget {
+        {
+            ext_locker_arc,
+            widget = ext_rotate_container
+        },
+        layout = wibox.layout.fixed.vertical
+    }
+
+    local ext_time = wibox.widget.textclock(clock_format, 60)
+
+    local is_active = function()
+        return extended_lockscreen.valid
+    end
+
+    awesome.connect_signal(
+        'module::lockscreen_user_name',
+        function(name)
+            if not is_active() then return end
+            ext_uname_text:set_markup(name)
+        end
+    )
+
+    awesome.connect_signal(
+        'module::lockscreen_profile_image',
+        function(image)
+            if not is_active() then return end
+            ext_profile_imagebox:set_image(image)
+        end
+    )
+
+    awesome.connect_signal(
+        'module::lockscreen_ring_feedback',
+        function(direction, color)
+            if not is_active() then return end
+            ext_rotate_container.direction = direction
+            ext_locker_arc.bg = color
+            ext_rotate_container:emit_signal('widget::redraw_needed')
+            ext_locker_arc:emit_signal('widget::redraw_needed')
+            ext_locker_widget:emit_signal('widget::redraw_needed')
+        end
+    )
+
+    awesome.connect_signal(
+        'module::lockscreen_auth_feedback',
+        function(color)
+            if not is_active() then return end
+            ext_circle_container.bg = color
+            ext_circle_container:emit_signal('widget::redraw_needed')
+        end
+    )
+
+    awesome.connect_signal(
+        'module::lockscreen_caps_state',
+        function(caps_on)
+            if not is_active() then return end
+            if caps_on then
+                ext_caps_text.opacity = 1.0
+                ext_caps_text_widget.bg = beautiful.accent
+            else
+                ext_caps_text.opacity = 0.0
+                ext_caps_text_widget.bg = beautiful.transparent
+            end
+            ext_caps_text:emit_signal('widget::redraw_needed')
+        end
+    )
+
+    extended_lockscreen:setup {
+        layout = wibox.layout.align.vertical,
+        expand = 'none',
+        nil,
+        {
+            layout = wibox.layout.align.horizontal,
+            expand = 'none',
+            nil,
+            {
+                layout = wibox.layout.fixed.vertical,
+                expand = 'none',
+                spacing = dpi(20),
+                {
+                    {
+                        layout = wibox.layout.align.horizontal,
+                        expand = 'none',
+                        nil,
+                        {
+                            bg = beautiful.bg_normal,
+                            widget = wibox.container.background,
+                            ext_time
+                        },
+                        nil
+                    },
+                    spacing = dpi(10),
+                    expand = 'none',
+                    layout = wibox.layout.fixed.vertical
+                },
+                {
+                    spacing = dpi(10),
+                    layout = wibox.layout.fixed.vertical,
+                    {
+                        ext_circle_container,
+                        ext_locker_widget,
+                        {
+                            layout = wibox.layout.align.vertical,
+                            expand = 'none',
+                            nil,
+                            {
+                                layout = wibox.layout.align.horizontal,
+                                expand = 'none',
+                                nil,
+                                ext_profile_imagebox,
+                                nil
+                            },
+                            nil
+                        },
+                        layout = wibox.layout.stack
+                    },
+                    {
+                        bg = beautiful.bg_normal,
+                        widget = wibox.container.background,
+                        ext_uname_text
+                    },
+                    ext_caps_text_widget
+                }
+            },
+            nil
+        },
+        nil
+    }
+
     return extended_lockscreen
 end
 
