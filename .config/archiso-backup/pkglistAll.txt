@@ -35,6 +35,7 @@ firefox
 firejail
 fprintd
 fuse2
+fwupd
 gcr
 git
 go
@@ -45,7 +46,11 @@ greetd-tuigreet
 gst-plugin-pipewire
 gst-plugins-good
 gtk-theme-numix-solarized
+icamerasrc-git
 imagemagick
+intel-ipu6-camera-bin
+intel-ipu6-camera-hal-git
+intel-ipu6-dkms-git
 intel-ucode
 iwd
 libev
@@ -132,6 +137,7 @@ ttf-dejavu
 ttf-hack-nerd
 ueberzugpp
 upower
+v4l2-relayd
 vlc
 warpd
 webkit2gtk-4.1

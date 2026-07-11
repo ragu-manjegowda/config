@@ -24,6 +24,7 @@ firefox
 firejail
 fprintd
 fuse2
+fwupd
 gcr
 git
 go

@@ -12,6 +12,10 @@ find-cursor
 goimapnotify-git
 google-chrome
 gtk-theme-numix-solarized
+icamerasrc-git
+intel-ipu6-camera-bin
+intel-ipu6-camera-hal-git
+intel-ipu6-dkms-git
 light
 lua-pam-git
 masterpdfeditor-free
@@ -37,6 +41,7 @@ solarized-colors-iconpack-git
 sync-pacman-hook-git
 teams
 teleport-bin
+v4l2-relayd
 warpd
 xidlehook
 zoom
