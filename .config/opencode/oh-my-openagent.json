@@ -30,10 +30,6 @@
         "timeout_seconds": 30,
         "notify_on_fallback": true
     },
-    "disabled_commands": [
-        "ralph-loop",
-        "ulw-loop"
-    ],
     "sisyphus_agent": {
         "disabled": true,
         "default_builder_enabled": true,
@@ -44,83 +40,83 @@
         "sisyphus": {
             "mode": "subagent",
             "hidden": true,
-            "model": "nvidia-openai/gpt-5.5",
+            "model": "nvidia-openai/gpt-5.6-sol",
             "fallback_models": []
         },
         "hephaestus": {
             "mode": "subagent",
             "hidden": true,
-            "model": "nvidia-openai/gpt-5.5",
+            "model": "nvidia-openai/gpt-5.6-sol",
             "fallback_models": []
         },
         "prometheus": {
             "mode": "subagent",
             "hidden": true,
-            "model": "nvidia-openai/gpt-5.5",
+            "model": "nvidia-openai/gpt-5.6-sol",
             "fallback_models": []
         },
         "atlas": {
             "mode": "subagent",
             "hidden": true,
-            "model": "nvidia-openai/gpt-5.5",
+            "model": "nvidia-openai/gpt-5.6-sol",
             "fallback_models": []
         },
         "oracle": {
             "mode": "subagent",
             "hidden": true,
-            "model": "nvidia-openai/gpt-5.5",
+            "model": "nvidia-openai/gpt-5.6-sol",
             "fallback_models": []
         },
         "metis": {
             "mode": "subagent",
             "hidden": true,
-            "model": "nvidia-openai/gpt-5.5",
+            "model": "nvidia-openai/gpt-5.6-sol",
             "fallback_models": []
         },
         "momus": {
             "mode": "subagent",
             "hidden": true,
-            "model": "nvidia-openai/gpt-5.5",
+            "model": "nvidia-openai/gpt-5.6-sol",
             "fallback_models": []
         },
         "explore": {
             "mode": "subagent",
             "hidden": true,
-            "model": "nvidia-openai/gpt-5.5",
+            "model": "nvidia-openai/gpt-5.6-sol",
             "fallback_models": []
         },
         "librarian": {
             "mode": "subagent",
             "hidden": true,
-            "model": "nvidia-openai/gpt-5.5",
+            "model": "nvidia-openai/gpt-5.6-sol",
             "fallback_models": []
         },
         "multimodal-looker": {
             "mode": "subagent",
             "hidden": true,
-            "model": "nvidia-openai/gpt-5.5",
+            "model": "nvidia-openai/gpt-5.6-sol",
             "fallback_models": []
         },
         "sisyphus-junior": {
             "mode": "subagent",
             "hidden": true,
-            "model": "nvidia-openai/gpt-5.5",
+            "model": "nvidia-openai/gpt-5.6-sol",
             "fallback_models": []
         },
         "OpenCode-Builder": {
             "mode": "subagent",
             "hidden": true,
-            "model": "nvidia-openai/gpt-5.5",
+            "model": "nvidia-openai/gpt-5.6-sol",
             "fallback_models": []
         }
     },
     "categories": {
         "explore": {
-            "model": "nvidia-openai/gpt-5.5",
+            "model": "nvidia-openai/gpt-5.6-sol",
             "fallback_models": []
         },
         "librarian": {
-            "model": "nvidia-openai/gpt-5.5",
+            "model": "nvidia-openai/gpt-5.6-sol",
             "fallback_models": []
         }
     }

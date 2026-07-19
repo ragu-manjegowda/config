@@ -35,3 +35,7 @@ else
     echo "$EXTERNAL_NAME not connected, using $PRIMARY_NAME only"
 fi
 
+if systemctl --user cat lid-brightness-manager.service &>/dev/null; then
+    systemctl --user restart lid-brightness-manager.service ||
+        echo "Warning: failed to restart lid brightness manager" >&2
+fi

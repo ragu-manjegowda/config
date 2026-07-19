@@ -17,11 +17,15 @@ on:
     branches: [ main, master, develop ]
     paths:
       - '.config/awesome/**'
+      - '.config/scripts/lid-brightness-monitor'
+      - '.config/systemd/user/lid-brightness-manager.service'
       - '.github/workflows/awesome-wm-tests.yml'
   pull_request:
     branches: [ main, master, develop ]
     paths:
       - '.config/awesome/**'
+      - '.config/scripts/lid-brightness-monitor'
+      - '.config/systemd/user/lid-brightness-manager.service'
   workflow_dispatch:
 
 env:
@@ -668,7 +672,10 @@ jobs:
                 EXIT_CODE=1
               fi
             fi
-          done < <(find ${{ env.AWESOME_CONFIG_DIR }}/utilities -type f)
+          done < <(
+            find ${{ env.AWESOME_CONFIG_DIR }}/utilities -type f
+            printf '%s\n' .config/scripts/lid-brightness-monitor
+          )
 
           # Also check .sh files
           find ${{ env.AWESOME_CONFIG_DIR }} -name "*.sh" -type f | while read -r script; do
@@ -968,6 +975,11 @@ jobs:
         run: |
           pacman -Syu --noconfirm
           pacman -S --noconfirm lua
+
+      - name: Test lid brightness recovery
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          bash .config/awesome/tests/test_lid_brightness_monitor.sh
 
       - name: Test monitor scripts integration
         run: |

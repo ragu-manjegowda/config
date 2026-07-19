@@ -167,8 +167,9 @@ fi
 echo "Syncing ${WIKI_DIR} to ${REMOTE}"
 rclone sync "${WIKI_DIR}" "${REMOTE}" -vP \
     --exclude 'html_output*/**' \
-    --exclude '.gitignore' \
-    --exclude '.git/**'
+    --exclude '/.gitattributes' \
+    --exclude '/.gitignore' \
+    --exclude '/.git/**'
 
 trim_history_if_needed
 

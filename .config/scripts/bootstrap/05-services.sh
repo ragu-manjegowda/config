@@ -38,3 +38,8 @@ enable_user_service pipewire-pulse
 enable_user_service wireplumber
 enable_user_service noisetorch
 enable_user_service lid-brightness-manager
+
+log_info "User tmpfiles..."
+enable_user_service systemd-tmpfiles-setup.service
+systemd-tmpfiles --user --create
+log_ok "Applied user tmpfiles rules"

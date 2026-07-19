@@ -35,15 +35,9 @@ screen_mgr.migrate_to_external()
 
     echo "✓ Extended display configured"
 
-    # Restart lid brightness manager service now that external monitor is connected
-    echo ""
-    echo "Restarting lid brightness manager..."
-    systemctl --user restart lid-brightness-manager.service
-    echo "✓ Lid brightness manager activated"
 else
     echo "✗ No external monitor detected on $EXTERNAL_NAME"
     echo ""
     echo "Available displays:"
     xrandr | grep " connected"
 fi
-

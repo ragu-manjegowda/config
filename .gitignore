@@ -165,6 +165,7 @@
 /.config/okularrc
 /.config/omni
 /.config/opencode/.npm-cache
+/.config/opencode/logs
 /.config/opencode/opencode.json-e
 /.config/opencode/package-lock.json
 /.config/opencode/tui.json-e
@@ -184,6 +185,7 @@
 /.config/rustup
 /.config/sioyek/extensions/sioyek-dict/target
 /.config/skanpagerc
+/.config/systemd/user/basic.target.wants
 /.config/systemd/user/default.target.wants
 /.config/systemd/user/graphical-session.target.wants
 /.config/systemd/user/pipewire-session-manager.service

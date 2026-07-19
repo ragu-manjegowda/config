@@ -2,15 +2,41 @@
 # Event-based laptop display brightness manager
 # Monitors systemd-logind for lid state changes via D-Bus
 
+LIGHT_BIN="${LID_BRIGHTNESS_LIGHT_BIN:-light}"
+STATE_DIR="${XDG_STATE_HOME:-${HOME}/.local/state}/lid-brightness-manager"
+BRIGHTNESS_CACHE="${LID_BRIGHTNESS_CACHE:-${STATE_DIR}/brightness}"
+LEGACY_CACHE="/tmp/laptop_brightness_${USER}"
+
+restore_brightness() {
+    local cache_file="$BRIGHTNESS_CACHE"
+    local saved_brightness
+
+    if [ ! -s "$cache_file" ] && [ -s "$LEGACY_CACHE" ]; then
+        cache_file="$LEGACY_CACHE"
+    fi
+
+    if [ ! -s "$cache_file" ]; then
+        return
+    fi
+
+    saved_brightness=$(cat "$cache_file")
+    if "$LIGHT_BIN" -S "$saved_brightness" 2>/dev/null; then
+        echo "[$(date '+%H:%M:%S')] Restored brightness to ${saved_brightness}%"
+        rm -f "$BRIGHTNESS_CACHE" "$LEGACY_CACHE"
+    fi
+}
+
+if [ "${1:-}" = "--restore" ]; then
+    restore_brightness
+    exit
+fi
+
 # Source display configuration from AwesomeWM config
 source <("$HOME/.config/awesome/utilities/read-display-config")
 
 # Use the centralized configuration
 EXTERNAL_DISPLAY="$EXTERNAL_NAME"
 PRIMARY_DISPLAY="$PRIMARY_NAME"
-
-# Brightness cache file
-BRIGHTNESS_CACHE="/tmp/laptop_brightness_${USER}"
 
 # Function to check if external monitor is connected
 is_external_connected() {
@@ -24,25 +50,23 @@ get_lid_state() {
 
 # Function to manage brightness based on lid state
 manage_brightness() {
-    local lid_state=$(get_lid_state)
+    local lid_state
+    lid_state=$(get_lid_state)
     
     if [ "$lid_state" = "closed" ] && is_external_connected; then
         # Save current brightness if not already saved
-        if [ ! -f "$BRIGHTNESS_CACHE" ]; then
-            light -G > "$BRIGHTNESS_CACHE" 2>/dev/null
+        if [ ! -s "$BRIGHTNESS_CACHE" ]; then
+            mkdir -p "$(dirname "$BRIGHTNESS_CACHE")"
+            "$LIGHT_BIN" -G > "$BRIGHTNESS_CACHE" 2>/dev/null
             echo "[$(date '+%H:%M:%S')] Lid closed with external monitor - saved brightness: $(cat "$BRIGHTNESS_CACHE")%"
         fi
         
         # Set brightness to 0
-        light -S 0 2>/dev/null
+        "$LIGHT_BIN" -S 0 2>/dev/null
         echo "[$(date '+%H:%M:%S')] Laptop display brightness set to 0"
         
-    elif [ "$lid_state" = "open" ] && [ -f "$BRIGHTNESS_CACHE" ]; then
-        # Restore brightness
-        local saved_brightness=$(cat "$BRIGHTNESS_CACHE")
-        light -S "$saved_brightness" 2>/dev/null
-        echo "[$(date '+%H:%M:%S')] Lid opened - restored brightness to ${saved_brightness}%"
-        rm "$BRIGHTNESS_CACHE"
+    elif [ "$lid_state" = "open" ] || ! is_external_connected; then
+        restore_brightness
     fi
 }
 
@@ -61,4 +85,3 @@ while read -r line; do
     sleep 0.3
     manage_brightness
 done
-
