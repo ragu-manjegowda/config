@@ -1,7 +1,7 @@
-# Interactive Command Policy
+# Tmux Command Policy
 
-When running any command, terminal app, or workflow that may require user interaction, use the existing tmux session named `ragu`.
+Always create a new window in the existing tmux session named `ragu` before sending or running any shell command, terminal application, or command-based workflow. Send the command to that new window and do not reuse an existing window.
 
-This includes commands that may prompt for credentials, passphrases, confirmations, or TTY input, such as GPG authentication for neomutt, `sudo` prompts, interactive installers, terminal UIs, editors, pagers, REPLs, and any long-running process that the user may need to inspect or control.
+This rule applies to every command, including non-interactive and short-lived commands. It also applies to commands that may prompt for credentials, passphrases, confirmations, or TTY input, such as GPG authentication for neomutt, `sudo` prompts, interactive installers, terminal UIs, editors, pagers, REPLs, and long-running processes that the user may need to inspect or control.
 
-Prefer the tmux tooling for these cases and target the `ragu` session explicitly. Do not start a separate tmux session with another name unless the user explicitly asks for it.
+Target the `ragu` session explicitly for every new window. Do not start a separate tmux session or use another session unless the user explicitly asks for it.
