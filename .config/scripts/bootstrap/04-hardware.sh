@@ -16,10 +16,6 @@ log_info "Backlight udev rules..."
 check_copy "${MISC_DIR}/etc/udev/rules.d/90-backlight.rules" \
     /etc/udev/rules.d/90-backlight.rules
 
-log_info "Low battery hibernate udev rule..."
-check_copy "${MISC_DIR}/etc/udev/rules.d/98-discharging.rules" \
-    /etc/udev/rules.d/98-discharging.rules
-
 log_info "Reloading udev rules..."
 sudo udevadm control --reload || log_warn "Failed to reload udev rules"
 
@@ -31,4 +27,11 @@ else
     log_ok "Added user to video group"
 fi
 
-REMINDERS+=("Ensure resume=UUID=... and resume_offset=... are set in rEFInd kernel options for hibernate support")
+printf -v _hibernate_reminder '%s %s %s %s' \
+    'Hibernate swapfile: ensure /swapfile exists, is in /etc/fstab' \
+    'with pri=10, and ~/.config/rEFInd/refind.conf has resume=UUID' \
+    'for the root filesystem plus the swapfile resume_offset before' \
+    'copying rEFInd config to ESP'
+
+REMINDERS+=("$_hibernate_reminder")
+unset _hibernate_reminder
