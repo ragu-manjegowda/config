@@ -295,8 +295,85 @@ select-word-style bash
 
 ###############################################################################
 
+function _set-shell-theme-env () {
+    local mode="$1"
+    local dircolors_path
+    local dircolors_command="dircolors"
+
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        dircolors_command="gdircolors"
+    fi
+
+    case "$mode" in
+        dark)
+            export BAT_THEME="Solarized (dark)"
+            dircolors_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-dark"
+            ;;
+        light)
+            export BAT_THEME="Solarized (light)"
+            dircolors_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-light"
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+
+    eval "$($dircolors_command "$dircolors_path")"
+}
+
+function _get-alacritty-theme () {
+    local config_path="$HOME/.config/alacritty/alacritty.toml"
+
+    awk -F'/' '/solarized/ {
+        gsub(/\[|"|\]|solarized_|.toml/, "")
+        print $(NF)
+    }' "$config_path"
+}
+
+function _run-theme-scripts () {
+    local mode="$1"
+    local script
+    local theme_dir="$HOME/.config/darkman/${mode}-mode.d"
+
+    if [[ ! -d "$theme_dir" ]]; then
+        echo "Directory $theme_dir doesn't exist"
+        return 1
+    fi
+
+    for script in "$theme_dir"/*.sh(N); do
+        "$script" || echo "Warning: theme script failed: $script" >&2
+    done
+}
+
+function _set-linux-theme () {
+    local mode="$1"
+
+    if (( $+commands[darkman] )) && darkman set "$mode"; then
+        return
+    fi
+
+    _run-theme-scripts "$mode"
+}
+
 # function to toggle alacritty theme defined in colors.yml
 function toggle-alacritty-theme () {
+    if [[ "$OSTYPE" == "linux-gnu" ]]; then
+        local mode
+        local target_mode
+
+        mode=$(_get-alacritty-theme) || return
+        if [[ "$mode" == "dark" ]]; then
+            target_mode="light"
+        else
+            target_mode="dark"
+        fi
+
+        _set-linux-theme "$target_mode" || return
+        _set-shell-theme-env "$target_mode"
+        echo "switched from $mode to $target_mode."
+        return
+    fi
+
     if ! test -r ~/.config/alacritty/themes; then
         echo "Directory $HOME/.config/alacritty/themes doesn't exist"
         return
@@ -441,103 +518,10 @@ function toggle-gtk-theme () {
     echo "switched away from $mode."
 }
 
-# Set BAT theme for FZF on linux (for Mac it is set below)
+# Set shell-local theme variables from the current Alacritty theme.
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
-    if ! test -r ~/.config/alacritty/themes; then
-        echo "Directory $HOME/.config/alacritty/themes doesn't exist"
-    else
-        config_path="$HOME/.config/alacritty/alacritty.toml"
-        git_config_path="$HOME/.config/git/config"
-        broot_config_path="$HOME/.config/broot/conf.hjson"
-        vim_colors_path="$HOME/.config/nvim/lua/user/colorscheme.lua"
-        tmux_config_path="$HOME/.config/tmux/tmux.conf"
-        zathura_config_path="$HOME/.config/zathura/zathurarc"
-        termshark_config_path="$HOME/.config/termshark/termshark.toml"
-        wiki_script_path="$HOME/.local/bin/render-wiki.sh"
-        ranger_colors_path="$HOME/.config/ranger/colorschemes/neosolarized.py"
-        opencode_config_path="$HOME/.config/opencode/opencode.json"
-        opencode_tui_config_path="$HOME/.config/opencode/tui.json"
-        yazi_config_path="$HOME/.config/yazi/theme.toml"
-        rofi_config_paths=(
-            "$HOME/.config/awesome/configuration/rofi/appmenu/rofi.rasi"
-            "$HOME/.config/awesome/configuration/rofi/calc/rofi.rasi"
-            "$HOME/.config/awesome/configuration/rofi/emojimenu/rofi.rasi"
-            "$HOME/.config/awesome/configuration/rofi/runmenu/rofi.rasi"
-            "$HOME/.config/awesome/configuration/rofi/time/rofi.rasi"
-            "$HOME/.config/awesome/configuration/rofi/help/rofi.rasi"
-        )
-
-        mode=$(awk -F'/' '/solarized/ {gsub(/\[|"|\]|solarized_|.toml/,""); print $(NF)}' $config_path)
-        if [[ "$mode" == "dark" ]]; then
-            export BAT_THEME="Solarized (dark)"
-
-            sed -i -e "s#(light)#(dark)#g" $git_config_path
-
-            sed -i -e "s#background=light#background=dark#g" $vim_colors_path
-
-            sed -i -e "s#solarized-light#solarized-dark#g" $tmux_config_path
-
-            broot_config_dark_path="$HOME/.config/broot/conf-dark.hjson"
-            cp $broot_config_dark_path $broot_config_path
-
-            zathura_config_dark_path="$HOME/.config/zathura/zathurarc-dark"
-            cp $zathura_config_dark_path $zathura_config_path
-
-            sed -i -e "s#^dark-mode = false#dark-mode = true#g" $termshark_config_path
-
-            sed -i -e "s#solarized-light#solarized-dark#g" $wiki_script_path
-            sed -i -e "s#favicon-light#favicon-dark#g" $wiki_script_path
-
-            sed -i -e "s#solarized_light#solarized_dark#g" $ranger_colors_path
-
-            sed -i -e "s#solarized-light#solarized-dark#g" $opencode_config_path
-            sed -i -e "s#solarized-light#solarized-dark#g" $opencode_tui_config_path
-
-            yazi_theme_dark_path="$HOME/.config/yazi/themes/solarized_dark.toml"
-            cp $yazi_theme_dark_path $yazi_config_path
-
-            for rofi_config_path in $rofi_config_paths; do
-                sed -i -e "s#-light#-dark#g" $rofi_config_path
-            done
-
-            dircolors_dark_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-dark"
-            eval `dircolors ${dircolors_dark_path}`
-        else
-            export BAT_THEME="Solarized (light)"
-
-            sed -i -e "s#(dark)#(light)#g" $git_config_path
-
-            sed -i -e "s#background=dark#background=light#g" $vim_colors_path
-
-            sed -i -e "s#solarized-dark#solarized-light#g" $tmux_config_path
-
-            broot_config_light_path="$HOME/.config/broot/conf-light.hjson"
-            cp $broot_config_light_path $broot_config_path
-
-            zathura_config_light_path="$HOME/.config/zathura/zathurarc-light"
-            cp $zathura_config_light_path $zathura_config_path
-
-            sed -i -e "s#^dark-mode = true#dark-mode = false#g" $termshark_config_path
-
-            sed -i -e "s#solarized-dark#solarized-light#g" $wiki_script_path
-            sed -i -e "s#favicon-dark#favicon-light#g" $wiki_script_path
-
-            sed -i -e "s#solarized_dark#solarized_light#g" $ranger_colors_path
-
-            sed -i -e "s#solarized-dark#solarized-light#g" $opencode_config_path
-            sed -i -e "s#solarized-dark#solarized-light#g" $opencode_tui_config_path
-
-            yazi_theme_light_path="$HOME/.config/yazi/themes/solarized_light.toml"
-            cp $yazi_theme_light_path $yazi_config_path
-
-            for rofi_config_path in $rofi_config_paths; do
-                sed -i -e "s#-dark#-light#g" $rofi_config_path
-            done
-
-            dircolors_light_path="${ZSH_CUSTOM}/themes/dircolors-solarized/dircolors.ansi-light"
-            eval `dircolors ${dircolors_light_path}`
-        fi
-    fi
+    mode=$(_get-alacritty-theme)
+    _set-shell-theme-env "$mode"
 fi
 
 # Set Alacritty theme (dark/light) on Mac
