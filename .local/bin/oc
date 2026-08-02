@@ -359,6 +359,8 @@ launch_opencode() {
             "$config_home/nvim"
             "$data_home/nvim"
             "$cache_home/nvim"
+            "$cache_home/ms-playwright"
+            "$cache_home/ms-playwright-mcp"
             "$HOME/.config/npm"
             "$config_home/bundler"
             "$HOME/.config/pnpm"
@@ -436,11 +438,19 @@ launch_opencode() {
             --env="BUNDLE_USER_HOME=$data_home/bundler"
             --env="BUNDLE_USER_CACHE=$cache_home/bundler"
             --env="BUNDLE_USER_CONFIG=$config_home/bundler/config"
+            '--ignore=read-only ${HOME}/.rustup'
+            '--ignore=read-only ${HOME}/.local/lib'
+            '--ignore=read-only ${HOME}/.config/nvim'
+            '--ignore=read-only ${HOME}/.local/share/nvim'
+            '--ignore=read-only ${HOME}/.local/state/nvim'
+            --noblacklist="$HOME/.rustup"
             --noblacklist="$config_home/git"
             --noblacklist="$config_home/nvim"
             --noblacklist="$data_home/nvim"
             --noblacklist="$state_home/nvim"
             --noblacklist="$cache_home/nvim"
+            --noblacklist="$cache_home/ms-playwright"
+            --noblacklist="$cache_home/ms-playwright-mcp"
         )
 
         if [ "${OC_SANDBOX_DOCKER:-auto}" != "0" ] && command -v docker >/dev/null 2>&1 && timeout 2 docker info >/dev/null 2>&1; then

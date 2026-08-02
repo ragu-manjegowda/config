@@ -40,6 +40,9 @@
 !/.local/share/applications/nvim-usercreated.desktop
 !/.local/share/applications/sioyek.desktop
 
+/.omo/*
+!/.omo/omo.jsonc
+
 ################################################################################
 ################## Regular ignores #############################################
 ################################################################################
@@ -285,7 +288,6 @@
 /.nv
 /.nvcccache
 /.nx
-/.omo
 /.opencode
 /.p4enviro
 /.p4qt

@@ -5,7 +5,6 @@ awesome-luajit-git
 awmtt
 calibre-bin
 check-broken-packages-pacman-hook-git
-codex-app-unofficial
 cppreference
 cyrus-sasl-xoauth2-git
 find-cursor
@@ -31,7 +30,6 @@ pam-fprint-grosshack
 paru
 pavucontrol-gtk3
 picom-git
-pinta
 prisma-access-browser-bin
 rdrview-git
 reflector-pacman-hook-git

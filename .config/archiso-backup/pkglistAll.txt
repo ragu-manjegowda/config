@@ -19,7 +19,6 @@ bun
 ca-certificates-mozilla
 calibre-bin
 check-broken-packages-pacman-hook-git
-codex-app-unofficial
 colord
 cppreference
 cups

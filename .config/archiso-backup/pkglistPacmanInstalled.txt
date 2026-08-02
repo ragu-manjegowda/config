@@ -68,6 +68,7 @@ nvidia-open-dkms
 openrazer-daemon
 openssh
 perl-cgi
+pinta
 pipewire-alsa
 pipewire-pulse
 playerctl
