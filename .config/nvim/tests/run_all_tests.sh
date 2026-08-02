@@ -76,8 +76,8 @@ if [ -n "$1" ] && [ "$1" != "--all" ]; then
     fi
     echo "Running specific test: $TEST_FILE"
     cd "$NVIM_CONFIG_DIR"
-    nvim --headless -u tests/minimal_init.lua \
-        -c "PlenaryBustedFile $TEST_FILE"
+    NVIM_TEST_FILE="$TEST_FILE" nvim --headless -u tests/minimal_init.lua \
+        -c "lua require('plenary.busted').run(vim.env.NVIM_TEST_FILE)"
     exit_code=$?
 else
     # Check for blacklist and --all flag

@@ -234,11 +234,9 @@ jobs:
           TEST_FILE: ${{ matrix.test.file }}
         run: |
           set -o pipefail
-          cd ~/.config/nvim/tests
+          cd ~/.config/nvim
           echo "Running $TEST_FILE..."
-          nvim --headless \
-            -u minimal_init.lua \
-            -c "PlenaryBustedFile $TEST_FILE" \
+          ./tests/run_all_tests.sh "$TEST_FILE" \
             2>&1 | tee "/tmp/nvim_test_${TEST_FILE}.log"
 
       - name: Upload test logs (on failure)
