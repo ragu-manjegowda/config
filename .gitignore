@@ -36,6 +36,7 @@
 /.local/share/*
 !/.local/share/applications
 /.local/share/applications/*
+!/.local/share/applications/Alacritty.desktop
 !/.local/share/applications/codex-app-linux.desktop
 !/.local/share/applications/nvim-usercreated.desktop
 !/.local/share/applications/sioyek.desktop
