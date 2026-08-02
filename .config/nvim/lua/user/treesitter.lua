@@ -70,12 +70,23 @@ M.config = function()
 
     local cfg_ok, nts_cfg = pcall(require, "nvim-treesitter.config")
     if cfg_ok then
-        local installed = nts_cfg.get_installed() or {}
+        local installed = nts_cfg.get_installed("parsers") or {}
         local to_install = vim.iter(ensure_installed)
-            :filter(function(p) return not vim.tbl_contains(installed, p) end)
+            :filter(function(p)
+                if vim.tbl_contains(installed, p) then
+                    return false
+                end
+                local pattern = "parser/" .. p .. ".*"
+                return #vim.api.nvim_get_runtime_file(pattern, true) == 0
+            end)
             :totable()
         if #to_install > 0 then
-            pcall(nts.install, to_install)
+            if vim.env.CI then
+                assert(nts.install(to_install):wait(300000),
+                    "Failed to install required Tree-sitter parsers")
+            else
+                pcall(nts.install, to_install)
+            end
         end
     end
 

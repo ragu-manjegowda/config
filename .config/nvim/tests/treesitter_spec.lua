@@ -21,9 +21,8 @@ describe("Treesitter Config", function()
 
     describe("Treesitter Setup (config())", function()
         it("should not error when called", function()
-            -- config() may return early if nvim-treesitter not available
             assert.has_no_errors(function()
-                pcall(treesitter_mod.config)
+                treesitter_mod.config()
             end)
         end)
     end)

@@ -263,7 +263,7 @@ function M.clangd_setup()
         -- "--std=c11",
     }
 
-    if not vim.uv.os_uname().sysname == "Darwin" then
+    if vim.uv.os_uname().sysname == "Linux" then
         -- Linux specific exclude this on Mac
         table.insert(clangd_cmd, "--enable-config")
         table.insert(clangd_cmd, "--malloc-trim")
@@ -418,7 +418,7 @@ function M.enable_with_vim_lsp()
     }
 
     for server, config in pairs(servers) do
-        vim.lsp.config[server] = config
+        vim.lsp.config(server, config)
         vim.lsp.enable(server)
     end
 end

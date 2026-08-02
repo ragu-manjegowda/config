@@ -247,7 +247,7 @@ function M.setup()
                 -- Construct command to open image in Preview
                 local command
 
-                if not vim.uv.os_uname().sysname == "Darwin" then
+                if vim.uv.os_uname().sysname == "Darwin" then
                     command = "open "
                 else
                     command = "xdg-open "
@@ -257,9 +257,9 @@ function M.setup()
                 command = command .. vim.fn.shellescape(absolute_image_path)
 
                 -- Execute the command
-                local success = os.execute(command)
+                local exit_code = os.execute(command)
 
-                if success then
+                if exit_code == 0 then
                     print("Opened image: " .. absolute_image_path)
                 else
                     print("Failed to open image: " .. absolute_image_path)

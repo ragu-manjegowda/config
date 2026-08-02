@@ -31,28 +31,36 @@ vim.opt.timeoutlen = 100
 vim.opt.updatetime = 100
 
 -- Add nvim config to runtime path
-vim.opt.runtimepath:prepend(vim.fn.expand("~/.config/nvim"))
+local nvim_config = vim.fn.stdpath("config")
+vim.opt.runtimepath:prepend(nvim_config)
 
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 vim.opt.runtimepath:prepend(lazypath)
 
--- Install plenary.nvim if not present (for CI)
-local plenary_path = vim.fn.stdpath("data") .. "/site/pack/vendor/start/plenary.nvim"
+local lazy_plenary = vim.fn.stdpath("data") .. "/lazy/plenary.nvim"
+local vendor_plenary = vim.fn.stdpath("data") .. "/site/pack/vendor/start/plenary.nvim"
+local plenary_path = lazy_plenary
+if vim.fn.isdirectory(lazy_plenary) == 0 then
+    plenary_path = vendor_plenary
+end
 if vim.fn.isdirectory(plenary_path) == 0 then
     print("Installing plenary.nvim for testing...")
-    vim.fn.system({
+    vim.fn.mkdir(vim.fs.dirname(vendor_plenary), "p")
+    local output = vim.fn.system({
         "git",
         "clone",
         "--depth=1",
         "https://github.com/nvim-lua/plenary.nvim",
-        plenary_path
+        vendor_plenary
     })
+    if vim.v.shell_error ~= 0 or vim.fn.isdirectory(vendor_plenary) == 0 then
+        error("Failed to install plenary.nvim: " .. output)
+    end
 end
 vim.opt.runtimepath:prepend(plenary_path)
 
 -- Set up package path for user modules and test helpers
-local nvim_config = vim.fn.expand("~/.config/nvim")
 package.path = nvim_config .. "/?.lua;" ..
     nvim_config .. "/?/init.lua;" ..
     nvim_config .. "/lua/?.lua;" ..

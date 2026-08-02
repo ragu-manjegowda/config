@@ -15,6 +15,7 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 NVIM_CONFIG_DIR="$(dirname "$SCRIPT_DIR")"
 BLACKLIST_FILE="$SCRIPT_DIR/.testignore"
+NVIM_DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/nvim"
 
 # Colors
 RED='\033[0;31m'
@@ -41,8 +42,8 @@ echo ""
 
 # Check if plenary.nvim is available in lazy or vendor path
 check_plenary() {
-    local lazy_plenary="$HOME/.local/share/nvim/lazy/plenary.nvim"
-    local vendor_plenary="$HOME/.local/share/nvim/site/pack/vendor/start/plenary.nvim"
+    local lazy_plenary="$NVIM_DATA_DIR/lazy/plenary.nvim"
+    local vendor_plenary="$NVIM_DATA_DIR/site/pack/vendor/start/plenary.nvim"
 
     if [ -d "$lazy_plenary" ] || [ -d "$vendor_plenary" ]; then
         return 0
@@ -53,7 +54,7 @@ check_plenary() {
 echo "Checking dependencies..."
 if ! check_plenary; then
     echo -e "${YELLOW}⚠ plenary.nvim not found, installing...${NC}"
-    PLENARY_PATH="$HOME/.local/share/nvim/site/pack/vendor/start/plenary.nvim"
+    PLENARY_PATH="$NVIM_DATA_DIR/site/pack/vendor/start/plenary.nvim"
     mkdir -p "$(dirname "$PLENARY_PATH")"
     git clone --depth=1 https://github.com/nvim-lua/plenary.nvim "$PLENARY_PATH"
     echo -e "${GREEN}✓ plenary.nvim installed${NC}"

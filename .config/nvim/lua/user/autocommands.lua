@@ -218,7 +218,7 @@ function M.set_autocommands_using_lua()
         { "TextYankPost" },
         {
             callback = function()
-                vim.highlight.on_yank { timeout = 500 }
+                vim.hl.on_yank { timeout = 500 }
             end,
             desc     = "Highlight yanks",
             group    = "highlight_yanks",

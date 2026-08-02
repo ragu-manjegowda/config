@@ -16,6 +16,13 @@ on:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
 jobs:
   # ============================================================================
   # SETUP - Runs once, discovers tests, creates artifact for all test jobs
@@ -40,11 +47,12 @@ jobs:
       - name: Install system dependencies
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm git neovim base-devel python tar nodejs npm jq
+          pacman -S --noconfirm git neovim tree-sitter-cli base-devel python tar nodejs npm jq
 
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
+          persist-credentials: false
           submodules: recursive
 
       - name: Discover test files
@@ -81,10 +89,14 @@ jobs:
             echo ""
 
             for test_file in *_spec.lua; do
+              if [[ ! "$test_file" =~ ^[A-Za-z0-9_.-]+$ ]]; then
+                echo "Invalid test filename: $test_file" >&2
+                exit 1
+              fi
               # Skip comments and empty lines in blacklist check
               if ! grep -qxF "$test_file" "$BLACKLIST_FILE"; then
                 display_name=$(get_display_name "$test_file")
-                TEST_ENTRIES+=("{\"file\":\"$test_file\",\"name\":\"$display_name\"}")
+                TEST_ENTRIES+=("$(jq -cn --arg file "$test_file" --arg name "$display_name" '{file: $file, name: $name}')")
                 echo "✓ Including: $test_file ($display_name)"
               else
                 echo "✗ Excluding: $test_file"
@@ -93,8 +105,12 @@ jobs:
           else
             echo "No blacklist file found, including all tests"
             for test_file in *_spec.lua; do
+              if [[ ! "$test_file" =~ ^[A-Za-z0-9_.-]+$ ]]; then
+                echo "Invalid test filename: $test_file" >&2
+                exit 1
+              fi
               display_name=$(get_display_name "$test_file")
-              TEST_ENTRIES+=("{\"file\":\"$test_file\",\"name\":\"$display_name\"}")
+              TEST_ENTRIES+=("$(jq -cn --arg file "$test_file" --arg name "$display_name" '{file: $file, name: $name}')")
               echo "✓ Including: $test_file ($display_name)"
             done
           fi
@@ -117,12 +133,6 @@ jobs:
           # Verify pynvim is importable
           ~/.local/share/venv/bin/python -c "import pynvim; print('pynvim installed:', pynvim.__file__)"
 
-      - name: Install test dependencies (plenary.nvim)
-        run: |
-          PLENARY_PATH="$HOME/.local/share/nvim/site/pack/vendor/start/plenary.nvim"
-          mkdir -p "$(dirname "$PLENARY_PATH")"
-          git clone --depth=1 https://github.com/nvim-lua/plenary.nvim "$PLENARY_PATH"
-
       - name: Setup Neovim config
         run: |
           mkdir -p ~/.config
@@ -141,33 +151,24 @@ jobs:
           export TMPDIR=/tmp
 
           echo "Installing plugins with Lazy.nvim..."
-          # First install, then restore to lock file versions for compatibility
-          nvim --headless "+Lazy! install" +qa 2>&1 || true
-          nvim --headless "+Lazy! restore" +qa 2>&1 || true
+          nvim --headless "+Lazy! restore" +qa
 
-          # Verify textobjects plugin can load (needs configs.lua)
-          if [ -f ~/.local/share/nvim/lazy/nvim-treesitter/lua/nvim-treesitter/configs.lua ]; then
+          if [ -f ~/.local/share/nvim/lazy/nvim-treesitter/lua/nvim-treesitter/config.lua ]; then
             echo "✓ nvim-treesitter API compatible"
           else
-            echo "⚠ nvim-treesitter new API - textobjects may not work"
+            echo "nvim-treesitter installation is incomplete" >&2
+            exit 1
           fi
           echo "Plugins installed successfully"
 
-      - name: Install Treesitter parsers
-        timeout-minutes: 5
+      - name: Install required Treesitter parsers
+        timeout-minutes: 10
         run: |
-          # Set TMPDIR to a writable location
           export TMPDIR=/tmp
 
-          # Only install parsers if not already present
-          for parser in lua python; do
-            if find ~/.local/share/nvim -name "${parser}.so" -path "*parser*" 2>/dev/null | grep -q .; then
-              echo "✓ ${parser} parser already installed"
-            else
-              echo "Installing ${parser} parser..."
-              nvim --headless -c "TSInstallSync! ${parser}" -c "qa!" || true
-            fi
-          done
+          nvim --headless -u ~/.config/nvim/tests/minimal_init.lua \
+            -c "lua local ok, err = pcall(require('user.treesitter').config); if not ok then print(err); vim.cmd('cquit 1') end" \
+            -c "qa!"
 
           echo "=== Installed parsers ==="
           find ~/.local/share/nvim -name "*.so" -path "*parser*" 2>/dev/null | head -10 || echo "No parsers found"
@@ -177,9 +178,8 @@ jobs:
           # Ensure directories exist
           mkdir -p ~/.cache/nvim
           # Bundle nvim data, config, and venv (pynvim) for test jobs
-          # Use --warning=no-file-changed to handle files modified during tar (treesitter compiling)
-          tar --warning=no-file-changed -czf /tmp/nvim-setup.tar.gz \
-            -C $HOME .local/share/nvim .local/share/venv .local/bin .config/nvim .cache/nvim || true
+          tar -czf /tmp/nvim-setup.tar.gz \
+            -C $HOME .local/share/nvim .local/share/venv .local/bin .config/nvim .cache/nvim
           ls -lh /tmp/nvim-setup.tar.gz
 
       - name: Upload setup artifact
@@ -209,7 +209,7 @@ jobs:
           pacman-key --init
           pacman-key --populate archlinux
           pacman -Syu --noconfirm
-          pacman -S --noconfirm neovim tar git python
+          pacman -S --noconfirm neovim tree-sitter-cli tar git python
 
       - name: Download setup artifact
         uses: actions/download-artifact@v7
@@ -230,28 +230,16 @@ jobs:
           ~/.local/share/venv/bin/python -c "import pynvim; print('pynvim available')" || echo "pynvim not found"
 
       - name: Run test - ${{ matrix.test.name }}
+        env:
+          TEST_FILE: ${{ matrix.test.file }}
         run: |
+          set -o pipefail
           cd ~/.config/nvim/tests
-          echo "Running ${{ matrix.test.file }}..."
+          echo "Running $TEST_FILE..."
           nvim --headless \
             -u minimal_init.lua \
-            -c "lua require('plenary.busted').run('${{ matrix.test.file }}')" \
-            -c "qa!" \
-            2>&1 | tee "/tmp/nvim_test_${{ matrix.test.file }}.log"
-
-          # Check for failures
-          failed_count=$(grep "Failed" "/tmp/nvim_test_${{ matrix.test.file }}.log" | sed 's/\x1b\[[0-9;]*m//g' | grep -oE '[0-9]+' | tail -1)
-          error_count=$(grep "Errors" "/tmp/nvim_test_${{ matrix.test.file }}.log" | sed 's/\x1b\[[0-9;]*m//g' | grep -oE '[0-9]+' | tail -1)
-
-          failed_count=${failed_count:-0}
-          error_count=${error_count:-0}
-
-          if [ "$failed_count" != "0" ] 2>/dev/null || [ "$error_count" != "0" ] 2>/dev/null; then
-            echo "❌ Test failed (Failed: $failed_count, Errors: $error_count)"
-            exit 1
-          else
-            echo "✅ Test passed"
-          fi
+            -c "PlenaryBustedFile $TEST_FILE" \
+            2>&1 | tee "/tmp/nvim_test_${TEST_FILE}.log"
 
       - name: Upload test logs (on failure)
         if: failure()
@@ -280,6 +268,8 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@v5
+        with:
+          persist-credentials: false
 
       - name: Run luacheck
         run: |

@@ -8,15 +8,26 @@
 vim.notify = function(_, _, _) end
 describe("LSP Config", function()
     local lspconfig_mod
+    local original_lspconfig
 
     before_each(function()
-        -- Module may return early if lspconfig not found
+        original_lspconfig = package.loaded["lspconfig"]
+        package.loaded["lspconfig"] = {
+            util = {
+                default_config = {
+                    capabilities = {},
+                },
+            },
+        }
+        package.loaded["user.lspconfig"] = nil
         local ok, mod = pcall(require, "user.lspconfig")
-        if ok and type(mod) == "table" then
-            lspconfig_mod = mod
-        else
-            lspconfig_mod = nil
-        end
+        assert.is_true(ok, tostring(mod))
+        assert.is_table(mod)
+        lspconfig_mod = mod
+    end)
+
+    after_each(function()
+        package.loaded["lspconfig"] = original_lspconfig
     end)
 
     describe("Module Interface", function()
@@ -142,6 +153,16 @@ describe("LSP Config", function()
     end)
 
     describe("clangd_setup()", function()
+        local original_os_uname
+
+        before_each(function()
+            original_os_uname = vim.uv.os_uname
+        end)
+
+        after_each(function()
+            vim.uv.os_uname = original_os_uname
+        end)
+
         it("should return table with cmd when loaded", function()
             if lspconfig_mod and lspconfig_mod.clangd_setup then
                 local config = lspconfig_mod.clangd_setup()
@@ -181,6 +202,28 @@ describe("LSP Config", function()
                 local has_header_never = vim.tbl_contains(config.cmd, "--header-insertion=never")
                 assert.is_true(has_header_never,
                     "clangd should have --header-insertion=never per user config")
+            end
+        end)
+
+        it("should include Linux-only flags on Linux", function()
+            if lspconfig_mod and lspconfig_mod.clangd_setup then
+                vim.uv.os_uname = function()
+                    return { sysname = "Linux" }
+                end
+                local config = lspconfig_mod.clangd_setup()
+                assert.is_true(vim.tbl_contains(config.cmd, "--enable-config"))
+                assert.is_true(vim.tbl_contains(config.cmd, "--malloc-trim"))
+            end
+        end)
+
+        it("should omit Linux-only flags on macOS", function()
+            if lspconfig_mod and lspconfig_mod.clangd_setup then
+                vim.uv.os_uname = function()
+                    return { sysname = "Darwin" }
+                end
+                local config = lspconfig_mod.clangd_setup()
+                assert.is_false(vim.tbl_contains(config.cmd, "--enable-config"))
+                assert.is_false(vim.tbl_contains(config.cmd, "--malloc-trim"))
             end
         end)
     end)
