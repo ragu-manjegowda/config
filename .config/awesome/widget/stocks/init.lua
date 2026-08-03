@@ -64,6 +64,7 @@ local stock_list_layout = wibox.widget {
 
 -- Store stock card widgets for updating
 local stock_cards = {}
+local stocks_updating = false
 
 -- Create a single stock card widget
 local function create_stock_card(symbol)
@@ -321,6 +322,19 @@ local set_refreshing_state = function()
 end
 
 local update_stocks = function(show_refreshing)
+    if stocks_updating or #stocks_symbols == 0 then
+        return
+    end
+
+    stocks_updating = true
+    local pending = #stocks_symbols
+    local function finish_update()
+        pending = pending - 1
+        if pending == 0 then
+            stocks_updating = false
+        end
+    end
+
     if show_refreshing then
         set_refreshing_state()
     end
@@ -332,7 +346,10 @@ local update_stocks = function(show_refreshing)
             cmd,
             function(stdout, stderr)
                 local widget_set = stock_cards[i]
-                if not widget_set then return end
+                if not widget_set then
+                    finish_update()
+                    return
+                end
 
                 if not stdout or stdout == "" then
                     widget_set.price_widget:set_text("Error")
@@ -340,6 +357,7 @@ local update_stocks = function(show_refreshing)
                         '<span foreground="' ..
                         beautiful.colors.red .. '">' ..
                         (stderr or "Unknown error") .. '</span>')
+                    finish_update()
                     return
                 end
 
@@ -351,6 +369,7 @@ local update_stocks = function(show_refreshing)
                         '<span foreground="' ..
                         beautiful.colors.red .. '">' ..
                         (data and data.error or "Parse failed") .. '</span>')
+                    finish_update()
                     return
                 end
 
@@ -398,25 +417,33 @@ local update_stocks = function(show_refreshing)
                     '<span foreground="' ..
                     beautiful.fg_normal .. '">' .. status ..
                     extended_info .. '</span>')
+                finish_update()
             end
         )
     end
 end
 
--- Initial update
-gears.timer.delayed_call(function()
-    update_stocks()
-    update_scrollbar()
-end)
-
 -- Update timer
-gears.timer {
+local stocks_timer = gears.timer {
     timeout = update_interval,
-    autostart = true,
     callback = function()
         update_stocks()
     end
 }
+
+local stocks_initialized = false
+awesome.connect_signal('info_center::visibility', function(visible)
+    if visible then
+        if not stocks_initialized then
+            stocks_initialized = true
+            update_scrollbar()
+        end
+        update_stocks()
+        stocks_timer:start()
+    else
+        stocks_timer:stop()
+    end
+end)
 
 -- Refresh button click handler
 refresh_button:buttons(

@@ -2,7 +2,6 @@ local wibox = require('wibox')
 local gears = require('gears')
 local awful = require('awful')
 local beautiful = require('beautiful')
-local watch = awful.widget.watch
 local dpi = beautiful.xresources.apply_dpi
 local icons = require('theme.icons')
 
@@ -56,16 +55,37 @@ local slider = wibox.widget {
     layout = wibox.layout.align.vertical
 }
 
-watch(
-    'bash -c "free | grep -z Mem.*Swap.*"',
-    10,
-    function(_, stdout)
-        local total, used, _, _, _, _, _, _, _ =
-            stdout:match('(%d+)%s*(%d+)%s*(%d+)%s*(%d+)%s*(%d+)%s*(%d+)%s*Swap:%s*(%d+)%s*(%d+)%s*(%d+)')
-        slider.ram_usage:set_value(used / total * 100)
-        collectgarbage('collect')
+local function update_ram()
+    local meminfo = io.open('/proc/meminfo', 'r')
+    if not meminfo then
+        return
     end
-)
+
+    local values = {}
+    for line in meminfo:lines() do
+        local key, value = line:match('^(%w+):%s+(%d+)')
+        if key then
+            values[key] = tonumber(value)
+        end
+    end
+    meminfo:close()
+
+    if values.MemTotal and values.MemAvailable then
+        slider.ram_usage:set_value(
+            (values.MemTotal - values.MemAvailable) / values.MemTotal * 100
+        )
+    end
+end
+
+local ram_timer = gears.timer { timeout = 10, callback = update_ram }
+awesome.connect_signal('control_center::monitor_visibility', function(visible)
+    if visible then
+        update_ram()
+        ram_timer:start()
+    else
+        ram_timer:stop()
+    end
+end)
 
 local ram_meter = wibox.widget {
     layout = wibox.layout.fixed.vertical,

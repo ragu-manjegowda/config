@@ -3,11 +3,6 @@
 	url = https://github.com/Aire-One/awesome-battery_widget.git
 	update = rebase
 	branch = master
-[submodule ".config/awesome/library/bling"]
-	path = .config/awesome/library/bling
-	url = https://github.com/BlingCorp/bling.git
-	update = rebase
-	branch = master
 [submodule ".config/awesome/library/revelation"]
 	path = .config/awesome/library/revelation
 	url = https://github.com/guotsuan/awesome-revelation

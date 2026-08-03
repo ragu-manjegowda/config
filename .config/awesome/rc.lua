@@ -41,7 +41,9 @@ awful.util.shell = 'sh'
 -- ░░█░░█▀█░█▀▀░█░█░█▀▀
 -- ░░▀░░▀░▀░▀▀▀░▀░▀░▀▀▀
 
-beautiful.init(require('theme'))
+local active_theme = require('theme')
+beautiful.init(active_theme)
+gears.table.crush(beautiful, active_theme, true)
 revelation.init()
 
 -- ░█░░░█▀█░█░█░█▀█░█░█░▀█▀
@@ -104,17 +106,6 @@ screen.connect_signal(
 -- ██ █▀▀█ ▀▀ █ ▀▀▄█ ▄▄▀█ ▀▀ █ █▄▀█ ▄▄████ ████ ██ █ ██ ██ ▄▄█ █▀██ ██ ██ █ ▀▀▄
 -- ██ ▀▀▄█▄██▄█▄█▄▄█▄▄▄▄█▄██▄█▄▄▄▄█▄▄▄████ ▀▀▄██▄▄██▄▄█▄▄█▄▄▄██▄███▄███▄▄██▄█▄▄
 -- ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
-
----@diagnostic disable-next-line: param-type-mismatch
-collectgarbage("setpause", 160)
----@diagnostic disable-next-line: param-type-mismatch
-collectgarbage("setstepmul", 400)
-
-gears.timer.start_new(10, function()
-    collectgarbage("step", 20000)
-    return true
-end)
-
 
 -- ______          _                   _____
 -- | ___ \        | |                 |_   _|

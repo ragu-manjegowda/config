@@ -4,7 +4,7 @@ local beautiful = require('beautiful')
 local filesystem = gears.filesystem
 local dpi = beautiful.xresources.apply_dpi
 
-local theme_dir = filesystem.get_configuration_dir() .. '/theme'
+local theme_dir = filesystem.get_configuration_dir() .. 'theme'
 local titlebar_theme = 'stoplight'
 local titlebar_icon_path = theme_dir .. '/icons/titlebar/' .. titlebar_theme .. '/'
 local tip = titlebar_icon_path
@@ -60,7 +60,7 @@ local awesome_overrides = function(theme)
     theme.icons = theme_dir .. '/icons/'
 
     -- Default wallpaper path
-    theme.wallpaper = theme.dir .. '/wallpapers/morning-wallpaper.jpg'
+    theme.wallpaper = theme.dir .. '/wallpapers/am_08.jpg'
 
     -- Re-export font functions after theme merge (in case they were overwritten)
     theme.font_regular = font_regular

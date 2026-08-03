@@ -2,7 +2,6 @@ local wibox = require('wibox')
 local gears = require('gears')
 local awful = require('awful')
 local beautiful = require('beautiful')
-local watch = awful.widget.watch
 local dpi = beautiful.xresources.apply_dpi
 local icons = require('theme.icons')
 
@@ -56,31 +55,51 @@ local slider = wibox.widget {
     layout = wibox.layout.align.vertical
 }
 
-local total_prev = 0
-local idle_prev = 0
+local total_prev
+local idle_prev
 
-watch(
-    [[bash -c "
-	cat /proc/stat | grep '^cpu '
-	"]],
-    10,
-    function(_, stdout)
+local function update_cpu()
+    local stat = io.open('/proc/stat', 'r')
+    if not stat then
+        return
+    end
+
+    local line = stat:read('*l')
+    stat:close()
+    if line then
         local user, nice, system, idle, iowait, irq, softirq, steal, _, _ =
-            stdout:match('(%d+)%s(%d+)%s(%d+)%s(%d+)%s(%d+)%s(%d+)%s(%d+)%s(%d+)%s(%d+)%s(%d+)%s')
+            line:match('cpu%s+(%d+)%s+(%d+)%s+(%d+)%s+(%d+)%s+(%d+)%s+(%d+)%s+(%d+)%s+(%d+)%s+(%d+)%s+(%d+)')
+
+        if not user then
+            return
+        end
 
         local total = user + nice + system + idle + iowait + irq + softirq + steal
 
-        local diff_idle = idle - idle_prev
-        local diff_total = total - total_prev
-        local diff_usage = (1000 * (diff_total - diff_idle) / diff_total + 5) / 10
-
-        slider.cpu_usage:set_value(diff_usage)
+        if total_prev then
+            local diff_idle = idle - idle_prev
+            local diff_total = total - total_prev
+            if diff_total > 0 then
+                slider.cpu_usage:set_value(100 * (diff_total - diff_idle) / diff_total)
+            end
+        end
 
         total_prev = total
         idle_prev = idle
-        collectgarbage('collect')
     end
-)
+end
+
+local cpu_timer = gears.timer { timeout = 10, callback = update_cpu }
+awesome.connect_signal('control_center::monitor_visibility', function(visible)
+    if visible then
+        update_cpu()
+        cpu_timer:start()
+    else
+        cpu_timer:stop()
+        total_prev = nil
+        idle_prev = nil
+    end
+end)
 
 local cpu_meter = wibox.widget {
     layout = wibox.layout.fixed.vertical,

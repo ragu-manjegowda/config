@@ -126,7 +126,7 @@ screen.connect_signal(
 
 local hide_osd = gears.timer {
     timeout   = 2,
-    autostart = true,
+    single_shot = true,
     callback  = function()
         local focused = awful.screen.focused()
         focused.mic_osd_overlay.visible = false
@@ -213,39 +213,3 @@ awesome.connect_signal(
         )
     end
 )
-
--- Monitor microphone state changes via pactl subscribe
-local dbus_monitor = function()
-    awful.spawn.with_line_callback(
-        'pactl subscribe 2>/dev/null',
-        {
-            stdout = function(line)
-                -- Only react to source (microphone) changes
-                if line:match("Event 'change' on source") then
-                    awful.spawn.easy_async_with_shell(
-                        'wpctl get-volume @DEFAULT_AUDIO_SOURCE@',
-                        function(stdout)
-                            local muted = stdout:match('%[MUTED%]') ~= nil
-                            -- Update OSD icon state
-                            awesome.emit_signal('module::mic_osd:update', muted)
-                            -- Update microphone widget state
-                            awesome.emit_signal('widget::microphone')
-                            -- Do NOT show OSD from pactl events (notifications also trigger source changes)
-                            -- OSD only shows from explicit user actions (F20, XF86AudioMicMute, widget click)
-                        end
-                    )
-                end
-            end
-        }
-    )
-end
-
--- Start D-Bus monitoring in background (delayed to ensure D-Bus is ready)
-gears.timer {
-    timeout = 2,
-    autostart = true,
-    single_shot = true,
-    callback = function()
-        dbus_monitor()
-    end
-}

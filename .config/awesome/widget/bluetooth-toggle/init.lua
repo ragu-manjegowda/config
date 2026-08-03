@@ -68,22 +68,14 @@ local update_widget = function()
     end
 end
 
-local check_device_state = function()
-    awful.spawn.easy_async_with_shell(
-        'rfkill list bluetooth',
-        function(stdout)
-            if stdout:match('Soft blocked: yes') then
-                device_state = false
-            else
-                device_state = true
-            end
-
-            update_widget()
-        end
-    )
+local check_device_state = function(stdout)
+    device_state = not stdout:match('Soft blocked: yes')
+    update_widget()
 end
 
-check_device_state()
+local function refresh_device_state()
+    awful.spawn.easy_async({ 'rfkill', 'list', 'bluetooth' }, check_device_state)
+end
 
 local power_on_cmd = [[
 	rfkill unblock bluetooth
@@ -167,14 +159,23 @@ action_info:buttons(
     )
 )
 
-watch(
+local _, bluetooth_timer = watch(
     'rfkill list bluetooth',
     5,
-    function(_, _)
-        check_device_state()
-        collectgarbage('collect')
+    function(_, stdout)
+        check_device_state(stdout)
     end
 )
+bluetooth_timer:stop()
+
+awesome.connect_signal('control_center::visibility', function(visible)
+    if visible then
+        refresh_device_state()
+        bluetooth_timer:start()
+    else
+        bluetooth_timer:stop()
+    end
+end)
 
 local action_widget = wibox.widget {
     layout = wibox.layout.fixed.horizontal,

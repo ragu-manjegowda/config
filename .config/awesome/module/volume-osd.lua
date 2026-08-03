@@ -181,7 +181,7 @@ screen.connect_signal(
 
 local hide_osd = gears.timer {
     timeout   = 2,
-    autostart = true,
+    single_shot = true,
     callback  = function()
         local focused = awful.screen.focused()
         focused.volume_osd_overlay.visible = false

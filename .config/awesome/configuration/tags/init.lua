@@ -1,6 +1,5 @@
 local awful = require('awful')
 local beautiful = require('beautiful')
-local bling = require('library.bling')
 
 local dir = os.getenv("HOME") .. "/.config/awesome/theme/icons/tags/"
 
@@ -48,7 +47,7 @@ tag.connect_signal(
     'request::default_layouts',
     function()
         awful.layout.append_default_layouts({
-            bling.layout.horizontal,
+            awful.layout.suit.tile.bottom,
             awful.layout.suit.spiral.dwindle,
             awful.layout.suit.tile,
             awful.layout.suit.floating,

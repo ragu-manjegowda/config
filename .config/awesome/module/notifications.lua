@@ -15,6 +15,7 @@ local cst = require("naughty.constants")
 -- internal by_position table uses weak references).  Entries are removed
 -- in the 'destroyed' signal handler below.
 local active_boxes = {}
+local active_animations = {}
 
 local function contains_text(value, needle)
     return tostring(value or ''):lower():find(needle, 1, true) ~= nil
@@ -39,6 +40,11 @@ local function add_to_notification_center(n)
 end
 
 local function release_popup_box(notification, box)
+    if active_animations[notification] then
+        active_animations[notification]:stop()
+        active_animations[notification] = nil
+    end
+
     if box then
         pcall(function()
             box.visible = false
@@ -204,6 +210,10 @@ end)
 naughty.connect_signal("destroyed", function(n, reason)
     -- Release strong reference to prevent memory leak
     active_boxes[n] = nil
+    if active_animations[n] then
+        active_animations[n]:stop()
+        active_animations[n] = nil
+    end
 
     if not n.clients then
         return
@@ -302,11 +312,12 @@ naughty.connect_signal(
 
         -- Notifbox Blueprint
         -- Store a strong reference to prevent GC (see active_boxes above)
-        -- Use awful.screen.preferred() so notifications follow focus, but
-        -- guard against it returning an invalid/about-to-be-removed screen.
-        local notif_screen = awful.screen.preferred()
+        local preferred_ok, notif_screen = pcall(awful.screen.preferred)
+        if not preferred_ok or not notif_screen or not notif_screen.valid then
+            notif_screen = screen.primary or screen[1]
+        end
         if not notif_screen or not notif_screen.valid then
-            notif_screen = screen.primary
+            return
         end
         local notif_w = notif_screen.geometry.width
         local notif_h = notif_screen.geometry.height
@@ -425,38 +436,38 @@ naughty.connect_signal(
         -- while naughty's internal weak-value table still tracks it.
         active_boxes[n] = widget
 
-        -- Animation for popup display duration
-        local anim = animation:new({
-            duration = POPUP_DURATION,
-            target = 100,
-            easing = animation.easing.linear,
-            reset_on_stop = false,
-            loop = is_urgent, -- urgent notifications loop until dismissed
-            update = function(_, pos)
-                timeout_arc.value = pos
-            end,
-        })
-
-        -- Only handle timeout for non-urgent notifications
-        -- Urgent notifications (timeout = 0) stay visible until user dismisses
+        local anim
         if not is_urgent then
+            anim = animation:new({
+                duration = POPUP_DURATION,
+                target = 100,
+                easing = animation.easing.linear,
+                reset_on_stop = false,
+                update = function(_, pos)
+                    timeout_arc.value = pos
+                end,
+            })
+            active_animations[n] = anim
+
             anim:connect_signal("ended", function()
                 -- Instead of destroying the notification (which closes D-Bus),
                 -- move it to the info center while keeping it alive
                 add_to_notification_center(n)
                 release_popup_box(n, widget)
             end)
-        end
 
-        widget:connect_signal("mouse::enter", function()
-            anim:stop()
-        end)
+            widget:connect_signal("mouse::enter", function()
+                anim:stop()
+            end)
 
-        widget:connect_signal("mouse::leave", function()
+            widget:connect_signal("mouse::leave", function()
+                anim:start()
+            end)
+
             anim:start()
-        end)
-
-        anim:start()
+        else
+            timeout_arc.value = 100
+        end
 
         -- Hide popups if dont_disturb_state mode is on
         -- Or if the info_center is visible
@@ -465,7 +476,6 @@ naughty.connect_signal(
             -- Add this notification to notification center while keeping it alive
             add_to_notification_center(n)
             release_popup_box(n, widget)
-            anim:stop()
         end
     end
 )

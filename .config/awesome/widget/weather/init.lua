@@ -205,6 +205,7 @@ local weather_list_layout = wibox.widget {
 
 -- Store weather card widgets for updating
 local weather_cards = {}
+local weather_updating = false
 
 local function create_weather_card(location)
     local weather_icon_widget = wibox.widget {
@@ -488,7 +489,7 @@ local function set_refreshing_state()
 end
 
 -- Update a single weather card
-local function update_weather_card(widget_set)
+local function update_weather_card(widget_set, done)
     fetch_weather_with_fallback(widget_set.location, function(ok, weather_data)
         if not ok or not weather_data then
             widget_set.weather_icon:set_image(widget_icon_dir .. 'weather-error.svg')
@@ -496,6 +497,7 @@ local function update_weather_card(widget_set)
             widget_set.weather_desc_temp:set_markup('Failed to fetch')
             widget_set.weather_sunrise:set_markup('--:--')
             widget_set.weather_sunset:set_markup('--:--')
+            done()
             return
         end
 
@@ -520,17 +522,31 @@ local function update_weather_card(widget_set)
         widget_set.weather_sunset:set_markup(sunset)
 
         header_time:set_markup(os.date('%H:%M'))
+        done()
     end)
 end
 
 -- Update all weather cards
 local function update_all_weather(show_refreshing)
+    if weather_updating or #weather_cards == 0 then
+        return
+    end
+
+    weather_updating = true
+    local pending = #weather_cards
+    local function finish_update()
+        pending = pending - 1
+        if pending == 0 then
+            weather_updating = false
+        end
+    end
+
     if show_refreshing then
         set_refreshing_state()
     end
 
     for _, widget_set in ipairs(weather_cards) do
-        update_weather_card(widget_set)
+        update_weather_card(widget_set, finish_update)
     end
 end
 
@@ -586,20 +602,26 @@ awesome.connect_signal(
     end
 )
 
--- Initial update
-gears.timer.start_new(5, function()
-    update_all_weather(false)
-    update_scrollbar()
-    return false
-end)
-
 -- Periodic update timer
-gears.timer {
+local weather_timer = gears.timer {
     timeout = secrets.update_interval,
-    autostart = true,
     callback = function()
         update_all_weather(false)
     end
 }
+
+local weather_initialized = false
+awesome.connect_signal('info_center::visibility', function(visible)
+    if visible then
+        if not weather_initialized then
+            weather_initialized = true
+            update_scrollbar()
+        end
+        update_all_weather(false)
+        weather_timer:start()
+    else
+        weather_timer:stop()
+    end
+end)
 
 return weather_report

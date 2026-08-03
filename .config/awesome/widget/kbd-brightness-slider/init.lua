@@ -65,10 +65,27 @@ local slider = wibox.widget {
 }
 
 local kbd_brightness_slider = slider.kbd_brightness_slider
+local is_programmatic_update = false
+local pending_brightness
+local brightness_apply_timer = gears.timer {
+    timeout = 0.08,
+    single_shot = true,
+    callback = function()
+        local output = io.open(config.keyboard.file, 'w')
+        if output then
+            output:write(tostring(pending_brightness))
+            output:close()
+        end
+    end,
+}
 
 kbd_brightness_slider:connect_signal(
     'property::value',
     function()
+        if is_programmatic_update then
+            return
+        end
+
         local kbd_brightness_path = config.keyboard.file
         local kbd_brightness_level = kbd_brightness_slider:get_value()
 
@@ -81,12 +98,8 @@ kbd_brightness_slider:connect_signal(
             kbd_brightness_level_absolute = math.floor(kbd_brightness_level * (2 / 100))
         end
 
-        local bkl_set_command =
-            "echo " ..
-            tostring(kbd_brightness_level_absolute) ..
-            " > " .. kbd_brightness_path
-
-        awful.spawn.with_shell(bkl_set_command)
+        pending_brightness = kbd_brightness_level_absolute
+        brightness_apply_timer:again()
 
         -- Show keyboard brightness osd
         awesome.emit_signal(
@@ -104,29 +117,22 @@ kbd_brightness_slider:connect_signal(
 
 local update_slider = function()
     local kbd_brightness_path = config.keyboard.file
-    local bkl_get_command = "cat " .. kbd_brightness_path
+    local input = io.open(kbd_brightness_path, 'r')
+    local kbd_brightness = input and tonumber(input:read('*l')) or nil
+    if input then
+        input:close()
+    end
 
-    -- spawn.easy_async_with_shell or easy_async gives error in awmtt
-    -- `attempt to call a boolean value`
-    awful.spawn(
-        bkl_get_command,
-        function(stdout)
-            local kbd_brightness = string.match(stdout, '(%d+)')
-
-            -- Handle missing hardware (CI environment)
-            if not kbd_brightness then
-                kbd_brightness_slider:set_value(0)
-                return
-            end
-
-            if string.find(kbd_brightness_path, "smc") then
-                kbd_brightness_slider:set_value((tonumber(kbd_brightness) / 255) * 100)
-            elseif string.find(kbd_brightness_path, "tpacpi") or
-                string.find(kbd_brightness_path, "dell") then
-                kbd_brightness_slider:set_value((tonumber(kbd_brightness) / 2) * 100)
-            end
-        end
-    )
+    is_programmatic_update = true
+    if not kbd_brightness then
+        kbd_brightness_slider:set_value(0)
+    elseif string.find(kbd_brightness_path, "smc") then
+        kbd_brightness_slider:set_value((kbd_brightness / 255) * 100)
+    elseif string.find(kbd_brightness_path, "tpacpi") or
+        string.find(kbd_brightness_path, "dell") then
+        kbd_brightness_slider:set_value((kbd_brightness / 2) * 100)
+    end
+    is_programmatic_update = false
 end
 
 -- Update on startup
@@ -171,7 +177,9 @@ awesome.connect_signal(
 awesome.connect_signal(
     'widget::kbd_brightness:update',
     function(value)
+        is_programmatic_update = true
         kbd_brightness_slider:set_value(tonumber(value))
+        is_programmatic_update = false
     end
 )
 

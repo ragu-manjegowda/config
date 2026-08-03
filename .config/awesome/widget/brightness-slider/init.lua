@@ -65,16 +65,26 @@ local slider = wibox.widget {
 }
 
 local brightness_slider = slider.brightness_slider
+local is_programmatic_update = false
+local pending_brightness
+local brightness_apply_timer = gears.timer {
+    timeout = 0.08,
+    single_shot = true,
+    callback = function()
+        spawn('light -S ' .. math.max(pending_brightness, 5), false)
+    end,
+}
 
 brightness_slider:connect_signal(
     'property::value',
     function()
-        local brightness_level = brightness_slider:get_value()
+        if is_programmatic_update then
+            return
+        end
 
-        spawn('light -S ' ..
-            math.max(brightness_level, 5),
-            false
-        )
+        local brightness_level = brightness_slider:get_value()
+        pending_brightness = brightness_level
+        brightness_apply_timer:again()
 
         -- Show brightness osd
         awesome.emit_signal(
@@ -98,9 +108,13 @@ local update_slider = function()
 
             -- Handle missing backlight device (CI environment)
             if brightness then
+                is_programmatic_update = true
                 brightness_slider:set_value(tonumber(brightness))
+                is_programmatic_update = false
             else
+                is_programmatic_update = true
                 brightness_slider:set_value(0)
+                is_programmatic_update = false
             end
         end
     )
@@ -148,7 +162,9 @@ awesome.connect_signal(
 awesome.connect_signal(
     'widget::brightness:update',
     function(value)
+        is_programmatic_update = true
         brightness_slider:set_value(tonumber(value))
+        is_programmatic_update = false
     end
 )
 

@@ -6,6 +6,7 @@ local spawn = awful.spawn
 local dpi = beautiful.xresources.apply_dpi
 local icons = require('theme.icons')
 local clickable_container = require('widget.clickable-container')
+local audio_monitor = require('library.audio-monitor')
 
 local action_name = wibox.widget {
     text = 'Volume',
@@ -70,6 +71,14 @@ local volume_slider = slider.volume_slider
 
 -- Track if we're updating the slider programmatically (from event monitor)
 local is_programmatic_update = false
+local pending_volume
+local volume_apply_timer = gears.timer {
+    timeout = 0.08,
+    single_shot = true,
+    callback = function()
+        spawn('wpctl set-volume @DEFAULT_AUDIO_SINK@ ' .. pending_volume .. '%', false)
+    end,
+}
 
 volume_slider:connect_signal(
     'property::value',
@@ -80,11 +89,8 @@ volume_slider:connect_signal(
         end
 
         local volume_level = volume_slider:get_value()
-
-        spawn('wpctl set-volume @DEFAULT_AUDIO_SINK@ ' ..
-            volume_level .. '%',
-            false
-        )
+        pending_volume = volume_level
+        volume_apply_timer:again()
 
         -- Show volume osd
         awesome.emit_signal(
@@ -115,9 +121,13 @@ local update_slider = function()
                 if volume then
                     -- Convert slider value from percentage to absolute value
                     local slider_value = tonumber(volume * 100)
+                    is_programmatic_update = true
                     volume_slider:set_value(slider_value)
+                    is_programmatic_update = false
                 else
+                    is_programmatic_update = true
                     volume_slider:set_value(0)
+                    is_programmatic_update = false
                 end
 
                 volume_icon:set_image(icons.volume)
@@ -181,33 +191,7 @@ awesome.connect_signal(
     end
 )
 
--- Monitor volume state changes via pactl subscribe (event-driven)
-local monitor_volume_changes = function()
-    awful.spawn.with_line_callback(
-        'pactl subscribe 2>/dev/null',
-        {
-            stdout = function(line)
-                -- Only react to sink (speaker) changes
-                if line:match("Event 'change' on sink") then
-                    -- Set flag to prevent OSD from being triggered
-                    is_programmatic_update = true
-                    update_slider()
-                    is_programmatic_update = false
-                end
-            end
-        }
-    )
-end
-
--- Start monitoring in background (delayed to ensure PulseAudio is ready)
-gears.timer {
-    timeout = 1,
-    autostart = true,
-    single_shot = true,
-    callback = function()
-        monitor_volume_changes()
-    end
-}
+audio_monitor:connect_signal('sink', update_slider)
 
 local volume_setting = wibox.widget {
     layout = wibox.layout.fixed.vertical,

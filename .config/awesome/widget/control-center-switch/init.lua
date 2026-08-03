@@ -40,10 +40,12 @@ local return_button = function()
             widget.icon:set_image(icons.memory)
             cc_widget:get_children_by_id('main_control')[1].visible = true
             cc_widget:get_children_by_id('monitor_control')[1].visible = false
+            awesome.emit_signal('control_center::monitor_visibility', false)
         else
             widget.icon:set_image(widget_icon_dir .. 'control-center.svg')
             cc_widget:get_children_by_id('main_control')[1].visible = false
             cc_widget:get_children_by_id('monitor_control')[1].visible = true
+            awesome.emit_signal('control_center::monitor_visibility', true)
         end
         monitor_mode = not monitor_mode
     end

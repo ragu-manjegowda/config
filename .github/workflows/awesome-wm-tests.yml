@@ -93,12 +93,32 @@ jobs:
           retention-days: 30
           if-no-files-found: ignore
 
+  lua-unit-tests:
+    name: Lua Unit Tests
+    runs-on: ubuntu-latest
+    needs: lua-syntax-check
+    container:
+      image: archlinux:latest
+    steps:
+      - name: Install dependencies
+        run: pacman -Syu --noconfirm && pacman -S --noconfirm git lua
+
+      - name: Checkout dotfiles
+        uses: actions/checkout@v5
+        with:
+          submodules: recursive
+
+      - name: Run Lua unit tests
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          for test in "${{ env.AWESOME_CONFIG_DIR }}"/tests/test_*.lua; do
+            HOME="$GITHUB_WORKSPACE" lua "$test"
+          done
+
   awesome-config-load:
     name: AwesomeWM Configuration Load Test (Lua)
     runs-on: ubuntu-latest
-    needs: lua-syntax-check
-    outputs:
-      awesome_git_workaround_used: ${{ steps.awesome_git_workaround_status.outputs.used }}
+    needs: [lua-unit-tests, module-imports-test, integration-tests, security-scan]
     container:
       image: archlinux:latest
     steps:
@@ -135,8 +155,7 @@ jobs:
       - name: Install dependencies
         run: |
           pacman -S --noconfirm \
-            lua54 \
-            lua54-lgi \
+            lua \
             cairo \
             pango \
             gdk-pixbuf2 \
@@ -162,62 +181,15 @@ jobs:
           cd /tmp
           sudo -u builder git clone https://aur.archlinux.org/awesome-git.git
 
-      - name: Try awesome-git unpatched
-        id: awesome_git_unpatched
-        continue-on-error: true
+      - name: Install lua-lgi-git
+        run: |
+          cd /tmp
+          sudo -u builder git clone https://aur.archlinux.org/lua-lgi-git.git
+          sudo -u builder bash -lc 'cd /tmp/lua-lgi-git && MAKEFLAGS="-j$(nproc)" makepkg -si --noconfirm'
+
+      - name: Install awesome-git
         run: |
           sudo -u builder bash -lc 'cd /tmp/awesome-git && MAKEFLAGS="-j$(nproc)" makepkg -si --noconfirm'
-
-      - name: Notice awesome-git workaround removable
-        if: steps.awesome_git_unpatched.outcome == 'success'
-        run: |
-          echo "::warning title=AUR Workaround Can Be Removed::Unpatched awesome-git build succeeded; remove Lua/doc workaround from CI."
-          echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-          echo "!!! UNPATCHED awesome-git BUILD SUCCEEDED; REVERT CI WORKAROUND !!!"
-          echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-
-      - name: Apply awesome-git workaround
-        id: awesome_git_workaround_apply
-        if: steps.awesome_git_unpatched.outcome == 'failure'
-        run: |
-          sudo -u builder bash << 'EOFAUR'
-          set -e
-          cd /tmp/awesome-git
-
-          # awesome-git supports Lua up to 5.4 and docs fail with ldoc on Lua 5.5.
-          git checkout -- PKGBUILD
-          rm -rf src pkg ./*.pkg.tar.* ./*.pkg.tar.*.sig
-          sed -i 's/^_LUA_VER=.*/_LUA_VER=5.4/' PKGBUILD
-
-          python - << 'PY'
-          from pathlib import Path
-          p = Path('PKGBUILD')
-          text = p.read_text()
-          continuation = chr(92) + "\n"
-          needle = "    -DLUA_EXECUTABLE=/usr/bin/lua${_LUA_VER} " + continuation
-          if needle in text and "-DGENERATE_DOC=OFF" not in text:
-              text = text.replace(
-                  needle,
-                  needle
-                  + "    -DGENERATE_DOC=OFF " + continuation
-                  + "    -DGENERATE_MANPAGES=OFF " + continuation,
-                  1,
-              )
-          p.write_text(text)
-          PY
-
-          MAKEFLAGS="-j$(nproc)" makepkg -si --noconfirm
-          EOFAUR
-
-      - name: Record awesome-git workaround status
-        id: awesome_git_workaround_status
-        if: always()
-        run: |
-          if [ "${{ steps.awesome_git_unpatched.outcome }}" = "failure" ]; then
-            echo "used=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "used=false" >> "$GITHUB_OUTPUT"
-          fi
 
       - name: Test configuration with awesome --check
         run: |
@@ -250,6 +222,8 @@ jobs:
           # Create fake D-Bus machine-id and start D-Bus session
           mkdir -p /var/lib/dbus
           dbus-uuidgen > /var/lib/dbus/machine-id
+          mkdir -p /run/dbus
+          dbus-daemon --system --fork
 
           # Start D-Bus session for playerctl
           eval $(dbus-launch --sh-syntax)
@@ -352,7 +326,7 @@ jobs:
   awesome-luajit-config-load:
     name: AwesomeWM Configuration Load Test (LuaJIT)
     runs-on: ubuntu-latest
-    needs: lua-syntax-check
+    needs: [lua-unit-tests, module-imports-test, integration-tests, security-scan]
     outputs:
       awesome_luajit_workaround_used: ${{ steps.awesome_luajit_workaround_status.outputs.used }}
     container:
@@ -405,6 +379,7 @@ jobs:
             xorg-server-xvfb \
             dbus \
             imagemagick \
+            playerctl \
             ttf-hack-nerd
 
       - name: Install luajit-lgi from AUR
@@ -492,6 +467,8 @@ jobs:
           # Create fake D-Bus machine-id and start D-Bus session
           mkdir -p /var/lib/dbus
           dbus-uuidgen > /var/lib/dbus/machine-id
+          mkdir -p /run/dbus
+          dbus-daemon --system --fork
 
           # Start D-Bus session for playerctl
           eval $(dbus-launch --sh-syntax)
@@ -594,28 +571,19 @@ jobs:
   workaround:
     name: Workaround Status
     runs-on: ubuntu-latest
-    needs: [awesome-config-load, awesome-luajit-config-load]
+    needs: awesome-luajit-config-load
     if: always()
     steps:
       - name: Show workaround usage
         run: |
-          AWESOME_GIT_WAR='${{ needs.awesome-config-load.outputs.awesome_git_workaround_used }}'
           AWESOME_LUAJIT_WAR='${{ needs.awesome-luajit-config-load.outputs.awesome_luajit_workaround_used }}'
 
-          echo "awesome-git workaround used: ${AWESOME_GIT_WAR}"
           echo "awesome-luajit-git workaround used: ${AWESOME_LUAJIT_WAR}"
 
-          if [ "${AWESOME_GIT_WAR}" = "true" ] || [ "${AWESOME_LUAJIT_WAR}" = "true" ]; then
-            APPLIED=()
-            if [ "${AWESOME_GIT_WAR}" = "true" ]; then
-              APPLIED+=("awesome-git (Lua 5.4 + docs/manpages disabled)")
-            fi
-            if [ "${AWESOME_LUAJIT_WAR}" = "true" ]; then
-              APPLIED+=("awesome-luajit-git (_BUILD_DOCS=0)")
-            fi
-            echo "::notice title=Workaround Active::Applied workarounds: ${APPLIED[*]}"
+          if [ "${AWESOME_LUAJIT_WAR}" = "true" ]; then
+            echo "::notice title=Workaround Active::Applied awesome-luajit-git _BUILD_DOCS=0 workaround."
           else
-            echo "::warning title=Workarounds Not Needed::Unpatched builds passed; consider removing workaround logic."
+            echo "::warning title=Workaround Not Needed::Unpatched awesome-luajit-git build passed; remove its workaround logic."
           fi
 
   bash-scripts-validation:
@@ -1110,7 +1078,7 @@ jobs:
   test-summary:
     name: Test Summary
     runs-on: ubuntu-latest
-    needs: [lua-syntax-check, awesome-config-load, awesome-luajit-config-load, bash-scripts-validation, display-config-test, module-imports-test, integration-tests, security-scan]
+    needs: [lua-syntax-check, lua-unit-tests, awesome-config-load, awesome-luajit-config-load, workaround, bash-scripts-validation, display-config-test, module-imports-test, integration-tests, security-scan]
     if: always()
     steps:
       - name: Check test results
@@ -1120,8 +1088,10 @@ jobs:
           echo "╚════════════════════════════════════════╝"
           echo ""
           echo "✓ Lua Syntax Check: ${{ needs.lua-syntax-check.result }}"
+          echo "✓ Lua Unit Tests: ${{ needs.lua-unit-tests.result }}"
           echo "✓ Awesome Config Load (Lua): ${{ needs.awesome-config-load.result }}"
           echo "✓ Awesome Config Load (LuaJIT): ${{ needs.awesome-luajit-config-load.result }}"
+          echo "✓ Workaround Status: ${{ needs.workaround.result }}"
           echo "✓ Bash Scripts Validation: ${{ needs.bash-scripts-validation.result }}"
           echo "✓ Display Config Test: ${{ needs.display-config-test.result }}"
           echo "✓ Module Imports: ${{ needs.module-imports-test.result }}"
@@ -1130,11 +1100,15 @@ jobs:
           echo ""
 
           if [ "${{ needs.lua-syntax-check.result }}" != "success" ] || \
+             [ "${{ needs.lua-unit-tests.result }}" != "success" ] || \
              [ "${{ needs.awesome-config-load.result }}" != "success" ] || \
              [ "${{ needs.awesome-luajit-config-load.result }}" != "success" ] || \
+             [ "${{ needs.workaround.result }}" != "success" ] || \
              [ "${{ needs.bash-scripts-validation.result }}" != "success" ] || \
              [ "${{ needs.display-config-test.result }}" != "success" ] || \
-             [ "${{ needs.integration-tests.result }}" != "success" ]; then
+             [ "${{ needs.module-imports-test.result }}" != "success" ] || \
+             [ "${{ needs.integration-tests.result }}" != "success" ] || \
+             [ "${{ needs.security-scan.result }}" != "success" ]; then
             echo "❌ Some tests failed"
             exit 1
           else

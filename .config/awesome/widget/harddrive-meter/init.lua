@@ -2,7 +2,7 @@ local wibox = require('wibox')
 local gears = require('gears')
 local awful = require('awful')
 local beautiful = require('beautiful')
-local watch = awful.widget.watch
+local Gio = require('lgi').Gio
 local dpi = beautiful.xresources.apply_dpi
 local icons = require('theme.icons')
 
@@ -56,15 +56,30 @@ local slider = wibox.widget {
     layout = wibox.layout.align.vertical
 }
 
-watch(
-    [[bash -c "df -h /home|grep '^/' | awk '{print $5}'"]],
-    10,
-    function(_, stdout)
-        local space_consumed = stdout:match('(%d+)')
-        slider.hdd_usage:set_value(tonumber(space_consumed))
-        collectgarbage('collect')
+local function update_disk()
+    local info = Gio.File.new_for_path('/home'):query_filesystem_info(
+        'filesystem::size,filesystem::free'
+    )
+    if not info then
+        return
     end
-)
+
+    local size = info:get_attribute_uint64('filesystem::size')
+    local free = info:get_attribute_uint64('filesystem::free')
+    if size > 0 then
+        slider.hdd_usage:set_value((size - free) / size * 100)
+    end
+end
+
+local disk_timer = gears.timer { timeout = 10, callback = update_disk }
+awesome.connect_signal('control_center::monitor_visibility', function(visible)
+    if visible then
+        update_disk()
+        disk_timer:start()
+    else
+        disk_timer:stop()
+    end
+end)
 
 local harddrive_meter = wibox.widget {
     layout = wibox.layout.fixed.vertical,

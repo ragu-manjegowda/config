@@ -13,19 +13,21 @@ local run_once = function(cmd)
     if firstspace then
         findme = cmd:sub(0, firstspace - 1)
     end
-    awful.spawn.easy_async_with_shell(
-        string.format('pgrep -f -u $USER -x %s > /dev/null || (%s)', findme, cmd),
-        function(_, stderr)
-            -- Debugger
-            if not stderr or stderr == '' or not debug_mode then
-                return
+    findme = findme:gsub('^~', os.getenv('HOME'))
+
+    awful.spawn.easy_async(
+        { 'pgrep', '-f', '-u', os.getenv('USER'), findme },
+        function(_, stderr, _, exit_code)
+            if exit_code ~= 0 then
+                awful.spawn.with_shell(cmd)
+            elseif debug_mode and stderr and stderr ~= '' then
+                naughty.notification({
+                    app_name = 'Start-up Applications',
+                    title = '<b>Oof! Error checking ' .. cmd .. '!</b>',
+                    message = stderr:gsub('%\n', ''),
+                    icon = require('beautiful').awesome_icon
+                })
             end
-            naughty.notification({
-                app_name = 'Start-up Applications',
-                title = '<b>Oof! Error detected when starting ' .. cmd .. '!</b>',
-                message = stderr:gsub('%\n', ''),
-                icon = require('beautiful').awesome_icon
-            })
         end
     )
 end

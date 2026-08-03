@@ -64,7 +64,8 @@ local slider = wibox.widget {
 
 local blur_slider = slider.blur_strength_slider
 
-local start_up
+local start_up = true
+local pending_strength
 
 local update_slider_value = function()
     local cmd = "grep -F 'strength =' " ..
@@ -123,12 +124,20 @@ local adjust_blur = function(power)
     )
 end
 
+local blur_apply_timer = gears.timer {
+    timeout = 0.1,
+    single_shot = true,
+    callback = function()
+        adjust_blur(pending_strength)
+    end,
+}
+
 blur_slider:connect_signal(
     'property::value',
     function()
         if not start_up then
-            local strength = blur_slider:get_value() / 50 * 10
-            adjust_blur(strength)
+            pending_strength = blur_slider:get_value() / 50 * 10
+            blur_apply_timer:again()
         end
     end
 )

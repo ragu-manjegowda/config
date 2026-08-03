@@ -261,6 +261,10 @@ local control_center = function(s)
         focused.backdrop_control_center.visible = true
         focused.control_center.visible = true
 
+        local monitor = focused.control_center.widget:get_children_by_id('monitor_control')[1]
+        awesome.emit_signal('control_center::visibility', true)
+        awesome.emit_signal('control_center::monitor_visibility', monitor.visible)
+
         panel:emit_signal('opened')
     end
 
@@ -270,6 +274,9 @@ local control_center = function(s)
 
         focused.control_center.visible = false
         focused.backdrop_control_center.visible = false
+
+        awesome.emit_signal('control_center::visibility', false)
+        awesome.emit_signal('control_center::monitor_visibility', false)
 
         panel:emit_signal('closed')
     end

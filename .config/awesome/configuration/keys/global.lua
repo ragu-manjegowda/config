@@ -3,7 +3,7 @@ local beautiful = require('beautiful')
 local naughty = require("naughty")
 local gears = require('gears')
 local revelation = require("library.revelation")
-local playerctl_daemon = require("library.bling").signal.playerctl.cli()
+local playerctl_daemon = require("library.playerctl")
 local keyboard = require('awful.keyboard')
 
 require('awful.autofocus')

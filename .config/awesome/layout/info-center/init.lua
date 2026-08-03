@@ -80,6 +80,8 @@ local info_center = function(s)
         focused.backdrop_info_center.visible = true
         focused.info_center.visible = true
 
+        awesome.emit_signal('info_center::visibility', true)
+
         panel:emit_signal('opened')
         --Not a good idea because we have API rate limit
         --awesome.emit_signal('widget::update_stocks')
@@ -91,6 +93,8 @@ local info_center = function(s)
 
         focused.info_center.visible = false
         focused.backdrop_info_center.visible = false
+
+        awesome.emit_signal('info_center::visibility', false)
 
         panel:emit_signal('closed')
     end

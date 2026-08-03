@@ -8,7 +8,11 @@ local wibox = require("wibox")
 local beautiful = require("beautiful")
 local xresources = require("beautiful.xresources")
 local dpi = xresources.apply_dpi
-local playerctl_daemon = require("library.bling").signal.playerctl.cli()
+local playerctl_daemon = require("library.playerctl")
+local source = debug.getinfo(1, 'S').source
+local config_dir = source:match('^@(.*/)widget/playerctl/init%.lua$') or
+    gears.filesystem.get_configuration_dir()
+local default_art = config_dir .. 'widget/playerctl/icons/default.png'
 
 local function rounded_shape(size)
     return function(cr, width, height)
@@ -17,7 +21,7 @@ local function rounded_shape(size)
 end
 
 local art = wibox.widget {
-    image = gears.filesystem.get_configuration_dir() .. "widget/playerctl/icons/default.png",
+    image = default_art,
     resize = true,
     upscale = true,
     vertical_fit_policy = "fit",
@@ -198,7 +202,7 @@ playerctl_daemon:connect_signal("metadata",
             artist = "Nothing Playing"
         end
         if album_path == "" then
-            album_path = gears.filesystem.get_configuration_dir() .. "widget/playerctl/icons/default.png"
+            album_path = default_art
         end
 
         -- Set art widget
@@ -218,7 +222,7 @@ playerctl_daemon:connect_signal("metadata",
 playerctl_daemon:connect_signal("no_players", function(_)
     local title = "Nothing Playing"
     local artist = "Nothing Playing"
-    local album_path = gears.filesystem.get_configuration_dir() .. "widget/playerctl/icons/default.png"
+    local album_path = default_art
 
     -- Set art widget
     -- Strings are assumed to be file names and get loaded
@@ -267,6 +271,9 @@ local total_length_in_sec = 0
 
 playerctl_daemon:connect_signal(
     "position", function(_, interval_sec, length_sec, _)
+        if length_sec <= 0 then
+            return
+        end
         seek_slider.value = (interval_sec / length_sec) * 100
         current_time:set_text(get_time_from_minutes(interval_sec))
         end_time:set_text(get_time_from_minutes(length_sec))

@@ -87,22 +87,14 @@ local return_button = function()
         })
     end
 
-    local update_vpn = function()
-        awful.spawn.easy_async_with_shell(
-            [[
-            /opt/cisco/anyconnect/bin/vpn state | grep "state:" | awk 'NR==1{print $4}'
-        	]],
-            function(stdout)
-                local vpn_percentage = stdout
-                --naughty.notify({text = tostring(stdout)})
-                show_vpn_warning(vpn_percentage)
+    local update_vpn = function(stdout)
+        local vpn_status = stdout:match('state:%s+([^%s]+)') or 'Unavailable'
+        show_vpn_warning(vpn_status)
 
-                vpn_imagebox.icon.visible = true
-                vpn_widget.spacing = dpi(5)
-                vpn_percentage_text.visible = true
-                vpn_percentage_text:set_text(vpn_percentage)
-            end
-        )
+        vpn_imagebox.icon.visible = true
+        vpn_widget.spacing = dpi(5)
+        vpn_percentage_text.visible = true
+        vpn_percentage_text:set_text(vpn_status)
     end
 
     -- Watch status if connected, disconnected
@@ -111,8 +103,8 @@ local return_button = function()
             /opt/cisco/anyconnect/bin/vpn state
         ]],
         5,
-        function(_, _)
-            update_vpn()
+        function(_, stdout)
+            update_vpn(stdout)
         end
     )
 

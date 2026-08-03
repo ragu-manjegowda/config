@@ -12,21 +12,54 @@ local notifbox_core = require('widget.notif-center.build-notifbox')
 local notifbox_layout = notifbox_core.notifbox_layout
 local reset_notifbox_layout = notifbox_core.reset_notifbox_layout
 
-local return_date_time = function(format)
-    return os.date(format)
+local age_entries = setmetatable({}, { __mode = 'k' })
+local age_timer
+
+local function update_age(entry)
+    local age = os.time() - entry.created_at
+
+    if age < 60 then
+        entry.widget:set_markup('now')
+    elseif age < 3600 then
+        entry.widget:set_markup(math.floor(age / 60) .. 'm ago')
+    elseif age < 86400 then
+        entry.widget:set_markup(os.date('%I:%M %p', entry.created_at))
+    else
+        entry.widget:set_markup(os.date('%b %d, %I:%M %p', entry.created_at))
+    end
 end
 
-local parse_to_seconds = function(time)
-    local hourInSec = tonumber(string.sub(time, 1, 2)) * 3600
-    local minInSec = tonumber(string.sub(time, 4, 5)) * 60
-    local getSec = tonumber(string.sub(time, 7, 8))
-    return (hourInSec + minInSec + getSec)
+local function update_ages()
+    local has_entries = false
+
+    for _, entry in pairs(age_entries) do
+        has_entries = true
+        update_age(entry)
+    end
+
+    if not has_entries then
+        age_timer:stop()
+    end
+end
+
+local function register_age(notifbox, widget, created_at)
+    age_entries[notifbox] = { widget = widget, created_at = created_at }
+    update_age(age_entries[notifbox])
+
+    if not age_timer then
+        age_timer = gears.timer {
+            timeout = 60,
+            callback = update_ages,
+        }
+    end
+
+    if not age_timer.started then
+        age_timer:start()
+    end
 end
 
 local notifbox_box = function(notif, icon, title, message, app, _)
-    local time_of_pop = return_date_time('%H:%M:%S')
-    local exact_time = return_date_time('%I:%M %p')
-    local exact_date_time = return_date_time('%b %d, %I:%M %p')
+    local created_at = os.time()
 
     local notifbox_timepop = wibox.widget {
         id = 'time_pop',
@@ -39,32 +72,6 @@ local notifbox_box = function(notif, icon, title, message, app, _)
     }
 
     local notifbox_dismiss = builder.notifbox_dismiss()
-
-    gears.timer {
-        timeout   = 60,
-        call_now  = true,
-        autostart = true,
-        callback  = function()
-            local time_difference = nil
-
-            time_difference = parse_to_seconds(return_date_time('%H:%M:%S')) - parse_to_seconds(time_of_pop)
-            time_difference = tonumber(time_difference)
-
-            if time_difference < 60 then
-                notifbox_timepop:set_markup('now')
-            elseif time_difference >= 60 and time_difference < 3600 then
-                local time_in_minutes = math.floor(time_difference / 60)
-                notifbox_timepop:set_markup(time_in_minutes .. 'm ago')
-            elseif time_difference >= 3600 and time_difference < 86400 then
-                notifbox_timepop:set_markup(exact_time)
-            elseif time_difference >= 86400 then
-                notifbox_timepop:set_markup(exact_date_time)
-                return false
-            end
-
-            collectgarbage('collect')
-        end
-    }
 
     local notifbox_content = wibox.widget {
         layout = wibox.layout.fixed.vertical,
@@ -139,6 +146,25 @@ local notifbox_box = function(notif, icon, title, message, app, _)
         widget = wibox.container.background
     }
 
+    register_age(notifbox, notifbox_timepop, created_at)
+    notifbox:connect_signal('widget::dismiss', function()
+        if notif then
+            naughty.destroy(notif, naughty.notification_closed_reason.expired)
+            notif = nil
+        end
+    end)
+    notifbox:connect_signal('widget::removed', function()
+        age_entries[notifbox] = nil
+        if age_timer and not next(age_entries) then
+            age_timer:stop()
+        end
+    end)
+
+    local notifbox_delete = function()
+        notifbox:emit_signal('widget::removed')
+        notifbox_layout:remove_widgets(notifbox, true)
+    end
+
     -- Track if mouse is hovering over dismiss button
     local dismiss_hovered = false
 
@@ -158,24 +184,20 @@ local notifbox_box = function(notif, icon, title, message, app, _)
                 1,
                 function()
                     -- Just delete, don't focus or close notification center
+                    notifbox:emit_signal('widget::dismiss')
                     if #notifbox_layout.children == 1 then
+                        notifbox:emit_signal('widget::removed')
                         reset_notifbox_layout()
                     else
-                        notifbox_layout:remove_widgets(notifbox, true)
+                        notifbox_delete()
                         if _G.update_notif_count then
                             _G.update_notif_count(#notifbox_layout.children)
                         end
                     end
-                    collectgarbage('collect')
                 end
             )
         )
     )
-
-    -- Delete notification box
-    local notifbox_delete = function()
-        notifbox_layout:remove_widgets(notifbox, true)
-    end
 
     -- Invoke the notification's default action via D-Bus
     -- This tells the app to open the relevant content (tab, conversation, etc.)
@@ -185,6 +207,7 @@ local notifbox_box = function(notif, icon, title, message, app, _)
             notif._private.action_cb("default")
             -- Then destroy the notification properly
             naughty.destroy(notif, naughty.notification_closed_reason.dismissed_by_user)
+            notif = nil
             return true
         end
         return false
@@ -200,6 +223,7 @@ local notifbox_box = function(notif, icon, title, message, app, _)
         -- Fallback: just destroy the notification if it exists
         if notif then
             naughty.destroy(notif, naughty.notification_closed_reason.dismissed_by_user)
+            notif = nil
         end
 
         -- Fallback: try to find and focus the client by app name
@@ -239,6 +263,7 @@ local notifbox_box = function(notif, icon, title, message, app, _)
 
                     -- Delete the notification
                     if #notifbox_layout.children == 1 then
+                        notifbox:emit_signal('widget::removed')
                         reset_notifbox_layout()
                     else
                         notifbox_delete()
@@ -246,14 +271,15 @@ local notifbox_box = function(notif, icon, title, message, app, _)
                             _G.update_notif_count(#notifbox_layout.children)
                         end
                     end
-                    collectgarbage('collect')
                 end
             ),
             awful.button(
                 {},
                 3, -- Right click: just delete without focusing
                 function()
+                    notifbox:emit_signal('widget::dismiss')
                     if #notifbox_layout.children == 1 then
+                        notifbox:emit_signal('widget::removed')
                         reset_notifbox_layout()
                     else
                         notifbox_delete()
@@ -261,7 +287,6 @@ local notifbox_box = function(notif, icon, title, message, app, _)
                             _G.update_notif_count(#notifbox_layout.children)
                         end
                     end
-                    collectgarbage('collect')
                 end
             )
         )
@@ -285,8 +310,6 @@ local notifbox_box = function(notif, icon, title, message, app, _)
             notifbox_dismiss.visible = false
         end
     )
-
-    collectgarbage('collect')
 
     return notifbox
 end

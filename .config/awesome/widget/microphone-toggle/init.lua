@@ -5,6 +5,7 @@ local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 local clickable_container = require('widget.clickable-container')
 local icons = require('theme.icons')
+local audio_monitor = require('library.audio-monitor')
 
 local mic_muted = false
 
@@ -76,6 +77,7 @@ local check_mic_status = function()
                 mic_muted = false
             end
             update_widget()
+            awesome.emit_signal('module::mic_osd:update', mic_muted)
         end
     )
 end
@@ -136,30 +138,7 @@ local action_widget = wibox.widget {
     }
 }
 
--- Monitor microphone state changes via pactl subscribe (cleaner than pw-mon)
-local dbus_monitor = function()
-    awful.spawn.with_line_callback(
-        'pactl subscribe 2>/dev/null',
-        {
-            stdout = function(line)
-                -- Only react to source (microphone) changes
-                if line:match("Event 'change' on source") then
-                    check_mic_status()
-                end
-            end
-        }
-    )
-end
-
--- Start D-Bus monitoring in background (delayed to ensure D-Bus is ready)
-gears.timer {
-    timeout = 2,
-    autostart = true,
-    single_shot = true,
-    callback = function()
-        dbus_monitor()
-    end
-}
+audio_monitor:connect_signal('source', check_mic_status)
 
 -- Subscribe to global mic OSD updates
 awesome.connect_signal(

@@ -8,7 +8,6 @@ local gobject = require("gears.object")
 local gtable = require("gears.table")
 local subscribable = require("library.tween.subscribable")
 local tween = require("library.tween.tween")
-local ipairs = ipairs
 local table = table
 local pairs = pairs
 
@@ -61,7 +60,7 @@ local animation = {}
 
 local instance = nil
 
-local ANIMATION_FRAME_DELAY = 5
+local ANIMATION_FRAME_DELAY = 16
 
 local function micro_to_milli(micro)
 	return micro / 1000
@@ -101,8 +100,9 @@ function animation:start(args)
 		})
 	end
 
-	if self._private.anim_manager._private.animations[self.index] == nil then
+	if not self._private.registered then
 		table.insert(self._private.anim_manager._private.animations, self)
+		self._private.registered = true
 	end
 
 	self.state = true
@@ -110,6 +110,7 @@ function animation:start(args)
 
 	self.started:fire()
 	self:emit_signal("started")
+	self._private.anim_manager:_start_scheduler()
 end
 
 function animation:set(args)
@@ -119,11 +120,18 @@ end
 
 function animation:stop()
 	self.state = false
+	self._private.anim_manager:_remove(self)
 	self:emit_signal("stopped")
 end
 
 function animation:abort(reset)
-	animation:stop(reset)
+	self:stop()
+	if reset and self.tween then
+		self.tween:reset()
+		self.pos = self._private.initial
+		self:fire(self.pos)
+		self:emit_signal("update", self.pos)
+	end
 	self:emit_signal("aborted")
 end
 
@@ -177,8 +185,70 @@ function animation_manager:new(args)
 	ret._private = {}
 	ret._private.anim_manager = self
 	ret._private.initial = args.pos
+	ret._private.registered = false
 
 	return ret
+end
+
+function animation_manager:_remove(target)
+	for index = #self._private.animations, 1, -1 do
+		if self._private.animations[index] == target then
+			table.remove(self._private.animations, index)
+			target._private.registered = false
+			return
+		end
+	end
+end
+
+function animation_manager:_start_scheduler()
+	if self._private.source_id then
+		return
+	end
+
+	self._private.source_id = GLib.timeout_add(
+		GLib.PRIORITY_DEFAULT,
+		ANIMATION_FRAME_DELAY,
+		function()
+			for index = #self._private.animations, 1, -1 do
+				local current = self._private.animations[index]
+				if current.state then
+					local time = GLib.get_monotonic_time()
+					local delta = time - current.last_elapsed
+					current.last_elapsed = time
+
+					local pos = current.tween:update(delta)
+					if pos == true then
+						if current.loop then
+							current.tween:reset()
+						else
+							current.pos = current.tween.target
+							current:fire(current.pos)
+							current:emit_signal("update", current.pos)
+							current.state = false
+							current.ended:fire(current.pos)
+							table.remove(self._private.animations, index)
+							current._private.registered = false
+							current:emit_signal("ended", current.pos)
+						end
+					else
+						current.pos = pos
+						current:fire(current.pos)
+						current:emit_signal("update", current.pos)
+					end
+				else
+					table.remove(self._private.animations, index)
+					current._private.registered = false
+				end
+			end
+
+			if #self._private.animations == 0 then
+				self._private.source_id = nil
+				return false
+			end
+
+			return true
+		end
+	)
 end
 
 local function new()
@@ -188,47 +258,7 @@ local function new()
 	ret._private = {}
 	ret._private.animations = {}
 	ret._private.instant = false
-
-	GLib.timeout_add(GLib.PRIORITY_DEFAULT, ANIMATION_FRAME_DELAY, function()
-		for index, animation in ipairs(ret._private.animations) do
-			if animation.state == true then
-				-- compute delta time
-				local time = GLib.get_monotonic_time()
-				local delta = time - animation.last_elapsed
-				animation.last_elapsed = time
-
-				-- If pos is true, the animation has ended
-				local pos = animation.tween:update(delta)
-				if pos == true then
-					-- Loop the animation, don't end it.
-					-- Useful for widgets like the spinning cicle
-					if animation.loop == true then
-						animation.tween:reset()
-					else
-						-- Snap to end
-						animation.pos = animation.tween.target
-						animation:fire(animation.pos)
-						animation:emit_signal("update", animation.pos)
-
-						animation.state = false
-						animation.ended:fire(pos)
-						table.remove(ret._private.animations, index)
-						animation:emit_signal("ended", animation.pos)
-					end
-					-- Animation in process, keep updating
-				else
-					animation.pos = pos
-					animation:fire(animation.pos)
-					animation:emit_signal("update", animation.pos)
-				end
-			else
-				table.remove(ret._private.animations, index)
-			end
-		end
-
-		-- call again the function after cooldown
-		return true
-	end)
+	ret._private.source_id = nil
 
 	return ret
 end

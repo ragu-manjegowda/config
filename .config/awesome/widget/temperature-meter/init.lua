@@ -2,7 +2,6 @@ local wibox = require('wibox')
 local awful = require('awful')
 local gears = require('gears')
 local beautiful = require('beautiful')
-local watch = awful.widget.watch
 local dpi = beautiful.xresources.apply_dpi
 local icons = require('theme.icons')
 
@@ -60,56 +59,26 @@ local max_temp = 80
 
 local temp_t = 0
 
--- TODO: line 6 and 7 needs to be fixed, this still works as we default to
--- zone0 in line 24
-local cmd =
-[[
-	temp_path=null
-	for i in /sys/class/hwmon/hwmon*/temp*_input;
-	do
-        #temp_path="$(echo "$(<$(dirname $i)/name): $(cat ${i%_*}_label 2>/dev/null ||
-        #	echo $(basename ${i%_*})) $(readlink -f $i)");"
-
-		label="$(echo $temp_path | awk '{print $2}')"
-
-		if [ "$label" = "Package" ];
-		then
-			echo ${temp_path} | awk '{print $5}' | tr -d ';\n'
-			exit;
-		fi
-	done
-	]]
-
-awful.spawn.easy_async_with_shell(
-    cmd,
-    function(stdout)
-        local temp_path = stdout:gsub('%\n', '')
-        if temp_path == '' or not temp_path then
-            temp_path = '/sys/class/thermal/thermal_zone0/temp'
-        end
-
-        watch(
-            [[
-			sh -c "cat ]] .. temp_path .. [["
-			]],
-            10,
-            function(_, stdout_)
-                local temp = stdout_:match('(%d+)')
-
-                -- Handle missing thermal sensor (CI environment)
-                if temp then
-                    slider.temp_status:set_value((temp / 1000) / max_temp * 100)
-                    temp_t = temp / 1000
-                else
-                    slider.temp_status:set_value(0)
-                    temp_t = 0
-                end
-
-                collectgarbage('collect')
-            end
-        )
+local function update_temperature()
+    local sensor = io.open('/sys/class/thermal/thermal_zone0/temp', 'r')
+    local temp = sensor and tonumber(sensor:read('*l')) or nil
+    if sensor then
+        sensor:close()
     end
-)
+
+    temp_t = temp and temp / 1000 or 0
+    slider.temp_status:set_value(temp_t / max_temp * 100)
+end
+
+local temperature_timer = gears.timer { timeout = 10, callback = update_temperature }
+awesome.connect_signal('control_center::monitor_visibility', function(visible)
+    if visible then
+        update_temperature()
+        temperature_timer:start()
+    else
+        temperature_timer:stop()
+    end
+end)
 
 local temp_meter = wibox.widget {
     layout = wibox.layout.fixed.vertical,
