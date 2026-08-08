@@ -9,7 +9,8 @@
 .config/openconnect-gp/gateways filter=git-crypt diff=git-crypt
 .config/scripts/sync-wiki.sh filter=git-crypt diff=git-crypt
 .config/zsh/zsh_history filter=git-crypt diff=git-crypt
-.omo/omo.jsonc filter=git-crypt diff=git-crypt
+.omo/omo.sol.jsonc filter=git-crypt diff=git-crypt
+.omo/omo.terra.jsonc filter=git-crypt diff=git-crypt
 .ssh/config filter=git-crypt diff=git-crypt
 .ssh/config_remote filter=git-crypt diff=git-crypt
 .ssh/omni_config filter=git-crypt diff=git-crypt
