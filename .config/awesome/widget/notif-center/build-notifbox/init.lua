@@ -9,7 +9,7 @@ local widget_icon_dir = config_dir .. 'widget/notif-center/icons/'
 local empty_notifbox = require('widget.notif-center.build-notifbox.empty-notifbox')
 
 local notif_core = {}
-local MAX_NOTIFICATION_HISTORY = 100
+local MAX_NOTIFICATION_HISTORY = 10
 
 notif_core.remove_notifbox_empty = true
 

@@ -16,6 +16,17 @@ local cst = require("naughty.constants")
 -- in the 'destroyed' signal handler below.
 local active_boxes = {}
 local active_animations = {}
+local popup_order = {}
+local MAX_VISIBLE_POPUPS = 3
+
+local function remove_from_popup_order(notification)
+    for index = #popup_order, 1, -1 do
+        if popup_order[index] == notification then
+            table.remove(popup_order, index)
+            return
+        end
+    end
+end
 
 local function contains_text(value, needle)
     return tostring(value or ''):lower():find(needle, 1, true) ~= nil
@@ -51,6 +62,7 @@ local function release_popup_box(notification, box)
         end)
     end
 
+    remove_from_popup_order(notification)
     active_boxes[notification] = nil
 end
 
@@ -210,6 +222,7 @@ end)
 naughty.connect_signal("destroyed", function(n, reason)
     -- Release strong reference to prevent memory leak
     active_boxes[n] = nil
+    remove_from_popup_order(n)
     if active_animations[n] then
         active_animations[n]:stop()
         active_animations[n] = nil
@@ -435,6 +448,13 @@ naughty.connect_signal(
         -- Hold a strong reference so the wibox is not garbage-collected
         -- while naughty's internal weak-value table still tracks it.
         active_boxes[n] = widget
+        popup_order[#popup_order + 1] = n
+
+        if #popup_order > MAX_VISIBLE_POPUPS then
+            local oldest = popup_order[1]
+            add_to_notification_center(oldest)
+            release_popup_box(oldest, active_boxes[oldest])
+        end
 
         local anim
         if not is_urgent then
