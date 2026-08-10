@@ -30,6 +30,7 @@ pam-fprint-grosshack
 paru
 pavucontrol-gtk3
 picom-git
+prisma-access-agent
 prisma-access-browser-bin
 rdrview-git
 reflector-pacman-hook-git

@@ -17,7 +17,7 @@ sandbox_config_no_searxng='{"mcp":{"searxng":{"enabled":false}},"permission":{"e
 
 usage() {
     cat <<'EOF'
-Usage: oc [--searxng] [--sandbox] [--session] [opencode args...]
+Usage: oc [--searxng] [--sandbox] [--session] [--update-plugins] [opencode args...]
 
 Launch OpenCode. Local SearXNG MCP support is opt-in.
 
@@ -36,6 +36,8 @@ Options:
       OpenCode plugin cache dependencies are updated at most once per day before
       launch. Set OC_DISABLE_PLUGIN_AUTOUPDATE=1 to skip, or set
       OC_PLUGIN_UPDATE_INTERVAL_SECONDS=0 to check every launch.
+  --update-plugins
+      Update OpenCode plugin caches and exit without launching OpenCode.
   -h, --help
       Show this help.
 EOF
@@ -203,8 +205,53 @@ select_opencode_session() {
     printf '%s\n' "$session_id"
 }
 
+prepare_bun_ipv4_preload() {
+    local source_file output_file temp_file
+
+    source_file="${XDG_CONFIG_HOME:-$HOME/.config}/opencode/force-ipv4-getaddrinfo.c"
+    output_file="$plugin_cache/force-ipv4-getaddrinfo.so"
+    if [ ! -f "$source_file" ] || ! command -v cc >/dev/null 2>&1; then
+        return 1
+    fi
+    if [ -f "$output_file" ] && [ "$output_file" -nt "$source_file" ]; then
+        printf '%s\n' "$output_file"
+        return 0
+    fi
+
+    temp_file="${output_file}.tmp.$$"
+    if ! cc -shared -fPIC -O2 -Wall -Wextra -Werror \
+            -o "$temp_file" "$source_file" -ldl; then
+        rm -f "$temp_file"
+        return 1
+    fi
+    mv "$temp_file" "$output_file"
+    printf '%s\n' "$output_file"
+}
+
+update_opencode_plugin_dir() {
+    local package_dir=$1 preload
+
+    if [ "${plugin_force_ipv4:-0}" -eq 0 ]; then
+        if (cd "$package_dir" && SHARP_IGNORE_GLOBAL_LIBVIPS=1 \
+                timeout 15 bun update --latest >/dev/null); then
+            return 0
+        fi
+        if ! preload=$(prepare_bun_ipv4_preload); then
+            return 1
+        fi
+        plugin_force_ipv4=1
+        plugin_ipv4_preload=$preload
+        echo "oc: bun registry access failed; retrying over IPv4" >&2
+    fi
+
+    (cd "$package_dir" && SHARP_IGNORE_GLOBAL_LIBVIPS=1 \
+        LD_PRELOAD="$plugin_ipv4_preload" bun update --latest >/dev/null)
+}
+
 update_opencode_plugins() {
     local now last package_dir update_failed cache_found
+    plugin_force_ipv4=0
+    plugin_ipv4_preload=
 
     if [ "${OC_DISABLE_PLUGIN_AUTOUPDATE:-0}" = "1" ]; then
         return 0
@@ -244,7 +291,7 @@ update_opencode_plugins() {
     echo "oc: updating OpenCode plugins..." >&2
 
     if [ -f "$plugin_cache/package.json" ]; then
-        if ! (cd "$plugin_cache" && SHARP_IGNORE_GLOBAL_LIBVIPS=1 bun update --latest >/dev/null); then
+        if ! update_opencode_plugin_dir "$plugin_cache"; then
             update_failed=1
             echo "oc: root plugin cache update failed; launching with existing plugins" >&2
         fi
@@ -254,7 +301,7 @@ update_opencode_plugins() {
         if [ ! -f "$package_dir/package.json" ]; then
             continue
         fi
-        if ! (cd "$package_dir" && SHARP_IGNORE_GLOBAL_LIBVIPS=1 bun update --latest >/dev/null); then
+        if ! update_opencode_plugin_dir "$package_dir"; then
             update_failed=1
             echo "oc: plugin cache update failed for $package_dir" >&2
             echo "oc: consider deleting $package_dir to force OpenCode to reinstall it" >&2
@@ -551,6 +598,11 @@ EOF
 
 opencode_args=()
 case "${1:-}" in
+    --update-plugins)
+        plugin_update_interval=0
+        update_opencode_plugins
+        exit $?
+        ;;
     --session-list-for-fzf)
         session_list_for_fzf
         exit $?

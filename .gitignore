@@ -194,6 +194,7 @@
 /.config/omni
 /.config/opencode/.npm-cache
 /.config/opencode/logs
+/.config/opencode/lsp-install-decisions.json
 /.config/opencode/opencode.json-e
 /.config/opencode/package-lock.json
 /.config/opencode/tui.json-e

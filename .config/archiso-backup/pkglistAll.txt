@@ -104,6 +104,7 @@ pinta
 pipewire-alsa
 pipewire-pulse
 playerctl
+prisma-access-agent
 prisma-access-browser-bin
 python-typing_extensions
 ranger
