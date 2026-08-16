@@ -145,6 +145,10 @@ local notifbox_box = function(notif, icon, title, message, app, _)
         end,
         widget = wibox.container.background
     }
+    local hints = notif._private.freedesktop_hints
+    notifbox._retention_priority = tonumber(notif._private.retention_priority or
+        (hints and hints['x-awesome-retention-priority'])) or
+        (notif.urgency == 'critical' and 2 or 0)
 
     register_age(notifbox, notifbox_timepop, created_at)
     notifbox:connect_signal('widget::dismiss', function()

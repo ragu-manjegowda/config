@@ -40,7 +40,14 @@ local notifbox_add = function(n, notif_icon, notifbox_color)
     end
 
     if #notif_core.notifbox_layout.children >= MAX_NOTIFICATION_HISTORY then
-        local oldest = notif_core.notifbox_layout.children[#notif_core.notifbox_layout.children]
+        local children = notif_core.notifbox_layout.children
+        local oldest = children[#children]
+        for index = #children - 1, 1, -1 do
+            if (children[index]._retention_priority or 0) <
+                (oldest._retention_priority or 0) then
+                oldest = children[index]
+            end
+        end
         oldest:emit_signal('widget::dismiss')
         oldest:emit_signal('widget::removed')
         notif_core.notifbox_layout:remove_widgets(oldest, true)

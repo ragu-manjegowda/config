@@ -1,9 +1,8 @@
-pushd .
+#!/usr/bin/env bash
+
+set -euo pipefail
 
 cd ~/.config/awesome/library/battery || exit
-git checkout master
-
-cd ~/.config/awesome/library/bling || exit
 git checkout master
 
 cd ~/.config/awesome/library/revelation || exit
@@ -59,5 +58,3 @@ git checkout master
 
 cd ~/.config/zsh/zsh-custom/themes/powerlevel10k || exit
 git checkout master
-
-popd || exit

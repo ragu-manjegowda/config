@@ -17,12 +17,60 @@ local cst = require("naughty.constants")
 local active_boxes = {}
 local active_animations = {}
 local popup_order = {}
+local centered_notifications = {}
+local centered_lookup = setmetatable({}, { __mode = 'k' })
 local MAX_VISIBLE_POPUPS = 3
+local MAX_CENTERED_NOTIFICATIONS = 10
+
+local function retention_priority(notification)
+    local ok, urgency, priority, hints = pcall(function()
+        return notification.urgency,
+            notification._private.retention_priority,
+            notification._private.freedesktop_hints
+    end)
+    if not ok then
+        return 0
+    end
+    local explicit = tonumber(priority or
+        (hints and hints['x-awesome-retention-priority']))
+    if explicit then
+        return explicit
+    end
+    if urgency == 'critical' then
+        return 2
+    end
+    return 0
+end
+
+local function oldest_lowest_priority(notifications)
+    local candidate = 1
+    local priority = retention_priority(notifications[candidate])
+
+    for index = 2, #notifications do
+        local current = retention_priority(notifications[index])
+        if current < priority then
+            candidate = index
+            priority = current
+        end
+    end
+
+    return candidate
+end
 
 local function remove_from_popup_order(notification)
     for index = #popup_order, 1, -1 do
         if popup_order[index] == notification then
             table.remove(popup_order, index)
+            return
+        end
+    end
+end
+
+local function remove_from_centered(notification)
+    centered_lookup[notification] = nil
+    for index = #centered_notifications, 1, -1 do
+        if centered_notifications[index] == notification then
+            table.remove(centered_notifications, index)
             return
         end
     end
@@ -44,11 +92,46 @@ local function normalize_notification_urgency(n)
 end
 
 local function add_to_notification_center(n)
+    if centered_lookup[n] then
+        return
+    end
+
     local notif_core = require('widget.notif-center.build-notifbox')
     if notif_core.add_notification then
         notif_core.add_notification(n)
+        centered_lookup[n] = true
+        centered_notifications[#centered_notifications + 1] = n
+
+        while #centered_notifications > MAX_CENTERED_NOTIFICATIONS do
+            local index = oldest_lowest_priority(centered_notifications)
+            local oldest = table.remove(centered_notifications, index)
+            centered_lookup[oldest] = nil
+            oldest:destroy(naughty.notification_closed_reason.expired)
+        end
     end
 end
+
+naughty.connect_signal('property::active', function()
+    local newest = naughty.active[#naughty.active]
+    gears.timer.delayed_call(function()
+        if newest and newest.suspended and not centered_lookup[newest] then
+            add_to_notification_center(newest)
+        end
+    end)
+
+    if #naughty.active > MAX_CENTERED_NOTIFICATIONS then
+        local index = oldest_lowest_priority(naughty.active)
+        local notification = naughty.active[index]
+        local count = #naughty.active
+        pcall(function()
+            notification:destroy(naughty.notification_closed_reason.expired)
+        end)
+        if #naughty.active == count then
+            remove_from_centered(notification)
+            table.remove(naughty.active, index)
+        end
+    end
+end)
 
 local function release_popup_box(notification, box)
     if active_animations[notification] then
@@ -223,6 +306,7 @@ naughty.connect_signal("destroyed", function(n, reason)
     -- Release strong reference to prevent memory leak
     active_boxes[n] = nil
     remove_from_popup_order(n)
+    remove_from_centered(n)
     if active_animations[n] then
         active_animations[n]:stop()
         active_animations[n] = nil
@@ -262,6 +346,9 @@ naughty.connect_signal(
         -- Urgent notifications (from apps that set timeout=0) stay visible until dismissed
         local POPUP_DURATION = 5
         normalize_notification_urgency(n)
+        if centered_lookup[n] then
+            return
+        end
         local is_urgent = n.urgency == 'critical'
 
         -- Actions Blueprint
