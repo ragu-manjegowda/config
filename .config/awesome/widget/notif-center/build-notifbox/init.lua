@@ -7,9 +7,9 @@ local config_dir = gears.filesystem.get_configuration_dir()
 local widget_icon_dir = config_dir .. 'widget/notif-center/icons/'
 
 local empty_notifbox = require('widget.notif-center.build-notifbox.empty-notifbox')
+local retention = require('library.notification-retention')
 
 local notif_core = {}
-local MAX_NOTIFICATION_HISTORY = 10
 
 notif_core.remove_notifbox_empty = true
 
@@ -39,8 +39,15 @@ local notifbox_add = function(n, notif_icon, notifbox_color)
         notif_core.remove_notifbox_empty = false
     end
 
-    if #notif_core.notifbox_layout.children >= MAX_NOTIFICATION_HISTORY then
-        local oldest = notif_core.notifbox_layout.children[#notif_core.notifbox_layout.children]
+    if #notif_core.notifbox_layout.children >= retention.limit then
+        local children = notif_core.notifbox_layout.children
+        local oldest = children[#children]
+        for index = #children - 1, 1, -1 do
+            if (children[index]._retention_priority or 0) <
+                (oldest._retention_priority or 0) then
+                oldest = children[index]
+            end
+        end
         oldest:emit_signal('widget::dismiss')
         oldest:emit_signal('widget::removed')
         notif_core.notifbox_layout:remove_widgets(oldest, true)

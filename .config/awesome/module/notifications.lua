@@ -9,6 +9,7 @@ local dpi = beautiful.xresources.apply_dpi
 local clickable_container = require('widget.clickable-container')
 local animation = require("library.tween")
 local cst = require("naughty.constants")
+local retention = require('library.notification-retention')
 
 -- Keep strong references to notification popup widgets so they are not
 -- garbage-collected while naughty still tracks them internally (the
@@ -17,12 +18,24 @@ local cst = require("naughty.constants")
 local active_boxes = {}
 local active_animations = {}
 local popup_order = {}
+local centered_notifications = {}
+local centered_lookup = setmetatable({}, { __mode = 'k' })
 local MAX_VISIBLE_POPUPS = 3
 
 local function remove_from_popup_order(notification)
     for index = #popup_order, 1, -1 do
         if popup_order[index] == notification then
             table.remove(popup_order, index)
+            return
+        end
+    end
+end
+
+local function remove_from_centered(notification)
+    centered_lookup[notification] = nil
+    for index = #centered_notifications, 1, -1 do
+        if centered_notifications[index] == notification then
+            table.remove(centered_notifications, index)
             return
         end
     end
@@ -44,11 +57,58 @@ local function normalize_notification_urgency(n)
 end
 
 local function add_to_notification_center(n)
+    if centered_lookup[n] then
+        return
+    end
+
     local notif_core = require('widget.notif-center.build-notifbox')
     if notif_core.add_notification then
         notif_core.add_notification(n)
+        centered_lookup[n] = true
+        centered_notifications[#centered_notifications + 1] = n
+
+        while #centered_notifications > retention.limit do
+            local index = retention.eviction_index(centered_notifications)
+            local oldest = table.remove(centered_notifications, index)
+            centered_lookup[oldest] = nil
+            oldest:destroy(naughty.notification_closed_reason.expired)
+        end
     end
 end
+
+naughty.connect_signal('property::active', function()
+    local newest = naughty.active[#naughty.active]
+    gears.timer.delayed_call(function()
+        if newest and newest.suspended and not centered_lookup[newest] then
+            add_to_notification_center(newest)
+        end
+    end)
+
+    if #naughty.active > retention.limit then
+        local index = retention.eviction_index(naughty.active)
+        local notification = naughty.active[index]
+        local count = #naughty.active
+        pcall(function()
+            notification:destroy(naughty.notification_closed_reason.expired)
+        end)
+        if #naughty.active == count then
+            if active_animations[notification] then
+                active_animations[notification]:stop()
+                active_animations[notification] = nil
+            end
+            local box = active_boxes[notification]
+            if box then
+                pcall(function()
+                    box.visible = false
+                end)
+            end
+            active_boxes[notification] = nil
+            remove_from_popup_order(notification)
+            remove_from_centered(notification)
+            table.remove(naughty.active, index)
+        end
+    end
+end)
 
 local function release_popup_box(notification, box)
     if active_animations[notification] then
@@ -63,7 +123,6 @@ local function release_popup_box(notification, box)
     end
 
     remove_from_popup_order(notification)
-    active_boxes[notification] = nil
 end
 
 screen.connect_signal("removed", function(s)
@@ -220,9 +279,11 @@ end)
 -- Raise client, if destroyed by user
 -- https://github.com/awesomeWM/awesome/issues/3182#issuecomment-1753211773
 naughty.connect_signal("destroyed", function(n, reason)
-    -- Release strong reference to prevent memory leak
-    active_boxes[n] = nil
+    gears.timer.delayed_call(function()
+        active_boxes[n] = nil
+    end)
     remove_from_popup_order(n)
+    remove_from_centered(n)
     if active_animations[n] then
         active_animations[n]:stop()
         active_animations[n] = nil
@@ -262,6 +323,9 @@ naughty.connect_signal(
         -- Urgent notifications (from apps that set timeout=0) stay visible until dismissed
         local POPUP_DURATION = 5
         normalize_notification_urgency(n)
+        if centered_lookup[n] then
+            return
+        end
         local is_urgent = n.urgency == 'critical'
 
         -- Actions Blueprint

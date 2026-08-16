@@ -3,9 +3,18 @@
 set -euo pipefail
 
 manifest_path="${1:-$HOME/.config/firefox/extensions.txt}"
-profiles_ini="$HOME/.mozilla/firefox/profiles.ini"
 potatofox_path="${POTATOFOX_PATH:-$HOME/.config/firefox/potatofox}"
 user_agent_switcher_prefs="${USER_AGENT_SWITCHER_PREFS:-$HOME/.config/firefox/useragent-switcher-preferences.json}"
+
+if [[ "$(uname -s)" == "Darwin" ]]; then
+    firefox_profile_root="${FIREFOX_PROFILE_ROOT:-$HOME/Library/Application Support/Firefox}"
+    managed_storage_dir="${FIREFOX_MANAGED_STORAGE_DIR:-$HOME/Library/Application Support/Mozilla/ManagedStorage}"
+else
+    firefox_profile_root="${FIREFOX_PROFILE_ROOT:-$HOME/.mozilla/firefox}"
+    managed_storage_dir="${FIREFOX_MANAGED_STORAGE_DIR:-$HOME/.mozilla/managed-storage}"
+fi
+
+profiles_ini="${FIREFOX_PROFILES_INI:-$firefox_profile_root/profiles.ini}"
 
 die() {
     printf 'error: %s\n' "$*" >&2
@@ -86,7 +95,7 @@ resolve_profile_path() {
     if [[ "$path" == /* || "$is_relative" == "0" ]]; then
         printf '%s' "$path"
     else
-        printf '%s/.mozilla/firefox/%s' "$HOME" "$path"
+        printf '%s/%s' "$firefox_profile_root" "$path"
     fi
 }
 
@@ -94,12 +103,12 @@ prune_profiles_ini() {
     local default_path="$1" tmp
 
     tmp="$(mktemp)"
-    awk -v home="$HOME" -v keep="$default_path" '
+    awk -v profile_root="$firefox_profile_root" -v keep="$default_path" '
         function absolute_profile_path(path, is_relative) {
             if (path ~ /^\// || is_relative == "0") {
                 return path
             }
-            return home "/.mozilla/firefox/" path
+            return profile_root "/" path
         }
 
         function flush_profile(i) {
@@ -154,7 +163,9 @@ offer_delete_non_default_profiles() {
     local default_profile="$1" reply line section name path is_default is_relative profile_path
     local -a profiles=() non_default_profiles=()
 
-    mapfile -t profiles < <(profile_records)
+    while IFS= read -r line; do
+        profiles+=("$line")
+    done < <(profile_records)
     (( ${#profiles[@]} > 1 )) || return 0
 
     printf 'Found %s Firefox profiles:\n' "${#profiles[@]}"
@@ -185,7 +196,7 @@ offer_delete_non_default_profiles() {
         IFS=$'\t' read -r section name path is_default is_relative <<<"$line"
         profile_path="$(resolve_profile_path "$path" "$is_relative")"
         case "$profile_path" in
-            "$HOME"/.mozilla/firefox/*)
+            "$firefox_profile_root"/*)
                 rm -rf -- "$profile_path"
                 printf 'Deleted non-default profile %s (%s)\n' "${name:-$section}" "$profile_path"
                 ;;
@@ -225,11 +236,40 @@ ensure_symlink() {
     printf 'Created symlink: %s -> %s\n' "$link_path" "$target"
 }
 
+ensure_directory_copy() {
+    local target="$1" destination="$2"
+
+    if [[ ! -d "$target" ]]; then
+        printf 'Skipping missing potatofox directory: %s\n' "$target" >&2
+        return 0
+    fi
+
+    if [[ -L "$destination" ]]; then
+        if [[ "$(readlink "$destination")" != "$target" ]]; then
+            printf 'Skipping existing symlink with different target: %s -> %s\n' "$destination" "$(readlink "$destination")" >&2
+            return 0
+        fi
+        rm "$destination"
+    elif [[ -e "$destination" && ! -d "$destination" ]]; then
+        printf 'Skipping existing non-directory path: %s\n' "$destination" >&2
+        return 0
+    fi
+
+    mkdir -p "$destination"
+    cp -R "$target/." "$destination/"
+    printf 'Copied directory: %s -> %s\n' "$target" "$destination"
+}
+
 setup_potatofox_links() {
     local profile_path="$1"
 
     ensure_symlink "$potatofox_path/user.js" "$profile_path/user.js"
-    ensure_symlink "$potatofox_path/chrome" "$profile_path/chrome"
+    if [[ "$(uname -s)" == "Darwin" ]]; then
+        # macOS content sandboxing blocks userContent.css through external symlinks.
+        ensure_directory_copy "$potatofox_path/chrome" "$profile_path/chrome"
+    else
+        ensure_symlink "$potatofox_path/chrome" "$profile_path/chrome"
+    fi
 }
 
 user_agent_switcher_id_from_manifest() {
@@ -266,7 +306,7 @@ install_user_agent_switcher_prefs() {
     ' "$user_agent_switcher_prefs" >/dev/null \
         || die "invalid User-Agent Switcher preferences JSON: $user_agent_switcher_prefs"
 
-    managed_dir="$HOME/.mozilla/managed-storage"
+    managed_dir="$managed_storage_dir"
     managed_path="$managed_dir/$extension_id.json"
     tmp="$(mktemp)"
     mkdir -p "$managed_dir"
@@ -386,7 +426,7 @@ profile_path="${FIREFOX_PROFILE_PATH:-$(default_profile_path)}"
 [[ -n "$profile_path" ]] || die 'could not determine Firefox profile path'
 
 if [[ "$profile_path" != /* ]]; then
-    profile_path="$HOME/.mozilla/firefox/$profile_path"
+    profile_path="$firefox_profile_root/$profile_path"
 fi
 
 offer_delete_non_default_profiles "$profile_path"

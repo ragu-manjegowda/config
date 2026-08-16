@@ -84,6 +84,7 @@ local check_disturb_status = function()
                 awful.spawn.with_shell('echo \'false\' > ' .. widget_dir .. 'disturb_status')
             end
 
+            naughty.suspended = _G.dont_disturb_state
             update_widget()
         end
     )
@@ -93,6 +94,7 @@ check_disturb_status()
 
 local set_disturb_status = function(enabled)
     _G.dont_disturb_state = enabled
+    naughty.suspended = enabled
 
     awful.spawn.easy_async_with_shell(
         'echo ' .. tostring(dont_disturb_state) .. ' > ' .. widget_dir .. 'disturb_status',
