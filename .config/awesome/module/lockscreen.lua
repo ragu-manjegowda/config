@@ -60,14 +60,9 @@ local function destroy_notification(notification)
 end
 
 local function trim_pending_notifications_for_resume()
-    local queued = {}
-
-    for _, notification in ipairs(naughty.notifications or {}) do
-        table.insert(queued, notification)
-    end
-
-    for index = MAX_RESUMED_NOTIFICATIONS + 1, #queued do
-        destroy_notification(queued[index])
+    local suspended = naughty.notifications.suspended
+    while #suspended > MAX_RESUMED_NOTIFICATIONS do
+        destroy_notification(suspended[1])
     end
 end
 
@@ -488,10 +483,7 @@ local locker = function(s)
 
                 awesome.emit_signal('module::unlocked')
 
-                -- Do not resume notifications if dont_disturb_state mode is on
-                -- Or if the info_center is visible
-                local focused = awful.screen.focused()
-                if not (_G.dont_disturb_state or (focused.info_center and focused.info_center.visible)) then
+                if not _G.dont_disturb_state then
                     trim_pending_notifications_for_resume()
                     naughty.suspended = false
                 end

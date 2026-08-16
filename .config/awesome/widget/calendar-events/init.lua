@@ -22,6 +22,8 @@ local MAX_EVENTS_VISIBLE = 3
 local MAX_HEIGHT = EVENT_HEIGHT * MAX_EVENTS_VISIBLE + dpi(5)
 local EVENT_SPACING = dpi(5)
 local SCROLL_STEP = dpi(40)
+local refresh_in_progress = false
+local refresh_pid
 
 local header_widget = wibox.widget {
     text = 'Calendar',
@@ -690,13 +692,27 @@ update_time = function()
 end
 
 local function refresh()
+    if refresh_in_progress then
+        return
+    end
+
+    refresh_in_progress = true
     local command = string.format('%q --days %d', fetch_script, window_days)
-    awful.spawn.easy_async_with_shell(command, function(stdout)
+    refresh_pid = awful.spawn.easy_async_with_shell(command, function(stdout)
+        refresh_pid = nil
+        refresh_in_progress = false
         local payload = json.parse(stdout or '')
         render_payload(payload)
         update_time()
     end)
 end
+
+awesome.connect_signal('exit', function()
+    if refresh_pid then
+        awful.spawn({ 'kill', '-TERM', tostring(refresh_pid) }, false)
+        refresh_pid = nil
+    end
+end)
 
 scroll_clip = wibox.widget {
     {

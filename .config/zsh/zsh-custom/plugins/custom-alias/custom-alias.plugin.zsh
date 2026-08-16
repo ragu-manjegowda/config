@@ -85,7 +85,7 @@ alias cpush='config push'
 alias cst='config status'
 alias cstv='cvim +Git +only'
 # alias csu='config submodule update --remote --rebase'
-alias csu='config submodule foreach git pull --recurse-submodules --rebase --autostash'
+alias csu='config submodule foreach git pull --rebase --autostash'
 
 
 ######################   Git FZF Aliases   ####################################

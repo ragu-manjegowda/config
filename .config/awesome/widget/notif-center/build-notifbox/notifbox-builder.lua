@@ -8,6 +8,7 @@ local dpi = beautiful.xresources.apply_dpi
 
 local builder = require('widget.notif-center.build-notifbox.notifbox-ui-elements')
 local notifbox_core = require('widget.notif-center.build-notifbox')
+local retention = require('library.notification-retention')
 
 local notifbox_layout = notifbox_core.notifbox_layout
 local reset_notifbox_layout = notifbox_core.reset_notifbox_layout
@@ -145,6 +146,7 @@ local notifbox_box = function(notif, icon, title, message, app, _)
         end,
         widget = wibox.container.background
     }
+    notifbox._retention_priority = retention.priority(notif)
 
     register_age(notifbox, notifbox_timepop, created_at)
     notifbox:connect_signal('widget::dismiss', function()

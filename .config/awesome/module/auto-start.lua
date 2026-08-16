@@ -44,7 +44,7 @@ awesome.connect_signal(
         -- Just a fail safe mechanism in case user services fails
         run_once('systemctl --user reload-or-restart --now darkman.service')
 
-        run_once('~/.config/imapnotify/watch-email.sh')
+        run_once('systemctl --user start goimapnotify.service')
     end
 )
 

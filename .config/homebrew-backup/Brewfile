@@ -5,8 +5,6 @@
 
 # ── Taps ─────────────────────────────────────────────────────────────────────
 tap "anomalyco/tap"
-tap "homebrew/bundle"
-tap "homebrew/services"
 
 # ── CLI Tools & Utilities ────────────────────────────────────────────────────
 brew "bat"                          # cat clone with syntax highlighting
@@ -74,7 +72,7 @@ brew "keyring"                      # credential storage
 if OS.mac?
   brew "bash"                       # Bash shell
   brew "bash-completion"            # Bash completions
-  brew "docker"                     # container runtime
+  brew "cliclick"                   # click app
   brew "ffmpeg"                     # media transcoder (legacy)
   brew "git"                        # version control
   brew "gnupg"                      # GPG encryption
@@ -82,16 +80,15 @@ if OS.mac?
   brew "mpv"                        # media player
   brew "neovim"                     # text editor
   brew "ranger"                     # terminal file manager
-  brew "redshift"                   # screen color temperature
   brew "rsync"                      # file sync
-  brew "rust"                       # Rust language
   brew "termshark"                  # terminal Wireshark
   brew "tmux"                       # terminal multiplexer
-  brew "tree-sitter-cli"             # tree-sitter CLI
+  brew "tree-sitter-cli"            # tree-sitter CLI
   brew "jstkdng/programs/ueberzugpp" # terminal image display
-  brew "yazi"                       # terminal file manager
 
   cask "alacritty"
+  cask "colemak-dh"
+  cask "docker"
   cask "firefox"
   cask "font-hack-nerd-font"
   cask "google-chrome"
@@ -101,5 +98,3 @@ if OS.mac?
   cask "slack"
   cask "whatsapp"
 end
-
-# ── Casks (both platforms) ───────────────────────────────────────────────────

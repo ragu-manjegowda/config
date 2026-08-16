@@ -3,6 +3,7 @@
     "anomalyco/tap"
   ],
   "trustedformulae": [
-    "anomalyco/tap/opencode"
+    "anomalyco/tap/opencode",
+    "jstkdng/programs/ueberzugpp"
   ]
 }

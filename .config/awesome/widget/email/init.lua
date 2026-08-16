@@ -332,6 +332,7 @@ local notify_all_unread_email = function(email_data)
 
     naughty.notification({
         app_name = 'Email',
+        retention_priority = 1,
         title = title,
         icon = widget_icon_dir .. 'email-unread.svg'
     })
@@ -356,6 +357,7 @@ local notify_new_email = function(count, from, subject)
 
         naughty.notification({
             app_name = 'Email',
+            retention_priority = 1,
             title = 'You have a new unread email!',
             message = message,
             timeout = 10,
@@ -487,6 +489,7 @@ local fetch_email_data = function()
         else
             naughty.notification({
                 app_name = 'Email',
+                retention_priority = 1,
                 title = 'Read error',
                 message = stderr,
                 icon = widget_icon_dir .. 'email-unread.svg'
@@ -507,6 +510,7 @@ awesome.connect_signal(
 -- Initial scrollbar update
 gears.timer.start_new(0.5, function()
     update_scrollbar()
+    fetch_email_data()
     return false
 end)
 

@@ -115,7 +115,7 @@ return {
         -- 'xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Tapping Enabled" 1',
         -- Start imapnotify
         --'systemctl --user reload-or-restart goimapnotify.service',
-        '~/.config/imapnotify/watch-email.sh',
+        'systemctl --user start goimapnotify.service',
         -- Sleep hook to update wallpaper when coming back from sleep
         config_dir .. 'utilities/suspend-hook.py &',
         -- Start volctl

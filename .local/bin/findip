@@ -23,7 +23,7 @@ alacritty_uses_dark_theme() {
     [[ -r "$config" ]] || return 1
 
     while IFS= read -r line; do
-        line="${line,,}"
+        line="$(printf '%s\n' "$line" | tr '[:upper:]' '[:lower:]')"
         [[ "$line" == *import* && "$line" == *dark* ]] && return 0
     done < "$config"
 
@@ -52,6 +52,28 @@ fi
 
 log() {
     printf '%sfindip: %s%s\n' "$log_style" "$*" "$reset" >&2
+}
+
+run_with_timeout() {
+    local seconds="$1"
+    local command_pid
+    local timer_pid
+    local status
+    shift
+
+    "$@" &
+    command_pid=$!
+    (
+        sleep "$seconds"
+        kill -KILL "$command_pid" 2>/dev/null || true
+    ) &
+    timer_pid=$!
+
+    wait "$command_pid" 2>/dev/null
+    status=$?
+    kill "$timer_pid" 2>/dev/null || true
+    wait "$timer_pid" 2>/dev/null || true
+    return "$status"
 }
 
 usage() {
@@ -94,10 +116,14 @@ while [[ $# -gt 0 ]]; do
 done
 
 local_ips() {
-    ip -o -4 addr show scope global 2>/dev/null | while read -r _ _ _ address _; do
-        address="${address%%/*}"
-        [[ "$address" == 192.168.* ]] && printf '%s\n' "$address"
-    done
+    if command -v ip >/dev/null 2>&1; then
+        ip -o -4 addr show scope global 2>/dev/null | while read -r _ _ _ address _; do
+            address="${address%%/*}"
+            [[ "$address" == 192.168.* ]] && printf '%s\n' "$address"
+        done
+    elif command -v ifconfig >/dev/null 2>&1; then
+        ifconfig 2>/dev/null | awk '$1 == "inet" && $2 ~ /^192\.168\./ { print $2 }'
+    fi
 }
 
 detect_prefix() {
@@ -128,11 +154,60 @@ is_excluded() {
     local ip="$1"
     local excluded
 
-    for excluded in "${excluded_ips[@]}"; do
+    for excluded in ${excluded_ips[@]+"${excluded_ips[@]}"}; do
         [[ "$ip" == "$excluded" ]] && return 0
     done
 
     return 1
+}
+
+discover_bonjour_hosts() {
+    local browse_output
+    local instance
+    local target
+    local address
+
+    command -v dns-sd >/dev/null 2>&1 || return
+    command -v dscacheutil >/dev/null 2>&1 || return
+
+    browse_output="$(run_with_timeout "$hostname_timeout" dns-sd -B _ssh._tcp local 2>/dev/null)"
+    while IFS= read -r instance; do
+        [[ -z "$instance" ]] && continue
+        target="$(
+            run_with_timeout "$hostname_timeout" dns-sd -L "$instance" _ssh._tcp local 2>/dev/null \
+                | awk '
+                    /can be reached at/ {
+                        for (i = 1; i <= NF; i += 1) {
+                            if ($i == "at") {
+                                target = $(i + 1)
+                                sub(/:[0-9]+$/, "", target)
+                                sub(/\.$/, "", target)
+                                print target
+                                exit
+                            }
+                        }
+                    }
+                '
+        )"
+        [[ -z "$target" ]] && continue
+
+        run_with_timeout "$hostname_timeout" dscacheutil -q host -a name "$target" 2>/dev/null \
+            | awk -v host="${target%.local}" -v network="$prefix" '
+                $1 == "ip_address:" && index($2, network) == 1 {
+                    print $2 "\t" host
+                }
+            '
+    done < <(
+        printf '%s\n' "$browse_output" \
+            | awk '
+                $2 == "Add" && $6 == "_ssh._tcp." {
+                    instance = $7
+                    for (i = 8; i <= NF; i += 1) instance = instance " " $i
+                    print instance
+                }
+            ' \
+            | LC_ALL=C sort -u
+    )
 }
 
 hostname_for() {
@@ -140,14 +215,28 @@ hostname_for() {
     local host=""
     local attempt
 
+    host="$(awk -F '\t' -v ip="$ip" '$1 == ip { print $2; exit }' "$hostname_file")"
+    if [[ -n "$host" ]]; then
+        printf '%s\n' "$host"
+        return
+    fi
+
     for ((attempt = 1; attempt <= hostname_attempts; attempt += 1)); do
-        host="$(timeout "$hostname_timeout" getent hosts "$ip" 2>/dev/null | { read -r _ name _; printf '%s' "${name:-}"; })"
+        if command -v getent >/dev/null 2>&1; then
+            if command -v timeout >/dev/null 2>&1; then
+                host="$(timeout "$hostname_timeout" getent hosts "$ip" 2>/dev/null | { read -r _ name _; printf '%s' "${name:-}"; })"
+            else
+                host="$(getent hosts "$ip" 2>/dev/null | { read -r _ name _; printf '%s' "${name:-}"; })"
+            fi
+        elif command -v dscacheutil >/dev/null 2>&1; then
+            host="$(run_with_timeout "$hostname_timeout" dscacheutil -q host -a ip_address "$ip" 2>/dev/null | awk '$1 == "name:" { print $2; exit }')"
+        fi
         if [[ -n "$host" ]]; then
             printf '%s\n' "$host"
             return
         fi
 
-        if command -v avahi-resolve-address >/dev/null 2>&1; then
+        if command -v timeout >/dev/null 2>&1 && command -v avahi-resolve-address >/dev/null 2>&1; then
             host="$(timeout "$hostname_timeout" avahi-resolve-address "$ip" 2>/dev/null | { read -r _ name _; printf '%s' "${name%.}"; })"
             if [[ -n "$host" ]]; then
                 printf '%s\n' "$host"
@@ -162,18 +251,26 @@ hostname_for() {
 open_ports_for() {
     local ip="$1"
     local port
-    local open=()
+    local open_ports=""
 
     for port in "${port_list[@]}"; do
         port="${port//[[:space:]]/}"
         [[ -z "$port" ]] && continue
-        if timeout "$timeout" bash -c '</dev/tcp/$1/$2' _ "$ip" "$port" 2>/dev/null; then
-            open+=("$port")
+        if command -v nc >/dev/null 2>&1; then
+            if [[ "$(uname -s)" == "Darwin" ]]; then
+                nc -z -G "$timeout" -w "$timeout" "$ip" "$port" </dev/null >/dev/null 2>&1 || continue
+            else
+                nc -z -w "$timeout" "$ip" "$port" </dev/null >/dev/null 2>&1 || continue
+            fi
+        elif command -v timeout >/dev/null 2>&1; then
+            timeout "$timeout" bash -c '</dev/tcp/$1/$2' _ "$ip" "$port" 2>/dev/null || continue
+        else
+            continue
         fi
+        open_ports="${open_ports:+$open_ports,}$port"
     done
 
-    local IFS=','
-    printf '%s\n' "${open[*]}"
+    printf '%s\n' "$open_ports"
 }
 
 candidate_ips() {
@@ -197,15 +294,23 @@ scan_one() {
 }
 
 tmpfile="$(mktemp)"
-trap 'rm -f "$tmpfile"' EXIT
+hostname_file="$(mktemp)"
+trap 'rm -f "$tmpfile" "$hostname_file"' EXIT
+log 'discovering Bonjour SSH hostnames'
+discover_bonjour_hosts > "$hostname_file"
 log 'detecting local IPs to exclude from results'
-mapfile -t excluded_ips < <(
-    for excluded in "${excludes[@]}"; do
+excluded_count=0
+while IFS= read -r excluded; do
+    [[ -z "$excluded" ]] && continue
+    excluded_ips[excluded_count]="$excluded"
+    ((excluded_count += 1))
+done < <(
+    for excluded in ${excludes[@]+"${excludes[@]}"}; do
         printf '%s\n' "$excluded"
     done
     local_ips
 )
-log "excluding ${#excluded_ips[@]} IP(s): ${excluded_ips[*]:-(none)}"
+log "excluding $excluded_count IP(s): ${excluded_ips[*]:-(none)}"
 log "scanning ${prefix}1-${prefix}254 on port(s) $ports with timeout ${timeout}s and $workers workers"
 active_jobs=0
 
@@ -213,10 +318,10 @@ while read -r ip; do
     [[ -z "$ip" ]] && continue
     scan_one "$ip" >> "$tmpfile" &
     ((active_jobs += 1))
-    while (( active_jobs >= workers )); do
-        wait -n
-        ((active_jobs -= 1))
-    done
+    if (( active_jobs >= workers )); then
+        wait
+        active_jobs=0
+    fi
 done < <(candidate_ips)
 
 wait
@@ -225,6 +330,6 @@ log 'scan complete; formatting matching hosts'
 printf '\n%s%sSSH Hosts%s\n\n' "$bold" "$accent_color" "$reset"
 printf '%s%s%-15s %-35s %-10s%s\n' "$bold" "$accent_color" IP HOSTNAME PORTS "$reset"
 printf '%-15s %-35s %-10s\n' '---------------' '-----------------------------------' '----------'
-sort -u -t $'\t' -k 1,1V "$tmpfile" | while IFS=$'\t' read -r ip host open_ports; do
+LC_ALL=C sort -u -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n "$tmpfile" | while IFS=$'\t' read -r ip host open_ports; do
     printf '%-15s %-35s %-10s\n' "$ip" "$host" "$open_ports"
 done

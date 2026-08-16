@@ -100,6 +100,12 @@
 /.config/alacritty/colors.yml-e
 /.config/autostart
 /.config/awesome/configuration/api_keys.lua
+/.config/awesome/configuration/rofi/appmenu/rofi.rasi-e
+/.config/awesome/configuration/rofi/calc/rofi.rasi-e
+/.config/awesome/configuration/rofi/emojimenu/rofi.rasi-e
+/.config/awesome/configuration/rofi/help/rofi.rasi-e
+/.config/awesome/configuration/rofi/runmenu/rofi.rasi-e
+/.config/awesome/configuration/rofi/time/rofi.rasi-e
 /.config/awesome/library/liblua_pam.so
 /.config/awesome/library/volctl/build
 /.config/awesome/library/volctl/venv
@@ -311,6 +317,7 @@
 /.ssh/authorized_keys
 /.ssh/id_ed25519*
 /.ssh/known_hosts
+/.ssh/known_hosts.old
 /.subversion
 /.sudo_as_admin_successful
 /.thunderbird
