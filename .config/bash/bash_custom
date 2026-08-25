@@ -48,11 +48,8 @@ export PYTHONPATH="$PYTHONPATH:$HOMEBREW_PATH/bin"
 export PYTHONPATH="$PYTHONPATH:$HOMEBREW_PATH/etc"
 
 # Rust
-export RUSTUP_HOME="$HOME/.config/rustup"
 export CARGO_NAME="Ragu Manjegowda"
 export CARGO_EMAIL="raghavendrahm0410@gmail.com"
-export CARGO_HOME="$HOME/.config/cargo"
-_path_append "$CARGO_HOME/bin"
 
 # Sphinx-doc
 _path_append "$HOMEBREW_PATH/opt/sphinx-doc/bin"

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 # Extended display with scaled external monitor to match laptop height
 # This makes cursor movement smooth across displays
 # Configuration is read from config.lua via read-display-config
@@ -14,17 +16,21 @@ xrandr --dpi "$DISPLAY_DPI"
 xrandr --output "$PRIMARY_NAME" --primary --mode "$PRIMARY_MODE" --pos "$PRIMARY_POS"
 
 # Check if external monitor is connected
-if xrandr | grep -q "^${EXTERNAL_NAME} connected"; then
-    # Build external monitor command
-    EXTERNAL_CMD="xrandr --output $EXTERNAL_NAME --mode $EXTERNAL_MODE --pos $EXTERNAL_POS"
+if xrandr --current | grep "^${EXTERNAL_NAME} connected" >/dev/null; then
+    external_args=(
+        xrandr
+        --output "$EXTERNAL_NAME"
+        --mode "$EXTERNAL_MODE"
+        --pos "$EXTERNAL_POS"
+    )
 
     # Add scaling if configured
     if [ -n "$EXTERNAL_SCALE_FROM" ]; then
-        EXTERNAL_CMD="$EXTERNAL_CMD --scale-from $EXTERNAL_SCALE_FROM"
+        external_args+=(--scale-from "$EXTERNAL_SCALE_FROM")
     fi
 
     # Apply external monitor settings
-    eval "$EXTERNAL_CMD"
+    "${external_args[@]}"
 
     echo "✓ Extended display configured:"
     echo "  - Primary ($PRIMARY_NAME): $PRIMARY_MODE @ $PRIMARY_POS"

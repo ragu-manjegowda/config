@@ -40,6 +40,9 @@
 !/.local/share/applications/codex-app-linux.desktop
 !/.local/share/applications/nvim-usercreated.desktop
 !/.local/share/applications/sioyek.desktop
+!/.local/share/xsessions
+/.local/share/xsessions/*
+!/.local/share/xsessions/awesome.desktop
 
 /.omo/*
 !/.omo/omo.sol.jsonc
@@ -48,6 +51,7 @@
 ################################################################################
 ################## Regular ignores #############################################
 ################################################################################
+/.cargo
 
 /.CFUserTextEncoding
 /.DS_Store
@@ -148,9 +152,11 @@
 /.config/gnome-initial-setup-done
 /.config/gnote
 /.config/gnupg/.*
+/.config/gnupg/common.conf
 /.config/gnupg/crls.d
 /.config/gnupg/openpgp-revocs.d
 /.config/gnupg/private-keys-v1.d
+/.config/gnupg/public-keys.d
 /.config/gnupg/pubring.kbx*
 /.config/gnupg/random_seed
 /.config/gnupg/sshcontrol
@@ -179,6 +185,7 @@
 /.config/monitors-v1-backup.xml
 /.config/monitors.xml
 /.config/monitors.xml~
+/.config/mozilla/
 /.config/mpv/fonts
 /.config/mpv/log
 /.config/mpv/script-opts

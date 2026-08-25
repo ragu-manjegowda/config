@@ -156,11 +156,8 @@ export PKG_CONFIG_PATH="$HOMEBREW_PATH/opt/ruby/lib/pkgconfig:$PKG_CONFIG_PATH"
 
 # Rust
 # Export ENV variables
-export RUSTUP_HOME="$HOME/.config/rustup"
 export CARGO_NAME="Ragu Manjegowda"
 export CARGO_EMAIL="raghavendrahm0410@gmail.com"
-export CARGO_HOME="$HOME/.config/cargo"
-export PATH="$PATH:$CARGO_HOME/bin"
 
 # Sphinx-doc
 export PATH="$PATH:$HOMEBREW_PATH/opt/sphinx-doc/bin"

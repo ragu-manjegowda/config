@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 # Connect external monitor in extended mode
 # Detects if monitor is already connected
 # Configuration is read from config.lua via read-display-config
@@ -9,11 +11,14 @@ source <("$HOME/.config/awesome/utilities/read-display-config")
 
 echo "Checking for external monitor ($EXTERNAL_NAME)..."
 
-if xrandr | grep -q "^${EXTERNAL_NAME} connected"; then
+if xrandr --current | grep "^${EXTERNAL_NAME} connected" >/dev/null; then
     echo "✓ External monitor detected"
 
     # Set up extended display
-    "$HOME/.config/awesome/utilities/setup-monitors"
+    if ! "$HOME/.config/awesome/utilities/setup-monitors"; then
+        echo "✗ Failed to configure displays" >&2
+        exit 1
+    fi
 
     # Wait for xrandr to finish
     sleep 2
@@ -31,7 +36,7 @@ screen_mgr.migrate_to_external()
 
     # Restart AwesomeWM to properly initialize new screen
     echo "Restarting AwesomeWM to initialize new screen..."
-    awesome-client "awesome.restart()"
+    awesome-client "awesome.restart()" >/dev/null 2>&1 || true
 
     echo "✓ Extended display configured"
 

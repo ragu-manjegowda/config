@@ -44,6 +44,12 @@ check_copy() {
         return 1
     fi
 
+    if [[ -e "$dest" ]] && pacman -Qqo -- "$dest" &>/dev/null; then
+        log_fail "Refusing to overwrite package-owned file: $dest"
+        log_fail "Use a semantic renderer or validated administrator config"
+        return 1
+    fi
+
     # Create destination directory if it doesn't exist
     local dest_dir
     dest_dir="$(dirname "$dest")"
@@ -60,6 +66,80 @@ check_copy() {
     log_ok "Copied: $src → $dest"
 }
 
+# Extract the current package version of a managed file. Prefer a .pacnew,
+# otherwise use the matching package archive retained by pacman.
+package_file_source() {
+    local dest="$1" output="$2" owner installed_version candidate metadata
+    local package_name package_version archive_path="${dest#/}"
+    local -a candidates=()
+
+    owner="$(pacman -Qqo -- "$dest" 2>/dev/null)" || {
+        log_fail "No package owns $dest"
+        return 1
+    }
+    if [[ -f "${dest}.pacnew" ]]; then
+        cp "${dest}.pacnew" "$output"
+        log_info "Using upstream pacnew for $dest"
+        return 0
+    fi
+
+    installed_version="$(pacman -Q -- "$owner" | cut -d' ' -f2-)"
+    shopt -s nullglob
+    candidates=(/var/cache/pacman/pkg/"${owner}"-*.pkg.tar.*)
+    shopt -u nullglob
+    for candidate in "${candidates[@]}"; do
+        metadata="$(pacman -Qp "$candidate" 2>/dev/null)" || continue
+        package_name="${metadata%% *}"
+        package_version="${metadata#* }"
+        [[ "$package_name" == "$owner" && "$package_version" == "$installed_version" ]] || continue
+        if bsdtar -xOf "$candidate" "$archive_path" > "$output" 2>/dev/null && [[ -s "$output" ]]; then
+            log_info "Rendering $dest from ${owner} ${installed_version}"
+            return 0
+        fi
+    done
+
+    log_fail "Current package archive for $owner is unavailable"
+    log_fail "Run 'sudo pacman -Sw $owner' and retry"
+    return 1
+}
+
+# Install a rendered package configuration atomically after its caller has
+# validated semantics. Removes a consumed .pacnew only after success.
+install_rendered_config() {
+    local rendered="$1" dest="$2" mode
+    mode="$(stat -c '%a' "$dest" 2>/dev/null || printf '644')"
+    if [[ -f "$dest" ]] && cmp -s "$rendered" "$dest"; then
+        log_ok "Already up to date: $dest"
+        return 0
+    fi
+    sudo install -Dm"$mode" "$rendered" "$dest"
+    if [[ -f "${dest}.pacnew" ]]; then
+        sudo rm -f "${dest}.pacnew"
+    fi
+    log_ok "Installed rendered package config: $dest"
+}
+
+# Explicit full-file deployment for administrator-owned package configuration.
+# A validator command must accept the candidate path as its final argument.
+install_validated_admin_config() {
+    local src="$1" dest="$2"
+    shift 2
+    pacman -Qqo -- "$dest" &>/dev/null || {
+        log_fail "Expected package-owned administrator config: $dest"
+        return 1
+    }
+    if [[ -f "${dest}.pacnew" ]]; then
+        log_fail "Upstream changed package config: ${dest}.pacnew"
+        log_fail "Review and merge it before bootstrap replaces $dest"
+        return 1
+    fi
+    "$@" "$src" || {
+        log_fail "Validation failed: $src"
+        return 1
+    }
+    install_rendered_config "$src" "$dest"
+}
+
 # Copy all files from a source directory to a dest directory (preserving structure).
 # Usage: check_copy_dir <src_dir> <dest_dir>
 check_copy_dir() {
@@ -74,7 +154,7 @@ check_copy_dir() {
     while IFS= read -r -d '' src_file; do
         rel_path="${src_file#"$src_dir"/}"
         check_copy "$src_file" "${dest_dir}/${rel_path}"
-    done < <(find "$src_dir" -type f -print0)
+    done < <(find "$src_dir" -type f ! -path '*/.git/*' ! -name .git -print0)
 }
 
 # Enable a system service if not already enabled.
@@ -205,7 +285,7 @@ check_symlink() {
 # Check if user is in a group.
 # Usage: user_in_group <group>
 user_in_group() {
-    id -nG | grep -qw "$1"
+    id -nG "${USER:-$(id -un)}" | grep -qw "$1"
 }
 
 # Check that a command exists.

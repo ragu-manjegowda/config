@@ -77,6 +77,25 @@ ruled.client.connect_signal(
             }
         }
 
+        -- Firefox now opens file choosers through xdg-desktop-portal-gtk.
+        ruled.client.append_rule {
+            id = 'portal_file_chooser',
+            rule = {
+                class = 'Xdg-desktop-portal-gtk',
+                role = 'GtkFileChooserDialog'
+            },
+            callback = function(c)
+                local area = c.screen.workarea
+                if c.transient_for and c.transient_for.valid then
+                    area = c.transient_for:geometry()
+                end
+                c:geometry {
+                    width = math.floor(area.width * 0.8),
+                    height = math.floor(area.height * 0.8)
+                }
+            end
+        }
+
         -- Modals
         ruled.client.append_rule {
             id = 'modal',

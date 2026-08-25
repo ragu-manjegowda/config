@@ -24,6 +24,8 @@ export LESSHISTFILE=/dev/null
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CACHE_HOME="$HOME/.cache"
+export CARGO_HOME="$XDG_DATA_HOME/cargo"
+export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
 
 export TMUX_TMPDIR="$XDG_RUNTIME_DIR"
 export ZDOTDIR="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
@@ -51,6 +53,8 @@ _path_append() {
         *) PATH="$PATH:$1" ;;
     esac
 }
+
+_path_append "$CARGO_HOME/bin"
 
 # if running bash
 if [ -n "$BASH_VERSION" ]; then

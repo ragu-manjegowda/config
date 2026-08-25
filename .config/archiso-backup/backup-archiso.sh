@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [[ -e /run/arch-bootstrap-package-restore ]]; then
+    exit 0
+fi
+
 # Backup all packages
 paru -Qqe > /var/archiso-backup/pkglistAll.txt
 

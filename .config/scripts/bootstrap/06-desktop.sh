@@ -4,7 +4,20 @@
 log_step "Desktop Environment"
 
 log_info "Greetd config..."
-check_copy "${MISC_DIR}/etc/greetd/config.toml" /etc/greetd/config.toml
+_validate_greetd() {
+    python -c '
+import sys
+import tomllib
+
+with open(sys.argv[1], "rb") as config_file:
+    config = tomllib.load(config_file)
+command = config.get("default_session", {}).get("command", "")
+if not command.startswith("tuigreet "):
+    raise SystemExit("default_session.command must launch tuigreet")
+' "$1"
+}
+install_validated_admin_config \
+    "${MISC_DIR}/etc/greetd/config.toml" /etc/greetd/config.toml _validate_greetd
 
 log_info "Polkit rules..."
 check_copy "${MISC_DIR}/etc/polkit-1/rules.d/00-early-checks.rules" \
@@ -24,3 +37,5 @@ fc-cache &>/dev/null || true
 log_ok "Font cache updated"
 
 REMINDERS+=("Add sudoers NOPASSWD lines for suspend/hibernate: sudoedit /etc/sudoers and add 'ragu ALL=(ALL:ALL) NOPASSWD: /usr/bin/systemctl suspend' and 'ragu ALL=(ALL:ALL) NOPASSWD: /usr/bin/systemctl hibernate'")
+
+unset -f _validate_greetd

@@ -10,8 +10,15 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
     firefox_profile_root="${FIREFOX_PROFILE_ROOT:-$HOME/Library/Application Support/Firefox}"
     managed_storage_dir="${FIREFOX_MANAGED_STORAGE_DIR:-$HOME/Library/Application Support/Mozilla/ManagedStorage}"
 else
-    firefox_profile_root="${FIREFOX_PROFILE_ROOT:-$HOME/.mozilla/firefox}"
-    managed_storage_dir="${FIREFOX_MANAGED_STORAGE_DIR:-$HOME/.mozilla/managed-storage}"
+    xdg_mozilla_root="${XDG_CONFIG_HOME:-$HOME/.config}/mozilla"
+    if [[ -n "${FIREFOX_PROFILE_ROOT:-}" ]]; then
+        firefox_profile_root="$FIREFOX_PROFILE_ROOT"
+    elif [[ -f "$xdg_mozilla_root/firefox/profiles.ini" ]]; then
+        firefox_profile_root="$xdg_mozilla_root/firefox"
+    else
+        firefox_profile_root="$HOME/.mozilla/firefox"
+    fi
+    managed_storage_dir="${FIREFOX_MANAGED_STORAGE_DIR:-$(dirname "$firefox_profile_root")/managed-storage}"
 fi
 
 profiles_ini="${FIREFOX_PROFILES_INI:-$firefox_profile_root/profiles.ini}"

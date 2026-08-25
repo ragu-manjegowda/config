@@ -13,6 +13,8 @@ Usage: $(basename "$0") [options]
 Options:
   --from N    Start from step N (0-7), skipping earlier steps
   --only N    Run only step N
+  --prune-packages
+              Remove packages outside the committed package manifests
   --help      Show this help
 
 Steps:
@@ -34,11 +36,13 @@ fi
 
 FROM_STEP=0
 ONLY_STEP=""
+PRUNE_PACKAGES=false
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --from)  FROM_STEP="$2"; shift 2 ;;
         --only)  ONLY_STEP="$2"; shift 2 ;;
+        --prune-packages) PRUNE_PACKAGES=true; shift ;;
         --help)  usage; exit 0 ;;
         *)       log_fail "Unknown option: $1"; usage; exit 1 ;;
     esac

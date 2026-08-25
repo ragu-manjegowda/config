@@ -116,6 +116,7 @@ rofi
 rofi-calc
 rofi-emoji
 rsync
+ruby
 ruby-erb
 ruby-neovim
 rust-src
@@ -123,16 +124,17 @@ sioyek-git
 skanpage
 sof-firmware
 solarized-colors-iconpack-git
+sudo
 swig
 sync-pacman-hook-git
 system-config-printer
-teams
 teleport-bin
 termshark
 thermald
 thunar
 tigervnc
 tmux
+tree-sitter-cli
 ttf-dejavu
 ttf-hack-nerd
 ueberzugpp

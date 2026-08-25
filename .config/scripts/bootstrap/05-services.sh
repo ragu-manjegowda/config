@@ -4,6 +4,12 @@
 log_step "Service Enablement"
 
 log_info "System services..."
+if [[ "$(systemctl get-default)" == "graphical.target" ]]; then
+    log_ok "Default target is already graphical.target"
+else
+    sudo systemctl set-default graphical.target
+    log_ok "Set default target to graphical.target"
+fi
 enable_system_service sshd
 enable_system_service NetworkManager
 enable_system_service bluetooth
@@ -36,6 +42,7 @@ log_info "User services..."
 enable_user_service pipewire
 enable_user_service pipewire-pulse
 enable_user_service wireplumber
+enable_user_service darkman
 enable_user_service noisetorch
 enable_user_service lid-brightness-manager
 

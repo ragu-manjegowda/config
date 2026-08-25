@@ -2,7 +2,7 @@
 
 # Based on https://stackoverflow.com/a/21756612
 # following files are ignored for local changes
-config update-index --assume-unchanged \
+git --git-dir="$HOME/.config.git" --work-tree="$HOME" update-index --assume-unchanged \
     .config/alacritty/alacritty.toml \
     .config/awesome/configuration/rofi/appmenu/rofi.rasi \
     .config/awesome/configuration/rofi/calc/rofi.rasi \

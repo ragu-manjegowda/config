@@ -11,4 +11,4 @@
 #
 # Use `exportfs -arv` to reload.
 
-/a/b/c/d        *(rw,all_squash,anonuid=1000,anongid=1000,no_subtree_check)
+# /a/b/c/d        *(rw,all_squash,anonuid=1000,anongid=1000,no_subtree_check)

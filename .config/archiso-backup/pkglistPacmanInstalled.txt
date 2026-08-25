@@ -80,10 +80,12 @@ rofi
 rofi-calc
 rofi-emoji
 rsync
+ruby
 ruby-erb
 rust-src
 skanpage
 sof-firmware
+sudo
 swig
 system-config-printer
 termshark
@@ -91,6 +93,7 @@ thermald
 thunar
 tigervnc
 tmux
+tree-sitter-cli
 ttf-dejavu
 ttf-hack-nerd
 ueberzugpp

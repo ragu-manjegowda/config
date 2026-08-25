@@ -5,7 +5,11 @@ log_step "Security Hardening"
 
 log_info "Firewall (nftables)..."
 require_package nftables
-check_copy "${MISC_DIR}/etc/nftables.conf" /etc/nftables.conf
+_validate_nftables() {
+    sudo nft -c -f "$1" &>/dev/null
+}
+install_validated_admin_config \
+    "${MISC_DIR}/etc/nftables.conf" /etc/nftables.conf _validate_nftables
 if sudo nft -c -f /etc/nftables.conf &>/dev/null; then
     sudo nft -f /etc/nftables.conf
     log_ok "nftables rules validated and applied"
@@ -73,3 +77,5 @@ else
 fi
 
 source "${SCRIPTS_DIR}/02-01-firejail.sh"
+
+unset -f _validate_nftables

@@ -38,7 +38,6 @@ ruby-neovim
 sioyek-git
 solarized-colors-iconpack-git
 sync-pacman-hook-git
-teams
 teleport-bin
 v4l2-relayd
 warpd
