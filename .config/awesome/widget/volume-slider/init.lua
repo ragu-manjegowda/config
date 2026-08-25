@@ -106,30 +106,19 @@ volume_slider:connect_signal(
     end
 )
 
-local update_slider = function()
+local update_slider = function(show_osd)
     local cmd = "wpctl get-volume @DEFAULT_AUDIO_SINK@"
     awful.spawn.easy_async_with_shell(
         cmd,
         function(stdout)
             local muted = string.match(stdout, 'MUTED')
+            local volume = tonumber(string.match(stdout, "%d+%.%d+"))
+            local slider_value = volume and volume * 100 or 0
+
+            is_programmatic_update = true
+            volume_slider:set_value(slider_value)
+            is_programmatic_update = false
             if muted ~= 'MUTED' then
-                -- Volume: 0.95
-                -- Extracting the decimal value using pattern matching
-                local volume = string.match(stdout, "%d+%.%d+")
-
-                -- Handle missing audio service (CI environment)
-                if volume then
-                    -- Convert slider value from percentage to absolute value
-                    local slider_value = tonumber(volume * 100)
-                    is_programmatic_update = true
-                    volume_slider:set_value(slider_value)
-                    is_programmatic_update = false
-                else
-                    is_programmatic_update = true
-                    volume_slider:set_value(0)
-                    is_programmatic_update = false
-                end
-
                 volume_icon:set_image(icons.volume)
             else
                 volume_icon:set_image(icons.volume_muted)
@@ -139,6 +128,10 @@ local update_slider = function()
                 'module::volume_osd:update_icon',
                 muted == 'MUTED'
             )
+            awesome.emit_signal('module::volume_osd', slider_value)
+            if show_osd then
+                awesome.emit_signal('module::volume_osd:show', true)
+            end
         end
     )
 end
@@ -178,8 +171,8 @@ action_level:buttons(
 -- The emit will come from the global keybind
 awesome.connect_signal(
     'widget::volume',
-    function()
-        update_slider()
+    function(show_osd)
+        update_slider(show_osd)
     end
 )
 
@@ -191,7 +184,9 @@ awesome.connect_signal(
     end
 )
 
-audio_monitor:connect_signal('sink', update_slider)
+audio_monitor:connect_signal('sink', function()
+    update_slider(false)
+end)
 
 local volume_setting = wibox.widget {
     layout = wibox.layout.fixed.vertical,

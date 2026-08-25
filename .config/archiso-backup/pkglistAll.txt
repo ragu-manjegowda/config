@@ -141,6 +141,7 @@ ueberzugpp
 upower
 v4l2-relayd
 vlc
+w3m
 warpd
 webkit2gtk-4.1
 woff2

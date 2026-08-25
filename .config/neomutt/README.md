@@ -190,6 +190,14 @@ script.
 
 ### Authorization
 
+Run all authentication flows interactively, with the option to skip each one:
+
+```bash
+~/.config/neomutt/scripts/authenticate.sh
+```
+
+Or authorize individual accounts directly:
+
 To authorize or re-authorize OAuth2 tokens:
 
 **Work (Outlook):**

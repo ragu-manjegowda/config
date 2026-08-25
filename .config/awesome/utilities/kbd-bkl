@@ -1,22 +1,29 @@
 #!/usr/bin/env bash
 
-case "$1" in
+set -euo pipefail
+
+operation="$1"
+percent="$2"
+brightness_path="$3"
+max_path="$(dirname "$brightness_path")/max_brightness"
+
+current="$(<"$brightness_path")"
+maximum="$(<"$max_path")"
+step=$(((maximum * percent + 99) / 100))
+((step > 0)) || step=1
+
+case "$operation" in
     -inc)
-	    var=$(cat $3)
-    if [ $(($var + $2)) -lt 255 ]
-    then
-        echo $(($var + $2)) > $3
-    else
-        echo 255 > $3
-    fi
-    ;;
+        value=$((current + step))
+        ((value <= maximum)) || value="$maximum"
+        ;;
     -dec)
-    var=$(cat $3)
-    if [ $(($var - $2)) -gt 0 ]
-    then
-        echo $(($var - $2)) > $3
-    else
-        echo 0 > $3
-    fi
-   ;;
+        value=$((current - step))
+        ((value >= 0)) || value=0
+        ;;
+    *)
+        exit 2
+        ;;
 esac
+
+printf '%s\n' "$value" > "$brightness_path"

@@ -10,7 +10,7 @@ return {
         -- Primary display (laptop)
         primary = {
             name = 'eDP-1',
-            mode = '3840x2400',
+            mode = '2880x1800',
             position = '0x0',
             -- Additional settings
             rate = nil, -- Optional: refresh rate (e.g., '60')
@@ -20,10 +20,10 @@ return {
         external = {
             name = 'DP-4',
             mode = '3440x1440',
-            position = '3840x0', -- Position relative to primary
+            position = '2880x0', -- Position relative to primary
             -- Scaling: scale external to match primary height
             -- This makes cursor movement smooth between displays
-            scale_from = '3840x2400', -- Scale to match primary dimensions
+            scale_from = '2880x1800', -- Scale to match primary dimensions
             rate = nil,               -- Optional: refresh rate
         },
     },

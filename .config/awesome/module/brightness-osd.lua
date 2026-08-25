@@ -44,15 +44,18 @@ local slider_osd = wibox.widget {
 }
 
 local bri_osd_slider = slider_osd.bri_osd_slider
+local is_programmatic_update = false
 
 bri_osd_slider:connect_signal(
     'property::value',
     function()
         local brightness_level = bri_osd_slider:get_value()
-        spawn('light -S ' .. math.max(brightness_level, 5), false)
-
-        -- Update textbox widget text
         osd_value.text = brightness_level .. '%'
+        if is_programmatic_update then
+            return
+        end
+
+        spawn('light -S ' .. math.max(brightness_level, 5), false)
 
         -- Update the brightness slider if values here change
         awesome.emit_signal('widget::brightness:update', brightness_level)
@@ -84,7 +87,9 @@ bri_osd_slider:connect_signal(
 awesome.connect_signal(
     'module::brightness_osd',
     function(brightness)
+        is_programmatic_update = true
         bri_osd_slider:set_value(brightness)
+        is_programmatic_update = false
     end
 )
 

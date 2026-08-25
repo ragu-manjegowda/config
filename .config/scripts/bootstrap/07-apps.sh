@@ -25,6 +25,15 @@ if [[ -d "${HOME}/.config/rustup" && ! -L "${HOME}/.config/rustup" ]]; then
 fi
 export RUSTUP_HOME="$_rustup_home"
 
+log_info "NeoMutt paths..."
+_neomutt_setup="${HOME}/.config/neomutt/scripts/setup-paths.sh"
+if [[ ! -x "$_neomutt_setup" ]]; then
+    log_fail "NeoMutt path setup script not found: $_neomutt_setup"
+    return 1
+fi
+"$_neomutt_setup"
+log_ok "NeoMutt runtime paths initialized"
+
 log_info "Python virtual environment..."
 _venv_dir="${HOME}/.local/share/venv"
 if [[ -d "$_venv_dir" ]]; then
@@ -78,5 +87,6 @@ else
     REMINDERS+=("Launch Firefox once, close it, then run ~/.config/scripts/firefox-install-extensions.sh")
 fi
 
-unset _cargo_home _legacy_cargo_home _rustup_home _firefox_extension_installer
+unset _cargo_home _legacy_cargo_home _rustup_home _neomutt_setup
+unset _firefox_extension_installer
 unset _xdg_firefox_profiles _legacy_firefox_profiles

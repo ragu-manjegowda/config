@@ -44,15 +44,18 @@ local slider_osd = wibox.widget {
 }
 
 local vol_osd_slider = slider_osd.vol_osd_slider
+local is_programmatic_update = false
 
 vol_osd_slider:connect_signal(
     'property::value',
     function()
         local volume_level = vol_osd_slider:get_value()
-        spawn('wpctl set-volume @DEFAULT_AUDIO_SINK@ ' .. volume_level .. '%', false)
-
-        -- Update textbox widget text
         osd_value.text = volume_level .. '%'
+        if is_programmatic_update then
+            return
+        end
+
+        spawn('wpctl set-volume @DEFAULT_AUDIO_SINK@ ' .. volume_level .. '%', false)
 
         -- Update the volume slider if values here change
         awesome.emit_signal('widget::volume:update', volume_level)
@@ -84,7 +87,9 @@ vol_osd_slider:connect_signal(
 awesome.connect_signal(
     'module::volume_osd',
     function(volume)
+        is_programmatic_update = true
         vol_osd_slider:set_value(volume)
+        is_programmatic_update = false
     end
 )
 

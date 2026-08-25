@@ -66,6 +66,7 @@ local slider = wibox.widget {
 
 local kbd_brightness_slider = slider.kbd_brightness_slider
 local is_programmatic_update = false
+local last_brightness
 local pending_brightness
 local brightness_apply_timer = gears.timer {
     timeout = 0.08,
@@ -115,28 +116,47 @@ kbd_brightness_slider:connect_signal(
     end
 )
 
-local update_slider = function()
+local update_slider = function(show_osd)
     local kbd_brightness_path = config.keyboard.file
     local input = io.open(kbd_brightness_path, 'r')
     local kbd_brightness = input and tonumber(input:read('*l')) or nil
     if input then
         input:close()
     end
+    local changed = last_brightness ~= nil and
+        kbd_brightness ~= nil and
+        kbd_brightness ~= last_brightness
+    last_brightness = kbd_brightness
 
-    is_programmatic_update = true
+    local slider_value = 0
     if not kbd_brightness then
-        kbd_brightness_slider:set_value(0)
+        slider_value = 0
     elseif string.find(kbd_brightness_path, "smc") then
-        kbd_brightness_slider:set_value((kbd_brightness / 255) * 100)
+        slider_value = (kbd_brightness / 255) * 100
     elseif string.find(kbd_brightness_path, "tpacpi") or
         string.find(kbd_brightness_path, "dell") then
-        kbd_brightness_slider:set_value((kbd_brightness / 2) * 100)
+        slider_value = (kbd_brightness / 2) * 100
     end
+
+    is_programmatic_update = true
+    kbd_brightness_slider:set_value(slider_value)
     is_programmatic_update = false
+    awesome.emit_signal('module::kbd_brightness_osd', slider_value)
+    if show_osd or changed then
+        awesome.emit_signal('module::kbd_brightness_osd:show', true)
+    end
 end
 
 -- Update on startup
 update_slider()
+
+local keyboard_backlight_monitor = gears.timer {
+    timeout = 0.25,
+    autostart = true,
+    callback = function()
+        update_slider(false)
+    end
+}
 
 local action_jump = function()
     local sli_value = kbd_brightness_slider:get_value()
@@ -168,8 +188,8 @@ action_level:buttons(
 -- The emit will come from the global keybind
 awesome.connect_signal(
     'widget::kbd_brightness',
-    function()
-        update_slider()
+    function(show_osd)
+        update_slider(show_osd)
     end
 )
 

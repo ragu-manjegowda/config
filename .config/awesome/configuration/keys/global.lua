@@ -29,6 +29,12 @@ local function shell_quote(value)
     return "'" .. tostring(value):gsub("'", "'\\''") .. "'"
 end
 
+local function run_and_refresh_osd(command, widget_signal)
+    awful.spawn.easy_async_with_shell(command, function()
+        awesome.emit_signal(widget_signal, true)
+    end)
+end
+
 local function hotkey_sort_key(hotkey)
     return table.concat(
         { hotkey.group, hotkey.modifiers, hotkey.key, hotkey.description },
@@ -639,9 +645,7 @@ local global_keys = awful.util.table.join(
         {},
         'XF86MonBrightnessUp',
         function()
-            awful.spawn('light -A 10', false)
-            awesome.emit_signal('widget::brightness')
-            awesome.emit_signal('module::brightness_osd:show', true)
+            run_and_refresh_osd('light -A 10', 'widget::brightness')
         end,
         { description = 'increase brightness by 10%', group = 'hotkeys' }
     ),
@@ -650,9 +654,7 @@ local global_keys = awful.util.table.join(
         {},
         'XF86MonBrightnessDown',
         function()
-            awful.spawn('light -U 10', false)
-            awesome.emit_signal('widget::brightness')
-            awesome.emit_signal('module::brightness_osd:show', true)
+            run_and_refresh_osd('light -U 10', 'widget::brightness')
         end,
         { description = 'decrease brightness by 10%', group = 'hotkeys' }
     ),
@@ -661,9 +663,10 @@ local global_keys = awful.util.table.join(
         {},
         'XF86KbdBrightnessUp',
         function()
-            awful.spawn(config.keyboard.script .. ' -inc 10 ' .. config.keyboard.file)
-            awesome.emit_signal('widget::kbd_brightness')
-            awesome.emit_signal('module::kbd_brightness_osd:show', true)
+            run_and_refresh_osd(
+                config.keyboard.script .. ' -inc 10 ' .. config.keyboard.file,
+                'widget::kbd_brightness'
+            )
         end,
         { description = 'increase keyboard brightness by 10%', group = 'hotkeys' }
     ),
@@ -672,9 +675,10 @@ local global_keys = awful.util.table.join(
         {},
         'XF86KbdBrightnessDown',
         function()
-            awful.spawn(config.keyboard.script .. ' -dec 10 ' .. config.keyboard.file)
-            awesome.emit_signal('widget::kbd_brightness')
-            awesome.emit_signal('module::kbd_brightness_osd:show', true)
+            run_and_refresh_osd(
+                config.keyboard.script .. ' -dec 10 ' .. config.keyboard.file,
+                'widget::kbd_brightness'
+            )
         end,
         { description = 'decrease keyboard brightness by 10%', group = 'hotkeys' }
     ),
@@ -683,8 +687,7 @@ local global_keys = awful.util.table.join(
         {},
         'XF86KbdLightOnOff',
         function()
-            awesome.emit_signal('widget::kbd_brightness')
-            awesome.emit_signal('module::kbd_brightness_osd:show', true)
+            awesome.emit_signal('widget::kbd_brightness', true)
         end,
         { description = 'Toggle keyboard brightness', group = 'hotkeys' }
     ),
@@ -694,9 +697,10 @@ local global_keys = awful.util.table.join(
         {},
         'XF86AudioRaiseVolume',
         function()
-            awful.spawn('wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+', false)
-            awesome.emit_signal('widget::volume')
-            awesome.emit_signal('module::volume_osd:show', true)
+            run_and_refresh_osd(
+                'wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+',
+                'widget::volume'
+            )
         end,
         { description = 'increase volume up by 5%', group = 'hotkeys' }
     ),
@@ -705,9 +709,10 @@ local global_keys = awful.util.table.join(
         {},
         'XF86AudioLowerVolume',
         function()
-            awful.spawn('wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-', false)
-            awesome.emit_signal('widget::volume')
-            awesome.emit_signal('module::volume_osd:show', true)
+            run_and_refresh_osd(
+                'wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-',
+                'widget::volume'
+            )
         end,
         { description = 'decrease volume up by 5%', group = 'hotkeys' }
     ),
@@ -716,9 +721,10 @@ local global_keys = awful.util.table.join(
         {},
         'XF86AudioMute',
         function()
-            awful.spawn('wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle', false)
-            awesome.emit_signal('widget::volume')
-            awesome.emit_signal('module::volume_osd:show', true)
+            run_and_refresh_osd(
+                'wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle',
+                'widget::volume'
+            )
         end,
         { description = 'toggle mute', group = 'hotkeys' }
     ),

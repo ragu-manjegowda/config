@@ -99,6 +99,7 @@ ttf-hack-nerd
 ueberzugpp
 upower
 vlc
+w3m
 webkit2gtk-4.1
 woff2
 xcalib

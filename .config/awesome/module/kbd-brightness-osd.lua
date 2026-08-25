@@ -44,12 +44,17 @@ local slider_osd = wibox.widget {
 }
 
 local kbd_bri_osd_slider = slider_osd.kbd_bri_osd_slider
+local is_programmatic_update = false
 
 kbd_bri_osd_slider:connect_signal(
     'property::value',
     function()
         local kbd_brightness_path = config.keyboard.file
         local kbd_brightness_level = kbd_bri_osd_slider:get_value()
+        osd_value.text = tostring(math.floor(kbd_brightness_level)) .. '%'
+        if is_programmatic_update then
+            return
+        end
 
         local kbd_brightness_level_absolute = 0
 
@@ -66,9 +71,6 @@ kbd_bri_osd_slider:connect_signal(
             " > " .. kbd_brightness_path
 
         awful.spawn.with_shell(bkl_set_command)
-
-        -- Update textbox widget text
-        osd_value.text = tostring(math.floor(kbd_brightness_level)) .. '%'
 
         -- Update the brightness slider if values here change
         awesome.emit_signal('widget::kbd_brightness:update', kbd_brightness_level)
@@ -100,7 +102,9 @@ kbd_bri_osd_slider:connect_signal(
 awesome.connect_signal(
     'module::kbd_brightness_osd',
     function(kbd_brightness)
+        is_programmatic_update = true
         kbd_bri_osd_slider:set_value(kbd_brightness)
+        is_programmatic_update = false
     end
 )
 

@@ -225,6 +225,16 @@ ruled.notification.connect_signal(
             }
         }
 
+        ruled.notification.append_rule {
+            rule = {
+                app_name = 'notify-send',
+                title = 'OpenCode'
+            },
+            properties = {
+                ignore = true
+            }
+        }
+
         -- ruled.notification.append_rule {
         --     rule       = { app_name = 'Email' },
         --     properties = {

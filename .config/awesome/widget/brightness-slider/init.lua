@@ -100,21 +100,19 @@ brightness_slider:connect_signal(
     end
 )
 
-local update_slider = function()
+local update_slider = function(show_osd)
     awful.spawn.easy_async_with_shell(
         'light -G',
         function(stdout)
             local brightness = string.match(stdout, '(%d+)')
+            local slider_value = tonumber(brightness) or 0
 
-            -- Handle missing backlight device (CI environment)
-            if brightness then
-                is_programmatic_update = true
-                brightness_slider:set_value(tonumber(brightness))
-                is_programmatic_update = false
-            else
-                is_programmatic_update = true
-                brightness_slider:set_value(0)
-                is_programmatic_update = false
+            is_programmatic_update = true
+            brightness_slider:set_value(slider_value)
+            is_programmatic_update = false
+            awesome.emit_signal('module::brightness_osd', slider_value)
+            if show_osd then
+                awesome.emit_signal('module::brightness_osd:show', true)
             end
         end
     )
@@ -153,8 +151,8 @@ action_level:buttons(
 -- The emit will come from the global keybind
 awesome.connect_signal(
     'widget::brightness',
-    function()
-        update_slider()
+    function(show_osd)
+        update_slider(show_osd)
     end
 )
 
