@@ -30,11 +30,13 @@ git
 go
 greetd
 greetd-tuigreet
+gst-plugin-libcamera
 gst-plugin-pipewire
 gst-plugins-good
 imagemagick
 intel-ucode
 iwd
+libcamera-tools
 libev
 libfido2
 libgit2
@@ -70,6 +72,7 @@ openssh
 perl-cgi
 pinta
 pipewire-alsa
+pipewire-libcamera
 pipewire-pulse
 playerctl
 python-typing_extensions

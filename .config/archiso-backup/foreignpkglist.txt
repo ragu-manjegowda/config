@@ -9,12 +9,10 @@ cppreference
 cyrus-sasl-xoauth2-git
 find-cursor
 goimapnotify-git
-google-chrome
 gtk-theme-numix-solarized
-icamerasrc-git
-intel-ipu6-camera-bin
-intel-ipu6-camera-hal-git
-intel-ipu6-dkms-git
+intel-vision-drivers-dkms-ipu7-ov08x40
+libcamera-ipu7-ov08x40
+libcamera-ipu7-ov08x40-ipa
 light
 lua-pam-git
 masterpdfeditor-free
@@ -39,7 +37,6 @@ sioyek-git
 solarized-colors-iconpack-git
 sync-pacman-hook-git
 teleport-bin
-v4l2-relayd
 warpd
 xidlehook
 zoom

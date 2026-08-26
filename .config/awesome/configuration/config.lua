@@ -5,7 +5,7 @@ local utils_dir = config_dir .. 'utilities/'
 return {
     display = {
         -- DPI setting for all displays
-        dpi = 192,
+        dpi = 144,
 
         -- Primary display (laptop)
         primary = {

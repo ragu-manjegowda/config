@@ -19,6 +19,8 @@ on:
       - '.config/awesome/**'
       - '.config/scripts/lid-brightness-monitor'
       - '.config/systemd/user/lid-brightness-manager.service'
+      - '.config/misc/etc/modprobe.d/xe.conf'
+      - '.config/scripts/bootstrap/03-system.sh'
       - '.github/workflows/awesome-wm-tests.yml'
   pull_request:
     branches: [ main, master, develop ]
@@ -26,6 +28,8 @@ on:
       - '.config/awesome/**'
       - '.config/scripts/lid-brightness-monitor'
       - '.config/systemd/user/lid-brightness-manager.service'
+      - '.config/misc/etc/modprobe.d/xe.conf'
+      - '.config/scripts/bootstrap/03-system.sh'
   workflow_dispatch:
 
 env:
@@ -948,6 +952,11 @@ jobs:
         run: |
           cd "$GITHUB_WORKSPACE"
           bash .config/awesome/tests/test_lid_brightness_monitor.sh
+
+      - name: Test Xe display workaround
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          bash .config/awesome/tests/test_xe_display_workaround.sh
 
       - name: Test monitor scripts integration
         run: |

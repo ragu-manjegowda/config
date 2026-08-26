@@ -134,6 +134,13 @@ fi
 _pacman_packages="${_manifest_dir}/pkglistPacmanInstalled.txt"
 _aur_packages="${_manifest_dir}/foreignpkglist.txt"
 
+log_info "Refreshing configured GitHub PKGBUILD repositories..."
+if paru -Sy --noconfirm --pkgbuilds; then
+    log_ok "GitHub PKGBUILD repositories refreshed"
+else
+    log_warn "Some GitHub PKGBUILD repositories failed to refresh"
+fi
+
 if [[ -f "$_pacman_packages" ]]; then
     log_info "Restoring official packages (this may take a while)..."
     if sudo pacman -S --needed --noconfirm - < "$_pacman_packages"; then
@@ -152,7 +159,19 @@ if [[ -f "$_aur_packages" ]]; then
     _failed_aur_packages=()
     while IFS= read -r _aur_package <&3 || [[ -n "$_aur_package" ]]; do
         [[ -z "$_aur_package" || "$_aur_package" == \#* ]] && continue
-        if ! paru -S --needed "$_aur_package"; then
+        if [[ "$_aur_package" == "intel-vision-drivers-dkms-ipu7-ov08x40" ||
+              "$_aur_package" == "libcamera-ipu7-ov08x40" ||
+              "$_aur_package" == "libcamera-ipu7-ov08x40-ipa" ]]; then
+            if paru -Qi "$_aur_package" &>/dev/null; then
+                continue
+            fi
+            if ! paru -S --needed --pkgbuilds \
+                intel-vision-drivers-dkms-ipu7-ov08x40 \
+                libcamera-ipu7-ov08x40 \
+                libcamera-ipu7-ov08x40-ipa; then
+                _failed_aur_packages+=("$_aur_package")
+            fi
+        elif ! paru -S --needed "$_aur_package"; then
             _failed_aur_packages+=("$_aur_package")
         fi
     done 3< "$_aur_packages"

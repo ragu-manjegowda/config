@@ -43,7 +43,6 @@ enable_user_service pipewire
 enable_user_service pipewire-pulse
 enable_user_service wireplumber
 enable_user_service darkman
-enable_user_service noisetorch
 enable_user_service lid-brightness-manager
 
 log_info "User tmpfiles..."

@@ -13,6 +13,9 @@ if [[ ! -f "$_logind_dropin" ]]; then
 fi
 check_copy "${MISC_DIR}/etc/systemd/logind.conf.d/90-local.conf" "$_logind_dropin"
 
+log_info "Deploying Intel Xe display workaround..."
+check_copy "${MISC_DIR}/etc/modprobe.d/xe.conf" /etc/modprobe.d/xe.conf
+
 log_info "Deploying mkinitcpio.conf..."
 _mkinitcpio_changed=false
 _mkinitcpio_dropin="/etc/mkinitcpio.conf.d/90-resume.conf"
