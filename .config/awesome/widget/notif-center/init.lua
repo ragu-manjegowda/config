@@ -4,61 +4,58 @@ local awful = require('awful')
 local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 
--- Notification count tracker
-_G.notif_count = 0
-
 -- Scroll state
 local SCROLL_STEP = dpi(60)
-local NOTIF_HEIGHT = dpi(100)
 local MAX_NOTIFS_VISIBLE = 2
-local MAX_HEIGHT = NOTIF_HEIGHT * MAX_NOTIFS_VISIBLE + dpi(10) -- 2 notifications + spacing
-
-local notif_header = wibox.widget {
-    text   = 'Notification Center',
-    font   = beautiful.font_bold(14),
-    align  = 'left',
-    valign = 'center',
-    widget = wibox.widget.textbox
-}
-
-local notif_count_widget = wibox.widget {
-    {
-        {
-            id = 'count_text',
-            text = '0',
-            font = beautiful.font_bold(10),
-            align = 'center',
-            valign = 'center',
-            widget = wibox.widget.textbox
-        },
-        left = dpi(6),
-        right = dpi(6),
-        top = dpi(2),
-        bottom = dpi(2),
-        widget = wibox.container.margin,
-    },
-    bg = beautiful.accent or beautiful.bg_focus,
-    fg = beautiful.fg_focus or beautiful.fg_normal,
-    shape = gears.shape.rounded_bar,
-    visible = false,
-    widget = wibox.container.background,
-}
-
--- Function to update notification count display
-local function update_notif_count(count)
-    _G.notif_count = count
-    local count_text = notif_count_widget:get_children_by_id('count_text')[1]
-    count_text.text = tostring(count)
-    notif_count_widget.visible = (count > 0)
-end
-
-_G.update_notif_count = update_notif_count
 
 local notif_center = function(s)
-    s.clear_all = require('widget.notif-center.clear-all')
+    local notif_manager = require('widget.notif-center.build-notifbox')
+    local notif_core = notif_manager.new_view()
+    s.clear_all = require('widget.notif-center.clear-all')()
 
-    local notif_core = require('widget.notif-center.build-notifbox')
+    local notif_header = wibox.widget {
+        text   = 'Notification Center',
+        font   = beautiful.font_bold(14),
+        align  = 'left',
+        valign = 'center',
+        widget = wibox.widget.textbox
+    }
+
+    local notif_count_widget = wibox.widget {
+        {
+            {
+                id = 'count_text',
+                text = '0',
+                font = beautiful.font_bold(10),
+                align = 'center',
+                valign = 'center',
+                widget = wibox.widget.textbox
+            },
+            left = dpi(6),
+            right = dpi(6),
+            top = dpi(2),
+            bottom = dpi(2),
+            widget = wibox.container.margin,
+        },
+        bg = beautiful.accent or beautiful.bg_focus,
+        fg = beautiful.fg_focus or beautiful.fg_normal,
+        shape = gears.shape.rounded_bar,
+        visible = false,
+        widget = wibox.container.background,
+    }
+
+    local function update_notif_count(count)
+        local count_text = notif_count_widget:get_children_by_id('count_text')[1]
+        count_text.text = tostring(count)
+        notif_count_widget.visible = count > 0
+    end
+
     s.notifbox_layout = notif_core.notifbox_layout
+    local fit_context = {
+        screen = s,
+        dpi = beautiful.xresources.get_dpi(s),
+    }
+    local content_width = s.geometry.width / 6 - dpi(20)
     local screen_active = true
 
     local function is_screen_active()
@@ -77,7 +74,7 @@ local notif_center = function(s)
     local scroll_offset = 0
     local max_scroll = 0
     local content_height = 0
-    local visible_height = MAX_HEIGHT
+    local visible_height = 0
 
     -- Scrollbar thumb widget
     local scrollbar_thumb = wibox.widget {
@@ -125,22 +122,40 @@ local notif_center = function(s)
             widget = wibox.container.background,
         },
         strategy = 'max',
-        height = MAX_HEIGHT,
+        height = 0,
         widget = wibox.container.constraint,
     }
 
     -- Function to update scrollbar and height
     local function update_scrollbar()
         if not is_screen_active() or not s.notifbox_layout then return end
-        local child_count = #s.notifbox_layout.children
-        content_height = child_count * NOTIF_HEIGHT
-
-        -- Dynamic height: use content height up to MAX_HEIGHT
-        visible_height = math.min(content_height, MAX_HEIGHT)
+        local children = s.notifbox_layout.children
+        local spacing = s.notifbox_layout.spacing or 0
+        content_height = 0
+        visible_height = 0
+        for index, child in ipairs(children) do
+            local _, child_height = wibox.widget.base.fit_widget(
+                s.notifbox_layout,
+                fit_context,
+                child,
+                content_width,
+                s.geometry.height
+            )
+            if index > 1 then
+                content_height = content_height + spacing
+                if index <= MAX_NOTIFS_VISIBLE then
+                    visible_height = visible_height + spacing
+                end
+            end
+            content_height = content_height + child_height
+            if index <= MAX_NOTIFS_VISIBLE then
+                visible_height = visible_height + child_height
+            end
+        end
         scroll_clip.height = visible_height
         scrollbar_track.forced_height = visible_height
 
-        max_scroll = math.max(0, content_height - MAX_HEIGHT + dpi(20))
+        max_scroll = math.max(0, content_height - visible_height)
         scroll_offset = math.max(0, math.min(scroll_offset, max_scroll))
 
         if max_scroll > 0 then
@@ -182,10 +197,7 @@ local notif_center = function(s)
         else
             update_notif_count(child_count)
         end
-        gears.timer.start_new(0.05, function()
-            update_scrollbar()
-            return false
-        end)
+        gears.timer.delayed_call(update_scrollbar)
     end
 
     s.notifbox_layout:connect_signal('widget::layout_changed', on_layout_changed)
@@ -196,6 +208,7 @@ local notif_center = function(s)
         end
 
         screen_active = false
+        notif_manager.remove_view(notif_core)
         notif_core.notifbox_layout:disconnect_signal('widget::layout_changed', on_layout_changed)
     end)
 
@@ -220,10 +233,7 @@ local notif_center = function(s)
         awful.button({}, 5, function() do_scroll('down') end)
     ))
 
-    gears.timer.start_new(0.5, function()
-        on_layout_changed()
-        return false
-    end)
+    gears.timer.delayed_call(on_layout_changed)
 
     -- Main widget with separate header and scroll areas
     return wibox.widget {

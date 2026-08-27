@@ -3,8 +3,16 @@ local wibox = require('wibox')
 local gears = require('gears')
 local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
+local suspension = require('library.notification-suspension')
 
 PANEL_VISIBLE = false
+local open_centers = setmetatable({}, { __mode = 'k' })
+local active_panel
+
+local function update_suspension()
+    PANEL_VISIBLE = next(open_centers) ~= nil
+    suspension.set('center_open', PANEL_VISIBLE)
+end
 
 local info_center = function(s)
     -- Set the info center geometry
@@ -74,11 +82,15 @@ local info_center = function(s)
     }
 
     local open_panel = function()
-        local focused = awful.screen.focused()
-        PANEL_VISIBLE = true
-
-        focused.backdrop_info_center.visible = true
-        focused.info_center.visible = true
+        if active_panel and active_panel ~= panel then
+            active_panel:hide_dashboard()
+        end
+        active_panel = panel
+        panel.opened = true
+        open_centers[panel] = true
+        update_suspension()
+        s.backdrop_info_center.visible = true
+        panel.visible = true
 
         awesome.emit_signal('info_center::visibility', true)
 
@@ -88,11 +100,17 @@ local info_center = function(s)
     end
 
     local close_panel = function()
-        local focused = awful.screen.focused()
-        PANEL_VISIBLE = false
-
-        focused.info_center.visible = false
-        focused.backdrop_info_center.visible = false
+        if active_panel == panel then
+            active_panel = nil
+        end
+        panel.opened = false
+        open_centers[panel] = nil
+        if active_panel == panel then
+            active_panel = nil
+        end
+        update_suspension()
+        panel.visible = false
+        s.backdrop_info_center.visible = false
 
         awesome.emit_signal('info_center::visibility', false)
 
@@ -105,13 +123,23 @@ local info_center = function(s)
     end
 
     function panel:toggle()
-        self.opened = not self.opened
         if self.opened then
-            open_panel()
-        else
             close_panel()
+        else
+            open_panel()
         end
     end
+
+    local removed_handler
+    removed_handler = function(removed)
+        if removed ~= s then
+            return
+        end
+        open_centers[panel] = nil
+        update_suspension()
+        screen.disconnect_signal('removed', removed_handler)
+    end
+    screen.connect_signal('removed', removed_handler)
 
     s.backdrop_info_center:buttons(
         awful.util.table.join(

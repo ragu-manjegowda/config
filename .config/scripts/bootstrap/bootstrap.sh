@@ -48,6 +48,8 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+mkdir -p "${HOME}/.local/bin"
+
 STEPS=(
     "00-dotfiles.sh"
     "01-packages.sh"

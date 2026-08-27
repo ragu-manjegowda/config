@@ -22,6 +22,7 @@ local function read_file(path)
 end
 
 local source = read_file(os.getenv("HOME") .. "/.config/awesome/module/lockscreen.lua")
+local exit_source = read_file(os.getenv("HOME") .. "/.config/awesome/module/exit-screen.lua")
 
 print("\nTest Suite: Lockscreen Authentication")
 
@@ -88,6 +89,54 @@ assert_test(
 assert_test(
     source:match("circle_container%.bg = beautiful%.transparent%s+awesome%.emit_signal%('module::lockscreen_auth_feedback', beautiful%.transparent%)") ~= nil,
     "Secondary auth failure color resets when primary clears"
+)
+
+assert_test(
+    source:match("awesome%.disconnect_signal%(signal%[1%], signal%[2%]%)") ~= nil and
+        source:match("screen%.disconnect_signal%('removed', removed_handler%)") ~= nil,
+    "Secondary monitor signal handlers disconnect when their screen is removed"
+)
+
+assert_test(
+    source:match("local function ensure_password_grab%(%)") ~= nil and
+        source:match("awful%.keygrabber%.current_instance == password_grabber") ~= nil and
+        source:match("if not ensure_password_grab%(%) then") ~= nil and
+        source:match("awesome%.emit_signal%('module::locked'%)") ~= nil,
+    "Lock completion requires password keygrab ownership"
+)
+
+assert_test(
+    source:match("module::sleep_resumed") ~= nil and
+        source:match("ensure_password_grab%(%)") ~= nil and
+        source:match("xset dpms force on") ~= nil,
+    "Resume wakes DPMS and reacquires the lockscreen keygrab"
+)
+
+assert_test(
+    source:match("lock_state_file") ~= nil and
+        source:match("set_lock_state%(true%)") ~= nil and
+        source:match("set_lock_state%(false%)") ~= nil and
+        source:match("is_lock_state_set%(%)") ~= nil,
+    "Lock state survives Awesome reload until authentication succeeds"
+)
+
+assert_test(
+    exit_source:match("lock%s*&%s*systemctl hibernate") == nil and
+        exit_source:match("pending_sleep_action%s*=%s*'hibernate'") ~= nil and
+        exit_source:match("module::locked") ~= nil,
+    "Hibernate waits for completed lockscreen keygrab setup"
+)
+
+assert_test(
+    source:match("elseif is_lock_state_set%(%) and ensure_password_grab%(%) then") ~= nil,
+    "Critical battery hibernate can confirm an already locked session"
+)
+
+assert_test(
+    source:match("local function lockscreen_for_screen%(s%)") ~= nil and
+        source:match("if not s%.valid then") ~= nil and
+        source:match("if target == lockscreen_for_screen%(s%) then") ~= nil,
+    "Wallpaper callbacks ignore removed or undecorated screens"
 )
 
 print("\n" .. string.rep("=", 50))

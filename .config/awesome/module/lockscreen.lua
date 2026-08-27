@@ -1,7 +1,6 @@
 local wibox = require('wibox')
 local gears = require('gears')
 local awful = require('awful')
-local naughty = require('naughty')
 local beautiful = require('beautiful')
 local filesystem = gears.filesystem
 local config_dir = filesystem.get_configuration_dir()
@@ -9,6 +8,7 @@ local dpi = beautiful.xresources.apply_dpi
 local apps = require('configuration.apps')
 local widget_icon_dir = config_dir .. 'configuration/user-profile/'
 local config = require('configuration.config')
+local suspension = require('library.notification-suspension')
 
 require('module.dynamic-wallpaper')
 require('module.auto-start')
@@ -39,6 +39,31 @@ local locker_config = {
     tmp_wall_dir = config.module.lockscreen.tmp_wall_dir or
         ('/tmp/awesomewm/' .. (os.getenv('USER') or 'unknown') .. '/')
 }
+local lock_state_file = (os.getenv('XDG_RUNTIME_DIR') or locker_config.tmp_wall_dir) ..
+    '/awesome-lockscreen.locked'
+
+local function set_lock_state(locked)
+    if not locked then
+        os.remove(lock_state_file)
+        return
+    end
+
+    local file = io.open(lock_state_file, 'w')
+    if file then
+        file:write('locked\n')
+        file:close()
+    end
+end
+
+local function is_lock_state_set()
+    local file = io.open(lock_state_file, 'r')
+    if not file then
+        return false
+    end
+
+    file:close()
+    return true
+end
 
 -- Useful variables (DO NOT TOUCH THESE)
 local input_password = nil
@@ -47,24 +72,10 @@ local type_again = true
 local capture_now = locker_config.capture_intruder
 local locked_tag = nil
 local client_focused = nil
-local MAX_RESUMED_NOTIFICATIONS = 10
 local pam_module_loaded = false
 local pam_module = nil
 local current_user_name = '$USER'
 local current_profile_image = widget_icon_dir .. 'default.svg'
-
-local function destroy_notification(notification)
-    local reason = naughty.notification_closed_reason and
-        naughty.notification_closed_reason.expired or 1
-    naughty.destroy(notification, reason)
-end
-
-local function trim_pending_notifications_for_resume()
-    local suspended = naughty.notifications.suspended
-    while #suspended > MAX_RESUMED_NOTIFICATIONS do
-        destroy_notification(suspended[1])
-    end
-end
 
 local function load_pam_module()
     if pam_module_loaded then
@@ -478,15 +489,13 @@ local locker = function(s)
 
                 circle_container.bg = beautiful.transparent
                 awesome.emit_signal('module::lockscreen_auth_feedback', beautiful.transparent)
+                set_lock_state(false)
                 lock_again = true
                 type_again = true
 
                 awesome.emit_signal('module::unlocked')
 
-                if not _G.dont_disturb_state then
-                    trim_pending_notifications_for_resume()
-                    naughty.suspended = false
-                end
+                suspension.set('lockscreen', false)
 
                 -- Select old tag
                 -- And restore minimized focused client if there's any
@@ -513,7 +522,6 @@ local locker = function(s)
 
     -- Password/key grabber
     local password_grabber = awful.keygrabber {
-        auto_start           = true,
         stop_event           = 'release',
         mask_event_callback  = true,
         keybindings          = {
@@ -607,6 +615,20 @@ local locker = function(s)
         end
     }
 
+    local function ensure_password_grab()
+        if awful.keygrabber.current_instance == password_grabber then
+            return true
+        end
+
+        local current = awful.keygrabber.current_instance
+        if current then
+            current:stop()
+        end
+
+        password_grabber:start()
+        return awful.keygrabber.current_instance == password_grabber
+    end
+
     lockscreen:setup {
         layout = wibox.layout.align.vertical,
         expand = 'none',
@@ -669,17 +691,6 @@ local locker = function(s)
         nil
     }
 
-    -- Exit screen sends this signal when sleep is resumed
-    awesome.connect_signal(
-        'module::sleep_resumed',
-        function()
-            awesome.emit_signal('module::spawn_apps')
-            awesome.emit_signal('module::change_wallpaper')
-            awesome.emit_signal('module::change_background_wallpaper')
-            awful.spawn.with_shell('xset r rate 180 45')
-        end
-    )
-
     local show_lockscreen = function()
         -- Why is there a lock_again variable?
         -- It prevents the user to spam locking while in a process of authentication
@@ -704,26 +715,24 @@ local locker = function(s)
                 end
             end
 
-            -- Start keygrabbing, but with a little delay to
-            -- give some extra time for the free_keygrab function
-            gears.timer.start_new(
-                0.5,
-                function()
-                    -- Start key grabbing for password
-                    password_grabber:start()
-                end
-            )
-
-            -- Dont lock again
+            input_password = nil
+            type_again = true
             lock_again = false
+            set_lock_state(true)
 
-            -- Do not suspend notifications if dont_disturb_state mode is on
-            -- Or if the info_center is visible
-            local focused = awful.screen.focused()
-            if not (_G.dont_disturb_state or (focused.info_center and focused.info_center.visible)) then
-                -- naughty.destroy_all_notifications(nil, 1)
-                naughty.suspended = true
+            if not ensure_password_grab() then
+                gears.timer.start_new(0.1, function()
+                    if ensure_password_grab() then
+                        suspension.set('lockscreen', true)
+                        awesome.emit_signal('module::locked')
+                        return false
+                    end
+                    return true
+                end)
+                return
             end
+
+            suspension.set('lockscreen', true)
 
             -- send signal to exit screen (needed during suspend)
             awesome.emit_signal('module::locked')
@@ -760,6 +769,22 @@ local locker = function(s)
             if lock_again == true or lock_again == nil then
                 free_keygrab()
                 show_lockscreen()
+            elseif is_lock_state_set() and ensure_password_grab() then
+                awesome.emit_signal('module::locked')
+            end
+        end
+    )
+
+    awesome.connect_signal(
+        'module::sleep_resumed',
+        function()
+            awesome.emit_signal('module::spawn_apps')
+            awesome.emit_signal('module::change_wallpaper')
+            awesome.emit_signal('module::change_background_wallpaper')
+            awful.spawn.with_shell('xset dpms force on; xset s reset; xset r rate 180 45')
+
+            if is_lock_state_set() then
+                ensure_password_grab()
             end
         end
     )
@@ -845,7 +870,13 @@ local locker_ext = function(s)
         return extended_lockscreen.valid
     end
 
-    awesome.connect_signal(
+    local signal_handlers = {}
+    local function connect_signal(name, handler)
+        awesome.connect_signal(name, handler)
+        signal_handlers[#signal_handlers + 1] = { name, handler }
+    end
+
+    connect_signal(
         'module::lockscreen_user_name',
         function(name)
             if not is_active() then return end
@@ -853,7 +884,7 @@ local locker_ext = function(s)
         end
     )
 
-    awesome.connect_signal(
+    connect_signal(
         'module::lockscreen_profile_image',
         function(image)
             if not is_active() then return end
@@ -861,7 +892,7 @@ local locker_ext = function(s)
         end
     )
 
-    awesome.connect_signal(
+    connect_signal(
         'module::lockscreen_ring_feedback',
         function(direction, color)
             if not is_active() then return end
@@ -873,7 +904,7 @@ local locker_ext = function(s)
         end
     )
 
-    awesome.connect_signal(
+    connect_signal(
         'module::lockscreen_auth_feedback',
         function(color)
             if not is_active() then return end
@@ -882,7 +913,7 @@ local locker_ext = function(s)
         end
     )
 
-    awesome.connect_signal(
+    connect_signal(
         'module::lockscreen_caps_state',
         function(caps_on)
             if not is_active() then return end
@@ -896,6 +927,18 @@ local locker_ext = function(s)
             ext_caps_text:emit_signal('widget::redraw_needed')
         end
     )
+
+    local removed_handler
+    removed_handler = function(removed)
+        if removed ~= s then
+            return
+        end
+        for _, signal in ipairs(signal_handlers) do
+            awesome.disconnect_signal(signal[1], signal[2])
+        end
+        screen.disconnect_signal('removed', removed_handler)
+    end
+    screen.connect_signal('removed', removed_handler)
 
     extended_lockscreen:setup {
         layout = wibox.layout.align.vertical,
@@ -971,35 +1014,6 @@ local create_lock_screens = function(s)
     end
 end
 
--- Don't show notification popups if the screen is locked
-local check_lockscreen_visibility = function()
-    local focused = awful.screen.focused()
-    if focused.lockscreen and focused.lockscreen.visible then
-        return true
-    end
-    if focused.lockscreen_extended and focused.lockscreen_extended.visible then
-        return true
-    end
-    return false
-end
-
--- Notifications signal
--- Check for added since we are doing suspended instead of destroy_all_notifications
-naughty.connect_signal(
-    'added',
-    function(_)
-        if check_lockscreen_visibility() then
-            -- Do not suspend notifications if dont_disturb_state mode is on
-            -- Or if the info_center is visible
-            local focused = awful.screen.focused()
-            if not (_G.dont_disturb_state or (focused.info_center and focused.info_center.visible)) then
-                -- naughty.destroy_all_notifications(nil, 1)
-                naughty.suspended = true
-            end
-        end
-    end
-)
-
 -- Filter background image
 local filter_bg_image = function(wall_name, index, ap, width, height)
     -- Checks if the blur has to be blurred
@@ -1023,6 +1037,17 @@ local filter_bg_image = function(wall_name, index, ap, width, height)
     return magic
 end
 
+local function lockscreen_for_screen(s)
+    if not s.valid then
+        return nil
+    end
+
+    if s.index == 1 then
+        return s.lockscreen
+    end
+    return s.lockscreen_extended
+end
+
 -- Apply lockscreen background image
 local apply_ls_bg_image = function(wall_name)
     -- Iterate through all the screens and create a lockscreen for each of it
@@ -1041,21 +1066,14 @@ local apply_ls_bg_image = function(wall_name)
         local cmd = nil
         cmd = filter_bg_image(wall_name, index, aspect_ratio, screen_width, screen_height)
 
-        -- Asign lockscreen to each screen
-        if s.index == 1 then
-            -- Primary screen
+        local target = lockscreen_for_screen(s)
+        if target then
             awful.spawn.easy_async_with_shell(
                 cmd,
                 function()
-                    s.lockscreen.bgimage = locker_config.tmp_wall_dir .. index .. wall_name
-                end
-            )
-        else
-            -- Multihead screen/s
-            awful.spawn.easy_async_with_shell(
-                cmd,
-                function()
-                    s.lockscreen_extended.bgimage = locker_config.tmp_wall_dir .. index .. wall_name
+                    if target == lockscreen_for_screen(s) then
+                        target.bgimage = locker_config.tmp_wall_dir .. index .. wall_name
+                    end
                 end
             )
         end
@@ -1078,15 +1096,19 @@ screen.connect_signal(
         create_lock_screens(s)
         -- Defined in dynamic-wallpaper.lua
         apply_ls_bg_image(get_wallpaper_name())
+        if s.index == 1 and is_lock_state_set() then
+            gears.timer.delayed_call(function()
+                awesome.emit_signal('module::lockscreen_show')
+            end)
+        end
     end
 )
 
--- Regenerate lockscreens and its background if a screen was removed to avoid errors
 screen.connect_signal(
     'removed',
-    function(s)
-        create_lock_screens(s)
-        -- Defined in dynamic-wallpaper.lua
-        apply_ls_bg_image(get_wallpaper_name())
+    function()
+        gears.timer.delayed_call(function()
+            apply_ls_bg_image(get_wallpaper_name())
+        end)
     end
 )

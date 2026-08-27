@@ -80,7 +80,9 @@ export PATH="$PATH:$HOMEBREW_PATH/opt/gnu-getopt/bin"
 export GUILE_TLS_CERTIFICATE_DIRECTORY="$HOMEBREW_PATH/etc/gnutls"
 
 # Go
-export GOPATH="$HOME/.config/go"
+export GOPATH="${XDG_DATA_HOME:-$HOME/.local/share}/go"
+export GOMODCACHE="${XDG_CACHE_HOME:-$HOME/.cache}/go/pkg/mod"
+export GOBIN="$HOME/.local/bin"
 
 # Guile
 export GUILE_LOAD_PATH="$HOMEBREW_PATH/share/guile/site/3.0"

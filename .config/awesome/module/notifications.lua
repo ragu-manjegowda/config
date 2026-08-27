@@ -10,6 +10,9 @@ local clickable_container = require('widget.clickable-container')
 local animation = require("library.tween")
 local cst = require("naughty.constants")
 local retention = require('library.notification-retention')
+local lifecycle = require('library.notification-lifecycle')
+local notif_manager = require('widget.notif-center.build-notifbox')
+local displaying_error = false
 
 -- Keep strong references to notification popup widgets so they are not
 -- garbage-collected while naughty still tracks them internally (the
@@ -18,24 +21,13 @@ local retention = require('library.notification-retention')
 local active_boxes = {}
 local active_animations = {}
 local popup_order = {}
-local centered_notifications = {}
-local centered_lookup = setmetatable({}, { __mode = 'k' })
+local suspension_handlers = setmetatable({}, { __mode = 'k' })
 local MAX_VISIBLE_POPUPS = 3
 
 local function remove_from_popup_order(notification)
     for index = #popup_order, 1, -1 do
         if popup_order[index] == notification then
             table.remove(popup_order, index)
-            return
-        end
-    end
-end
-
-local function remove_from_centered(notification)
-    centered_lookup[notification] = nil
-    for index = #centered_notifications, 1, -1 do
-        if centered_notifications[index] == notification then
-            table.remove(centered_notifications, index)
             return
         end
     end
@@ -56,58 +48,105 @@ local function normalize_notification_urgency(n)
     end
 end
 
-local function add_to_notification_center(n)
-    if centered_lookup[n] then
-        return
+local function preferred_notification_screen()
+    if screen.count() > 1 then
+        for candidate in screen do
+            if candidate ~= screen.primary and candidate.valid then
+                return candidate
+            end
+        end
     end
 
-    local notif_core = require('widget.notif-center.build-notifbox')
-    if notif_core.add_notification then
-        notif_core.add_notification(n)
-        centered_lookup[n] = true
-        centered_notifications[#centered_notifications + 1] = n
+    local preferred_ok, preferred = pcall(awful.screen.preferred)
+    if preferred_ok and preferred and preferred.valid then
+        return screen.primary or preferred
+    end
+    return screen.primary or screen[1]
+end
 
-        while #centered_notifications > retention.limit do
-            local index = retention.eviction_index(centered_notifications)
-            local oldest = table.remove(centered_notifications, index)
-            centered_lookup[oldest] = nil
-            oldest:destroy(naughty.notification_closed_reason.expired)
-        end
+local function remove_cards(entry)
+    if not entry then
+        return
+    end
+    for view, card in pairs(entry.cards) do
+        view.remove_card(card, false)
+        entry.cards[view] = nil
     end
 end
 
-naughty.connect_signal('property::active', function()
-    local newest = naughty.active[#naughty.active]
-    gears.timer.delayed_call(function()
-        if newest and newest.suspended and not centered_lookup[newest] then
-            add_to_notification_center(newest)
-        end
+local notification_store = retention.new(function(evicted)
+    remove_cards(evicted)
+    pcall(function()
+        evicted.notification:destroy(naughty.notification_closed_reason.expired)
     end)
+end)
 
-    if #naughty.active > retention.limit then
-        local index = retention.eviction_index(naughty.active)
-        local notification = naughty.active[index]
-        local count = #naughty.active
+local function track_notification(n)
+    if lifecycle.is_ignored(n) then
+        n:destroy(naughty.notification_closed_reason.expired)
+        return nil
+    end
+    return notification_store:add(n)
+end
+
+local function add_entry_to_view(entry, view)
+    if not entry.cards[view] then
+        notification_store:set_card(
+            entry.notification,
+            view,
+            view.add_notification(entry.notification)
+        )
+    end
+end
+
+local function add_to_notification_center(n)
+    local entry = notification_store:get(n) or track_notification(n)
+    if not entry then
+        return
+    end
+    for view in notif_manager.each_view() do
+        add_entry_to_view(entry, view)
+    end
+end
+
+awesome.connect_signal('widget::notif-center:view_added', function(view)
+    for _, entry in ipairs(notification_store.entries) do
+        add_entry_to_view(entry, view)
+    end
+end)
+
+awesome.connect_signal('widget::notif-center:view_removed', function(view)
+    for _, entry in ipairs(notification_store.entries) do
+        entry.cards[view] = nil
+    end
+end)
+
+awesome.connect_signal('widget::notif-center:clear_all', function()
+    local notifications = {}
+    for _, entry in ipairs(notification_store.entries) do
+        notifications[#notifications + 1] = entry.notification
+    end
+    notif_manager.clear_all()
+    for _, notification in ipairs(notifications) do
         pcall(function()
             notification:destroy(naughty.notification_closed_reason.expired)
         end)
-        if #naughty.active == count then
-            if active_animations[notification] then
-                active_animations[notification]:stop()
-                active_animations[notification] = nil
-            end
-            local box = active_boxes[notification]
-            if box then
-                pcall(function()
-                    box.visible = false
-                end)
-            end
-            active_boxes[notification] = nil
-            remove_from_popup_order(notification)
-            remove_from_centered(notification)
-            table.remove(naughty.active, index)
-        end
     end
+end)
+
+naughty.connect_signal('property::active', function()
+    local newest = naughty.active[#naughty.active]
+    if not newest then
+        return
+    end
+
+    track_notification(newest)
+    gears.timer.delayed_call(function()
+        local entry = notification_store:get(newest)
+        if entry and newest.suspended and not next(entry.cards) then
+            add_to_notification_center(newest)
+        end
+    end)
 end)
 
 local function release_popup_box(notification, box)
@@ -123,6 +162,18 @@ local function release_popup_box(notification, box)
     end
 
     remove_from_popup_order(notification)
+end
+
+local function watch_notification_suspension(n)
+    if suspension_handlers[n] then
+        return
+    end
+
+    local handler = lifecycle.watch_suspension(n, function()
+        add_to_notification_center(n)
+        release_popup_box(n, active_boxes[n])
+    end)
+    suspension_handlers[n] = handler
 end
 
 screen.connect_signal("removed", function(s)
@@ -183,8 +234,7 @@ ruled.notification.connect_signal(
                 bg               = beautiful.colors.red,
                 fg               = beautiful.colors.red,
                 margin           = dpi(16),
-                position         = 'top_left',
-                implicit_timeout = 0
+                position         = 'top_left'
             }
         }
 
@@ -196,10 +246,7 @@ ruled.notification.connect_signal(
                 bg               = beautiful.bg_focus,
                 fg               = beautiful.fg_normal,
                 margin           = dpi(16),
-                position         = 'top_left',
-                -- timeout = 0 to prevent auto-destroy,
-                -- we manage lifecycle ourselves
-                implicit_timeout = 0
+                position         = 'top_left'
             }
         }
 
@@ -211,17 +258,7 @@ ruled.notification.connect_signal(
                 bg               = beautiful.transparent,
                 fg               = beautiful.fg_normal,
                 margin           = dpi(16),
-                position         = 'top_left',
-                -- timeout = 0 to prevent auto-destroy,
-                -- we manage lifecycle ourselves
-                implicit_timeout = 0
-            }
-        }
-
-        ruled.notification.append_rule {
-            rule       = { app_name = 'Slack' },
-            properties = {
-                implicit_timeout = 0
+                position         = 'top_left'
             }
         }
 
@@ -234,13 +271,6 @@ ruled.notification.connect_signal(
                 ignore = true
             }
         }
-
-        -- ruled.notification.append_rule {
-        --     rule       = { app_name = 'Email' },
-        --     properties = {
-        --         ignore    = true
-        --     }
-        -- }
     end
 )
 
@@ -248,13 +278,25 @@ ruled.notification.connect_signal(
 naughty.connect_signal(
     'request::display_error',
     function(message, startup)
-        naughty.notification {
-            urgency  = 'critical',
-            title    = 'Oops, an error happened' .. (startup and ' during startup!' or '!'),
-            message  = message,
-            app_name = 'System Notification',
-            icon     = beautiful.awesome_icon
-        }
+        if displaying_error then
+            io.stderr:write(tostring(message) .. '\n')
+            return
+        end
+
+        displaying_error = true
+        local ok, err = pcall(function()
+            naughty.notification {
+                urgency  = 'critical',
+                title    = 'Oops, an error happened' .. (startup and ' during startup!' or '!'),
+                message  = message,
+                app_name = 'System Notification',
+                icon     = beautiful.awesome_icon
+            }
+        end)
+        displaying_error = false
+        if not ok then
+            io.stderr:write(tostring(err) .. '\n')
+        end
     end
 )
 
@@ -288,12 +330,40 @@ end)
 
 -- Raise client, if destroyed by user
 -- https://github.com/awesomeWM/awesome/issues/3182#issuecomment-1753211773
+local function focus_new_urgent_client()
+    local handler
+    local timeout
+    local function disconnect()
+        client.disconnect_signal("property::urgent", handler)
+        if timeout and timeout.started then
+            timeout:stop()
+        end
+    end
+
+    handler = function(c)
+        if c and c.valid and c.urgent then
+            c:jump_to()
+            disconnect()
+        end
+    end
+    client.connect_signal("property::urgent", handler)
+    timeout = gears.timer.start_new(5, function()
+        disconnect()
+        return false
+    end)
+end
+
 naughty.connect_signal("destroyed", function(n, reason)
+    local suspension_handler = suspension_handlers[n]
+    if suspension_handler then
+        n:disconnect_signal('property::suspended', suspension_handler)
+        suspension_handlers[n] = nil
+    end
+    remove_cards(notification_store:remove(n))
     gears.timer.delayed_call(function()
         active_boxes[n] = nil
     end)
     remove_from_popup_order(n)
-    remove_from_centered(n)
     if active_animations[n] then
         active_animations[n]:stop()
         active_animations[n] = nil
@@ -304,24 +374,7 @@ naughty.connect_signal("destroyed", function(n, reason)
     end
 
     if reason == cst.notification_closed_reason.dismissed_by_user then
-        -- If we clicked on a notification, we get a new urgent client to jump to
-        client.connect_signal("property::urgent", function(c)
-            -- We don't use notification_client because it's not reliable
-            -- (Ex: If we have two different instances of chrome)
-            -- cf: https://awesomewm.org/apidoc/core_components/naughty.notification.html#clients
-            -- So we just check if the client name of our notification is
-            -- the same as the last urgent client and jump to this one.
-            for _, notification_client in ipairs(n.clients) do
-                -- For whatever reason, `c` can be nil
-                if c == nil then
-                    return
-                end
-
-                if c.name == notification_client.name then
-                    c:jump_to()
-                end
-            end
-        end)
+        focus_new_urgent_client()
     end
 end)
 
@@ -333,9 +386,11 @@ naughty.connect_signal(
         -- Urgent notifications (from apps that set timeout=0) stay visible until dismissed
         local POPUP_DURATION = 5
         normalize_notification_urgency(n)
-        if centered_lookup[n] then
+        local entry = notification_store:get(n) or track_notification(n)
+        if not entry or next(entry.cards) then
             return
         end
+        watch_notification_suspension(n)
         local is_urgent = n.urgency == 'critical'
 
         -- Actions Blueprint
@@ -399,10 +454,7 @@ naughty.connect_signal(
 
         -- Notifbox Blueprint
         -- Store a strong reference to prevent GC (see active_boxes above)
-        local preferred_ok, notif_screen = pcall(awful.screen.preferred)
-        if not preferred_ok or not notif_screen or not notif_screen.valid then
-            notif_screen = screen.primary or screen[1]
-        end
+        local notif_screen = preferred_notification_screen()
         if not notif_screen or not notif_screen.valid then
             return
         end
@@ -426,7 +478,7 @@ naughty.connect_signal(
                                                     {
                                                         layout = wibox.layout.align.horizontal,
                                                         {
-                                                            markup = n.app_name or 'System Notification',
+                                                            text = n.app_name or 'System Notification',
                                                             font = beautiful.font_bold(12),
                                                             align = 'center',
                                                             valign = 'center',
@@ -563,11 +615,7 @@ naughty.connect_signal(
             timeout_arc.value = 100
         end
 
-        -- Hide popups if dont_disturb_state mode is on
-        -- Or if the info_center is visible
-        local focused = awful.screen.focused()
-        if _G.dont_disturb_state or (focused and focused.valid and focused.info_center and focused.info_center.visible) then
-            -- Add this notification to notification center while keeping it alive
+        if n.suspended then
             add_to_notification_center(n)
             release_popup_box(n, widget)
         end

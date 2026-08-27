@@ -8,8 +8,7 @@ _validate_zramswap() {
     bash -n "$1" || return 1
     [[ "$(grep -Ec '^SIZE=[0-9]+$' "$1")" == 1 ]] &&
         [[ "$(grep -Ec '^RAM_PERCENT=[0-9]+$' "$1")" == 1 ]] &&
-        [[ "$(grep -Ec '^ZRAM_COMPRESSION_ALGO=[[:alnum:]_-]+$' "$1")" == 1 ]] &&
-        [[ "$(grep -Ec '^KERNEL_SWAP_DEVICE=/swapfile$' "$1")" == 1 ]]
+        [[ "$(grep -Ec '^ZRAM_COMPRESSION_ALGO=[[:alnum:]_-]+$' "$1")" == 1 ]]
 }
 install_validated_admin_config \
     "${MISC_DIR}/etc/zramswap.conf" /etc/zramswap.conf _validate_zramswap
@@ -135,6 +134,13 @@ enable_system_service disable-USB-wakeup.service
 log_info "Backlight udev rules..."
 check_copy "${MISC_DIR}/etc/udev/rules.d/90-backlight.rules" \
     /etc/udev/rules.d/90-backlight.rules
+
+log_info "On-demand IPU7 compatibility camera..."
+if [[ -e /etc/modprobe.d/v4l2loopback.conf ]]; then
+    sudo rm -f /etc/modprobe.d/v4l2loopback.conf
+    log_ok "Removed legacy v4l2loopback configuration"
+fi
+enable_system_service v4l2-relayd-ipu7.service
 
 log_info "Reloading udev rules..."
 sudo udevadm control --reload || log_warn "Failed to reload udev rules"

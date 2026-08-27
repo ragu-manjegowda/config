@@ -8,59 +8,59 @@ local dpi = beautiful.xresources.apply_dpi
 local config_dir = require('gears').filesystem.get_configuration_dir()
 local widget_icon_dir = config_dir .. 'widget/notif-center/icons/'
 
-local empty_notifbox = wibox.widget {
-    {
-        layout = wibox.layout.fixed.vertical,
-        spacing = dpi(5),
+local function new_empty_notifbox()
+    local empty_notifbox = wibox.widget {
         {
-            expand = 'none',
-            layout = wibox.layout.align.horizontal,
-            nil,
+            layout = wibox.layout.fixed.vertical,
+            spacing = dpi(5),
             {
-                image = widget_icon_dir .. 'empty-notification' .. '.svg',
-                resize = true,
-                forced_height = dpi(35),
-                forced_width = dpi(35),
-                widget = wibox.widget.imagebox,
+                expand = 'none',
+                layout = wibox.layout.align.horizontal,
+                nil,
+                {
+                    image = widget_icon_dir .. 'empty-notification' .. '.svg',
+                    resize = true,
+                    forced_height = dpi(35),
+                    forced_width = dpi(35),
+                    widget = wibox.widget.imagebox,
+                },
+                nil
             },
-            nil
+            {
+                text = 'Wow, such empty.',
+                font = beautiful.font_bold(14),
+                align = 'center',
+                valign = 'center',
+                widget = wibox.widget.textbox
+            },
+            {
+                text = 'Come back later.',
+                font = beautiful.font_regular(10),
+                align = 'center',
+                valign = 'center',
+                widget = wibox.widget.textbox
+            },
         },
-        {
-            text = 'Wow, such empty.',
-            font = beautiful.font_bold(14),
-            align = 'center',
-            valign = 'center',
-            widget = wibox.widget.textbox
-        },
-        {
-            text = 'Come back later.',
-            font = beautiful.font_regular(10),
-            align = 'center',
-            valign = 'center',
-            widget = wibox.widget.textbox
-        },
-    },
-    margins = dpi(20),
-    widget = wibox.container.margin
-
-}
-
-
-local separator_for_empty_msg = wibox.widget
-    {
-        orientation = 'vertical',
-        opacity = 0.0,
-        widget = wibox.widget.separator
+        margins = dpi(20),
+        widget = wibox.container.margin
     }
 
--- Make empty_notifbox center
-local centered_empty_notifbox = wibox.widget {
-    layout = wibox.layout.align.vertical,
-    forced_height = dpi(150),
-    expand = 'none',
-    separator_for_empty_msg,
-    empty_notifbox,
-    separator_for_empty_msg
-}
+    local function separator()
+        return wibox.widget {
+            orientation = 'vertical',
+            opacity = 0.0,
+            widget = wibox.widget.separator
+        }
+    end
 
-return centered_empty_notifbox
+    return wibox.widget {
+        layout = wibox.layout.align.vertical,
+        forced_height = dpi(150),
+        expand = 'none',
+        separator(),
+        empty_notifbox,
+        separator()
+    }
+end
+
+return new_empty_notifbox

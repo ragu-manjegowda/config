@@ -101,6 +101,8 @@ ttf-dejavu
 ttf-hack-nerd
 ueberzugpp
 upower
+v4l2loopback-dkms
+v4l2loopback-utils
 vlc
 w3m
 webkit2gtk-4.1

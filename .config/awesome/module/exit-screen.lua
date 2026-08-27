@@ -163,26 +163,28 @@ local build_power_button = function(name, icon, callback)
     return exit_screen_item
 end
 
-local hibernate_command = function()
-    awesome.emit_signal('module::exit_screen:hide')
-    awful.spawn.with_shell(apps.default.lock .. ' & systemctl hibernate')
-end
-
-awesome.connect_signal('module::hibernate', hibernate_command)
-
 -------------------------------------------------------------------------------
 -- Wait till lock screen is displayed, otherwise clients are visible for
 -- brief time when we come back from sleep.
 -------------------------------------------------------------------------------
 
-local sleep_requested = 0;
+local pending_sleep_action = nil
+
+local hibernate_command = function()
+    awesome.emit_signal('module::exit_screen:hide')
+    pending_sleep_action = 'hibernate'
+    awesome.emit_signal('module::lockscreen_show')
+end
+
+awesome.connect_signal('module::hibernate', hibernate_command)
 
 awesome.connect_signal(
     'module::locked',
     function(_)
-        if tostring(sleep_requested) == tostring(1) then
-            sleep_requested = 0;
-            awful.spawn.with_shell('systemctl suspend')
+        if pending_sleep_action then
+            local action = pending_sleep_action
+            pending_sleep_action = nil
+            awful.spawn.with_shell('systemctl ' .. action)
         end
     end
 )
@@ -190,7 +192,7 @@ awesome.connect_signal(
 awesome.connect_signal(
     'module::unlocked',
     function(_)
-        sleep_requested = 0;
+        pending_sleep_action = nil
         awful.spawn.with_shell('xset r rate 180 45')
     end
 )
@@ -200,10 +202,8 @@ awesome.connect_signal(
 
 local suspend_command = function()
     awesome.emit_signal('module::exit_screen:hide')
-    awful.spawn.with_shell(apps.default.lock)
-
-    -- set the variable which will be used to suspend after screen is locked
-    sleep_requested = 1;
+    pending_sleep_action = 'suspend'
+    awesome.emit_signal('module::lockscreen_show')
 end
 
 local logout_command = function()

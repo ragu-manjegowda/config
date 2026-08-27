@@ -112,12 +112,22 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Run Lua unit tests
+      - name: Run general Lua unit tests
         run: |
           cd "$GITHUB_WORKSPACE"
           for test in "${{ env.AWESOME_CONFIG_DIR }}"/tests/test_*.lua; do
+            case "$(basename "$test")" in
+              test_notification_*.lua) continue ;;
+            esac
             HOME="$GITHUB_WORKSPACE" lua "$test"
           done
+
+      - name: Verify notification retention policy
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          HOME="$GITHUB_WORKSPACE" lua "${{ env.AWESOME_CONFIG_DIR }}/tests/test_notification_retention.lua"
+          HOME="$GITHUB_WORKSPACE" lua "${{ env.AWESOME_CONFIG_DIR }}/tests/test_notification_lifecycle.lua"
+          HOME="$GITHUB_WORKSPACE" lua "${{ env.AWESOME_CONFIG_DIR }}/tests/test_notification_suspension.lua"
 
   awesome-config-load:
     name: AwesomeWM Configuration Load Test (Lua)

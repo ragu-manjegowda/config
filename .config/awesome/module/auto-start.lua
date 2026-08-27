@@ -8,6 +8,11 @@ local config = require('configuration.config')
 local debug_mode = config.module.auto_start.debug_mode or false
 
 local run_once = function(cmd)
+    if cmd:match('^systemctl%s') then
+        awful.spawn.with_shell(cmd)
+        return
+    end
+
     local findme = cmd
     local firstspace = cmd:find(' ')
     if firstspace then

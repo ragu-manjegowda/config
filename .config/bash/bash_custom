@@ -35,7 +35,8 @@ elif [ -n "$ZSH_VERSION" ]; then
 fi
 
 # Go
-export GOPATH="$HOME/.cache/go"
+export GOPATH="${XDG_DATA_HOME:-$HOME/.local/share}/go"
+export GOMODCACHE="${XDG_CACHE_HOME:-$HOME/.cache}/go/pkg/mod"
 export GOBIN="$HOME/.local/bin"
 
 # Java

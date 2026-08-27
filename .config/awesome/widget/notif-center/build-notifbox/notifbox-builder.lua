@@ -7,11 +7,7 @@ local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 
 local builder = require('widget.notif-center.build-notifbox.notifbox-ui-elements')
-local notifbox_core = require('widget.notif-center.build-notifbox')
-local retention = require('library.notification-retention')
-
-local notifbox_layout = notifbox_core.notifbox_layout
-local reset_notifbox_layout = notifbox_core.reset_notifbox_layout
+local lifecycle = require('library.notification-lifecycle')
 
 local age_entries = setmetatable({}, { __mode = 'k' })
 local age_timer
@@ -59,7 +55,7 @@ local function register_age(notifbox, widget, created_at)
     end
 end
 
-local notifbox_box = function(notif, icon, title, message, app, _)
+local notifbox_box = function(notif, icon, title, message, app, _, notifbox_core)
     local created_at = os.time()
 
     local notifbox_timepop = wibox.widget {
@@ -146,12 +142,10 @@ local notifbox_box = function(notif, icon, title, message, app, _)
         end,
         widget = wibox.container.background
     }
-    notifbox._retention_priority = retention.priority(notif)
-
     register_age(notifbox, notifbox_timepop, created_at)
     notifbox:connect_signal('widget::dismiss', function()
         if notif then
-            naughty.destroy(notif, naughty.notification_closed_reason.expired)
+            notif:destroy(naughty.notification_closed_reason.expired)
             notif = nil
         end
     end)
@@ -163,8 +157,7 @@ local notifbox_box = function(notif, icon, title, message, app, _)
     end)
 
     local notifbox_delete = function()
-        notifbox:emit_signal('widget::removed')
-        notifbox_layout:remove_widgets(notifbox, true)
+        notifbox_core.remove_card(notifbox, false)
     end
 
     -- Track if mouse is hovering over dismiss button
@@ -185,17 +178,7 @@ local notifbox_box = function(notif, icon, title, message, app, _)
                 {},
                 1,
                 function()
-                    -- Just delete, don't focus or close notification center
-                    notifbox:emit_signal('widget::dismiss')
-                    if #notifbox_layout.children == 1 then
-                        notifbox:emit_signal('widget::removed')
-                        reset_notifbox_layout()
-                    else
-                        notifbox_delete()
-                        if _G.update_notif_count then
-                            _G.update_notif_count(#notifbox_layout.children)
-                        end
-                    end
+                    notifbox_core.remove_card(notifbox, true)
                 end
             )
         )
@@ -204,11 +187,10 @@ local notifbox_box = function(notif, icon, title, message, app, _)
     -- Invoke the notification's default action via D-Bus
     -- This tells the app to open the relevant content (tab, conversation, etc.)
     local invoke_default_action = function()
-        if notif and notif._private and notif._private.action_cb then
-            -- Invoke the "default" action - this sends ActionInvoked D-Bus signal
-            notif._private.action_cb("default")
-            -- Then destroy the notification properly
-            naughty.destroy(notif, naughty.notification_closed_reason.dismissed_by_user)
+        if lifecycle.invoke_default(
+            notif,
+            naughty.notification_closed_reason.dismissed_by_user
+        ) then
             notif = nil
             return true
         end
@@ -224,7 +206,7 @@ local notifbox_box = function(notif, icon, title, message, app, _)
 
         -- Fallback: just destroy the notification if it exists
         if notif then
-            naughty.destroy(notif, naughty.notification_closed_reason.dismissed_by_user)
+            notif:destroy(naughty.notification_closed_reason.dismissed_by_user)
             notif = nil
         end
 
@@ -263,32 +245,14 @@ local notifbox_box = function(notif, icon, title, message, app, _)
                         focused.info_center:toggle()
                     end
 
-                    -- Delete the notification
-                    if #notifbox_layout.children == 1 then
-                        notifbox:emit_signal('widget::removed')
-                        reset_notifbox_layout()
-                    else
-                        notifbox_delete()
-                        if _G.update_notif_count then
-                            _G.update_notif_count(#notifbox_layout.children)
-                        end
-                    end
+                    notifbox_delete()
                 end
             ),
             awful.button(
                 {},
                 3, -- Right click: just delete without focusing
                 function()
-                    notifbox:emit_signal('widget::dismiss')
-                    if #notifbox_layout.children == 1 then
-                        notifbox:emit_signal('widget::removed')
-                        reset_notifbox_layout()
-                    else
-                        notifbox_delete()
-                        if _G.update_notif_count then
-                            _G.update_notif_count(#notifbox_layout.children)
-                        end
-                    end
+                    notifbox_core.remove_card(notifbox, true)
                 end
             )
         )
@@ -307,7 +271,7 @@ local notifbox_box = function(notif, icon, title, message, app, _)
     notifbox_template:connect_signal(
         'mouse::leave',
         function()
-            notifbox.bg = beautiful.tranparent
+            notifbox.bg = beautiful.transparent
             notifbox_timepop.visible = true
             notifbox_dismiss.visible = false
         end

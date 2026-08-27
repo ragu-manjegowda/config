@@ -37,8 +37,8 @@ sioyek-git
 solarized-colors-iconpack-git
 sync-pacman-hook-git
 teleport-bin
+v4l2-relayd-ipu7-ov08x40
 warpd
 xidlehook
 zoom
-zram-hibernate-git
 zramswap
