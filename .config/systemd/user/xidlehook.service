@@ -6,7 +6,6 @@ After=graphical-session.target
 [Service]
 Type=simple
 Environment=DISPLAY=:0
-ExecCondition=/usr/bin/bash -c '[[ $${XDG_CURRENT_DESKTOP,,} == *awesome* || $${XDG_SESSION_DESKTOP,,} == awesome || $${DESKTOP_SESSION,,} == awesome ]]'
 ExecStart=%h/.config/scripts/start_xidlehook.sh
 Restart=on-failure
 RestartSec=30

@@ -3,10 +3,11 @@ local retention = {
 }
 
 function retention.priority(notification)
-    local ok, urgency, priority, hints = pcall(function()
+    local ok, urgency, priority, hints, app_name = pcall(function()
         return notification.urgency,
             notification._private.retention_priority,
-            notification._private.freedesktop_hints
+            notification._private.freedesktop_hints,
+            notification.app_name
     end)
     if not ok then
         return 0
@@ -14,6 +15,10 @@ function retention.priority(notification)
 
     if urgency == 'critical' then
         return 2
+    end
+
+    if tostring(app_name):lower() == 'blueman' then
+        return -1
     end
 
     local explicit = tonumber(priority or

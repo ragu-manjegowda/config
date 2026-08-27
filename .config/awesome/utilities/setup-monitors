@@ -41,6 +41,8 @@ else
     echo "$EXTERNAL_NAME not connected, using $PRIMARY_NAME only"
 fi
 
+"$HOME/.config/awesome/utilities/reset-primary-display" --once
+
 if systemctl --user cat lid-brightness-manager.service &>/dev/null; then
     systemctl --user restart lid-brightness-manager.service ||
         echo "Warning: failed to restart lid brightness manager" >&2

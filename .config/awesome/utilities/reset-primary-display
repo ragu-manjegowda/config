@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+mode="${1:---force}"
+if [[ "$mode" != --once && "$mode" != --force ]]; then
+    printf 'usage: %s [--once|--force]\n' "$0" >&2
+    exit 2
+fi
+
+xrandr_bin="${DISPLAY_RESET_XRANDR_BIN:-xrandr}"
+xset_bin="${DISPLAY_RESET_XSET_BIN:-xset}"
+sleep_bin="${DISPLAY_RESET_SLEEP_BIN:-sleep}"
+settle_seconds="${DISPLAY_RESET_SETTLE_SECONDS:-3}"
+config_reader="${DISPLAY_RESET_CONFIG_READER:-$HOME/.config/awesome/utilities/read-display-config}"
+state_file="${DISPLAY_RESET_STATE_FILE:-${XDG_RUNTIME_DIR:-/tmp}/awesome-display-reset-${UID}-${DISPLAY#:}}"
+
+if [[ "$mode" == --once && -e "$state_file" ]]; then
+    exit 0
+fi
+
+source <("$config_reader")
+
+display_off=false
+restore_display() {
+    if [[ "$display_off" == true ]]; then
+        "$xrandr_bin" --output "$PRIMARY_NAME" --primary \
+            --mode "$PRIMARY_MODE" --pos "$PRIMARY_POS"
+    fi
+}
+trap restore_display EXIT INT TERM
+
+"$xset_bin" dpms force on 2>/dev/null || true
+"$xrandr_bin" --output "$PRIMARY_NAME" --off
+display_off=true
+"$sleep_bin" 2
+restore_display
+display_off=false
+trap - EXIT INT TERM
+"$sleep_bin" "$settle_seconds"
+
+mkdir -p "$(dirname "$state_file")"
+: > "$state_file"

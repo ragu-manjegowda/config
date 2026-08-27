@@ -1,17 +1,15 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-# Run xidlehook
-xidlehook \
-  `# Don't lock when there's a fullscreen application` \
-  --not-when-fullscreen \
-  `# Don't lock when there's audio playing` \
-  `# --not-when-audio` \
-  `# Lock after 120 seconds` \
-  --timer 120 \
-    'awesome-client \
-    "awesome.emit_signal(\"module::lockscreen_show\")" ' \
-    '' \
-  `# Finally, suspend 300 seconds after it locks` \
-  `# --timer 300` \
-    `# 'systemctl suspend'` \
-    `# ''`
+xset s off
+xset +dpms
+xset dpms 0 0 0
+
+exec xidlehook \
+    --not-when-fullscreen \
+    --timer 120 \
+        'awesome-client "awesome.emit_signal(\"module::lockscreen_show\")"' \
+        '' \
+    --timer 480 \
+        'xset dpms force off' \
+        "$HOME/.config/awesome/utilities/reset-primary-display --force"

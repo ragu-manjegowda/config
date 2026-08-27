@@ -3,9 +3,10 @@
 local root = os.getenv('HOME') .. '/.config/awesome/'
 local retention = dofile(root .. 'library/notification-retention.lua')
 
-local function notification(urgency, priority, hints)
+local function notification(urgency, priority, hints, app_name)
     return {
         urgency = urgency or 'normal',
+        app_name = app_name,
         _private = {
             retention_priority = priority,
             freedesktop_hints = hints,
@@ -24,8 +25,16 @@ assert(retention.priority(notification('normal', nil, {
 assert(retention.priority(notification('normal', nil, {
     ['x-awesome-retention-priority'] = 999,
 })) == 1, 'D-Bus priority hint exceeded sender priority')
+assert(retention.priority(notification('normal', nil, nil, 'blueman')) == -1,
+    'ordinary Bluetooth notification is not low priority')
+assert(retention.priority(notification('critical', nil, nil, 'blueman')) == 2,
+    'critical Bluetooth notification lost critical priority')
 assert(retention.priority({}) == 0, 'malformed notifications must use default priority')
 assert(retention.eviction_index({}) == nil, 'empty history has no eviction candidate')
+
+local bluetooth = notification('normal', nil, nil, 'blueman')
+assert(retention.eviction_index({ notification(), notification(), bluetooth }) == 3,
+    'Bluetooth notification was not selected before normal notifications')
 
 local critical = notification('critical')
 local email = notification('normal', 1)

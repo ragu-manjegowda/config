@@ -968,6 +968,11 @@ jobs:
           cd "$GITHUB_WORKSPACE"
           bash .config/awesome/tests/test_xe_display_workaround.sh
 
+      - name: Test xidlehook display recovery
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          bash .config/awesome/tests/test_xidlehook_display_recovery.sh
+
       - name: Test monitor scripts integration
         run: |
           cd "$GITHUB_WORKSPACE"
