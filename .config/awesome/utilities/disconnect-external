@@ -1,35 +1,122 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 # Gracefully disconnect external monitor
 # Moves windows to primary screen before disconnect
 # Configuration is read from config.lua via read-display-config
 
 # Source the configuration from config.lua
-source <("$HOME/.config/awesome/utilities/read-display-config")
+display_config="$("$HOME/.config/awesome/utilities/read-display-config")"
+source /dev/stdin <<<"$display_config"
+unset display_config
+
+: "${XDG_RUNTIME_DIR:?XDG_RUNTIME_DIR is required}"
+exec 9>"${XDG_RUNTIME_DIR}/awesome-display-transition-${UID}.lock"
+if ! flock -n 9; then
+    printf '%s\n' 'Another display transition is already running' >&2
+    exit 1
+fi
 
 echo "Preparing for monitor disconnect..."
 
+display_state="$(xrandr --current)"
+external_geometry=""
+while IFS= read -r line; do
+    read -r output connection geometry _ <<<"$line"
+    if [[ "$output" == "$EXTERNAL_NAME" && "$connection" == connected ]]; then
+        if [[ "$geometry" == primary ]]; then
+            read -r _ _ _ geometry _ <<<"$line"
+        fi
+        external_geometry="${geometry:-}"
+        break
+    fi
+done <<<"$display_state"
+if [[ "$external_geometry" != *x*+* ]]; then
+    echo "✓ External monitor is already inactive"
+    exit 0
+fi
+
+manager_was_active=false
+migration_started=false
+topology_started=false
+completed=false
+cleanup() {
+    status=$?
+    trap - EXIT
+    topology_available=true
+    if [[ "$completed" != true && "$topology_started" == true ]]; then
+        rollback_args=(xrandr --dpi "$DISPLAY_DPI" \
+            --output "$PRIMARY_NAME" --primary --mode "$PRIMARY_MODE" --pos "$PRIMARY_POS" \
+            --output "$EXTERNAL_NAME" --mode "$EXTERNAL_MODE" --pos "$EXTERNAL_POS")
+        if [[ -n "$EXTERNAL_SCALE_FROM" ]]; then
+            rollback_args+=(--scale-from "$EXTERNAL_SCALE_FROM")
+        fi
+        if ! "${rollback_args[@]}"; then
+            topology_available=false
+            printf '%s\n' 'Failed to roll back display topology' >&2
+        fi
+    fi
+    if [[ "$completed" != true && "$migration_started" == true &&
+          "$topology_available" == true ]]; then
+        rollback_result="$(awesome-client "
+local screen_mgr = require('module.screen-manager')
+local ok, err = pcall(screen_mgr.restore_to_external)
+if not ok then
+    return 'error: ' .. tostring(err)
+end
+return 'ok'
+" 2>&1 || true)"
+        rollback_result="${rollback_result#"${rollback_result%%[![:space:]]*}"}"
+        if [[ "$rollback_result" != 'string "ok"' ]]; then
+            printf 'Failed to roll back clients: %s\n' "$rollback_result" >&2
+        fi
+    fi
+    if [[ "$completed" != true && "$manager_was_active" == true ]]; then
+        if ! systemctl --user start lid-brightness-manager.service; then
+            printf '%s\n' 'Failed to restart lid brightness manager' >&2
+        fi
+    fi
+    exit "$status"
+}
+trap cleanup EXIT
+
 # Stop lid brightness manager since external monitor is being disconnected
-echo "Stopping lid brightness manager..."
-systemctl --user stop lid-brightness-manager.service
+if systemctl --user is-active --quiet lid-brightness-manager.service; then
+    manager_was_active=true
+    echo "Stopping lid brightness manager..."
+    systemctl --user stop lid-brightness-manager.service
+fi
 
 # Tell AwesomeWM to prepare
-awesome-client "
+migration_started=true
+migration_result="$(awesome-client "
 local screen_mgr = require('module.screen-manager')
-screen_mgr.prepare_for_disconnect()
-"
-
-# Give AwesomeWM time to reorganize
-sleep 2
+local ok, err = pcall(screen_mgr.prepare_for_disconnect)
+if not ok then
+    return 'error: ' .. tostring(err)
+end
+return 'ok'
+")"
+migration_result="${migration_result#"${migration_result%%[![:space:]]*}"}"
+if [[ "$migration_result" != 'string "ok"' ]]; then
+    printf '✗ Window migration failed: %s\n' "$migration_result" >&2
+    exit 1
+fi
 
 # Switch to laptop-only configuration
-xrandr --output "$EXTERNAL_NAME" --off
-xrandr --output "$PRIMARY_NAME" --primary --mode "$PRIMARY_MODE" --pos "$PRIMARY_POS"
-xrandr --dpi "$DISPLAY_DPI"
+topology_started=true
+xrandr --dpi "$DISPLAY_DPI" \
+    --output "$PRIMARY_NAME" --primary --mode "$PRIMARY_MODE" --pos "$PRIMARY_POS" \
+    --output "$EXTERNAL_NAME" --off
+
+completed=true
+topology_started=false
 
 echo "✓ External monitor disconnected"
 echo "✓ Windows moved to $PRIMARY_NAME"
-echo "✓ Lid brightness manager stopped (no external monitor)"
+if [[ "$manager_was_active" == true ]]; then
+    echo "✓ Lid brightness manager stopped (no external monitor)"
+fi
 echo ""
 echo "You can now safely unplug the external monitor"
-

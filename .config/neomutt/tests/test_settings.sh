@@ -16,7 +16,11 @@ echo "  $test_name"
 echo "========================================="
 echo ""
 
-CONFIG_FILE="$HOME/.config/neomutt/neomuttrc"
+MAIN_CONFIG="$HOME/.config/neomutt/neomuttrc"
+CONFIG_FILE="$(mktemp)"
+trap 'rm -f "$CONFIG_FILE"' EXIT
+grep -Fv 'source $XDG_CONFIG_HOME/neomutt/accounts/work/config-offline' \
+    "$MAIN_CONFIG" > "$CONFIG_FILE"
 
 # Helper function to check setting value
 check_setting() {
@@ -92,6 +96,17 @@ check_bool_setting "menu_scroll" "yes" "menu scroll"
 check_setting "sidebar_width" "30" "sidebar width"
 check_bool_setting "sidebar_short_path" "yes" "sidebar short path"
 check_bool_setting "sidebar_folder_indent" "yes" "sidebar folder indent"
+
+echo -n "Testing work offline status reports unread rather than new messages... "
+if grep -Eq "status_format.* %u" ~/.config/neomutt/accounts/work/config-offline &&
+   ! grep -Eq "status_format.* %n" ~/.config/neomutt/accounts/work/config-offline; then
+    echo -e "${GREEN}✓ PASSED${NC}"
+    ((passed++))
+else
+    echo -e "${RED}✗ FAILED${NC}"
+    echo "  Work status bar uses %n (new) where the unread icon requires %u (unread)"
+    ((failed++))
+fi
 
 # Test editor setting contains nvim
 echo -n "Testing editor is nvim... "

@@ -112,6 +112,18 @@ for script in create-alias.sh get-mailboxes.sh mu-search.sh \
     fi
 done
 
+for account in work personal; do
+    echo -n "Testing $account background sync pulls all server-side changes... "
+    if grep -Fqx "Sync Pull" ~/.config/neomutt/accounts/$account/mbsyncrc; then
+        echo -e "${GREEN}✓ PASSED${NC}"
+        ((passed++))
+    else
+        echo -e "${RED}✗ FAILED${NC}"
+        echo "  Pull channel does not propagate the complete remote change set"
+        ((failed++))
+    fi
+done
+
 echo ""
 echo "========================================="
 echo "  Results: $passed passed, $failed failed"

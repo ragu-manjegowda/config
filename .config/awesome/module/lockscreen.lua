@@ -77,6 +77,14 @@ local pam_module = nil
 local current_user_name = '$USER'
 local current_profile_image = widget_icon_dir .. 'default.svg'
 
+local function lockscreen_for_screen(s)
+    if not s.valid then
+        return nil
+    end
+
+    return s.lockscreen or s.lockscreen_extended
+end
+
 local function load_pam_module()
     if pam_module_loaded then
         return pam_module
@@ -480,10 +488,9 @@ local locker = function(s)
                 -- Hide all the lockscreen on all screen
                 ---@diagnostic disable-next-line: redefined-local
                 for s in screen do
-                    if s.index == 1 then
-                        s.lockscreen.visible = false
-                    else
-                        s.lockscreen_extended.visible = false
+                    local target = lockscreen_for_screen(s)
+                    if target then
+                        target.visible = false
                     end
                 end
 
@@ -708,10 +715,9 @@ local locker = function(s)
             -- Show all the lockscreen on each screen
             ---@diagnostic disable-next-line: redefined-local
             for s in screen do
-                if s.index == 1 then
-                    s.lockscreen.visible = true
-                else
-                    s.lockscreen_extended.visible = true
+                local target = lockscreen_for_screen(s)
+                if target then
+                    target.visible = true
                 end
             end
 
@@ -1035,17 +1041,6 @@ local filter_bg_image = function(wall_name, index, ap, width, height)
         [[! ]] .. locker_config.tmp_wall_dir .. index .. wall_name .. [[
 	"]]
     return magic
-end
-
-local function lockscreen_for_screen(s)
-    if not s.valid then
-        return nil
-    end
-
-    if s.index == 1 then
-        return s.lockscreen
-    end
-    return s.lockscreen_extended
 end
 
 -- Apply lockscreen background image

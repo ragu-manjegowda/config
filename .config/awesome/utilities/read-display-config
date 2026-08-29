@@ -44,14 +44,39 @@ local d = config.display
 local screen_recorder = config.widget and config.widget.screen_recorder or {}
 local screenshot = config.widget and config.widget.screenshot or {}
 
+local function require_value(name, value, pattern)
+    if type(value) ~= 'string' or not value:match(pattern) then
+        error('invalid ' .. name)
+    end
+    return value
+end
+
+local primary_name = require_value('primary display name', d.primary.name, '^[%w_.:-]+$')
+local primary_mode = require_value('primary display mode', d.primary.mode, '^%d+x%d+$')
+local primary_pos = require_value('primary display position', d.primary.position, '^%d+x%d+$')
+local external_name = require_value('external display name', d.external.name, '^[%w_.:-]+$')
+if primary_name == external_name then
+    error('primary and external display names must differ')
+end
+local external_mode = require_value('external display mode', d.external.mode, '^%d+x%d+$')
+local external_pos = require_value('external display position', d.external.position, '^%d+x%d+$')
+local external_scale = d.external.scale_from or ''
+if external_scale ~= '' then
+    external_scale = require_value('external display scale', external_scale, '^%d+x%d+$')
+end
+local recorder_target = require_value(
+    'screen recorder target', screen_recorder.display_target or 'primary', '^[%w_-]+$')
+local screenshot_target = require_value(
+    'screenshot target', screenshot.display_target or 'both', '^[%w_-]+$')
+
 -- Output bash-compatible variable assignments
 print(string.format('export DISPLAY_DPI=%d', d.dpi))
-print(string.format('export PRIMARY_NAME="%s"', d.primary.name))
-print(string.format('export PRIMARY_MODE="%s"', d.primary.mode))
-print(string.format('export PRIMARY_POS="%s"', d.primary.position))
-print(string.format('export EXTERNAL_NAME="%s"', d.external.name))
-print(string.format('export EXTERNAL_MODE="%s"', d.external.mode))
-print(string.format('export EXTERNAL_POS="%s"', d.external.position))
-print(string.format('export EXTERNAL_SCALE_FROM="%s"', d.external.scale_from or ''))
-print(string.format('export SCREEN_RECORDER_TARGET="%s"', screen_recorder.display_target or 'primary'))
-print(string.format('export SCREENSHOT_TARGET="%s"', screenshot.display_target or 'both'))
+print(string.format('export PRIMARY_NAME="%s"', primary_name))
+print(string.format('export PRIMARY_MODE="%s"', primary_mode))
+print(string.format('export PRIMARY_POS="%s"', primary_pos))
+print(string.format('export EXTERNAL_NAME="%s"', external_name))
+print(string.format('export EXTERNAL_MODE="%s"', external_mode))
+print(string.format('export EXTERNAL_POS="%s"', external_pos))
+print(string.format('export EXTERNAL_SCALE_FROM="%s"', external_scale))
+print(string.format('export SCREEN_RECORDER_TARGET="%s"', recorder_target))
+print(string.format('export SCREENSHOT_TARGET="%s"', screenshot_target))

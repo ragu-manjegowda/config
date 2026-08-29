@@ -98,6 +98,13 @@ assert_test(
 )
 
 assert_test(
+    source:match("return s%.lockscreen or s%.lockscreen_extended") ~= nil and
+        source:match("s%.lockscreen%.visible") == nil and
+        source:match("s%.lockscreen_extended%.visible") == nil,
+    "Lockscreen visibility tolerates a primary screen recreated with an extended decoration"
+)
+
+assert_test(
     source:match("local function ensure_password_grab%(%)") ~= nil and
         source:match("awful%.keygrabber%.current_instance == password_grabber") ~= nil and
         source:match("if not ensure_password_grab%(%) then") ~= nil and

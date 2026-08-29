@@ -7,16 +7,41 @@ set -euo pipefail
 # Configuration is read from config.lua via read-display-config
 
 # Source the configuration from config.lua
-source <("$HOME/.config/awesome/utilities/read-display-config")
+display_config="$("$HOME/.config/awesome/utilities/read-display-config")"
+source /dev/stdin <<<"$display_config"
+unset display_config
 
-# Set DPI based on configuration
-xrandr --dpi "$DISPLAY_DPI"
+: "${XDG_RUNTIME_DIR:?XDG_RUNTIME_DIR is required}"
+lock_file="${XDG_RUNTIME_DIR}/awesome-display-transition-${UID}.lock"
+inherited_lock=false
+if [[ "${DISPLAY_TRANSITION_LOCK_FD:-}" == 9 &&
+      "$(readlink /proc/$$/fd/9 2>/dev/null || true)" == "$lock_file" ]]; then
+    inherited_lock=true
+fi
+if [[ "$inherited_lock" != true ]]; then
+    exec 9>"$lock_file"
+fi
+if ! flock -n 9; then
+    printf '%s\n' 'Another display transition is already running' >&2
+    exit 1
+fi
 
-# Set laptop display (primary)
-xrandr --output "$PRIMARY_NAME" --primary --mode "$PRIMARY_MODE" --pos "$PRIMARY_POS"
+xrandr_args=(
+    xrandr --dpi "$DISPLAY_DPI"
+    --output "$PRIMARY_NAME" --primary --mode "$PRIMARY_MODE" --pos "$PRIMARY_POS"
+)
 
 # Check if external monitor is connected
-if xrandr --current | grep "^${EXTERNAL_NAME} connected" >/dev/null; then
+external_connected=false
+display_state="$(xrandr --current)"
+while IFS= read -r line; do
+    read -r output connection _ <<<"$line"
+    if [[ "$output" == "$EXTERNAL_NAME" && "$connection" == connected ]]; then
+        external_connected=true
+        break
+    fi
+done <<<"$display_state"
+if [[ "$external_connected" == true ]]; then
     external_args=(
         xrandr
         --output "$EXTERNAL_NAME"
@@ -29,8 +54,8 @@ if xrandr --current | grep "^${EXTERNAL_NAME} connected" >/dev/null; then
         external_args+=(--scale-from "$EXTERNAL_SCALE_FROM")
     fi
 
-    # Apply external monitor settings
-    "${external_args[@]}"
+    xrandr_args+=("${external_args[@]:1}")
+    "${xrandr_args[@]}"
 
     echo "✓ Extended display configured:"
     echo "  - Primary ($PRIMARY_NAME): $PRIMARY_MODE @ $PRIMARY_POS"
@@ -38,6 +63,7 @@ if xrandr --current | grep "^${EXTERNAL_NAME} connected" >/dev/null; then
     [ -n "$EXTERNAL_SCALE_FROM" ] && echo "  - Scaling: from $EXTERNAL_SCALE_FROM"
     echo "  - DPI: $DISPLAY_DPI"
 else
+    "${xrandr_args[@]}"
     echo "$EXTERNAL_NAME not connected, using $PRIMARY_NAME only"
 fi
 

@@ -4,6 +4,8 @@
 local awful = require('awful')
 local gears = require('gears')
 local naughty = require('naughty')
+local config = require('configuration.config')
+local screen_tag_state = require('library.screen-tag-state')
 
 local screen_manager = {}
 
@@ -16,6 +18,22 @@ local external_clients = {}
 
 -- Track last selected tag on external monitor
 local last_external_tag_index = nil
+local external_output = config.display.external.name
+local restore_generation = 0
+local primary_output = config.display.primary.name
+
+local function is_external_screen(s)
+    return s.valid and s.outputs and s.outputs[external_output] ~= nil
+end
+
+local function configured_primary_screen()
+    for s in screen do
+        if s.valid and s.outputs and s.outputs[primary_output] ~= nil then
+            return s
+        end
+    end
+    return nil
+end
 
 -- Save current window layout
 local save_window_state = function()
@@ -34,10 +52,9 @@ end
 
 -- Reorganize windows when screen is removed
 local reorganize_windows_on_remove = function(removed_screen)
-    local primary_screen = screen.primary
+    local primary_screen = configured_primary_screen()
 
-    -- Guard: if screen is no longer valid, bail out
-    if not removed_screen.valid then
+    if not removed_screen.valid or not primary_screen then
         return
     end
 
@@ -55,144 +72,74 @@ local reorganize_windows_on_remove = function(removed_screen)
         end
     end
 
-    -- Map clients by their tag index for better organization
-    local clients_by_tag = {}
-    local tags_to_show = {}
+    local clients = screen_tag_state.collect(removed_screen)
+    local moved_count = 0
+    local failed_count = 0
 
-    -- Collect ALL clients from ALL tags on the removed screen
-    for tag_idx, tag in ipairs(removed_screen.tags) do
-        local tag_clients = tag:clients()
-
-        for _, c in ipairs(tag_clients) do
-            local tag_index = tag.index or 1
-
-            if not clients_by_tag[tag_index] then
-                clients_by_tag[tag_index] = {}
-            end
-            table.insert(clients_by_tag[tag_index], c)
-
-            -- Save tag information BEFORE attempting to move
-            -- This ensures we can restore even if move fails
-            external_clients[c] = {
-                tag_index = tag_index,
-                tag_name = tag.name or tostring(tag_index),
-                was_floating = c.floating,
-                was_maximized = c.maximized,
-                was_fullscreen = c.fullscreen,
-                was_minimized = c.minimized,
-                geometry = c:geometry()
+    for _, collected in ipairs(clients) do
+        local c = collected.client
+        local state = {
+            tag_indices = collected.tag_indices,
+            was_floating = c.floating,
+            was_maximized = c.maximized,
+            was_fullscreen = c.fullscreen,
+            was_minimized = c.minimized,
+            geometry = c:geometry(),
+            source_geometry = {
+                x = removed_screen.geometry.x,
+                y = removed_screen.geometry.y,
+                width = removed_screen.geometry.width,
+                height = removed_screen.geometry.height
             }
+        }
+        external_clients[c] = state
+        local target_tags = screen_tag_state.map(primary_screen, state.tag_indices)
 
-            -- Mark this tag as needing to be visible on primary screen
-            tags_to_show[tag_index] = true
-        end
-    end
-
-    -- Count total clients found
-    local total_clients = 0
-    for _, clients in pairs(clients_by_tag) do
-        total_clients = total_clients + #clients
-    end
-
-    -- Ensure all needed tags are visible on primary screen
-    for tag_index, _ in pairs(tags_to_show) do
-        local target_tag = primary_screen.tags[tag_index]
-        if target_tag and not target_tag.selected then
-            -- Make tag visible (viewmore, not switch to it)
-            target_tag.screen = primary_screen
-            -- Don't select it, just make it available
-            -- The tag will become visible when a window moves to it
-        end
-    end
-
-    -- Move clients and try to preserve tag organization
-    for tag_index, clients in pairs(clients_by_tag) do
-        -- Get corresponding tag on primary screen
-        local target_tag = primary_screen.tags[tag_index]
-
-        if target_tag then
-            for _, c in ipairs(clients) do
-                -- Use pcall to catch any errors during move
-                local success, err = pcall(function()
-                    -- Move to primary screen FIRST
-                    c:move_to_screen(primary_screen)
-
-                    -- Clear existing tags
-                    c:tags({})
-
-                    -- Assign to target tag - this will make tag visible if it has clients
-                    c:tags({ target_tag })
-
-                    -- Toggle tag visibility if not already visible
-                    if not target_tag.selected then
-                        target_tag.selected = true
-                    end
-
-                    -- Preserve window state
-                    if c.maximized then
-                        c.maximized = true
-                    elseif c.fullscreen then
-                        c.fullscreen = true
-                    elseif c.floating then
-                        local geo = c:geometry()
-                        -- Scale down if window is larger than new screen
-                        if geo.width > primary_screen.geometry.width then
-                            geo.width = primary_screen.geometry.width * 0.8
-                        end
-                        if geo.height > primary_screen.geometry.height then
-                            geo.height = primary_screen.geometry.height * 0.8
-                        end
-                        -- Center on screen
-                        geo.x = (primary_screen.geometry.width - geo.width) / 2
-                        geo.y = (primary_screen.geometry.height - geo.height) / 2
-                        c:geometry(geo)
-                    end
-                end)
-
-                if not success then
-                    -- If move failed, log it but keep the client info saved
-                    naughty.notification({
-                        app_name = 'Screen Manager',
-                        title = 'Warning',
-                        message = 'Failed to move window, but state is preserved for restore',
-                        timeout = 3
-                    })
-                end
-            end
-        else
-            -- If target tag doesn't exist, still keep client info for restoration
+        if not target_tags then
+            failed_count = failed_count + 1
             naughty.notification({
                 app_name = 'Screen Manager',
                 title = 'Warning',
-                message = 'Tag ' .. tag_index .. ' not found on primary, but will restore on reconnect',
+                message = 'Client tags were not found on the primary screen',
                 timeout = 3
             })
+        else
+            local success = pcall(function()
+                c:move_to_screen(primary_screen)
+                c:tags(target_tags)
+
+                if state.was_floating and state.geometry then
+                    c:geometry(screen_tag_state.fit_geometry(
+                        state.geometry, removed_screen.geometry, primary_screen.geometry))
+                end
+            end)
+
+            if success then
+                moved_count = moved_count + 1
+            else
+                failed_count = failed_count + 1
+                naughty.notification({
+                    app_name = 'Screen Manager',
+                    title = 'Warning',
+                    message = 'Failed to move window, but state is preserved for restore',
+                    timeout = 3
+                })
+            end
         end
     end
 
-    -- Re-arrange tiled windows
     awful.layout.arrange(primary_screen)
 
-    -- Focus the last selected tag on primary screen
-    gears.timer.start_new(0.1, function()
-        for _, tag in ipairs(primary_screen.tags) do
-            if tag.selected then
-                tag:view_only()
-                break
-            end
-        end
-        return false
-    end)
-
-    -- Only show notification if we actually moved windows
-    if total_clients > 0 then
+    if moved_count > 0 then
         naughty.notification({
             app_name = 'Screen Manager',
             title = 'External Monitor Disconnected',
-            message = total_clients .. ' window(s) saved. Will restore on reconnect.',
+            message = moved_count .. ' window(s) saved. Will restore on reconnect.',
             timeout = 3
         })
     end
+
+    return moved_count, failed_count
 end
 
 -- Restore windows to external monitor when reconnected
@@ -203,38 +150,19 @@ local restore_windows_to_external = function(new_screen)
         new_screen.systray.visible = true
     end
 
-    -- Wait a moment for screen to be fully initialized
-    gears.timer.start_new(0.5, function()
-        local primary_screen = screen.primary
-        local moved_count = 0
-        local failed_count = 0
+    local primary_screen = configured_primary_screen()
+    local moved_count = 0
+    local failed_count = 0
+    local remaining = {}
 
-        -- Find clients that were from external monitor
         for c, state in pairs(external_clients) do
-            -- Check if client still exists (might be on any screen now)
             if c.valid then
-                -- Use pcall to handle any errors during restoration
-                local success, err = pcall(function()
-                    -- Move back to external monitor
+                local success = pcall(function()
+                    local target_tags = screen_tag_state.map(new_screen, state.tag_indices)
+                    assert(target_tags)
                     c:move_to_screen(new_screen)
+                    c:tags(target_tags)
 
-                    -- Clear existing tags
-                    c:tags({})
-
-                    -- Restore to same tag index
-                    local target_tag = new_screen.tags[state.tag_index]
-                    if target_tag then
-                        c:tags({ target_tag })
-                        -- Make tag visible
-                        if not target_tag.selected then
-                            target_tag.selected = true
-                        end
-                    else
-                        -- Fallback to tag 1 if original tag doesn't exist
-                        c:tags({ new_screen.tags[1] })
-                    end
-
-                    -- Restore window state
                     if state.was_minimized then
                         c.minimized = true
                     elseif state.was_fullscreen then
@@ -243,12 +171,8 @@ local restore_windows_to_external = function(new_screen)
                         c.maximized = true
                     elseif state.was_floating and state.geometry then
                         c.floating = true
-                        -- Restore original geometry if it fits
-                        local geo = state.geometry
-                        if geo.width <= new_screen.geometry.width and
-                           geo.height <= new_screen.geometry.height then
-                            c:geometry(geo)
-                        end
+                        c:geometry(screen_tag_state.fit_geometry(
+                            state.geometry, state.source_geometry, new_screen.geometry))
                     end
 
                     moved_count = moved_count + 1
@@ -256,6 +180,7 @@ local restore_windows_to_external = function(new_screen)
 
                 if not success then
                     failed_count = failed_count + 1
+                    remaining[c] = state
                     naughty.notification({
                         app_name = 'Screen Manager',
                         title = 'Restore Failed',
@@ -266,8 +191,7 @@ local restore_windows_to_external = function(new_screen)
             end
         end
 
-        -- Clear the tracking table
-        external_clients = {}
+        external_clients = remaining
 
         -- Re-arrange windows on both screens
         awful.layout.arrange(new_screen)
@@ -294,21 +218,25 @@ local restore_windows_to_external = function(new_screen)
         -- Restore focus to the last selected tag on external monitor
         -- Wait a bit longer to ensure all windows and tags are fully settled
         gears.timer.start_new(0.3, function()
-            if last_external_tag_index and new_screen.tags[last_external_tag_index] then
+            if is_external_screen(new_screen) and last_external_tag_index and
+                new_screen.tags[last_external_tag_index] then
                 new_screen.tags[last_external_tag_index]:view_only()
             end
             return false
         end)
 
-        return false  -- Don't repeat timer
-    end)
+    return moved_count, failed_count
 end
 
 -- Move all clients from primary to external monitor (fresh connect)
 local move_all_clients_to_external = function(external_screen)
-    local primary_screen = screen.primary
-    local clients_by_tag = {}
-    local total_clients = 0
+    local primary_screen = configured_primary_screen()
+    if not primary_screen or primary_screen == external_screen then
+        return 0, 1, 0
+    end
+    local moved_count = 0
+    local failed_count = 0
+    local original_states = {}
 
     -- Move systray to external monitor
     if external_screen and external_screen.systray then
@@ -325,57 +253,69 @@ local move_all_clients_to_external = function(external_screen)
         end
     end
 
-    -- Collect all clients from primary screen grouped by tag
-    for _, tag in ipairs(primary_screen.tags) do
-        local tag_clients = tag:clients()
-        for _, c in ipairs(tag_clients) do
-            if c.valid then
-                local tag_index = tag.index or 1
-                if not clients_by_tag[tag_index] then
-                    clients_by_tag[tag_index] = {}
+    for _, collected in ipairs(screen_tag_state.collect(primary_screen)) do
+        local c = collected.client
+        local target_tags = screen_tag_state.map(external_screen, collected.tag_indices)
+        if c.valid and target_tags then
+            local state = {
+                client = c,
+                tag_indices = collected.tag_indices,
+                was_minimized = c.minimized,
+                was_fullscreen = c.fullscreen,
+                was_maximized = c.maximized,
+                was_floating = c.floating,
+                geometry = c:geometry()
+            }
+            original_states[#original_states + 1] = state
+            local success = pcall(function()
+                c:move_to_screen(external_screen)
+                c:tags(target_tags)
+
+                if state.was_minimized then
+                    c.minimized = true
+                elseif state.was_fullscreen then
+                    c.fullscreen = true
+                elseif state.was_maximized then
+                    c.maximized = true
+                elseif state.was_floating and state.geometry then
+                    c.floating = true
+                    c:geometry(screen_tag_state.fit_geometry(
+                        state.geometry, primary_screen.geometry, external_screen.geometry))
                 end
-                table.insert(clients_by_tag[tag_index], {
-                    client = c,
-                    was_floating = c.floating,
-                    was_maximized = c.maximized,
-                    was_fullscreen = c.fullscreen,
-                    was_minimized = c.minimized,
-                    geometry = c:geometry()
-                })
-                total_clients = total_clients + 1
+            end)
+            if success then
+                moved_count = moved_count + 1
+            else
+                failed_count = failed_count + 1
             end
+        elseif c.valid then
+            failed_count = failed_count + 1
         end
     end
 
-    -- Move clients to external screen, preserving tag assignments
-    for tag_index, clients in pairs(clients_by_tag) do
-        local target_tag = external_screen.tags[tag_index]
-        if target_tag then
-            for _, state in ipairs(clients) do
-                local c = state.client
-                pcall(function()
-                    c:move_to_screen(external_screen)
-                    c:tags({})
-                    c:tags({ target_tag })
-
-                    -- Restore window state
-                    if state.was_minimized then
-                        c.minimized = true
-                    elseif state.was_fullscreen then
-                        c.fullscreen = true
-                    elseif state.was_maximized then
-                        c.maximized = true
-                    elseif state.was_floating and state.geometry then
-                        c.floating = true
-                        local geo = state.geometry
-                        if geo.width <= external_screen.geometry.width and
-                           geo.height <= external_screen.geometry.height then
-                            c:geometry(geo)
-                        end
-                    end
-                end)
+    if failed_count > 0 then
+        local rollback_failures = 0
+        for _, state in ipairs(original_states) do
+            local target_tags = screen_tag_state.map(primary_screen, state.tag_indices)
+            local success = target_tags and pcall(function()
+                state.client:move_to_screen(primary_screen)
+                state.client:tags(target_tags)
+                if state.was_minimized then
+                    state.client.minimized = true
+                elseif state.was_fullscreen then
+                    state.client.fullscreen = true
+                elseif state.was_maximized then
+                    state.client.maximized = true
+                elseif state.was_floating and state.geometry then
+                    state.client.floating = true
+                    state.client:geometry(state.geometry)
+                end
+            end)
+            if not success then
+                rollback_failures = rollback_failures + 1
             end
         end
+        return 0, failed_count, rollback_failures
     end
 
     awful.layout.arrange(external_screen)
@@ -387,7 +327,7 @@ local move_all_clients_to_external = function(external_screen)
         external_screen.tags[focused_tag_index]:view_only()
     end
 
-    return total_clients
+    return moved_count, failed_count, 0
 end
 
 -- Handle screen being removed
@@ -396,6 +336,7 @@ end
 screen.connect_signal(
     'removed',
     function(s)
+        restore_generation = restore_generation + 1
         -- If prepare_for_disconnect already handled this screen,
         -- external_clients will have entries and the screen is now invalid.
         -- Only reorganize if there are clients still on this screen that
@@ -412,7 +353,10 @@ screen.connect_signal(
     function(s)
         -- Only restore windows if this is NOT the initial startup
         -- and we actually have saved clients to restore
-        if not awesome.startup and next(external_clients) ~= nil then
+        if not awesome.startup and is_external_screen(s) and
+            next(external_clients) ~= nil then
+            restore_generation = restore_generation + 1
+            local generation = restore_generation
             -- New screen detected
             naughty.notification({
                 app_name = 'Screen Manager',
@@ -421,31 +365,59 @@ screen.connect_signal(
                 timeout = 3
             })
 
-            -- Restore windows that were previously on external monitor
-            restore_windows_to_external(s)
+            gears.timer.start_new(0.5, function()
+                if generation == restore_generation and is_external_screen(s) then
+                    restore_windows_to_external(s)
+                end
+                return false
+            end)
         end
     end
 )
 
 screen_manager.prepare_for_disconnect = function()
+    restore_generation = restore_generation + 1
+    local primary_screen = configured_primary_screen()
+    if not primary_screen then
+        error('configured primary screen is not available')
+    end
+    local failed_count = 0
     for s in screen do
-        if s ~= screen.primary then
-            reorganize_windows_on_remove(s)
+        if is_external_screen(s) then
+            local _, failures = reorganize_windows_on_remove(s)
+            failed_count = failed_count + failures
+            if failures > 0 then
+                local _, rollback_failures = restore_windows_to_external(s)
+                if rollback_failures > 0 then
+                    error('failed to roll back ' .. rollback_failures .. ' client(s)')
+                end
+            end
         end
+    end
+    if failed_count > 0 then
+        error('failed to migrate ' .. failed_count .. ' client(s) to the primary screen')
     end
 end
 
 screen_manager.migrate_to_external = function()
+    restore_generation = restore_generation + 1
     local external_screen = nil
     for s in screen do
-        if s ~= screen.primary then
+        if is_external_screen(s) then
             external_screen = s
             break
         end
     end
 
     if external_screen then
-        local moved = move_all_clients_to_external(external_screen)
+        local moved, failures, rollback_failures =
+            move_all_clients_to_external(external_screen)
+        if rollback_failures > 0 then
+            error('rollback failed for ' .. rollback_failures .. ' client(s)')
+        end
+        if failures > 0 then
+            error('failed to migrate ' .. failures .. ' client(s) to the external screen')
+        end
         if moved > 0 then
             naughty.notification({
                 app_name = 'Screen Manager',
@@ -454,8 +426,22 @@ screen_manager.migrate_to_external = function()
                 timeout = 3
             })
         end
+        return
     end
+    error('configured external screen is not available')
+end
+
+screen_manager.restore_to_external = function()
+    for s in screen do
+        if is_external_screen(s) then
+            local _, failures = restore_windows_to_external(s)
+            if failures > 0 then
+                error('failed to restore ' .. failures .. ' client(s) to the external screen')
+            end
+            return
+        end
+    end
+    error('configured external screen is not available')
 end
 
 return screen_manager
-

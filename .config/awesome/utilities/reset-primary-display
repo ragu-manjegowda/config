@@ -2,8 +2,8 @@
 set -euo pipefail
 
 mode="${1:---force}"
-if [[ "$mode" != --once && "$mode" != --force ]]; then
-    printf 'usage: %s [--once|--force]\n' "$0" >&2
+if [[ "$mode" != --once && "$mode" != --force && "$mode" != --restore-only ]]; then
+    printf 'usage: %s [--once|--force|--restore-only]\n' "$0" >&2
     exit 2
 fi
 
@@ -12,29 +12,71 @@ xset_bin="${DISPLAY_RESET_XSET_BIN:-xset}"
 sleep_bin="${DISPLAY_RESET_SLEEP_BIN:-sleep}"
 settle_seconds="${DISPLAY_RESET_SETTLE_SECONDS:-3}"
 config_reader="${DISPLAY_RESET_CONFIG_READER:-$HOME/.config/awesome/utilities/read-display-config}"
-state_file="${DISPLAY_RESET_STATE_FILE:-${XDG_RUNTIME_DIR:-/tmp}/awesome-display-reset-${UID}-${DISPLAY#:}}"
+if [[ -n "${DISPLAY_RESET_STATE_FILE:-}" ]]; then
+    state_file="$DISPLAY_RESET_STATE_FILE"
+else
+    : "${XDG_RUNTIME_DIR:?XDG_RUNTIME_DIR is required}"
+    state_file="${XDG_RUNTIME_DIR}/awesome-display-reset-${UID}-${DISPLAY#:}"
+fi
 
 if [[ "$mode" == --once && -e "$state_file" ]]; then
     exit 0
 fi
 
-source <("$config_reader")
+display_config="$("$config_reader")"
+source /dev/stdin <<<"$display_config"
+unset display_config
+
+if [[ "$mode" == --restore-only ]]; then
+    "$xrandr_bin" --output "$PRIMARY_NAME" --primary \
+        --mode "$PRIMARY_MODE" --pos "$PRIMARY_POS"
+    "$xset_bin" dpms force on 2>/dev/null || true
+    exit 0
+fi
 
 display_off=false
+watchdog_pid=""
+watchdog_ready="${state_file}.watchdog.$$"
 restore_display() {
     if [[ "$display_off" == true ]]; then
         "$xrandr_bin" --output "$PRIMARY_NAME" --primary \
             --mode "$PRIMARY_MODE" --pos "$PRIMARY_POS"
     fi
 }
-trap restore_display EXIT INT TERM
+cleanup() {
+    if [[ -n "$watchdog_pid" ]]; then
+        kill "$watchdog_pid" 2>/dev/null || true
+    fi
+    rm -f "$watchdog_ready"
+    restore_display
+}
+trap cleanup EXIT INT TERM
 
 "$xset_bin" dpms force on 2>/dev/null || true
-"$xrandr_bin" --output "$PRIMARY_NAME" --off
+# Positional parameters are intentionally expanded by the detached shell.
+# shellcheck disable=SC2016
+nohup setsid bash -c ': > "$1"; "$2" "$3"; "$4" --restore-only; /usr/bin/sleep 1; rm -f "$1"' \
+    _ "$watchdog_ready" "$sleep_bin" 4 "$0" >/dev/null 2>&1 &
+watchdog_pid=$!
+for _ in {1..50}; do
+    [[ -e "$watchdog_ready" ]] && break
+    /usr/bin/sleep 0.01
+done
+if [[ ! -e "$watchdog_ready" ]]; then
+    kill "$watchdog_pid" 2>/dev/null || true
+    watchdog_pid=""
+    printf '%s\n' 'Unable to start display recovery watchdog' >&2
+    exit 1
+fi
 display_off=true
+"$xrandr_bin" --output "$PRIMARY_NAME" --off
 "$sleep_bin" 2
 restore_display
 display_off=false
+kill "$watchdog_pid" 2>/dev/null || true
+wait "$watchdog_pid" 2>/dev/null || true
+watchdog_pid=""
+rm -f "$watchdog_ready"
 trap - EXIT INT TERM
 "$sleep_bin" "$settle_seconds"
 

@@ -17,8 +17,11 @@ on:
     branches: [ main, master, develop ]
     paths:
       - '.config/awesome/**'
+      - '.config/imapnotify/**'
       - '.config/scripts/lid-brightness-monitor'
+      - '.config/scripts/start_xidlehook.sh'
       - '.config/systemd/user/lid-brightness-manager.service'
+      - '.config/systemd/user/xidlehook.service'
       - '.config/misc/etc/modprobe.d/xe.conf'
       - '.config/scripts/bootstrap/03-system.sh'
       - '.github/workflows/awesome-wm-tests.yml'
@@ -26,10 +29,14 @@ on:
     branches: [ main, master, develop ]
     paths:
       - '.config/awesome/**'
+      - '.config/imapnotify/**'
       - '.config/scripts/lid-brightness-monitor'
+      - '.config/scripts/start_xidlehook.sh'
       - '.config/systemd/user/lid-brightness-manager.service'
+      - '.config/systemd/user/xidlehook.service'
       - '.config/misc/etc/modprobe.d/xe.conf'
       - '.config/scripts/bootstrap/03-system.sh'
+      - '.github/workflows/awesome-wm-tests.yml'
   workflow_dispatch:
 
 env:
@@ -210,7 +217,8 @@ jobs:
           cd "$GITHUB_WORKSPACE"
 
           # Validate config syntax
-          awesome --check || echo "⚠ Config check warning (may be due to missing dependencies)"
+          HOME="$GITHUB_WORKSPACE" awesome --check \
+            -c "$GITHUB_WORKSPACE/${{ env.AWESOME_CONFIG_DIR }}/rc.lua"
 
           echo "✓ Configuration syntax check complete"
 
@@ -455,7 +463,8 @@ jobs:
           cd "$GITHUB_WORKSPACE"
 
           # Validate config syntax
-          awesome --check || echo "⚠ Config check warning (may be due to missing dependencies)"
+          HOME="$GITHUB_WORKSPACE" awesome --check \
+            -c "$GITHUB_WORKSPACE/${{ env.AWESOME_CONFIG_DIR }}/rc.lua"
 
           echo "✓ Configuration syntax check complete"
 
@@ -627,6 +636,7 @@ jobs:
 
       - name: Run shellcheck on bash scripts
         run: |
+          set -o pipefail
           mkdir -p "$GITHUB_WORKSPACE"/test-logs
           echo "Running shellcheck..." | tee "$GITHUB_WORKSPACE"/test-logs/shellcheck.log
           EXIT_CODE=0
@@ -660,9 +670,9 @@ jobs:
           )
 
           # Also check .sh files
-          find ${{ env.AWESOME_CONFIG_DIR }} -name "*.sh" -type f | while read -r script; do
+          while IFS= read -r script; do
             echo "Checking: $script" | tee -a "$GITHUB_WORKSPACE"/test-logs/shellcheck.log
-            shellcheck -x "$script" \
+            if ! shellcheck -x "$script" \
               -e SC1090 \
               -e SC1091 \
               -e SC2164 \
@@ -676,8 +686,10 @@ jobs:
               -e SC2059 \
               -e SC2068 \
               -e SC2155 \
-              -e SC2235 2>&1 | tee -a "$GITHUB_WORKSPACE"/test-logs/shellcheck.log || EXIT_CODE=1
-          done
+              -e SC2235 2>&1 | tee -a "$GITHUB_WORKSPACE"/test-logs/shellcheck.log; then
+              EXIT_CODE=1
+            fi
+          done < <(find ${{ env.AWESOME_CONFIG_DIR }} -name "*.sh" -type f)
 
           if [ $EXIT_CODE -eq 0 ]; then
             echo "✓ All scripts passed shellcheck" | tee -a "$GITHUB_WORKSPACE"/test-logs/shellcheck.log
@@ -768,10 +780,10 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install Lua
+      - name: Install test dependencies
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm lua
+          pacman -S --noconfirm lua util-linux coreutils grep
 
       - name: Test display config can be read
         run: |
@@ -972,6 +984,22 @@ jobs:
         run: |
           cd "$GITHUB_WORKSPACE"
           bash .config/awesome/tests/test_xidlehook_display_recovery.sh
+
+      - name: Test goimapnotify timeout handling
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          bash .config/awesome/tests/test_imapnotify_timeout.sh
+
+      - name: Test external display transitions
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          bash .config/awesome/tests/test_external_display_scripts.sh
+
+      - name: Test screen tag preservation
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_screen_tag_state.lua
+          HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_screen_manager.lua
 
       - name: Test monitor scripts integration
         run: |

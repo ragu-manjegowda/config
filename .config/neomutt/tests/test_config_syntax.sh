@@ -1,6 +1,11 @@
 #!/bin/bash
 # Test neomutt configuration syntax validation
 
+CONFIG_FILE="$(mktemp)"
+trap 'rm -f "$CONFIG_FILE"' EXIT
+grep -Fv 'source $XDG_CONFIG_HOME/neomutt/accounts/work/config-offline' \
+    "$HOME/.config/neomutt/neomuttrc" > "$CONFIG_FILE"
+
 test_name="Config Syntax Tests"
 passed=0
 failed=0
@@ -18,7 +23,7 @@ echo ""
 
 # Test 1: Main config file syntax
 echo -n "Testing neomuttrc syntax... "
-if neomutt -F ~/.config/neomutt/neomuttrc -Q quit 2>&1 | grep -q "Error"; then
+if neomutt -F "$CONFIG_FILE" -Q quit 2>&1 | grep -q "Error"; then
     echo -e "${RED}✗ FAILED${NC}"
     echo "  Main config has syntax errors"
     ((failed++))

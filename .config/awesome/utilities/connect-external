@@ -7,42 +7,147 @@ set -euo pipefail
 # Configuration is read from config.lua via read-display-config
 
 # Source the configuration from config.lua
-source <("$HOME/.config/awesome/utilities/read-display-config")
+display_config="$("$HOME/.config/awesome/utilities/read-display-config")"
+source /dev/stdin <<<"$display_config"
+unset display_config
+
+: "${XDG_RUNTIME_DIR:?XDG_RUNTIME_DIR is required}"
+exec 9>"${XDG_RUNTIME_DIR}/awesome-display-transition-${UID}.lock"
+if ! flock -n 9; then
+    printf '%s\n' 'Another display transition is already running' >&2
+    exit 1
+fi
 
 echo "Checking for external monitor ($EXTERNAL_NAME)..."
 
-if xrandr --current | grep "^${EXTERNAL_NAME} connected" >/dev/null; then
+display_state="$(xrandr --current)"
+external_line=""
+primary_line=""
+while IFS= read -r line; do
+    read -r output connection _ <<<"$line"
+    if [[ "$output" == "$EXTERNAL_NAME" && "$connection" == connected ]]; then
+        external_line="$line"
+    elif [[ "$output" == "$PRIMARY_NAME" && "$connection" == connected ]]; then
+        primary_line="$line"
+    fi
+done <<<"$display_state"
+external_was_active=false
+external_was_primary=false
+external_original_pos="$EXTERNAL_POS"
+read -r _ _ external_geometry _ <<<"$external_line"
+if [[ "${external_geometry:-}" == primary ]]; then
+    external_was_primary=true
+    read -r _ _ _ external_geometry _ <<<"$external_line"
+fi
+if [[ "${external_geometry:-}" == *x*+* ]]; then
+    external_was_active=true
+    if [[ "$external_geometry" =~ ^[0-9]+x[0-9]+[+](-?[0-9]+)[+](-?[0-9]+)$ ]]; then
+        external_original_pos="${BASH_REMATCH[1]}x${BASH_REMATCH[2]}"
+    fi
+fi
+primary_was_active=false
+read -r _ _ primary_geometry _ <<<"$primary_line"
+if [[ "${primary_geometry:-}" == primary ]]; then
+    read -r _ _ _ primary_geometry _ <<<"$primary_line"
+fi
+if [[ "${primary_geometry:-}" == *x*+* ]]; then
+    primary_was_active=true
+fi
+topology_changed=false
+preserve_external_on_error=false
+completed=false
+cleanup() {
+    status=$?
+    trap - EXIT
+    if [[ "$completed" != true && "$topology_changed" == true ]]; then
+        rollback_args=(xrandr --dpi "$DISPLAY_DPI")
+        if [[ "$primary_was_active" == true ]]; then
+            rollback_args+=(--output "$PRIMARY_NAME" --primary \
+                --mode "$PRIMARY_MODE" --pos "$PRIMARY_POS")
+        else
+            rollback_args+=(--output "$PRIMARY_NAME" --off)
+        fi
+        if [[ "$external_was_active" == true || "$preserve_external_on_error" == true ]]; then
+            rollback_args+=(--output "$EXTERNAL_NAME")
+            if [[ "$external_was_primary" == true ]]; then
+                rollback_args+=(--primary)
+            fi
+            rollback_args+=(--mode "$EXTERNAL_MODE" --pos "$external_original_pos")
+            if [[ -n "$EXTERNAL_SCALE_FROM" ]]; then
+                rollback_args+=(--scale-from "$EXTERNAL_SCALE_FROM")
+            fi
+        else
+            rollback_args+=(--output "$EXTERNAL_NAME" --off)
+        fi
+        if ! "${rollback_args[@]}"; then
+            printf '%s\n' 'Failed to roll back display topology' >&2
+        fi
+    fi
+    exit "$status"
+}
+trap cleanup EXIT
+if [[ -n "$external_line" ]]; then
     echo "✓ External monitor detected"
+    topology_changed=true
 
     # Set up extended display
-    if ! "$HOME/.config/awesome/utilities/setup-monitors"; then
+    if ! DISPLAY_TRANSITION_LOCK_FD=9 \
+        "$HOME/.config/awesome/utilities/setup-monitors"; then
         echo "✗ Failed to configure displays" >&2
         exit 1
     fi
-
-    # Wait for xrandr to finish
-    sleep 2
-
-    # Migrate clients to external monitor
-    echo ""
-    echo "Migrating windows to external monitor..."
-    awesome-client "
-local screen_mgr = require('module.screen-manager')
-screen_mgr.migrate_to_external()
-"
-
-    # Wait for migration to complete
-    sleep 2
-
-    # Restart AwesomeWM to properly initialize new screen
-    echo "Restarting AwesomeWM to initialize new screen..."
-    awesome-client "awesome.restart()" >/dev/null 2>&1 || true
-
-    echo "✓ Extended display configured"
-
 else
     echo "✗ No external monitor detected on $EXTERNAL_NAME"
     echo ""
     echo "Available displays:"
     xrandr | grep " connected"
+    exit 1
 fi
+
+external_ready=false
+for _ in {1..30}; do
+    readiness_result=""
+    if readiness_result="$(awesome-client "
+for s in screen do
+    if s ~= screen.primary and s.valid and s.outputs['$EXTERNAL_NAME'] and #s.tags > 0 then
+        return 'ready'
+    end
+end
+")"; then
+        readiness_result="${readiness_result#"${readiness_result%%[![:space:]]*}"}"
+        if [[ "$readiness_result" == 'string "ready"' ]]; then
+            external_ready=true
+            break
+        fi
+    fi
+    sleep 0.1
+done
+
+if [[ "$external_ready" != true ]]; then
+    echo "✗ AwesomeWM did not initialize the external screen" >&2
+    exit 1
+fi
+
+echo ""
+echo "Migrating windows to external monitor..."
+if ! migration_result="$(awesome-client "
+local screen_mgr = require('module.screen-manager')
+local ok, err = pcall(screen_mgr.migrate_to_external)
+if not ok then
+    return 'error: ' .. tostring(err)
+end
+return 'ok'
+")"; then
+    preserve_external_on_error=true
+    printf '%s\n' '✗ Window migration command failed' >&2
+    exit 1
+fi
+migration_result="${migration_result#"${migration_result%%[![:space:]]*}"}"
+if [[ "$migration_result" != 'string "ok"' ]]; then
+    preserve_external_on_error=true
+    printf '✗ Window migration failed: %s\n' "$migration_result" >&2
+    exit 1
+fi
+
+completed=true
+echo "✓ Extended display configured"
