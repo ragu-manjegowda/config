@@ -897,6 +897,7 @@ local locker = function(s)
 
             if is_lock_state_set() then
                 ensure_password_grab()
+                if fingerprint_auth then fingerprint_auth:start() end
             end
         end
     )

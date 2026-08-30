@@ -13,6 +13,8 @@ trap 'rm -rf "$tmp_dir"' EXIT
 grep -Fq -- 'Before=systemd-suspend.service' "$service"
 grep -Fq -- 'RequiredBy=systemd-suspend.service' "$service"
 grep -Fq -- 'User=ragu' "$service"
+grep -Fq -- 'Environment=XDG_RUNTIME_DIR=/run/user/1000' "$service"
+grep -Fq -- 'Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus' "$service"
 grep -Fq -- 'ExecStart=/home/ragu/.config/scripts/lock-before-sleep.sh' "$service"
 grep -Fq -- 'enable_system_service awesome-lock-before-sleep.service' "$bootstrap"
 grep -Fq -- 'lockscreen.visible' "$helper"

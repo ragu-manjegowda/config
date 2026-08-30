@@ -129,9 +129,12 @@ assert_test(
 
 assert_test(
     source:match("module::sleep_resumed") ~= nil and
-        source:match("ensure_password_grab%(%)") ~= nil and
+        source:match(
+            "if is_lock_state_set%(%) then%s*ensure_password_grab%(%)%s*" ..
+            "if fingerprint_auth then fingerprint_auth:start%(%) end%s*end"
+        ) ~= nil and
         source:match("xset dpms force on") ~= nil,
-    "Resume wakes DPMS and reacquires the lockscreen keygrab"
+    "Resume wakes DPMS and restores password and fingerprint authentication"
 )
 
 assert_test(
