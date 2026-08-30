@@ -24,12 +24,21 @@ elif [ -d "$1" ]; then
 # https://github.com/wofr06/lesspipe/pull/110
 elif [ "$kind" = pdf ]; then
     if has_cmd pdftotext sed; then
-        pdftotext -q "$1" - | sed "s/\f/$(hr ─)\n/g"
+        pdftotext -q "$1" - | sed $'s/\f/\n----------------------------------------\n/g'
     fi
 # https://github.com/wofr06/lesspipe/pull/115
 elif [ "$kind" = rfc822 ]; then
     if has_cmd bat; then
         bat --color=always -lEmail "$1"
+    fi
+elif [ "$category" = image ]; then
+    if has_cmd chafa; then
+        chafa \
+            --format=symbols \
+            --colors=full \
+            --animate=off \
+            --size="${FZF_PREVIEW_COLUMNS:-80}x${FZF_PREVIEW_LINES:-40}" \
+            "$1"
     fi
 # https://github.com/wofr06/lesspipe/pull/117
 elif [ "$category" = text ]; then

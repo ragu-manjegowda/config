@@ -80,6 +80,28 @@ local pam_module = nil
 local current_user_name = '$USER'
 local current_profile_image = widget_icon_dir .. 'default.svg'
 local fingerprint_auth = nil
+local locked_media_signals = {
+    XF86MonBrightnessUp = 'widget::brightness',
+    XF86MonBrightnessDown = 'widget::brightness',
+    XF86AudioRaiseVolume = 'widget::volume',
+    XF86AudioLowerVolume = 'widget::volume',
+    XF86AudioMute = 'widget::volume',
+    XF86AudioMicMute = 'widget::microphone'
+}
+
+local function refresh_locked_media_osd(key)
+    local signal = locked_media_signals[key]
+    if not signal then return false end
+
+    gears.timer.start_new(0.15, function()
+        awesome.emit_signal(signal, true)
+        if signal == 'widget::microphone' then
+            awesome.emit_signal('module::mic_osd:show', true)
+        end
+        return false
+    end)
+    return true
+end
 
 awesome.connect_signal('module::fingerprint_start', function()
     if fingerprint_auth then fingerprint_auth:start() end
@@ -627,6 +649,10 @@ local locker = function(s)
             }
         },
         keypressed_callback  = function(_, _, key, _)
+            if refresh_locked_media_osd(key) then
+                return
+            end
+
             if not type_again then
                 return
             end

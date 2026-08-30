@@ -1,0 +1,160 @@
+#!/usr/bin/env python3
+
+import os
+import select
+import struct
+import subprocess
+import time
+from pathlib import Path
+
+TARGET_USER = "ragu"
+TARGET_UID = 1000
+PROC_ROOT = Path("/proc")
+LOCK_FILE = Path(f"/run/user/{TARGET_UID}/awesome-lockscreen.locked")
+INPUT_EVENT = struct.Struct("llHHI")
+EV_KEY = 1
+
+KEY_MUTE = 113
+KEY_VOLUMEDOWN = 114
+KEY_VOLUMEUP = 115
+KEY_BRIGHTNESSDOWN = 224
+KEY_BRIGHTNESSUP = 225
+KEY_MICMUTE = 248
+
+ACTIONS = {
+    KEY_MUTE: ("volume", "toggle"),
+    KEY_VOLUMEDOWN: ("volume", "5%-"),
+    KEY_VOLUMEUP: ("volume", "5%+"),
+    KEY_BRIGHTNESSDOWN: ("brightness", "-U"),
+    KEY_BRIGHTNESSUP: ("brightness", "-A"),
+    KEY_MICMUTE: ("microphone", "toggle"),
+}
+
+
+def tuigreet_running():
+    for comm_file in PROC_ROOT.glob("[0-9]*/comm"):
+        try:
+            if comm_file.read_text().strip() != "tuigreet":
+                continue
+            status = (comm_file.parent / "status").read_text()
+            if f"Uid:\t{TARGET_UID}\t" in status:
+                return True
+        except (FileNotFoundError, PermissionError, ProcessLookupError):
+            continue
+    return False
+
+
+def controls_enabled():
+    return LOCK_FILE.exists() or tuigreet_running()
+
+
+def run(command):
+    try:
+        result = subprocess.run(
+            command,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=2,
+            check=False,
+        )
+        return result.returncode == 0
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+
+
+def as_user(command):
+    runtime_dir = f"/run/user/{TARGET_UID}"
+    return [
+        "/usr/bin/runuser",
+        "-u",
+        TARGET_USER,
+        "--",
+        "/usr/bin/env",
+        f"XDG_RUNTIME_DIR={runtime_dir}",
+        f"DBUS_SESSION_BUS_ADDRESS=unix:path={runtime_dir}/bus",
+        *command,
+    ]
+
+
+def run_action(code):
+    action, value = ACTIONS[code]
+    if action == "brightness":
+        return run(["/usr/bin/light", value, "10"])
+
+    target = "@DEFAULT_AUDIO_SOURCE@" if action == "microphone" else "@DEFAULT_AUDIO_SINK@"
+    wpctl_action = "set-mute" if value == "toggle" else "set-volume"
+    wpctl_command = as_user([
+        "/usr/bin/wpctl",
+        wpctl_action,
+        target,
+        value,
+    ])
+    if run(wpctl_command):
+        return True
+
+    run(as_user([
+        "/usr/bin/systemctl",
+        "--user",
+        "start",
+        "pipewire.service",
+        "pipewire-pulse.service",
+        "wireplumber.service",
+    ]))
+    time.sleep(0.25)
+    if run(wpctl_command):
+        return True
+
+    alsa_control = "Capture" if action == "microphone" else "Master"
+    return run(as_user(["/usr/bin/amixer", "-q", "set", alsa_control, value]))
+
+
+def discover_devices(devices):
+    for path in Path("/dev/input").glob("event[0-9]*"):
+        if path in devices:
+            continue
+        try:
+            devices[path] = os.open(path, os.O_RDONLY | os.O_NONBLOCK)
+        except OSError:
+            continue
+
+
+def process_events(data):
+    for offset in range(0, len(data) - INPUT_EVENT.size + 1, INPUT_EVENT.size):
+        _, _, event_type, code, value = INPUT_EVENT.unpack_from(data, offset)
+        if (
+            event_type == EV_KEY
+            and code in ACTIONS
+            and value in (1, 2)
+            and controls_enabled()
+        ):
+            run_action(code)
+
+
+def main():
+    devices = {}
+    print("login media key listener started", flush=True)
+
+    while True:
+        discover_devices(devices)
+        if not devices:
+            time.sleep(2)
+            continue
+
+        try:
+            ready, _, _ = select.select(list(devices.values()), [], [], 2)
+        except (OSError, ValueError):
+            ready = []
+
+        for path, descriptor in list(devices.items()):
+            if descriptor not in ready:
+                continue
+            try:
+                process_events(os.read(descriptor, INPUT_EVENT.size * 64))
+            except OSError:
+                os.close(descriptor)
+                del devices[path]
+
+
+if __name__ == "__main__":
+    main()

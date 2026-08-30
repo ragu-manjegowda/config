@@ -1,0 +1,18 @@
+[Unit]
+Description=Handle brightness and volume keys on login and lock screens
+After=systemd-udevd.service
+Before=greetd.service
+
+[Service]
+Type=simple
+Environment=HOME=/tmp
+ExecStart=/usr/local/libexec/login-media-keys
+Restart=always
+RestartSec=2
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=read-only
+ProtectKernelModules=true
+
+[Install]
+WantedBy=multi-user.target

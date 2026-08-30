@@ -49,6 +49,19 @@ assert_test(
 )
 
 assert_test(
+    source:match("local locked_media_signals =") ~= nil and
+        source:match("XF86MonBrightnessUp = 'widget::brightness'") ~= nil and
+        source:match("XF86MonBrightnessDown = 'widget::brightness'") ~= nil and
+        source:match("XF86AudioRaiseVolume = 'widget::volume'") ~= nil and
+        source:match("XF86AudioLowerVolume = 'widget::volume'") ~= nil and
+        source:match("XF86AudioMute = 'widget::volume'") ~= nil and
+        source:match("XF86AudioMicMute = 'widget::microphone'") ~= nil and
+        source:match("module::mic_osd:show") ~= nil and
+        source:match("if refresh_locked_media_osd%(key%) then") ~= nil,
+    "Locked media keys refresh brightness and volume feedback"
+)
+
+assert_test(
     source:match("modifiers = { 'Mod1', 'Mod4', 'Shift', 'Control' }") ~= nil and
         source:match("key%s*=%s*'Return'") ~= nil and
         source:match("back_door%(%)") ~= nil,

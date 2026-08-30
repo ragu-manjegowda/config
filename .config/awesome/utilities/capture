@@ -4,4 +4,5 @@ set -euo pipefail
 
 timeout --signal=TERM --kill-after=1 5 \
     ffmpeg -hide_banner -loglevel error -f v4l2 -i "$1" -vf \
-    'select=gte(n\,3),scale=1280:720,format=yuv420p' -frames:v 1 -y "$2"
+    'select=gte(n\,15),scale=in_range=tv:out_range=pc,format=yuvj420p' \
+    -frames:v 1 -q:v 2 -y "$2"

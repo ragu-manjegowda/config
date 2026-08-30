@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+set -uo pipefail
+
+fzf_binary="$(command -v fzf)"
+if ! command -v ueberzugpp >/dev/null || [[ -z "${DISPLAY:-}" ]]; then
+    exec "$fzf_binary" "$@"
+fi
+
+runtime_root="${XDG_RUNTIME_DIR:-/tmp}"
+runtime_dir="$(mktemp -d "$runtime_root/fzf-ueberzug.XXXXXX")"
+pid_file="$runtime_dir/pid"
+socket=""
+
+cleanup() {
+    if [[ -n "$socket" ]]; then
+        ueberzugpp cmd --socket "$socket" --action exit >/dev/null 2>&1 || true
+    fi
+    rm -rf "$runtime_dir"
+}
+trap cleanup EXIT HUP INT QUIT TERM
+
+if ! UEBERZUGPP_TMPDIR="$runtime_dir" ueberzugpp layer \
+    --no-stdin \
+    --silent \
+    --output x11 \
+    --pid-file "$pid_file"; then
+    cleanup
+    trap - EXIT HUP INT QUIT TERM
+    exec "$fzf_binary" "$@"
+fi
+
+if [[ -s "$pid_file" ]]; then
+    read -r ueberzug_pid < "$pid_file"
+    socket="$runtime_dir/ueberzugpp-$ueberzug_pid.socket"
+fi
+
+for _ in {1..20}; do
+    [[ -S "$socket" ]] && break
+    sleep 0.05
+done
+
+if [[ ! -S "$socket" ]]; then
+    cleanup
+    trap - EXIT HUP INT QUIT TERM
+    exec "$fzf_binary" "$@"
+fi
+
+export FZF_UEBERZUG_SOCKET="$socket"
+export FZF_UEBERZUG_CACHE_DIR="$runtime_dir/previews"
+mkdir -p "$FZF_UEBERZUG_CACHE_DIR"
+"$fzf_binary" "$@"

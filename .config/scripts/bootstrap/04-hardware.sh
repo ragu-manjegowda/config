@@ -115,6 +115,9 @@ if [[ -e /etc/modprobe.d/v4l2loopback.conf ]]; then
     sudo rm -f /etc/modprobe.d/v4l2loopback.conf
     log_ok "Removed legacy v4l2loopback configuration"
 fi
+check_copy \
+    "${MISC_DIR}/etc/systemd/system/v4l2-relayd-ipu7.service.d/override.conf" \
+    /etc/systemd/system/v4l2-relayd-ipu7.service.d/override.conf
 enable_system_service v4l2-relayd-ipu7.service
 
 log_info "Reloading udev rules..."

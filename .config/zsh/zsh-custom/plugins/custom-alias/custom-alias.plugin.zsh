@@ -215,7 +215,8 @@ HISTORY_BASE="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/dir_history"
 zstyle ':fzf-tab:*' default-color "$fg[yellow]"
 
 # Preview completion
-zstyle ':fzf-tab:complete:*:*' fzf-preview 'less ${(Q)realpath}'
+zstyle ':fzf-tab:*' fzf-command "$HOME/.config/zsh/fzf-ueberzug"
+zstyle ':fzf-tab:complete:*:*' fzf-preview '$HOME/.config/zsh/fzf-preview ${(Q)realpath}'
 
 zstyle ':fzf-tab:complete:(-command-|-parameter-|-brace-parameter-|export|unset|expand):*' \
 	fzf-preview 'echo ${(P)word}'

@@ -19,6 +19,13 @@ if not command.startswith("tuigreet "):
 install_validated_admin_config \
     "${MISC_DIR}/etc/greetd/config.toml" /etc/greetd/config.toml _validate_greetd
 
+log_info "Login and lockscreen media keys..."
+check_copy "${MISC_DIR}/usr/local/libexec/login-media-keys" \
+    /usr/local/libexec/login-media-keys
+check_copy "${MISC_DIR}/etc/systemd/system/login-media-keys.service" \
+    /etc/systemd/system/login-media-keys.service
+enable_system_service login-media-keys.service
+
 log_info "Polkit rules..."
 check_copy "${MISC_DIR}/etc/polkit-1/rules.d/00-early-checks.rules" \
     /etc/polkit-1/rules.d/00-early-checks.rules

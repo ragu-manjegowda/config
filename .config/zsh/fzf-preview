@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+set -uo pipefail
+
+path="$1"
+identifier="fzf-tab-preview"
+socket="${FZF_UEBERZUG_SOCKET:-}"
+mime="$(file -Lbs --mime-type -- "$path")"
+preview_file=""
+
+remove_overlay() {
+    if [[ -S "$socket" ]]; then
+        ueberzugpp cmd \
+            --socket "$socket" \
+            --identifier "$identifier" \
+            --action remove >/dev/null 2>&1 || true
+    fi
+}
+
+if [[ "$mime" == image/* ]]; then
+    preview_file="$path"
+elif [[ "$mime" == application/pdf ]] && [[ -n "${FZF_UEBERZUG_CACHE_DIR:-}" ]]; then
+    metadata="$(stat -Lc '%n:%Y:%s' -- "$path")"
+    cache_key="$(printf '%s' "$metadata" | sha256sum)"
+    cache_key="${cache_key%% *}"
+    preview_file="$FZF_UEBERZUG_CACHE_DIR/$cache_key.png"
+
+    if [[ ! -s "$preview_file" ]]; then
+        tmp_base="$FZF_UEBERZUG_CACHE_DIR/.$cache_key.$$"
+        trap 'rm -f "$tmp_base.png"' EXIT HUP INT QUIT TERM
+        if pdftoppm -f 1 -l 1 -singlefile -png -r 150 \
+            "$path" "$tmp_base" >/dev/null 2>&1 && [[ -s "$tmp_base.png" ]]; then
+            mv "$tmp_base.png" "$preview_file"
+        fi
+        trap - EXIT HUP INT QUIT TERM
+    fi
+fi
+
+if [[ -s "$preview_file" ]] && [[ -S "$socket" ]]; then
+    if ueberzugpp cmd \
+        --socket "$socket" \
+        --identifier "$identifier" \
+        --action add \
+        --file "$preview_file" \
+        --xpos "${FZF_PREVIEW_LEFT:-0}" \
+        --ypos "${FZF_PREVIEW_TOP:-0}" \
+        --max-width "${FZF_PREVIEW_COLUMNS:-80}" \
+        --max-height "${FZF_PREVIEW_LINES:-40}"; then
+        exit 0
+    fi
+fi
+
+remove_overlay
+exec less "$path"
