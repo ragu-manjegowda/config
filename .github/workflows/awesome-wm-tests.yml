@@ -42,6 +42,7 @@ on:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   AWESOME_CONFIG_DIR: .config/awesome
+  XDG_RUNTIME_DIR: /tmp
 
 jobs:
   lua-syntax-check:
@@ -125,6 +126,7 @@ jobs:
           for test in "${{ env.AWESOME_CONFIG_DIR }}"/tests/test_*.lua; do
             case "$(basename "$test")" in
               test_notification_*.lua) continue ;;
+              test_screen_recorder_storage.lua) continue ;;
             esac
             HOME="$GITHUB_WORKSPACE" lua "$test"
           done
@@ -211,6 +213,11 @@ jobs:
       - name: Install awesome-git
         run: |
           sudo -u builder bash -lc 'cd /tmp/awesome-git && MAKEFLAGS="-j$(nproc)" makepkg -si --noconfirm'
+
+      - name: Test recorder storage with Lua
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_screen_recorder_storage.lua
 
       - name: Test configuration with awesome --check
         run: |
@@ -457,6 +464,11 @@ jobs:
           else
             echo "used=false" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Test recorder storage with LuaJIT
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_screen_recorder_storage.lua
 
       - name: Test configuration with awesome --check
         run: |
@@ -968,7 +980,7 @@ jobs:
       - name: Install Lua
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm lua
+          pacman -S --noconfirm lua luajit lua51-lgi
 
       - name: Test lid brightness recovery
         run: |
@@ -985,6 +997,15 @@ jobs:
           cd "$GITHUB_WORKSPACE"
           bash .config/awesome/tests/test_xidlehook_display_recovery.sh
 
+      - name: Test hardware-independent lockscreen power policy
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_lockscreen_fingerprint.lua
+          HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_lockscreen_auth.lua
+          HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_lock_before_sleep.sh
+          HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_suspend_only_policy.sh
+          HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_top_panel_lifecycle.sh
+
       - name: Test goimapnotify timeout handling
         run: |
           cd "$GITHUB_WORKSPACE"
@@ -1000,6 +1021,17 @@ jobs:
           cd "$GITHUB_WORKSPACE"
           HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_screen_tag_state.lua
           HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_screen_manager.lua
+
+      - name: Test screen recorder source selection
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_screen_recorder_state.lua
+          HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_screen_recorder_selector.lua
+          HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_screen_recorder_command.lua
+          HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_screen_recorder_settings.lua
+          HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_screen_recorder_icons.lua
+          HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_screen_recorder_source.lua
+          HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_screen_recorder_storage.lua
 
       - name: Test monitor scripts integration
         run: |

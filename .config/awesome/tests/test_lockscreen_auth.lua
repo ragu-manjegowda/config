@@ -23,6 +23,8 @@ end
 
 local source = read_file(os.getenv("HOME") .. "/.config/awesome/module/lockscreen.lua")
 local exit_source = read_file(os.getenv("HOME") .. "/.config/awesome/module/exit-screen.lua")
+local battery_source = read_file(os.getenv("HOME") .. "/.config/awesome/widget/battery/init.lua")
+local capture_source = read_file(os.getenv("HOME") .. "/.config/awesome/utilities/capture")
 
 print("\nTest Suite: Lockscreen Authentication")
 
@@ -128,15 +130,35 @@ assert_test(
 )
 
 assert_test(
-    exit_source:match("lock%s*&%s*systemctl hibernate") == nil and
-        exit_source:match("pending_sleep_action%s*=%s*'hibernate'") ~= nil and
+    exit_source:match("hibernate") == nil and
+        exit_source:match("pending_sleep_action%s*=%s*'suspend'") ~= nil and
+        exit_source:match("module::suspend") ~= nil and
         exit_source:match("module::locked") ~= nil,
-    "Hibernate waits for completed lockscreen keygrab setup"
+    "Suspend waits for completed lockscreen keygrab setup"
 )
 
 assert_test(
-    source:match("elseif is_lock_state_set%(%) and ensure_password_grab%(%) then") ~= nil,
-    "Critical battery hibernate can confirm an already locked session"
+    battery_source:match("module::suspend") ~= nil and
+        battery_source:match("hibernate") == nil and
+        source:match("elseif is_lock_state_set%(%) and ensure_password_grab%(%) then") ~= nil,
+    "Critical battery suspend can confirm an already locked session"
+)
+
+assert_test(
+    source:match("local capture_in_progress = false") ~= nil and
+        source:match("if capture_in_progress then return end") ~= nil and
+        source:match("reset_failed_auth%(%)") ~= nil and
+        capture_source:match("timeout %-%-signal=TERM %-%-kill%-after=1 5") ~= nil,
+    "Intruder capture cannot block failed-auth recovery indefinitely"
+)
+
+assert_test(
+    source:match("require%('module%.lockscreen%-fingerprint'%)") ~= nil and
+        source:match("on_match%s*=%s*function%(%)") ~= nil and
+        source:match("generalkenobi_ohhellothere%(%)") ~= nil and
+        source:match("on_no_match%s*=%s*function%(%)") ~= nil and
+        source:match("stoprightthereyoucriminalscum%(%)") ~= nil,
+    "Fingerprint match and failure use guarded lockscreen authentication paths"
 )
 
 assert_test(

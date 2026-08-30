@@ -6,7 +6,20 @@ local task_list = require('widget.task-list')
 local tag_list = require('widget.tag-list')
 local vseparator = require('widget.vseparator')
 
+local function hide_existing_panel(s)
+    local panel = s.top_panel
+    if not panel then return end
+    s.top_panel = nil
+    panel.visible = false
+    panel:struts { top = 0 }
+end
+
+screen.connect_signal('removed', hide_existing_panel)
+
 local top_panel = function(s)
+    -- RandR can request decoration repeatedly while startup geometry settles.
+    hide_existing_panel(s)
+
     -- Use DPI-scaled panel height for consistency across resolutions
     -- Base height of 46px scales with DPI (at 144 DPI = ~68px)
     local panel_height = dpi(46)

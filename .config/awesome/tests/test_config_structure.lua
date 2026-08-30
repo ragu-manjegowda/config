@@ -267,6 +267,14 @@ if config.module and config.module.lockscreen then
     if lock.capture_intruder ~= nil then
         assert_type(lock.capture_intruder, "boolean", "capture_intruder is a boolean")
     end
+    if lock.fingerprint_unlock ~= nil then
+        assert_type(lock.fingerprint_unlock, "boolean", "fingerprint_unlock is a boolean")
+    end
+    if lock.capture_intruder then
+        assert_test(lock.camera_device == "/dev/video90",
+            "intruder capture uses the compatibility camera",
+            "Expected /dev/video90, got " .. tostring(lock.camera_device))
+    end
 
     if lock.military_clock ~= nil then
         assert_type(lock.military_clock, "boolean", "military_clock is a boolean")

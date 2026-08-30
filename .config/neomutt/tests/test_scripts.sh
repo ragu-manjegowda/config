@@ -113,8 +113,11 @@ for script in create-alias.sh get-mailboxes.sh mu-search.sh \
 done
 
 for account in work personal; do
+    file=~/.config/neomutt/accounts/$account/mbsyncrc
     echo -n "Testing $account background sync pulls all server-side changes... "
-    if grep -Fqx "Sync Pull" ~/.config/neomutt/accounts/$account/mbsyncrc; then
+    if is_git_crypt_locked "$file"; then
+        echo -e "${YELLOW}⚠ SKIPPED${NC} (git-crypt locked)"
+    elif grep -Fqx "Sync Pull" "$file"; then
         echo -e "${GREEN}✓ PASSED${NC}"
         ((passed++))
     else

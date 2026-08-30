@@ -170,14 +170,6 @@ end
 
 local pending_sleep_action = nil
 
-local hibernate_command = function()
-    awesome.emit_signal('module::exit_screen:hide')
-    pending_sleep_action = 'hibernate'
-    awesome.emit_signal('module::lockscreen_show')
-end
-
-awesome.connect_signal('module::hibernate', hibernate_command)
-
 awesome.connect_signal(
     'module::locked',
     function(_)
@@ -206,6 +198,8 @@ local suspend_command = function()
     awesome.emit_signal('module::lockscreen_show')
 end
 
+awesome.connect_signal('module::suspend', suspend_command)
+
 local logout_command = function()
     awesome.quit()
 end
@@ -227,7 +221,6 @@ end
 
 local poweroff = build_power_button('Shutdown', icons.power, poweroff_command)
 local reboot = build_power_button('Restart', icons.restart, reboot_command)
-local hibernate = build_power_button('Hibernate', icons.hibernate, hibernate_command)
 local suspend = build_power_button('Sleep', icons.sleep, suspend_command)
 local logout = build_power_button('Logout', icons.logout, logout_command)
 local lock = build_power_button('Lock', icons.lock, lock_command)
@@ -316,7 +309,6 @@ local create_exit_screen = function(s)
                         {
                             poweroff,
                             reboot,
-                            hibernate,
                             suspend,
                             logout,
                             lock,
@@ -353,9 +345,7 @@ local exit_screen_grabber = awful.keygrabber {
     auto_start = true,
     stop_event = 'release',
     keypressed_callback = function(_, _, key, _)
-        if key == 'h' then
-            awesome.emit_signal('module::hibernate')
-        elseif key == 's' then
+        if key == 's' then
             suspend_command()
         elseif key == 'e' then
             logout_command()

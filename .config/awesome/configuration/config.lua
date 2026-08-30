@@ -103,9 +103,9 @@ return {
         },
 
         screen_recorder = {
-            -- Which display to record from: "primary", "external", or "both"
-            -- If "external"/"both" is selected and the external display is not
-            -- connected, recording falls back to the primary display.
+            -- Initial display choice: "primary", "external", or "both".
+            -- The recorder UI persists later choices under XDG_STATE_HOME.
+            -- Unavailable external targets remain disabled instead of falling back.
             display_target = "external",
             -- Resolution and offset are automatically detected from display config
             -- based on the display_target setting above
@@ -190,11 +190,13 @@ return {
             -- Default password if there's no PAM integration
             fallback_password = 'toor',
             -- Capture intruder using webcam
-            capture_intruder = false,
+            capture_intruder = true,
+            -- Allow fingerprint unlock while the locked display is on
+            fingerprint_unlock = true,
             -- Camera path (Some systemts will have more than one built-in
             -- camera, pick the right one with this command
             -- $ v4l2-ctl --list-devices
-            camera_device = '/dev/video8',
+            camera_device = '/dev/video90',
             capture_script = utils_dir .. 'capture',
             -- Intruder image save location (Will create directory if it doesn't exist)
             face_capture_dir = '$HOME/Pictures/Intruders/',

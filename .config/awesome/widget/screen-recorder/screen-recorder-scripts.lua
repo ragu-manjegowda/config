@@ -1,168 +1,178 @@
 local awful = require('awful')
-local naughty = require('naughty')
+local gears = require('gears')
 local user_config = require('widget.screen-recorder.screen-recorder-config')
-local scripts_tbl = {}
+local recorder_state = require('widget.screen-recorder.screen-recorder-state')
+local storage = require('widget.screen-recorder.screen-recorder-storage')
 
--- Get user settings
-scripts_tbl.user_resolution = user_config.user_resolution
-scripts_tbl.user_offset = user_config.user_offset
-scripts_tbl.user_audio = user_config.user_audio
-scripts_tbl.user_dir = user_config.user_save_directory
-scripts_tbl.user_mic_lvl = user_config.user_mic_lvl
-scripts_tbl.user_fps = user_config.user_fps
+local scripts = {}
+local home = assert(os.getenv('HOME'))
+local save_directory = user_config.user_save_directory:gsub('^%$HOME', home)
+if save_directory:sub(-1) ~= '/' then save_directory = save_directory .. '/' end
+local runtime_directory = os.getenv('XDG_RUNTIME_DIR')
+if not runtime_directory or runtime_directory == '' then
+    runtime_directory = gears.filesystem.get_cache_dir()
+end
+if runtime_directory:sub(-1) ~= '/' then runtime_directory = runtime_directory .. '/' end
+local pid_path = runtime_directory .. 'awesome-screen-recorder.pid'
+local active_pid, active_filename, finished_callback
+local stopping = false
 
-scripts_tbl.update_user_settings = function(res, offset, audio)
-    scripts_tbl.user_resolution = res
-    scripts_tbl.user_offset = offset
-    scripts_tbl.user_audio = audio
+local function file_exists(path)
+    local file = io.open(path, 'rb')
+    if not file then return false end
+    file:close()
+    return true
 end
 
-scripts_tbl.check_settings = function()
-    -- For debugging purpose only
-    -- naughty.notification({
-    -- 	message=scripts_tbl.user_resolution .. ' ' .. scripts_tbl.user_offset .. tostring(scripts_tbl.user_audio)
-    -- })
+function scripts.owns_arguments(arguments, filename)
+    local executable = arguments[1] and arguments[1]:match('([^/]+)$')
+    if executable ~= 'ffmpeg' or arguments[2] ~= '-nostdin' or
+        arguments[#arguments] ~= filename then return false end
+    for _, argument in ipairs(arguments) do
+        if argument == '' then return false end
+    end
+    local has_video_size, has_input, has_x11grab = false, false, false
+    for index = 1, #arguments - 1 do
+        has_video_size = has_video_size or arguments[index] == '-video_size'
+        has_input = has_input or arguments[index] == '-i'
+        has_x11grab = has_x11grab or
+            (arguments[index] == '-f' and arguments[index + 1] == 'x11grab')
+    end
+    return has_video_size and has_input and has_x11grab
 end
 
-local create_save_directory = function()
-    local create_dir_cmd = [[
-	dir="]] .. scripts_tbl.user_dir .. [["
-
-	if [ ! -d "$dir" ]; then
-		mkdir -p "$dir"
-	fi
-	]]
-
-    awful.spawn.easy_async_with_shell(
-        create_dir_cmd,
-        function(_) end
-    )
+function scripts.parse_command_line(command)
+    local arguments, start = {}, 1
+    while start <= #command do
+        local separator = command:find('\0', start, true)
+        if not separator then return nil end
+        arguments[#arguments + 1] = command:sub(start, separator - 1)
+        start = separator + 1
+    end
+    return arguments
 end
 
-create_save_directory()
-
-local kill_existing_recording_ffmpeg = function()
-    -- Let's killall ffmpeg instance first after awesome (re)-starts if there's any
-    awful.spawn.easy_async_with_shell(
-        [[
-		ps x | grep 'ffmpeg -video_size' | grep -v grep | awk '{print $1}' | xargs kill
-		]],
-        function(_) end
-    )
+local function owned_process(pid, filename)
+    local file = io.open('/proc/' .. tostring(pid) .. '/cmdline', 'rb')
+    if not file then return false end
+    local command = file:read(4096)
+    file:close()
+    if not command then return false end
+    local arguments = scripts.parse_command_line(command)
+    return arguments and scripts.owns_arguments(arguments, filename)
 end
 
-kill_existing_recording_ffmpeg()
-
-local turn_on_the_mic = function()
-    awful.spawn.easy_async_with_shell(
-        [[
-		wpctl set-volume @DEFAULT_AUDIO_SOURCE@ ]] .. scripts_tbl.user_mic_lvl .. [[%
-		]],
-        function() end
-    )
+local function stop_stale_recording()
+    local content = storage.read(pid_path, 4096)
+    if not content then return end
+    local pid, filename = content:match('^(%d+)\n([^\n]+)$')
+    if pid and filename and owned_process(pid, filename) then
+        awful.spawn({ 'kill', '-INT', pid })
+    end
+    storage.remove(pid_path)
 end
 
-local ffmpeg_stop_recording = function()
-    -- Let's killall ffmpeg instance first after awesome (re)-starts if there's any
-    awful.spawn.easy_async_with_shell(
-        [[
-		ps x | grep 'ffmpeg -video_size' | grep -v grep | awk '{print $1}' | xargs kill -2
-		]],
-        function(_) end
-    )
+local function unique_filename()
+    gears.filesystem.make_directories(save_directory)
+    local base = save_directory .. os.date('%Y-%m-%d_%H-%M-%S')
+    for suffix = 0, 999 do
+        local candidate = base .. (suffix == 0 and '' or ('-' .. suffix)) .. '.mp4'
+        if not file_exists(candidate) then return candidate end
+    end
+    return nil, 'Could not allocate a recording filename'
 end
 
-local create_notification = function(file_dir)
-    local open_video = naughty.action {
-        name = 'Open',
-        icon_only = false,
+local function ffmpeg_arguments(audio, geometry, filename)
+    local video_size, input = recorder_state.ffmpeg_geometry(geometry)
+    local args = {
+        'ffmpeg', '-nostdin', '-video_size', video_size,
+        '-framerate', tostring(user_config.user_fps),
+        '-f', 'x11grab', '-i', input
     }
-
-    local delete_video = naughty.action {
-        name = 'Delete',
-        icon_only = false,
-    }
-
-    open_video:connect_signal(
-        'invoked',
-        function()
-            awful.spawn('xdg-open ' .. file_dir, false)
-        end
-    )
-
-    delete_video:connect_signal(
-        'invoked',
-        function()
-            awful.spawn('gio trash ' .. file_dir, false)
-        end
-    )
-
-    naughty.notification({
-        app_name = 'Screen Recorder',
-        timeout = 60,
-        title = '<b>Recording Finished!</b>',
-        message = 'Recording can now be viewed.',
-        actions = { open_video, delete_video }
-    })
-end
-
-local ffmpeg_start_recording = function(audio, filename)
-    local add_audio_str = ' '
-
     if audio then
-        turn_on_the_mic()
-        add_audio_str = '-f pulse -ac 2 -i default'
+        args[#args + 1] = '-f'
+        args[#args + 1] = 'pulse'
+        args[#args + 1] = '-ac'
+        args[#args + 1] = '2'
+        args[#args + 1] = '-i'
+        args[#args + 1] = 'default'
+    end
+    local output_args = {
+        '-c:v', 'libx264', '-crf', '20', '-profile:v', 'baseline',
+        '-level', '3.0', '-pix_fmt', 'yuv420p', filename
+    }
+    for _, argument in ipairs(output_args) do args[#args + 1] = argument end
+    return args
+end
+
+local function complete_recording(reason, code, last_error)
+    local callback, filename = finished_callback, active_filename
+    local requested_stop = stopping
+    active_pid, active_filename, finished_callback = nil, nil, nil
+    stopping = false
+    storage.remove(pid_path)
+    local success = file_exists(filename) and
+        (requested_stop or (reason == 'exit' and code == 0))
+    if callback then
+        callback(success, filename, success and nil or
+            (last_error ~= '' and last_error or ('FFmpeg exited with ' .. tostring(code))))
+    end
+end
+
+function scripts.start_recording(audio, geometry, callback)
+    if active_pid then return nil, 'Recording already active' end
+    local filename, filename_error = unique_filename()
+    if not filename then return nil, filename_error end
+    if audio then
+        awful.spawn({
+            'wpctl', 'set-volume', '@DEFAULT_AUDIO_SOURCE@',
+            tostring(user_config.user_mic_lvl) .. '%'
+        })
     end
 
-    awful.spawn.easy_async_with_shell(
-        [[
-		file_name=]] .. filename .. [[
-
-		ffmpeg -video_size ]] .. scripts_tbl.user_resolution .. [[ -framerate ]] .. scripts_tbl.user_fps .. [[ -f x11grab \
-		-i :0.0+]] ..
-        scripts_tbl.user_offset ..
-        ' ' .. add_audio_str .. [[ -c:v libx264 -crf 20 -profile:v baseline -level 3.0 -pix_fmt yuv420p $file_name
-		]],
-        function(_, stderr)
-            if stderr and stderr:match('Invalid argument') then
-                naughty.notification({
-                    app_name = 'Screen Recorder',
-                    title = '<b>Invalid Configuration!</b>',
-                    message = 'Please, put a valid settings!',
-                    timeout = 60,
-                    urgency = 'normal'
-                })
-                awesome.emit_signal('widget::screen_recorder')
-                return
+    local last_error = ''
+    local early_exit
+    local pid = awful.spawn.with_line_callback(
+        ffmpeg_arguments(audio, geometry, filename), {
+            stderr = function(line)
+                last_error = line:sub(1, 2048)
+            end,
+            exit = function(reason, code)
+                if not active_pid then
+                    early_exit = { reason = reason, code = code }
+                else
+                    complete_recording(reason, code, last_error)
+                end
             end
-            create_notification(filename)
-        end
-    )
+        })
+    if type(pid) ~= 'number' then return nil, tostring(pid) end
+    if early_exit then
+        return nil, last_error ~= '' and last_error or
+            ('FFmpeg exited with ' .. tostring(early_exit.code))
+    end
+
+    active_pid, active_filename, finished_callback = pid, filename, callback
+    local saved, save_error = pcall(
+        storage.write, pid_path, tostring(pid) .. '\n' .. filename)
+    if not saved then
+        awful.spawn({ 'kill', '-INT', tostring(pid) })
+        stopping = true
+        finished_callback = nil
+        return nil, tostring(save_error)
+    end
+    return pid
 end
 
-local create_unique_filename = function(audio)
-    awful.spawn.easy_async_with_shell(
-        [[
-		dir="]] .. scripts_tbl.user_dir .. [["
-		date=$(date '+%Y-%m-%d_%H-%M-%S')
-		format=.mp4
-
-		echo "${dir}${date}${format}" | tr -d '\n'
-		]],
-        function(stdout)
-            local filename = stdout
-            ffmpeg_start_recording(audio, filename)
-        end
-    )
+function scripts.stop_recording()
+    if not active_pid or stopping then return false end
+    stopping = true
+    awful.spawn({ 'kill', '-INT', tostring(active_pid) })
+    return true
 end
 
-scripts_tbl.start_recording = function(audio_mode)
-    create_save_directory()
-    create_unique_filename(audio_mode)
+function scripts.is_recording()
+    return active_pid ~= nil
 end
 
-scripts_tbl.stop_recording = function()
-    ffmpeg_stop_recording()
-end
-
-return scripts_tbl
+stop_stale_recording()
+return scripts

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 04-hardware.sh - Power management, hibernate, backlight, USB wakeup
+# 04-hardware.sh - Power management, boot, backlight, USB wakeup
 
 log_step "Hardware Configuration"
 
@@ -13,47 +13,9 @@ _validate_zramswap() {
 install_validated_admin_config \
     "${MISC_DIR}/etc/zramswap.conf" /etc/zramswap.conf _validate_zramswap
 
-log_info "Hibernate swapfile..."
-_swapfile=/swapfile
-_swap_size_gib=40
-if [[ ! -f "$_swapfile" ]]; then
-    log_info "Creating ${_swap_size_gib} GiB swapfile..."
-    if ! sudo fallocate -l "${_swap_size_gib}G" "$_swapfile"; then
-        sudo rm -f "$_swapfile"
-        log_fail "Failed to allocate hibernate swapfile"
-        return 1
-    fi
-    sudo chmod 600 "$_swapfile"
-    sudo chown root:root "$_swapfile"
-    sudo mkswap "$_swapfile"
-    log_ok "Created hibernate swapfile"
-else
-    log_ok "Hibernate swapfile already exists"
-fi
-
-_swap_fstab_entry="/swapfile none swap defaults,pri=10 0 0"
-if grep -qE '^/swapfile[[:space:]]' /etc/fstab; then
-    log_ok "Swapfile already present in /etc/fstab"
-else
-    printf '%s\n' "$_swap_fstab_entry" | sudo tee -a /etc/fstab >/dev/null
-    log_ok "Added swapfile to /etc/fstab"
-fi
-
-_swap_priority="$(swapon --show=NAME,PRIO --noheadings | awk '$1 == "/swapfile" {print $2}')"
-if [[ "$_swap_priority" == 10 ]]; then
-    log_ok "Hibernate swapfile already active at priority 10"
-else
-    if [[ -n "$_swap_priority" ]]; then
-        sudo swapoff "$_swapfile"
-    fi
-    sudo swapon --priority 10 "$_swapfile"
-    log_ok "Activated hibernate swapfile at priority 10"
-fi
-
 _root_uuid="$(findmnt -no UUID /)"
-_resume_offset="$(sudo filefrag -v "$_swapfile" | awk '$1 == "0:" {sub(/\.\..*/, "", $4); print $4; exit}')"
-if [[ -z "$_root_uuid" || -z "$_resume_offset" ]]; then
-    log_fail "Unable to determine hibernate resume parameters"
+if [[ -z "$_root_uuid" ]]; then
+    log_fail "Unable to determine root filesystem UUID"
     return 1
 fi
 
@@ -94,12 +56,12 @@ fi
 
 log_info "rEFInd configuration..."
 _rendered_refind="$(mktemp)"
-awk -v uuid="$_root_uuid" -v offset="$_resume_offset" '
+awk -v uuid="$_root_uuid" '
     /^[[:space:]]*options.*lsm=landlock/ {
         gsub(/root=UUID=[^ ]+/, "root=UUID=" uuid)
         gsub(/ resume=UUID=[^ ]+/, "")
         gsub(/ resume_offset=[^ ]+/, "")
-        sub(/ rw /, " rw resume=UUID=" uuid " resume_offset=" offset " ")
+        if ($0 !~ / nohibernate([ \"]|$)/) sub(/ rw /, " rw nohibernate ")
     }
     { print }
 ' "${HOME}/.config/rEFInd/refind.conf" > "$_rendered_refind"
@@ -122,9 +84,22 @@ if [[ -d /boot/EFI/BOOT/refind-theme-regular ]]; then
     log_ok "Removed legacy rEFInd theme path"
 fi
 
-log_info "Sleep/hibernate config..."
-check_copy "${MISC_DIR}/etc/systemd/sleep.conf.d/hibernatemode.conf" \
-    /etc/systemd/sleep.conf.d/hibernatemode.conf
+log_info "Suspend-only config..."
+check_copy "${MISC_DIR}/etc/systemd/sleep.conf.d/90-disable-hibernation.conf" \
+    /etc/systemd/sleep.conf.d/90-disable-hibernation.conf
+if [[ -e /etc/systemd/sleep.conf.d/hibernatemode.conf ]]; then
+    sudo rm -f /etc/systemd/sleep.conf.d/hibernatemode.conf
+    log_ok "Removed obsolete hibernate mode config"
+fi
+sudo systemctl mask \
+    systemd-hibernate.service \
+    systemd-suspend-then-hibernate.service \
+    systemd-hybrid-sleep.service >/dev/null
+log_ok "Masked hibernation services"
+
+check_copy "${MISC_DIR}/etc/systemd/system/awesome-lock-before-sleep.service" \
+    /etc/systemd/system/awesome-lock-before-sleep.service
+enable_system_service awesome-lock-before-sleep.service
 
 log_info "USB wakeup disable service..."
 check_copy "${MISC_DIR}/etc/systemd/system/disable-USB-wakeup.service" \

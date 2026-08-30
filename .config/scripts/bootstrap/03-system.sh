@@ -16,21 +16,13 @@ check_copy "${MISC_DIR}/etc/systemd/logind.conf.d/90-local.conf" "$_logind_dropi
 log_info "Deploying Intel Xe display workaround..."
 check_copy "${MISC_DIR}/etc/modprobe.d/xe.conf" /etc/modprobe.d/xe.conf
 
-log_info "Deploying mkinitcpio.conf..."
+log_info "Removing obsolete hibernate resume hook..."
 _mkinitcpio_changed=false
 _mkinitcpio_dropin="/etc/mkinitcpio.conf.d/90-resume.conf"
-if [[ ! -f "$_mkinitcpio_dropin" ]]; then
-    _rendered_config="$(mktemp)"
-    package_file_source /etc/mkinitcpio.conf "$_rendered_config"
-    install_rendered_config "$_rendered_config" /etc/mkinitcpio.conf
-    rm -f "$_rendered_config"
+if [[ -e "$_mkinitcpio_dropin" ]]; then
+    sudo rm -f "$_mkinitcpio_dropin"
     _mkinitcpio_changed=true
 fi
-if [[ ! -f "$_mkinitcpio_dropin" ]] || \
-   ! cmp -s "${MISC_DIR}/etc/mkinitcpio.conf.d/90-resume.conf" "$_mkinitcpio_dropin"; then
-    _mkinitcpio_changed=true
-fi
-check_copy "${MISC_DIR}/etc/mkinitcpio.conf.d/90-resume.conf" "$_mkinitcpio_dropin"
 if [[ "$_mkinitcpio_changed" == true ]]; then
     if prompt_yn "mkinitcpio.conf was updated. Rebuild initramfs now (mkinitcpio -P)?"; then
         sudo mkinitcpio -P
@@ -50,11 +42,26 @@ fi
 awk '
     /^[[:space:]]*auth[[:space:]]+include[[:space:]]+system-login/ {
         print "auth      sufficient pam_unix.so try_first_pass likeauth nullok"
-        print "auth      sufficient pam_fprintd.so"
     }
     { print }
 ' "$_rendered_config" > "${_rendered_config}.new"
 install_rendered_config "${_rendered_config}.new" /etc/pam.d/system-local-login
+rm -f "$_rendered_config" "${_rendered_config}.new"
+
+_rendered_config="$(mktemp)"
+package_file_source /etc/pam.d/greetd "$_rendered_config"
+if [[ "$(grep -Ec '^[[:space:]]*auth[[:space:]]+include[[:space:]]+system-local-login' "$_rendered_config")" != 1 ]]; then
+    log_fail "Unsupported greetd PAM structure"
+    return 1
+fi
+awk '
+    /^[[:space:]]*auth[[:space:]]+include[[:space:]]+system-local-login/ {
+        print "auth       sufficient   pam_unix.so try_first_pass likeauth nullok"
+        print "auth       sufficient   pam_fprintd.so"
+    }
+    { print }
+' "$_rendered_config" > "${_rendered_config}.new"
+install_rendered_config "${_rendered_config}.new" /etc/pam.d/greetd
 rm -f "$_rendered_config" "${_rendered_config}.new"
 
 _rendered_config="$(mktemp)"

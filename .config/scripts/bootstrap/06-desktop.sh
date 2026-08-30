@@ -36,6 +36,6 @@ log_info "Font cache..."
 fc-cache &>/dev/null || true
 log_ok "Font cache updated"
 
-REMINDERS+=("Add sudoers NOPASSWD lines for suspend/hibernate: sudoedit /etc/sudoers and add 'ragu ALL=(ALL:ALL) NOPASSWD: /usr/bin/systemctl suspend' and 'ragu ALL=(ALL:ALL) NOPASSWD: /usr/bin/systemctl hibernate'")
+REMINDERS+=("Allow suspend without a password if needed: sudoedit /etc/sudoers and add 'ragu ALL=(ALL:ALL) NOPASSWD: /usr/bin/systemctl suspend'")
 
 unset -f _validate_greetd

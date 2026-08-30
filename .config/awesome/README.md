@@ -293,8 +293,10 @@ updates wallpaper when resuming from sleep.
 
 ### Lockscreen
 
-- PAM authentication (fallback password available)
-- Optional webcam capture on failed unlock attempts
+- Password PAM and asynchronous fingerprint authentication run independently
+- Fingerprint verification accepts any enrolled finger and stops while the display is off or suspended
+- Optional webcam capture on rejected password and fingerprint attempts
+- Idle locking waits for active audio only while unlocked; a locked display turns off after one minute
 - Blurred background option
 
 ### Screen Recorder
@@ -307,6 +309,18 @@ screen_recorder = {
     fps = '60',
 }
 ```
+
+The configured `display_target` is the initial preference. The recorder settings
+offer Primary, External, Both, and a mouse-drag Area selected with `slop`.
+External targets are disabled while disconnected instead of silently recording
+the primary display. Keys `1` through `4` choose a source and Escape returns to
+the recorder. The selected source, microphone mode, and last custom region are
+stored under `$XDG_STATE_HOME/awesome/screen-recorder/settings`; selecting Area
+reuses that region, while selecting an active Area again redraws it. When
+`XDG_STATE_HOME` is unset, the state path is
+`~/.local/state/awesome/screen-recorder/settings`.
+
+Runtime dependencies: `ffmpeg`, `slop`, and `wpctl` from WirePlumber.
 
 ## Key Bindings
 
@@ -359,7 +373,7 @@ Configured in `configuration/apps.lua`, launched via `module/auto-start.lua`:
 - **lxqt-policykit-agent** -- Authentication agent
 - **setup-monitors** -- Display arrangement
 - **redshift** -- Blue-light filter
-- **xidlehook** -- Auto screen lock on idle
+- **xidlehook** -- Audio-aware idle lock and locked-screen DPMS control
 - **darkman** -- Dark/light theme switching
 - **watch-email.sh** -- IMAP email notifications (goimapnotify)
 - **suspend-hook.py** -- Wallpaper update on sleep/wake

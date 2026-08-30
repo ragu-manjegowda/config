@@ -26,11 +26,15 @@ echo ""
 run_test() {
     local test_file="$1"
     local test_name="$(basename "$test_file" .lua | sed 's/_/ /g' | sed 's/test //')"
+    local interpreter="lua"
+    if [[ "$test_file" == *test_screen_recorder_storage.lua ]]; then
+        interpreter="luajit"
+    fi
     
     echo -e "\n${YELLOW}▶ Running: $test_name${NC}"
     echo "$(printf '─%.0s' {1..60})"
     
-    if lua "$test_file"; then
+    if "$interpreter" "$test_file"; then
         echo -e "${GREEN}✓ $test_name passed${NC}"
         ((TESTS_PASSED++))
         return 0
@@ -172,4 +176,3 @@ else
     echo ""
     exit 1
 fi
-

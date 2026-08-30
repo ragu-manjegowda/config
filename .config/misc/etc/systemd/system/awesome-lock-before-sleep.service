@@ -1,0 +1,13 @@
+[Unit]
+Description=Lock AwesomeWM before system suspend
+Before=systemd-suspend.service
+
+[Service]
+Type=oneshot
+User=ragu
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/ragu/.Xauthority
+ExecStart=/home/ragu/.config/scripts/lock-before-sleep.sh
+
+[Install]
+RequiredBy=systemd-suspend.service

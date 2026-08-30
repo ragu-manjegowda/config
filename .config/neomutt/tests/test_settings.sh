@@ -11,6 +11,11 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
+is_git_crypt_locked() {
+    local file="$1"
+    [ -f "$file" ] && head -c9 "$file" 2>/dev/null | LC_ALL=C tr -d '\0' | grep -q "GITCRYPT"
+}
+
 echo "========================================="
 echo "  $test_name"
 echo "========================================="
@@ -97,9 +102,12 @@ check_setting "sidebar_width" "30" "sidebar width"
 check_bool_setting "sidebar_short_path" "yes" "sidebar short path"
 check_bool_setting "sidebar_folder_indent" "yes" "sidebar folder indent"
 
+work_offline_config=~/.config/neomutt/accounts/work/config-offline
 echo -n "Testing work offline status reports unread rather than new messages... "
-if grep -Eq "status_format.* %u" ~/.config/neomutt/accounts/work/config-offline &&
-   ! grep -Eq "status_format.* %n" ~/.config/neomutt/accounts/work/config-offline; then
+if is_git_crypt_locked "$work_offline_config"; then
+    echo -e "${YELLOW}⚠ SKIPPED${NC} (git-crypt locked)"
+elif grep -Eq "status_format.* %u" "$work_offline_config" &&
+     ! grep -Eq "status_format.* %n" "$work_offline_config"; then
     echo -e "${GREEN}✓ PASSED${NC}"
     ((passed++))
 else

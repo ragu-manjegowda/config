@@ -1,455 +1,269 @@
 local awful = require('awful')
 local gears = require('gears')
+local naughty = require('naughty')
 local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
-local config_dir = gears.filesystem.get_configuration_dir()
-local widget_icon_dir = config_dir .. 'widget/screen-recorder/icons/'
+local config = require('configuration.config')
+local recorder_scripts = require('widget.screen-recorder.screen-recorder-scripts')
+local recorder_state = require('widget.screen-recorder.screen-recorder-state')
+local recorder_source = require('widget.screen-recorder.screen-recorder-source')
+local recorder_selector = require('widget.screen-recorder.screen-recorder-selector')
+local recorder_settings = require('widget.screen-recorder.screen-recorder-settings')
+local recorder_icons = require('widget.screen-recorder.screen-recorder-icons')
+local recorder_notification = require('widget.screen-recorder.screen-recorder-notification')
+local recorder_ui = require('widget.screen-recorder.screen-recorder-ui')
 
--- The screen-recorders scripting
-local screen_rec_backend = require('widget.screen-recorder.screen-recorder-scripts')
+local source_controller = recorder_source.new(config)
+local capture_state = source_controller.state
 
--- The screen-recorder's UI
-local screen_rec_ui = require('widget.screen-recorder.screen-recorder-ui')
+local toggle_imgbox = recorder_ui.screen_rec_toggle_imgbox
+local toggle_button = recorder_ui.screen_rec_toggle_button
+local countdown_text = recorder_ui.screen_rec_countdown_txt
+local main_imgbox = recorder_ui.screen_rec_main_imgbox
+local main_button = recorder_ui.screen_rec_main_button
+local audio_imgbox = recorder_ui.screen_rec_audio_imgbox
+local audio_button = recorder_ui.screen_rec_audio_button
+local settings_button = recorder_ui.screen_rec_settings_button
+local close_button = recorder_ui.screen_rec_close_button
+local back_button = recorder_ui.screen_rec_back_button
+local source_buttons = recorder_ui.screen_rec_source_buttons
+local area_tbox = recorder_ui.screen_rec_area_txtbox:get_children_by_id('area_tbox')[1]
+local source_keys = recorder_ui.screen_rec_area_hint:get_children_by_id('source_keys_tbox')[1]
+local cancel_hint = recorder_ui.screen_rec_area_hint:get_children_by_id('cancel_hint_tbox')[1]
 
--- User Preferences
-local sr_user_resolution = screen_rec_backend.user_resolution
-local sr_user_offset = screen_rec_backend.user_offset
-local sr_user_audio = screen_rec_backend.user_audio
-local sr_user_update = screen_rec_backend.update_user_settings
+local active_screen, pending_geometry, countdown_timer = nil, nil, nil
+local status_countdown, status_recording, status_audio = false, false, capture_state.audio
+local navigation_reset, settings_controller, countdown_stop
 
--- Panel UIs
-local sr_toggle_imgbox = screen_rec_ui.screen_rec_toggle_imgbox
-local sr_toggle_button = screen_rec_ui.screen_rec_toggle_button
-local sr_countdown_text = screen_rec_ui.screen_rec_countdown_txt
-local sr_main_imgbox = screen_rec_ui.screen_rec_main_imgbox
-local sr_main_button = screen_rec_ui.screen_rec_main_button
-local sr_audio_imgbox = screen_rec_ui.screen_rec_audio_imgbox
-local sr_audio_button = screen_rec_ui.screen_rec_audio_button
-local sr_settings_button = screen_rec_ui.screen_rec_settings_button
-local sr_close_button = screen_rec_ui.screen_rec_close_button
-
-
--- Settings UIs
-local sr_back_button = screen_rec_ui.screen_rec_back_button
-local sr_resolution_box = screen_rec_ui.screen_rec_res_txtbox
-local sr_offset_box = screen_rec_ui.screen_rec_offset_txtbox
-local sr_resolution_tbox = sr_resolution_box:get_children_by_id('res_tbox')[1]
-local sr_offset_tbox = sr_offset_box:get_children_by_id('offset_tbox')[1]
-
-
--- Main Scripts
-local sr_start_recording = screen_rec_backend.start_recording
-local sr_stop_recording = screen_rec_backend.stop_recording
-
--- Active Screen Recorder
-local sr_screen = nil
-
--- Active textbox
-local sr_active_tbox = nil
-
-
--- Status variables
-local status_countdown = false
-local status_recording = false
-local status_audio = sr_user_audio
-
-
--- Update UI on startup using the user config
-sr_resolution_tbox:set_markup('<span foreground="#FFFFFF66">' .. sr_user_resolution .. "</span>")
-sr_offset_tbox:set_markup('<span foreground="#FFFFFF66">' .. sr_user_offset .. "</span>")
-
-local sr_res_default_markup = sr_resolution_tbox:get_markup()
-local sr_offset_default_markup = sr_offset_tbox:get_markup()
-
-
-if status_audio then
-    sr_audio_imgbox:set_image(widget_icon_dir .. 'audio' .. '.svg')
-else
-    sr_audio_imgbox:set_image(widget_icon_dir .. 'audio-mute' .. '.svg')
+local function notification(title, message)
+    naughty.notification({
+        app_name = 'Screen Recorder',
+        title = title,
+        message = message,
+        timeout = 5
+    })
 end
 
--- Textbox ui manipulators
-local emphasize_inactive_tbox = function()
-    if sr_active_tbox == 'res_tbox' then
-        sr_resolution_box.shape_border_width = dpi(0)
-        sr_resolution_box.shape_border_color = beautiful.transparent
-    elseif sr_active_tbox == 'offset_tbox' then
-        sr_offset_box.shape_border_width = dpi(0)
-        sr_offset_box.shape_border_color = beautiful.transparent
-    end
-    sr_active_tbox = nil
-end
-
-local emphasize_active_tbox = function()
-    if sr_active_tbox == 'res_tbox' then
-        sr_resolution_box.border_width = dpi(1)
-        sr_resolution_box.border_color = '#F2F2F2AA'
-    elseif sr_active_tbox == 'offset_tbox' then
-        sr_offset_box.border_width = dpi(1)
-        sr_offset_box.border_color = '#F2F2F2AA'
+local function persist_state()
+    local success, err = source_controller:save()
+    if not success then
+        notification('Settings were not saved', tostring(err))
     end
 end
 
--- Delete, reset and write to the textbox
-local write_to_textbox = function(char)
-    if sr_active_tbox == 'res_tbox' and (char:match('%d') or char == 'x') then
-        if sr_resolution_tbox:get_markup() == sr_res_default_markup then
-            sr_resolution_tbox:set_text('')
-        end
-        if tonumber(#sr_resolution_tbox:get_text()) <= 8 then
-            sr_resolution_tbox:set_text(sr_resolution_tbox:get_text() .. char)
-        end
-    elseif sr_active_tbox == 'offset_tbox' and (char:match('%d') or char == ',') then
-        if sr_offset_tbox:get_markup() == sr_offset_default_markup then
-            sr_offset_tbox:set_text('')
-        end
-        sr_offset_tbox:set_text(sr_offset_tbox:get_text() .. char)
+local function update_audio_icon()
+    local icon = status_audio and 'audio' or 'audio-mute'
+    audio_imgbox:set_image(recorder_icons.normal(icon))
+end
+
+local function show_settings(recorder_screen)
+    if not recorder_screen or not recorder_screen.valid then
+        recorder_screen = awful.screen.focused().recorder_screen
     end
-end
-
-local reset_textbox = function()
-    if sr_active_tbox == 'res_tbox' then
-        sr_resolution_tbox:set_markup(sr_res_default_markup)
-    elseif sr_active_tbox == 'offset_tbox' then
-        sr_offset_tbox:set_markup(sr_offset_default_markup)
+    if not recorder_screen or not recorder_screen.valid then
+        return
     end
-    emphasize_inactive_tbox()
+    local panel = recorder_screen:get_children_by_id('recorder_panel')[1]
+    local settings = recorder_screen:get_children_by_id('recorder_settings')[1]
+    panel.visible = false
+    settings.visible = true
+    recorder_screen.visible = true
+    active_screen = recorder_screen
+    settings_controller:refresh()
+    settings_controller:start()
 end
 
--- Set audio mode
-local sr_audio_mode = function()
-    if not status_recording and not status_countdown then
-        if status_audio then
-            status_audio = false
-            sr_audio_imgbox:set_image(widget_icon_dir .. 'audio-mute' .. '.svg')
-        else
-            status_audio = true
-            sr_audio_imgbox:set_image(widget_icon_dir .. 'audio' .. '.svg')
-        end
+local function select_area()
+    if status_recording or status_countdown or recorder_selector.active then
+        return
     end
+    local origin = active_screen
+    settings_controller:stop()
+    settings_controller:refresh('Drag to select; right-click to cancel')
+    recorder_selector.start(function()
+        for s in screen do
+            if s.recorder_screen then
+                s.recorder_screen.visible = false
+            end
+        end
+    end, function(region, reason)
+        if region then
+            capture_state.source = 'region'
+            capture_state.region = region
+            persist_state()
+        elseif reason == 'invalid' then
+            notification('Area not selected', 'Select an area at least 16x16 pixels.')
+        end
+        show_settings(origin)
+    end)
 end
 
-local delete_key = function()
-    if sr_active_tbox == 'res_tbox' then
-        if tonumber(#sr_resolution_tbox:get_text()) == 1 then
-            reset_textbox()
-            return
-        end
-        sr_resolution_tbox:set_text(sr_resolution_tbox:get_text():sub(1, -2))
-    elseif sr_active_tbox == 'offset_tbox' then
-        if tonumber(#sr_offset_tbox:get_text()) == 1 then
-            reset_textbox()
-            return
-        end
-        sr_offset_tbox:set_text(sr_offset_tbox:get_text():sub(1, -2))
-    end
-end
-
-local apply_new_settings = function()
-
-    -- Get the text on texbox
-    sr_user_resolution = sr_resolution_tbox:get_text()
-    sr_user_offset = sr_offset_tbox:get_text()
-
-    -- Apply new settings
-    sr_user_update(sr_user_resolution, sr_user_offset, status_audio)
-
-    -- Debugger
-    screen_rec_backend.check_settings()
-end
-
--- Settings Key grabber
-local settings_updater = awful.keygrabber {
-    auto_start          = true,
-    stop_event          = 'release',
-    keypressed_callback = function(_, _, key, _)
-        if key == 'BackSpace' then
-            delete_key()
-        end
+settings_controller = recorder_settings.new {
+    source_controller = source_controller,
+    buttons = source_buttons,
+    area = area_tbox,
+    source_hint = source_keys,
+    cancel_hint = cancel_hint,
+    dpi = dpi,
+    accent = beautiful.accent,
+    transparent = beautiful.transparent,
+    summary = recorder_state.summary,
+    can_update = function()
+        return not status_recording and not status_countdown and not recorder_selector.active
     end,
-    keyreleased_callback = function(self, _, key, _)
-        if key == 'Return' then
-            apply_new_settings()
-            self:stop()
-        end
-
-        if key == 'Escape' then
-            self:stop()
-            reset_textbox()
-        end
-
-        if key:match('%d') or key == 'x' or key == ',' then
-            write_to_textbox(key)
-        end
-
-    end
+    on_select_area = select_area,
+    on_escape = function() navigation_reset() end,
+    on_error = notification
 }
 
--- Textboxes
-sr_resolution_tbox:buttons(
-    gears.table.join(
-        awful.button(
-            {},
-            1,
-            nil,
-            function()
-                emphasize_inactive_tbox()
-                sr_active_tbox = 'res_tbox'
-                emphasize_active_tbox()
-                settings_updater:start()
-            end
-        )
-    )
-)
-
-sr_offset_tbox:buttons(
-    gears.table.join(
-        awful.button(
-            {},
-            1,
-            nil,
-            function()
-                emphasize_inactive_tbox()
-                sr_active_tbox = 'offset_tbox'
-                emphasize_active_tbox()
-                settings_updater:start()
-            end
-        )
-    )
-)
-
--- UI switcher
-local sr_navigation_reset = function()
-    if sr_screen then
-        local recorder_panel = sr_screen:get_children_by_id('recorder_panel')[1]
-        local recorder_settings = sr_screen:get_children_by_id('recorder_settings')[1]
-        recorder_settings.visible = false
-        recorder_panel.visible = true
+navigation_reset = function()
+    if not active_screen then
+        return
     end
+    settings_controller:stop()
+    active_screen:get_children_by_id('recorder_settings')[1].visible = false
+    active_screen:get_children_by_id('recorder_panel')[1].visible = true
 end
 
-local sr_navigation = function()
-    if sr_screen then
-        local recorder_panel = sr_screen:get_children_by_id('recorder_panel')[1]
-        local recorder_settings = sr_screen:get_children_by_id('recorder_settings')[1]
-        if recorder_panel.visible then
-            recorder_panel.visible = false
-            recorder_settings.visible = true
-        else
-            recorder_settings.visible = false
-            recorder_panel.visible = true
+local function close_recorder()
+    if status_countdown then countdown_stop() end
+    for s in screen do
+        if s.recorder_screen then
+            s.recorder_screen.visible = false
         end
     end
+    navigation_reset()
+    active_screen = nil
 end
 
-sr_settings_button:buttons(
-    gears.table.join(
-        awful.button(
-            {},
-            1,
-            nil,
-            function()
-                if not status_recording and not status_countdown then
-                    sr_navigation()
-                end
-            end
-        )
-    )
-)
-
-sr_back_button:buttons(
-    gears.table.join(
-        awful.button(
-            {},
-            1,
-            nil,
-            function()
-
-                -- Save settings
-                apply_new_settings()
-
-                -- Reset textbox UI
-                emphasize_inactive_tbox()
-
-                -- Go back to UI Panel
-                sr_navigation()
-            end
-        )
-    )
-)
-
--- Close button functions and buttons
-local screen_rec_close = function()
-
-    for s in screen do
-        s.recorder_screen.visible = false
+local function toggle_settings()
+    if not active_screen then
+        return
     end
-    settings_updater:stop()
-    sr_navigation_reset()
-    sr_screen = nil
+    local panel = active_screen:get_children_by_id('recorder_panel')[1]
+    if panel.visible then
+        show_settings(active_screen)
+    else
+        navigation_reset()
+    end
 end
 
-sr_close_button:buttons(
-    gears.table.join(
-        awful.button(
-            {},
-            1,
-            nil,
-            function()
-                screen_rec_close()
-            end
-        )
-    )
-)
-
--- Right click to exit
-local screen_close_on_rmb = function(widget)
-    widget:buttons(
-        gears.table.join(
-            awful.button(
-                {},
-                3,
-                nil,
-                function()
-                    screen_rec_close()
-                end
-            )
-        )
-    )
+local function audio_mode()
+    if status_recording or status_countdown then
+        return
+    end
+    status_audio = not status_audio
+    capture_state.audio = status_audio
+    persist_state()
+    update_audio_icon()
 end
 
--- Open recorder screen
-sr_toggle_button:buttons(
-    gears.table.join(
-        awful.button(
-            {},
-            1,
-            nil,
-            function()
-                for s in screen do
-                    s.recorder_screen.visible = false
-                end
-                sr_screen = awful.screen.focused().recorder_screen
-                screen_close_on_rmb(sr_screen)
-                sr_screen.visible = not sr_screen.visible
-            end
-        )
-    )
-)
+local function same_geometry(first, second)
+    return first and second and first.x == second.x and first.y == second.y and
+        first.width == second.width and first.height == second.height
+end
 
--- Start Recording
-local sr_recording_start = function()
+local function recording_start()
     status_countdown = false
-    status_recording = true
-    local record_screen = awful.screen.focused().recorder_screen
-
-    -- Hide recorder screen
-    record_screen.visible = false
-
-    -- Manipulate UIs
-    sr_toggle_imgbox:set_image(widget_icon_dir .. 'recording-button' .. '.svg')
-    sr_main_imgbox:set_image(widget_icon_dir .. 'recorder-on' .. '.svg')
-
-    sr_start_recording(status_audio)
-end
-
--- Stop Recording
-local sr_recording_stop = function()
-    status_recording = false
-    status_audio = false
-
-    -- Manipulate UIs
-    sr_toggle_imgbox:set_image(widget_icon_dir .. 'start-recording-button' .. '.svg')
-    sr_main_imgbox:set_image(widget_icon_dir .. 'recorder-off' .. '.svg')
-    sr_stop_recording()
-end
-
-awesome.connect_signal(
-    'widget::screen_recorder',
-    function()
-        sr_recording_stop()
+    countdown_text.opacity = 0
+    countdown_text:emit_signal('widget::redraw_needed')
+    local geometry, err = source_controller:resolve()
+    if not geometry or not same_geometry(geometry, pending_geometry) then
+        main_imgbox:set_image(recorder_icons.normal('recorder-off'))
+        countdown_text.opacity = 0
+        notification('Recording cancelled', err or 'Capture source changed during countdown.')
+        return
     end
-)
+    local pid, start_error = recorder_scripts.start_recording(
+        status_audio, geometry, function(success, filename, finish_error)
+            status_recording = false
+            toggle_imgbox:set_image(recorder_icons.normal('start-recording-button'))
+            main_imgbox:set_image(recorder_icons.normal('recorder-off'))
+            if success then
+                recorder_notification.finished(filename)
+            else
+                notification('Recording failed', finish_error)
+            end
+        end)
+    if not pid then
+        main_imgbox:set_image(recorder_icons.normal('recorder-off'))
+        notification('Recording failed', start_error)
+        return
+    end
+    status_recording = true
+    if active_screen then
+        active_screen.visible = false
+    end
+    toggle_imgbox:set_image(recorder_icons.urgent('recording-button'))
+    main_imgbox:set_image(recorder_icons.urgent('recorder-on'))
+end
 
--- Countdown timer functions
-local countdown_timer = nil
+local function recording_stop()
+    if not recorder_scripts.stop_recording() then
+        status_recording = false
+        toggle_imgbox:set_image(recorder_icons.normal('start-recording-button'))
+        main_imgbox:set_image(recorder_icons.normal('recorder-off'))
+        notification('Recording stopped', 'The FFmpeg process was no longer running.')
+    end
+end
 
-local counter_timer = function()
+local function countdown_start()
+    local geometry, err = source_controller:resolve()
+    if not geometry then
+        notification('Recording unavailable', err)
+        return
+    end
+    pending_geometry = geometry
     status_countdown = true
     local seconds = 3
-    countdown_timer = gears.timer.start_new(
-        1,
-        function()
-            if seconds == 0 then
-                sr_countdown_text.opacity = 0.0
-
-                --  Start recording function
-                sr_recording_start()
-                sr_countdown_text:emit_signal('widget::redraw_needed')
-                return false
-            else
-                sr_main_imgbox:set_image(widget_icon_dir .. 'recorder-countdown' .. '.svg')
-                sr_countdown_text.opacity = 1.0
-                sr_countdown_text:set_text(tostring(seconds))
-                sr_countdown_text:emit_signal('widget::redraw_needed')
-            end
-            seconds = seconds - 1
-            return true
+    countdown_timer = gears.timer.start_new(1, function()
+        if seconds == 0 then
+            recording_start()
+            countdown_text:emit_signal('widget::redraw_needed')
+            return false
         end
-    )
+        main_imgbox:set_image(recorder_icons.accent('recorder-countdown'))
+        countdown_text.opacity = 1
+        countdown_text:set_text(tostring(seconds))
+        countdown_text:emit_signal('widget::redraw_needed')
+        seconds = seconds - 1
+        return true
+    end)
 end
 
--- Stop Countdown timer
-local sr_countdown_stop = function()
-    if countdown_timer ~= nil then
+countdown_stop = function()
+    if countdown_timer then
         countdown_timer:stop()
     end
     status_countdown = false
-    sr_main_imgbox:set_image(widget_icon_dir .. 'recorder-off' .. '.svg')
-    sr_countdown_text.opacity = 0.0
-    sr_countdown_text:emit_signal('widget::redraw_needed')
+    main_imgbox:set_image(recorder_icons.normal('recorder-off'))
+    countdown_text.opacity = 0
 end
 
-sr_audio_button:buttons(
-    gears.table.join(
-        awful.button(
-            {},
-            1,
-            nil,
-            function()
-                sr_audio_mode()
-            end
-        )
-    )
-)
-
--- Main button functions and buttons
-local status_checker = function()
+settings_button:buttons(gears.table.join(awful.button({}, 1, nil, function()
+    if not status_recording and not status_countdown then toggle_settings() end
+end)))
+back_button:buttons(gears.table.join(awful.button({}, 1, nil, navigation_reset)))
+close_button:buttons(gears.table.join(awful.button({}, 1, nil, close_recorder)))
+audio_button:buttons(gears.table.join(awful.button({}, 1, nil, audio_mode)))
+main_button:buttons(gears.table.join(awful.button({}, 1, nil, function()
     if status_recording and not status_countdown then
-
-        -- Stop recording
-        sr_recording_stop()
-        return
-    elseif not status_recording and status_countdown then
-
-        -- Stop timer
-        sr_countdown_stop()
-        return
+        recording_stop()
+    elseif status_countdown then
+        countdown_stop()
+    else
+        countdown_start()
     end
+end)))
 
-    -- Start counting down
-    counter_timer()
-end
+toggle_button:buttons(gears.table.join(awful.button({}, 1, nil, function()
+    for s in screen do
+        if s.recorder_screen then s.recorder_screen.visible = false end
+    end
+    active_screen = awful.screen.focused().recorder_screen
+    navigation_reset()
+    active_screen.visible = true
+    settings_controller:refresh()
+end)))
 
-sr_main_button:buttons(
-    gears.table.join(
-        awful.button(
-            {},
-            1,
-            nil,
-            function()
-                status_checker()
-            end
-        )
-    )
-)
+update_audio_icon()

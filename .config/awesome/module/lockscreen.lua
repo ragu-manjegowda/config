@@ -9,6 +9,7 @@ local apps = require('configuration.apps')
 local widget_icon_dir = config_dir .. 'configuration/user-profile/'
 local config = require('configuration.config')
 local suspension = require('library.notification-suspension')
+local fingerprint = require('module.lockscreen-fingerprint')
 
 require('module.dynamic-wallpaper')
 require('module.auto-start')
@@ -27,6 +28,7 @@ local locker_config = {
     end,
     -- Capture a picture using webcam
     capture_intruder = config.module.lockscreen.capture_intruder or false,
+    fingerprint_unlock = config.module.lockscreen.fingerprint_unlock == true,
     -- Save location, auto creates
     face_capture_dir = config.module.lockscreen.face_capture_dir or '$HOME/Pictures/Intruders/',
     -- Blur background
@@ -70,12 +72,26 @@ local input_password = nil
 local lock_again = nil
 local type_again = true
 local capture_now = locker_config.capture_intruder
+local capture_in_progress = false
 local locked_tag = nil
 local client_focused = nil
 local pam_module_loaded = false
 local pam_module = nil
 local current_user_name = '$USER'
 local current_profile_image = widget_icon_dir .. 'default.svg'
+local fingerprint_auth = nil
+
+awesome.connect_signal('module::fingerprint_start', function()
+    if fingerprint_auth then fingerprint_auth:start() end
+end)
+
+awesome.connect_signal('module::fingerprint_stop', function()
+    if fingerprint_auth then fingerprint_auth:stop() end
+end)
+
+awesome.connect_signal('exit', function()
+    if fingerprint_auth then fingerprint_auth:stop() end
+end)
 
 local function lockscreen_for_screen(s)
     if not s.valid then
@@ -152,6 +168,15 @@ local caps_text_widget = wibox.widget {
     -- bg = beautiful.accent,
     widget = wibox.container.background,
     caps_text
+}
+
+local fingerprint_text = wibox.widget {
+    text = 'Touch fingerprint sensor or enter password',
+    font = beautiful.font_regular(14),
+    align = 'center',
+    valign = 'center',
+    visible = locker_config.fingerprint_unlock,
+    widget = wibox.widget.textbox
 }
 
 local profile_imagebox = wibox.widget {
@@ -410,7 +435,10 @@ local locker = function(s)
 
     -- Snap an image of the intruder
     local intruder_capture = function()
+        if capture_in_progress then return end
+        capture_in_progress = true
         local capture_image = [[
+        set -eu
         save_dir="]] .. locker_config.face_capture_dir .. [["
         date="$(date +%Y%m%d_%H%M%S)"
         file_loc="${save_dir}SUSPECT-${date}.png"
@@ -419,22 +447,25 @@ local locker = function(s)
             mkdir -p "$save_dir";
         fi
 
-        ]] .. config.module.lockscreen.capture_script ..
-            " " .. config.module.lockscreen.camera_device .. [[ "${file_loc}"
-
-        canberra-gtk-play -i camera-shutter 2>/dev/null &
-        echo "${file_loc}"
+        if ]] .. config.module.lockscreen.capture_script ..
+            " " .. config.module.lockscreen.camera_device .. [[ "${file_loc}"; then
+            canberra-gtk-play -i camera-shutter 2>/dev/null &
+            echo "${file_loc}"
+        else
+            rm -f "${file_loc}"
+            exit 1
+        fi
         ]]
 
         -- Capture the filthy intruder face
         awful.spawn.easy_async_with_shell(
             capture_image,
-            function(stdout)
-                circle_container.bg = beautiful.transparent
-                awesome.emit_signal('module::lockscreen_auth_feedback', beautiful.transparent)
+            function(stdout, _, _, exit_code)
+                capture_in_progress = false
+                if exit_code ~= 0 or stdout == '' then return end
 
                 -- Humiliate the intruder by showing his/her hideous face
-                wanted_image:set_image(stdout:gsub('%\n', ''))
+                wanted_image:set_image(stdout:gsub('%s+$', ''))
                 wanted_msg:set_markup(msg_table[math.random(#msg_table)])
                 wanted_poster.visible = true
 
@@ -448,31 +479,41 @@ local locker = function(s)
                 )
 
                 wanted_image:emit_signal('widget::redraw_needed')
+            end
+        )
+    end
+
+    local password_grabber
+    local auth_succeeded = false
+
+    local reset_failed_auth = function()
+        gears.timer.start_new(
+            1,
+            function()
+                circle_container.bg = beautiful.transparent
+                awesome.emit_signal('module::lockscreen_auth_feedback', beautiful.transparent)
                 type_again = true
+                if locker_config.fingerprint_unlock then
+                    fingerprint_text:set_text('Touch fingerprint sensor or enter password')
+                end
             end
         )
     end
 
     -- Login failed
     local stoprightthereyoucriminalscum = function()
+        if auth_succeeded then return end
         circle_container.bg = red
         awesome.emit_signal('module::lockscreen_auth_feedback', red)
-        if capture_now then
-            intruder_capture()
-        else
-            gears.timer.start_new(
-                1,
-                function()
-                    circle_container.bg = beautiful.transparent
-                    awesome.emit_signal('module::lockscreen_auth_feedback', beautiful.transparent)
-                    type_again = true
-                end
-            )
-        end
+        reset_failed_auth()
+        if capture_now then intruder_capture() end
     end
 
     -- Login successful
     local generalkenobi_ohhellothere = function()
+        if auth_succeeded then return end
+        auth_succeeded = true
+        if fingerprint_auth then fingerprint_auth:stop() end
         circle_container.bg = beautiful.accent
         awesome.emit_signal('module::lockscreen_auth_feedback', beautiful.accent)
 
@@ -520,6 +561,39 @@ local locker = function(s)
             end
         )
     end
+
+    if fingerprint_auth then fingerprint_auth:stop() end
+    if locker_config.fingerprint_unlock then
+        fingerprint_auth = fingerprint.new {
+            user = os.getenv('USER'),
+            is_locked = is_lock_state_set,
+            spawn = function(argv, callbacks)
+                return awful.spawn.with_line_callback(argv, callbacks)
+            end,
+            kill = function(pid)
+                awful.spawn({ 'kill', '-TERM', tostring(pid) })
+            end,
+            retry = function(callback)
+                gears.timer.start_new(1, function()
+                    callback()
+                    return false
+                end)
+            end,
+            on_match = function()
+                if awful.keygrabber.current_instance == password_grabber then
+                    password_grabber:stop()
+                end
+                generalkenobi_ohhellothere()
+            end,
+            on_no_match = function()
+                fingerprint_text:set_text('Fingerprint not recognized; enter password')
+                stoprightthereyoucriminalscum()
+            end
+        }
+    else
+        fingerprint_auth = nil
+    end
+
     -- A backdoor.
     -- Sometimes I'm too lazy to type so I decided to create this.
     -- Sometimes my genius is... it's almost frightening.
@@ -528,7 +602,7 @@ local locker = function(s)
     end
 
     -- Password/key grabber
-    local password_grabber = awful.keygrabber {
+    password_grabber = awful.keygrabber {
         stop_event           = 'release',
         mask_event_callback  = true,
         keybindings          = {
@@ -688,8 +762,9 @@ local locker = function(s)
                     {
                         bg     = beautiful.bg_normal,
                         widget = wibox.container.background,
-                        uname_text
+                    uname_text
                     },
+                    fingerprint_text,
                     caps_text_widget
                 },
             },
@@ -723,6 +798,7 @@ local locker = function(s)
 
             input_password = nil
             type_again = true
+            auth_succeeded = false
             lock_again = false
             set_lock_state(true)
 
@@ -730,6 +806,7 @@ local locker = function(s)
                 gears.timer.start_new(0.1, function()
                     if ensure_password_grab() then
                         suspension.set('lockscreen', true)
+                        if fingerprint_auth then fingerprint_auth:start() end
                         awesome.emit_signal('module::locked')
                         return false
                     end
@@ -739,6 +816,7 @@ local locker = function(s)
             end
 
             suspension.set('lockscreen', true)
+            if fingerprint_auth then fingerprint_auth:start() end
 
             -- send signal to exit screen (needed during suspend)
             awesome.emit_signal('module::locked')
@@ -776,6 +854,7 @@ local locker = function(s)
                 free_keygrab()
                 show_lockscreen()
             elseif is_lock_state_set() and ensure_password_grab() then
+                if fingerprint_auth then fingerprint_auth:start() end
                 awesome.emit_signal('module::locked')
             end
         end
@@ -784,6 +863,7 @@ local locker = function(s)
     awesome.connect_signal(
         'module::sleep_resumed',
         function()
+            if fingerprint_auth then fingerprint_auth:stop() end
             awesome.emit_signal('module::spawn_apps')
             awesome.emit_signal('module::change_wallpaper')
             awesome.emit_signal('module::change_background_wallpaper')
