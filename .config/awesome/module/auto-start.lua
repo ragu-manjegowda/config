@@ -6,6 +6,7 @@ local naughty = require('naughty')
 local apps = require('configuration.apps')
 local config = require('configuration.config')
 local debug_mode = config.module.auto_start.debug_mode or false
+local auto_start_disabled = os.getenv('AWESOME_SKIP_AUTOSTART') == '1'
 
 local run_once = function(cmd)
     if cmd:match('^systemctl%s') then
@@ -40,6 +41,8 @@ end
 awesome.connect_signal(
     'module::spawn_apps',
     function()
+        if auto_start_disabled then return end
+
         -- Need the following when we come back from sleep
         -- run_once('systemctl reload-or-restart --now geoclue.service')
         -- run_once('killall darkman; ' ..
@@ -53,6 +56,8 @@ awesome.connect_signal(
     end
 )
 
-for _, app in ipairs(apps.run_on_start_up) do
-    run_once(app)
+if not auto_start_disabled then
+    for _, app in ipairs(apps.run_on_start_up) do
+        run_once(app)
+    end
 end
