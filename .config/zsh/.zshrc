@@ -25,8 +25,9 @@ ZSH_CUSTOM=$ZDOTDIR/zsh-custom
 
 # Plugins to load?
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
-plugins=(tmux fzf-tab fzf-tab-source zsh-autosuggestions alias-finder
-         custom-alias zsh-hist history-sync gitfast per-directory-history)
+plugins=(tmux fzf-tab fzf-tab-source fzf-tab-preview zsh-autosuggestions
+         alias-finder custom-alias zsh-hist history-sync gitfast
+         per-directory-history)
 
 # Enable alias finder by default for every command
 ZSH_ALIAS_FINDER_AUTOMATIC=true
@@ -52,6 +53,9 @@ zstyle ':completion:*' cache-path $ZDOTDIR/.zsh.cache
 ZSH_COMPDUMP="${ZDOTDIR}/.zcompdump-${ZSH_VERSION}"
 
 source $ZSH/oh-my-zsh.sh
+
+# Keep current and parent directory entries out of completion menus.
+zstyle ':completion:*' special-dirs false
 
 # Enable extended globbing
 # https://unix.stackexchange.com/a/366137

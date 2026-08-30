@@ -23,8 +23,8 @@ elif [ -d "$1" ]; then
     fi
 # https://github.com/wofr06/lesspipe/pull/110
 elif [ "$kind" = pdf ]; then
-    if has_cmd pdftotext sed; then
-        pdftotext -q "$1" - | sed $'s/\f/\n----------------------------------------\n/g'
+    if has_cmd pdftotext; then
+        pdftotext -q -nopgbrk "$1" -
     fi
 # https://github.com/wofr06/lesspipe/pull/115
 elif [ "$kind" = rfc822 ]; then

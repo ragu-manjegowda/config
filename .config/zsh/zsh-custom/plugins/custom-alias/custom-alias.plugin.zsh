@@ -214,15 +214,6 @@ HISTORY_BASE="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/dir_history"
 # Set completion color to yellow
 zstyle ':fzf-tab:*' default-color "$fg[yellow]"
 
-# Preview completion
-zstyle ':fzf-tab:*' fzf-command "$HOME/.config/zsh/fzf-ueberzug"
-zstyle ':fzf-tab:complete:*:*' fzf-preview '$HOME/.config/zsh/fzf-preview ${(Q)realpath}'
-
-zstyle ':fzf-tab:complete:(-command-|-parameter-|-brace-parameter-|export|unset|expand):*' \
-	fzf-preview 'echo ${(P)word}'
-
-export LESSOPEN='|$HOME/.config/zsh/lessfilter %s'
-
 # Set hl color
 zstyle ':fzf-tab:*' fzf-flags '--color=hl:green'
 
