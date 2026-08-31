@@ -178,6 +178,19 @@ assert_test(
 )
 
 assert_test(
+    source:match("local ext_fingerprint_text%s*=%s*wibox%.widget") ~= nil and
+        source:match("'module::lockscreen_fingerprint_text'") ~= nil and
+        source:match("ext_fingerprint_text_widget,") ~= nil,
+    "Fingerprint instructions appear and update on external lockscreens"
+)
+
+assert_test(
+    source:match("local fingerprint_text_widget%s*=%s*wibox%.widget%s*{%s*bg%s*=%s*beautiful%.bg_normal") ~= nil and
+        source:match("local ext_fingerprint_text_widget%s*=%s*wibox%.widget%s*{%s*bg%s*=%s*beautiful%.bg_normal") ~= nil,
+    "Fingerprint instructions use a contrasting background on every screen"
+)
+
+assert_test(
     source:match("local function lockscreen_for_screen%(s%)") ~= nil and
         source:match("if not s%.valid then") ~= nil and
         source:match("if target == lockscreen_for_screen%(s%) then") ~= nil,

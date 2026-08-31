@@ -146,6 +146,7 @@
 /.config/filezilla
 /.config/fontconfig
 /.config/gedit
+/.config/gh
 /.config/git/.git-completion.bash
 /.config/git/.git-completion.zsh
 /.config/git/config-e
@@ -355,7 +356,6 @@
 /Videos
 /snap
 /wiki
-
 
 ############## 14inch Lenevo ##########
 

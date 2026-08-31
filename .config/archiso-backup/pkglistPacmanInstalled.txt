@@ -27,6 +27,7 @@ fuse2
 fwupd
 gcr
 git
+github-cli
 go
 greetd
 greetd-tuigreet

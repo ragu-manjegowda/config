@@ -201,6 +201,17 @@ local fingerprint_text = wibox.widget {
     widget = wibox.widget.textbox
 }
 
+local fingerprint_text_widget = wibox.widget {
+    bg = beautiful.bg_normal,
+    widget = wibox.container.background,
+    fingerprint_text
+}
+
+local function set_fingerprint_text(text)
+    fingerprint_text:set_text(text)
+    awesome.emit_signal('module::lockscreen_fingerprint_text', text)
+end
+
 local profile_imagebox = wibox.widget {
     id = 'user_icon',
     image = widget_icon_dir .. 'default.svg',
@@ -516,7 +527,7 @@ local locker = function(s)
                 awesome.emit_signal('module::lockscreen_auth_feedback', beautiful.transparent)
                 type_again = true
                 if locker_config.fingerprint_unlock then
-                    fingerprint_text:set_text('Touch fingerprint sensor or enter password')
+                    set_fingerprint_text('Touch fingerprint sensor or enter password')
                 end
             end
         )
@@ -608,7 +619,7 @@ local locker = function(s)
                 generalkenobi_ohhellothere()
             end,
             on_no_match = function()
-                fingerprint_text:set_text('Fingerprint not recognized; enter password')
+                set_fingerprint_text('Fingerprint not recognized; enter password')
                 stoprightthereyoucriminalscum()
             end
         }
@@ -790,7 +801,7 @@ local locker = function(s)
                         widget = wibox.container.background,
                     uname_text
                     },
-                    fingerprint_text,
+                    fingerprint_text_widget,
                     caps_text_widget
                 },
             },
@@ -941,6 +952,21 @@ local locker_ext = function(s)
         ext_caps_text
     }
 
+    local ext_fingerprint_text = wibox.widget {
+        text = 'Touch fingerprint sensor or enter password',
+        font = beautiful.font_regular(14),
+        align = 'center',
+        valign = 'center',
+        visible = locker_config.fingerprint_unlock,
+        widget = wibox.widget.textbox
+    }
+
+    local ext_fingerprint_text_widget = wibox.widget {
+        bg = beautiful.bg_normal,
+        widget = wibox.container.background,
+        ext_fingerprint_text
+    }
+
     local ext_profile_imagebox = wibox.widget {
         image = current_profile_image,
         resize = true,
@@ -1027,6 +1053,14 @@ local locker_ext = function(s)
     )
 
     connect_signal(
+        'module::lockscreen_fingerprint_text',
+        function(text)
+            if not is_active() then return end
+            ext_fingerprint_text:set_text(text)
+        end
+    )
+
+    connect_signal(
         'module::lockscreen_caps_state',
         function(caps_on)
             if not is_active() then return end
@@ -1107,6 +1141,7 @@ local locker_ext = function(s)
                         widget = wibox.container.background,
                         ext_uname_text
                     },
+                    ext_fingerprint_text_widget,
                     ext_caps_text_widget
                 }
             },
