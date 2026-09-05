@@ -260,9 +260,9 @@ local global_keys = awful.util.table.join(
         { modkey },
         'd',
         function()
-            naughty.destroy_all_notifications(nil, -1)
+            awesome.emit_signal('module::notifications:dismiss_popup')
         end,
-        { description = 'destroy all notifications', group = 'launcher' }
+        { description = 'dismiss visible notification popups', group = 'launcher' }
     ),
 
     awful.key(

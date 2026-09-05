@@ -132,6 +132,16 @@ assert(view_source:match(
 local keys = assert(io.open(root .. 'configuration/keys/global.lua', 'r'))
 local key_source = keys:read('*a')
 keys:close()
+assert(not key_source:match('naughty%.destroy_all_notifications'),
+    'popup dismissal still destroys retained notifications')
+assert(key_source:match("awesome%.emit_signal%('module::notifications:dismiss_popup'%)"),
+    'popup dismissal shortcut does not use the scoped notification signal')
+assert(source:match("awesome%.connect_signal%('module::notifications:dismiss_popup'"),
+    'notification controller does not handle scoped popup dismissal')
+assert(source:match('for index = #popup_order, 1, %-1 do') and
+        source:match('local notification = popup_order%[index%]') and
+        source:match('notification:destroy%(cst%.notification_closed_reason%.silent%)'),
+    'popup dismissal does not destroy every visible popup')
 assert(key_source:match(
     "if focused%.info_center and focused%.info_center%.visible then%s+awesome%.emit_signal%('widget::notif%-center:clear_all'%)"),
     'clear shortcut no longer requires an open Info Center')

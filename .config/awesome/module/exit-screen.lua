@@ -186,6 +186,15 @@ awesome.connect_signal(
     function(_)
         pending_sleep_action = nil
         awful.spawn.with_shell('xset r rate 180 45')
+        local runtime_dir = os.getenv('XDG_RUNTIME_DIR')
+        if runtime_dir then
+            awful.spawn({
+                'xidlehook-client',
+                '--socket',
+                runtime_dir .. '/xidlehook.sock',
+                'reset-idle'
+            }, false)
+        end
     end
 )
 

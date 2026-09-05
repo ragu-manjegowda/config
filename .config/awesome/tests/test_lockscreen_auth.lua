@@ -154,6 +154,14 @@ assert_test(
 )
 
 assert_test(
+    exit_source:match("'module::unlocked'") ~= nil and
+        exit_source:match("'xidlehook%-client'") ~= nil and
+        exit_source:match("runtime_dir %.%. '/xidlehook%.sock'") ~= nil and
+        exit_source:match("'reset%-idle'") ~= nil,
+    "Unlocking restarts the idle timer without requiring keyboard input"
+)
+
+assert_test(
     battery_source:match("module::suspend") ~= nil and
         battery_source:match("hibernate") == nil and
         source:match("elseif is_lock_state_set%(%) and ensure_password_grab%(%) then") ~= nil,

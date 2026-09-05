@@ -242,14 +242,6 @@ if [[ ! -f "$DIRSTACKFILE" ]]; then
   touch "$DIRSTACKFILE"
 fi
 
-if [[ -f ${DIRSTACKFILE} ]] && [[ ${#dirstack[*]} -eq 0 ]] ; then
-  dirstack=( ${(f)"$(< $DIRSTACKFILE)"} )
-  # "cd -" won't work after login by just setting $OLDPWD, so
-  [[ -d $dirstack[1] ]] && cd $dirstack[1] && cd $OLDPWD
-fi
-
-autoload -U add-zsh-hook
-add-zsh-hook chpwd chpwd_dirpersist
 chpwd_dirpersist() {
   if (( $DIRSTACKSIZE <= 0 )) || [[ -z $DIRSTACKFILE ]]; then return; fi
   local -ax my_stack
@@ -260,24 +252,23 @@ chpwd_dirpersist() {
 # Load the custom dirstack to zsh
 load_dirstack() {
   if [[ -f "$DIRSTACKFILE" ]]; then
-    # Read the custom file and set the DIRSTACK
-    dirs -c  # Clear the current stack
-    # Read the custom file into an array
     local stack=()
     while IFS= read -r dir; do
-      # Skip empty lines
-      [[ -n "$dir" ]] && stack+=("$dir")
+      [[ -d "$dir" ]] && stack+=("$dir")
     done < "$DIRSTACKFILE"
 
-    # Reverse the array to maintain the correct order
-    for ((i=${#stack[@]}; i>=0; i--)); do
-      pushd "${stack[i]}" > /dev/null
-    done
+    if (( ${#stack[@]} > 0 )); then
+      builtin cd -q -- "$stack[1]"
+      dirstack=("${stack[@]:1}")
+    fi
   fi
 }
 
 # Load the custom dirstack when the shell starts
 load_dirstack
+add-zsh-hook chpwd chpwd_dirpersist
+# Preserve the shell's cwd before foreground applications or nested shells run.
+add-zsh-hook preexec chpwd_dirpersist
 
 ###################### word navigation ########################################
 

@@ -164,6 +164,13 @@ local function release_popup_box(notification, box)
     remove_from_popup_order(notification)
 end
 
+awesome.connect_signal('module::notifications:dismiss_popup', function()
+    for index = #popup_order, 1, -1 do
+        local notification = popup_order[index]
+        notification:destroy(cst.notification_closed_reason.silent)
+    end
+end)
+
 local function watch_notification_suspension(n)
     if suspension_handlers[n] then
         return

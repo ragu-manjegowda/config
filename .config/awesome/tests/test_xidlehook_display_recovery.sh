@@ -42,8 +42,10 @@ trap 'rm -rf "$tmp_dir"' EXIT
 
 cat > "$tmp_dir/pactl" <<'EOF'
 #!/usr/bin/env bash
-if [[ "${AUDIO_RUNNING:-false}" == true ]]; then
-    printf 'State: RUNNING\n'
+if [[ "$*" == 'list sink-inputs' && "${AUDIO_RUNNING:-false}" == true ]]; then
+    printf 'Corked: no\n'
+elif [[ "$*" == 'list source-outputs' && "${CAPTURE_RUNNING:-false}" == true ]]; then
+    printf 'Corked: no\n'
 fi
 EOF
 cat > "$tmp_dir/xidlehook-client" <<'EOF'
@@ -79,6 +81,14 @@ fi
 : > "$XIDLEHOOK_TEST_LOG"
 AUDIO_RUNNING=false "$LOCK_ACTION" "$tmp_dir/xidle.sock"
 grep -Fq 'module::lockscreen_show' "$XIDLEHOOK_TEST_LOG"
+
+: > "$XIDLEHOOK_TEST_LOG"
+CAPTURE_RUNNING=true "$LOCK_ACTION" "$tmp_dir/xidle.sock"
+grep -Fq 'reset-idle' "$XIDLEHOOK_TEST_LOG"
+if grep -Fq 'module::lockscreen_show' "$XIDLEHOOK_TEST_LOG"; then
+    printf '%s\n' 'active microphone capture must defer locking while unlocked' >&2
+    exit 1
+fi
 
 : > "$XIDLEHOOK_TEST_LOG"
 touch "$XDG_RUNTIME_DIR/awesome-lockscreen.locked"

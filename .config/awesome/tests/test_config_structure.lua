@@ -288,6 +288,18 @@ if config.module and config.module.lockscreen then
     end
 end
 
+local client_buttons = assert(io.open(
+    home .. '/.config/awesome/configuration/client/buttons.lua',
+    'r'
+))
+local client_button_source = client_buttons:read('*a')
+client_buttons:close()
+assert_test(
+    client_button_source:match("c:activate%s*{%s*context%s*=%s*'mouse_click'%s*}") ~= nil and
+        client_button_source:match("c:emit_signal%('request::activate'%)") == nil,
+    "client clicks use Awesome's grab-aware activation path"
+)
+
 -- Summary
 print("\n" .. string.rep("=", 50))
 print(string.format("Results: %d passed, %d failed", tests_passed, tests_failed))

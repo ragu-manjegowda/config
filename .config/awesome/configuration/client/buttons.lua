@@ -6,8 +6,7 @@ return awful.util.table.join(
         {},
         1,
         function(c)
-            c:emit_signal('request::activate')
-            c:raise()
+            c:activate { context = 'mouse_click' }
         end
     ),
     awful.button(
