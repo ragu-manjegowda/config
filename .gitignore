@@ -51,7 +51,6 @@
 ################################################################################
 ################## Regular ignores #############################################
 ################################################################################
-/.cargo
 
 /.CFUserTextEncoding
 /.DS_Store
@@ -68,6 +67,7 @@
 /.bash_logout
 /.bundle
 /.cache
+/.cargo
 /.ccache
 /.cgdb
 /.cisco
@@ -145,6 +145,7 @@
 /.config/evolution
 /.config/filezilla
 /.config/fontconfig
+/.config/gcloud
 /.config/gedit
 /.config/gh
 /.config/git/.git-completion.bash
@@ -214,6 +215,7 @@
 /.config/opencode/tui.json-e
 /.config/openrazer
 /.config/pavucontrol.ini
+/.config/personal-assistant
 /.config/pip
 /.config/qalculate
 /.config/ranger/colorschemes/__init__.py

@@ -1,8 +1,8 @@
 [Default Applications]
 text/plain=nvim-usercreated.desktop
-text/html=firefox.desktop
-x-scheme-handler/http=firefox.desktop
-x-scheme-handler/https=firefox.desktop
+text/html=prisma-access-browser.desktop
+x-scheme-handler/http=prisma-access-browser.desktop
+x-scheme-handler/https=prisma-access-browser.desktop
 video/mp4=firefox.desktop
 application/pdf=firefox.desktop
 image/apng=firefox.desktop
@@ -29,15 +29,17 @@ video/x-m4v=firefox.desktop
 video/x-matroska=firefox.desktop
 video/x-msvideo=firefox.desktop
 x-scheme-handler/codex=codex-app-linux.desktop
-application/xhtml+xml=firefox.desktop
+application/xhtml+xml=prisma-access-browser.desktop
 x-scheme-handler/paacallback=paa-auth-handler.desktop
+x-scheme-handler/about=prisma-access-browser.desktop
+x-scheme-handler/unknown=prisma-access-browser.desktop
 
 [Added Associations]
 text/plain=nvim-usercreated.desktop
-x-scheme-handler/http=com.google.Chrome.desktop;
-application/xhtml+xml=com.google.Chrome.desktop;
-text/html=com.google.Chrome.desktop;
-x-scheme-handler/https=com.google.Chrome.desktop;
+x-scheme-handler/http=prisma-access-browser.desktop;
+application/xhtml+xml=prisma-access-browser.desktop;
+text/html=prisma-access-browser.desktop;
+x-scheme-handler/https=prisma-access-browser.desktop;
 application/pdf=firefox.desktop;
 image/apng=firefox.desktop;
 image/avif=firefox.desktop;

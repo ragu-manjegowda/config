@@ -12,6 +12,7 @@ git_root=
 plugin_cache="${XDG_CACHE_HOME:-$HOME/.cache}/opencode"
 plugin_update_stamp="$plugin_cache/.oc-plugin-update"
 plugin_update_interval=${OC_PLUGIN_UPDATE_INTERVAL_SECONDS:-86400}
+plugin_update_timeout=${OC_PLUGIN_UPDATE_TIMEOUT_SECONDS:-15}
 sandbox_config='{"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"},"agent":{"build":{"mode":"primary","permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}},"general":{"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}},"plan":{"mode":"primary","permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}}}}'
 sandbox_config_no_searxng='{"mcp":{"searxng":{"enabled":false}},"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"},"agent":{"build":{"mode":"primary","permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}},"general":{"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}},"plan":{"mode":"primary","permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}}}}'
 
@@ -233,7 +234,7 @@ update_opencode_plugin_dir() {
 
     if [ "${plugin_force_ipv4:-0}" -eq 0 ]; then
         if (cd "$package_dir" && SHARP_IGNORE_GLOBAL_LIBVIPS=1 \
-                timeout 15 bun update --latest >/dev/null); then
+                timeout "$plugin_update_timeout" bun update --latest >/dev/null); then
             return 0
         fi
         if ! preload=$(prepare_bun_ipv4_preload); then
@@ -245,7 +246,7 @@ update_opencode_plugin_dir() {
     fi
 
     (cd "$package_dir" && SHARP_IGNORE_GLOBAL_LIBVIPS=1 \
-        LD_PRELOAD="$plugin_ipv4_preload" bun update --latest >/dev/null)
+        LD_PRELOAD="$plugin_ipv4_preload" timeout "$plugin_update_timeout" bun update --latest >/dev/null)
 }
 
 update_opencode_plugins() {

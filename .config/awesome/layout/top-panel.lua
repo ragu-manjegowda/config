@@ -79,6 +79,7 @@ local top_panel = function(s)
     s.screen_rec              = require('widget.screen-recorder')()
     s.playerctl_center_toggle = require('widget.playerctl-center-toggle')()
     s.kbd_battery             = require('widget.kbd-battery')()
+    s.vpn                     = require('widget.vpn')()
     s.battery                 = require('widget.battery')()
     s.control_center_toggle   = require('widget.control-center-toggle')()
     s.info_center_toggle      = require('widget.info-center-toggle')()
@@ -148,6 +149,7 @@ local top_panel = function(s)
                     s.screen_rec,
                     s.playerctl_center_toggle,
                     s.kbd_battery,
+                    s.vpn,
                     s.battery,
                     s.control_center_toggle,
                     layout_box,

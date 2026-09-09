@@ -133,6 +133,7 @@ git --git-dir="$HOME/.config.git" --work-tree="$HOME" update-index --assume-unch
     .config/awesome/widget/tray-toggle/icons/left-arrow.svg \
     .config/awesome/widget/tray-toggle/icons/right-arrow.svg \
     .config/awesome/widget/volume-slider/icons/volume-muted.png \
+    .config/awesome/widget/vpn/icons/prisma-access.svg \
     .config/awesome/widget/weather/icons/d_rain.svg \
     .config/awesome/widget/weather/icons/dbroken_clouds.svg \
     .config/awesome/widget/weather/icons/dfew_clouds.svg \

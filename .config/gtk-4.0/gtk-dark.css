@@ -47,3 +47,8 @@
 
 @define-color borders #586e75;
 @define-color scrollbar_outline_color #586e75;
+
+/* Match Pinta's header toolbar icons to its 2rem toolbox icons. */
+window#Pinta\.GenericWindow headerbar image {
+    -gtk-icon-size: 2rem;
+}

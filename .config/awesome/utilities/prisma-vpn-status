@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+set -u
+
+systemctl_bin="${PRISMA_VPN_SYSTEMCTL_BIN:-/usr/bin/systemctl}"
+agent_run="${PRISMA_VPN_AGENT_RUN:-/usr/lib/prisma-access-agent/run}"
+timeout_bin="${PRISMA_VPN_TIMEOUT_BIN:-/usr/bin/timeout}"
+timeout_seconds="${PRISMA_VPN_TIMEOUT_SECONDS:-2}"
+service='prisma-access-agent.service'
+
+if ! "$systemctl_bin" is-active --quiet "$service"; then
+    printf 'disconnected\n'
+    exit 0
+fi
+
+if ! status=$("$timeout_bin" "$timeout_seconds" \
+    "$agent_run" PACli status --relative 2>/dev/null); then
+    printf 'unavailable\n'
+    exit 0
+fi
+
+tunnel_status=''
+while IFS=: read -r key value; do
+    if [[ "$key" == Tunnel ]]; then
+        value="${value#"${value%%[![:space:]]*}"}"
+        value="${value%"${value##*[![:space:]]}"}"
+        tunnel_status="$value"
+        break
+    fi
+done <<<"$status"
+
+case "$tunnel_status" in
+    Connected) printf 'connected\n' ;;
+    Connecting) printf 'connecting\n' ;;
+    *) printf 'disconnected\n' ;;
+esac
