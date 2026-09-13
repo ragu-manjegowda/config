@@ -25,6 +25,7 @@ local source = read_file(os.getenv("HOME") .. "/.config/awesome/module/lockscree
 local exit_source = read_file(os.getenv("HOME") .. "/.config/awesome/module/exit-screen.lua")
 local battery_source = read_file(os.getenv("HOME") .. "/.config/awesome/widget/battery/init.lua")
 local capture_source = read_file(os.getenv("HOME") .. "/.config/awesome/utilities/capture")
+local suspend_hook_source = read_file(os.getenv("HOME") .. "/.config/awesome/utilities/suspend-hook.py")
 
 print("\nTest Suite: Lockscreen Authentication")
 
@@ -131,10 +132,17 @@ assert_test(
     source:match("module::sleep_resumed") ~= nil and
         source:match(
             "if is_lock_state_set%(%) then%s*ensure_password_grab%(%)%s*" ..
-            "if fingerprint_auth then fingerprint_auth:start%(%) end%s*end"
+            "gears%.timer%.start_new%(1, function%(%)"
         ) ~= nil and
         source:match("xset dpms force on") ~= nil,
     "Resume wakes DPMS and restores password and fingerprint authentication"
+)
+
+assert_test(
+    source:match("gears%.timer%.start_new%(1, function%(%)%s+if lockscreen_lifecycle%.can_restart_fingerprint%(") ~= nil and
+        suspend_hook_source:match('"/usr/bin/awesome%-client"') ~= nil and
+        suspend_hook_source:match("module::sleep_resumed") ~= nil,
+    "Resume waits for the fingerprint device before restarting verification"
 )
 
 assert_test(
@@ -162,6 +170,29 @@ assert_test(
 )
 
 assert_test(
+    exit_source:match(
+        "'module::locked',%s+function%(_%)%s+awesome%.emit_signal%('module::exit_screen:hide'%)"
+    ) ~= nil and
+        exit_source:match(
+            "'module::unlocked',%s+function%(_%)%s+awesome%.emit_signal%('module::exit_screen:hide'%)"
+        ) ~= nil and
+        exit_source:match("lockscreen_lifecycle%.owns_keygrab%(") ~= nil,
+    "Lock transitions clear the exit screen without stealing the password grab"
+)
+
+assert_test(
+    source:match(
+        "local show_lockscreen = function%(%)%s+.-if lock_again == true or lock_again == nil then%s+awesome%.emit_signal%('module::exit_screen:hide'%)"
+    ) ~= nil,
+    "Lockscreen requests hide the exit screen before acquiring the keygrab"
+)
+
+assert_test(
+    exit_source:match("if lockscreen_lifecycle%.is_visible%(screen%) then return end") ~= nil,
+    "Power-key repeats cannot reopen the exit screen over the lockscreen"
+)
+
+assert_test(
     battery_source:match("module::suspend") ~= nil and
         battery_source:match("hibernate") == nil and
         source:match("elseif is_lock_state_set%(%) and ensure_password_grab%(%) then") ~= nil,
@@ -171,9 +202,11 @@ assert_test(
 assert_test(
     source:match("local capture_in_progress = false") ~= nil and
         source:match("if capture_in_progress then return end") ~= nil and
+        source:match("lockscreen_lifecycle%.can_show_intruder%(") ~= nil and
+        source:match("auth_succeeded = true%s+wanted_poster%.visible = false") ~= nil and
         source:match("reset_failed_auth%(%)") ~= nil and
         capture_source:match("timeout %-%-signal=TERM %-%-kill%-after=1 5") ~= nil,
-    "Intruder capture cannot block failed-auth recovery indefinitely"
+    "Intruder capture cannot block recovery or reappear after unlock"
 )
 
 assert_test(

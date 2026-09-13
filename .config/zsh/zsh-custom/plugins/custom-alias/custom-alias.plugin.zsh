@@ -229,46 +229,8 @@ bindkey '^[/' autosuggest-fetch
 
 ######################### dirstack ############################################
 
-# Store 10 recent directories
 # Ref: github.com/ohmyzsh/ohmyzsh/blob/master/plugins/dirpersist/dirpersist.plugin.zsh
-autoload -Uz add-zsh-hook
-
-DIRSTACKSIZE="10"
-DIRSTACKFILE="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/dirs"
-
-# Ensure the file exists and is readable
-if [[ ! -f "$DIRSTACKFILE" ]]; then
-  mkdir -p "${DIRSTACKFILE:h}"
-  touch "$DIRSTACKFILE"
-fi
-
-chpwd_dirpersist() {
-  if (( $DIRSTACKSIZE <= 0 )) || [[ -z $DIRSTACKFILE ]]; then return; fi
-  local -ax my_stack
-  my_stack=( ${PWD} ${dirstack} )
-  builtin print -l ${(u)my_stack} >! ${DIRSTACKFILE}
-}
-
-# Load the custom dirstack to zsh
-load_dirstack() {
-  if [[ -f "$DIRSTACKFILE" ]]; then
-    local stack=()
-    while IFS= read -r dir; do
-      [[ -d "$dir" ]] && stack+=("$dir")
-    done < "$DIRSTACKFILE"
-
-    if (( ${#stack[@]} > 0 )); then
-      builtin cd -q -- "$stack[1]"
-      dirstack=("${stack[@]:1}")
-    fi
-  fi
-}
-
-# Load the custom dirstack when the shell starts
-load_dirstack
-add-zsh-hook chpwd chpwd_dirpersist
-# Preserve the shell's cwd before foreground applications or nested shells run.
-add-zsh-hook preexec chpwd_dirpersist
+source "${0:A:h}/shared-dirstack.zsh"
 
 ###################### word navigation ########################################
 

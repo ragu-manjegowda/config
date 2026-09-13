@@ -6,7 +6,7 @@ XE_CONFIG="$REPO_HOME/.config/misc/etc/modprobe.d/xe.conf"
 BOOTSTRAP="$REPO_HOME/.config/scripts/bootstrap/03-system.sh"
 
 grep -Fxq \
-    'options xe enable_psr=0 enable_panel_replay=0 enable_psr2_sel_fetch=0' \
+    'options xe enable_psr=0 enable_panel_replay=0 enable_psr2_sel_fetch=0 enable_fbc=0' \
     "$XE_CONFIG"
 grep -Fq 'etc/modprobe.d/xe.conf' "$BOOTSTRAP"
 grep -Fq '/etc/modprobe.d/xe.conf' "$BOOTSTRAP"

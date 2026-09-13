@@ -7,6 +7,7 @@ local dpi = beautiful.xresources.apply_dpi
 local icons = require('theme.icons')
 local apps = require('configuration.apps')
 local clickable_container = require('widget.clickable-container')
+local lockscreen_lifecycle = require('module.lockscreen-lifecycle')
 local config_dir = filesystem.get_configuration_dir()
 local widget_icon_dir = config_dir .. 'configuration/user-profile/'
 
@@ -173,6 +174,7 @@ local pending_sleep_action = nil
 awesome.connect_signal(
     'module::locked',
     function(_)
+        awesome.emit_signal('module::exit_screen:hide')
         if pending_sleep_action then
             local action = pending_sleep_action
             pending_sleep_action = nil
@@ -184,6 +186,7 @@ awesome.connect_signal(
 awesome.connect_signal(
     'module::unlocked',
     function(_)
+        awesome.emit_signal('module::exit_screen:hide')
         pending_sleep_action = nil
         awful.spawn.with_shell('xset r rate 180 45')
         local runtime_dir = os.getenv('XDG_RUNTIME_DIR')
@@ -373,6 +376,7 @@ local exit_screen_grabber = awful.keygrabber {
 awesome.connect_signal(
     'module::exit_screen:show',
     function()
+        if lockscreen_lifecycle.is_visible(screen) then return end
         for s in screen do
             s.exit_screen.visible = false
         end
@@ -385,7 +389,9 @@ awesome.connect_signal(
     'module::exit_screen:hide',
     function()
         update_greeter_msg()
-        exit_screen_grabber:stop()
+        if lockscreen_lifecycle.owns_keygrab(awful.keygrabber.current_instance, exit_screen_grabber) then
+            exit_screen_grabber:stop()
+        end
         for s in screen do
             s.exit_screen.visible = false
         end

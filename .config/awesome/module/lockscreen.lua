@@ -10,6 +10,7 @@ local widget_icon_dir = config_dir .. 'configuration/user-profile/'
 local config = require('configuration.config')
 local suspension = require('library.notification-suspension')
 local fingerprint = require('module.lockscreen-fingerprint')
+local lockscreen_lifecycle = require('module.lockscreen-lifecycle')
 
 require('module.dynamic-wallpaper')
 require('module.auto-start')
@@ -466,6 +467,8 @@ local locker = function(s)
 
     check_webcam()
 
+    local auth_succeeded = false
+
     -- Snap an image of the intruder
     local intruder_capture = function()
         if capture_in_progress then return end
@@ -495,7 +498,9 @@ local locker = function(s)
             capture_image,
             function(stdout, _, _, exit_code)
                 capture_in_progress = false
-                if exit_code ~= 0 or stdout == '' then return end
+                if not lockscreen_lifecycle.can_show_intruder(
+                        exit_code, stdout, auth_succeeded, is_lock_state_set()
+                    ) then return end
 
                 -- Humiliate the intruder by showing his/her hideous face
                 wanted_image:set_image(stdout:gsub('%s+$', ''))
@@ -517,7 +522,6 @@ local locker = function(s)
     end
 
     local password_grabber
-    local auth_succeeded = false
 
     local reset_failed_auth = function()
         gears.timer.start_new(
@@ -546,6 +550,7 @@ local locker = function(s)
     local generalkenobi_ohhellothere = function()
         if auth_succeeded then return end
         auth_succeeded = true
+        wanted_poster.visible = false
         if fingerprint_auth then fingerprint_auth:stop() end
         circle_container.bg = beautiful.accent
         awesome.emit_signal('module::lockscreen_auth_feedback', beautiful.accent)
@@ -815,6 +820,8 @@ local locker = function(s)
         -- It prevents the user to spam locking while in a process of authentication
         -- Prevents a potential bug/problem
         if lock_again == true or lock_again == nil then
+            awesome.emit_signal('module::exit_screen:hide')
+
             -- Force update clock widget
             time:emit_signal('widget::redraw_needed')
 
@@ -908,7 +915,15 @@ local locker = function(s)
 
             if is_lock_state_set() then
                 ensure_password_grab()
-                if fingerprint_auth then fingerprint_auth:start() end
+                gears.timer.start_new(1, function()
+                    if lockscreen_lifecycle.can_restart_fingerprint(
+                            is_lock_state_set(), fingerprint_auth
+                        ) then
+                        fingerprint_auth:stop()
+                        fingerprint_auth:start()
+                    end
+                    return false
+                end)
             end
         end
     )

@@ -11,6 +11,7 @@ find-cursor
 goimapnotify-git
 gtk-theme-numix-solarized
 intel-vision-drivers-dkms-ipu7-ov08x40
+ipu-bridge-legacy-cvs-dkms
 libcamera-ipu7-ov08x40
 libcamera-ipu7-ov08x40-ipa
 light

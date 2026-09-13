@@ -24,18 +24,19 @@ if [[ -n "$_greeter_shell" && "$_greeter_shell" != "/usr/bin/nologin" ]]; then
 elif [[ -n "$_greeter_shell" ]]; then
     log_ok "greeter shell already set to /usr/bin/nologin"
 fi
-enable_system_service ntpd
+if systemctl is-enabled ntpd.service &>/dev/null; then
+    sudo systemctl disable ntpd.service
+    log_ok "Disabled legacy NTP service: ntpd"
+fi
+enable_system_service systemd-timesyncd
 enable_system_service thermald
 enable_system_service zramswap
 
-log_info "NTP network dispatcher..."
-_ntpd_dispatcher="${MISC_DIR}/etc/NetworkManager/dispatcher.d/10-ntpd"
-_ntpd_dest="/etc/NetworkManager/dispatcher.d/10-ntpd"
-check_copy "$_ntpd_dispatcher" "$_ntpd_dest"
-if [[ -f "$_ntpd_dest" ]]; then
-    sudo chmod 700 "$_ntpd_dest"
-    sudo chown root:root "$_ntpd_dest"
-    log_ok "NTP dispatcher permissions set"
+log_info "Legacy NTP network dispatcher..."
+_ntpd_dest="${NTPD_DISPATCHER_PATH:-/etc/NetworkManager/dispatcher.d/10-ntpd}"
+if [[ -e "$_ntpd_dest" ]]; then
+    sudo rm -f -- "$_ntpd_dest"
+    log_ok "Removed legacy NTP network dispatcher"
 fi
 
 log_info "User services..."

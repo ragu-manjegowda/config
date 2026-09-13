@@ -11,6 +11,7 @@ This test suite validates:
 - ✅ Display configuration consistency
 - ✅ Module structure and imports
 - ✅ Integration between components
+- ✅ System lifecycle, package manifest, and shared zsh state
 - ✅ Security and best practices
 
 ## Running Tests
@@ -28,6 +29,8 @@ Run individual tests:
 lua test_display_config.lua
 lua test_config_structure.lua
 lua test_read_display_config.lua
+bash test_service_migration.sh
+python test_suspend_hook.py
 ```
 
 ### Testing with awmtt (Advanced)
@@ -49,6 +52,8 @@ DISPLAY=:1 awesome -c ~/.config/awesome/rc.lua
 
 Tests run automatically on GitHub when you push changes to:
 - `.config/awesome/**` - Any AwesomeWM config changes
+- `.config/archiso-backup/**` and `.config/zsh/**` - Package and shell state
+- Relevant bootstrap, logind, camera, NetworkManager, and Xe configuration
 - `.github/workflows/**` - Workflow changes
 
 View test results in the "Actions" tab of your GitHub repository.

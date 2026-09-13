@@ -14,7 +14,6 @@ base
 base-devel
 blueman
 bluez-utils
-broadcom-wl-dkms
 bun
 ca-certificates-mozilla
 calibre-bin
@@ -49,6 +48,7 @@ gtk-theme-numix-solarized
 imagemagick
 intel-ucode
 intel-vision-drivers-dkms-ipu7-ov08x40
+ipu-bridge-legacy-cvs-dkms
 iwd
 libcamera-ipu7-ov08x40
 libcamera-ipu7-ov08x40-ipa
@@ -87,7 +87,6 @@ newsboat-git
 nfs-utils
 noto-fonts
 noto-fonts-emoji
-ntp
 numix-cursor-theme
 nvidia-container-toolkit
 nvidia-open-dkms

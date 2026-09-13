@@ -10,31 +10,50 @@
 ###############################################################################
 
 
-from os import system
-from gi.repository import GLib, Gio
-from subprocess import run
+import subprocess
+import sys
 
-# Check if this is already running, if so exit
-p = run("pgrep -f suspend-hook.py | wc -l", capture_output=True, shell=True)
-
-# Check for length 2 as current instance of process creates a PID as well
-# and wc -l above counts extra '\n' from pgrep output.
-if p.stdout.strip().decode('utf-8') != '2':
-    # print(p.stdout.strip().decode('utf-8'))
-    exit()
 
 def onPrepareForSleep(conn, sender, obj, interface, signal, parameters, data):
-    if not parameters[0]: # parameters[0] is True just before sleep, False just after wake
-        system(""" echo "awesome.emit_signal(\'module::sleep_resumed\', true)" | awesome-client """)
+    if not parameters[0]:  # True just before sleep, false just after wake.
+        result = subprocess.run(
+            [
+                "/usr/bin/awesome-client",
+                "awesome.emit_signal('module::sleep_resumed', true)",
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode != 0:
+            print(f"Failed to notify Awesome after resume: {result.stderr.strip()}", flush=True)
 
-system_bus = Gio.bus_get_sync(Gio.BusType.SYSTEM, None)
-system_bus.signal_subscribe('org.freedesktop.login1',
-                            'org.freedesktop.login1.Manager',
-                            'PrepareForSleep',
-                            '/org/freedesktop/login1',
-                            None,
-                            Gio.DBusSignalFlags.NONE,
-                            onPrepareForSleep,
-                            None)
 
-GLib.MainLoop().run()
+def main():
+    from gi.repository import Gio, GLib
+
+    # The current shell pipeline and this process both match pgrep.
+    process_count = subprocess.run(
+        "pgrep -f suspend-hook.py | wc -l",
+        capture_output=True,
+        shell=True,
+        check=False,
+    )
+    if process_count.stdout.strip().decode('utf-8') != '2':
+        return
+
+    system_bus = Gio.bus_get_sync(Gio.BusType.SYSTEM, None)
+    system_bus.signal_subscribe('org.freedesktop.login1',
+                                'org.freedesktop.login1.Manager',
+                                'PrepareForSleep',
+                                '/org/freedesktop/login1',
+                                None,
+                                Gio.DBusSignalFlags.NONE,
+                                onPrepareForSleep,
+                                None)
+
+    GLib.MainLoop().run()
+
+
+if __name__ == '__main__':
+    sys.exit(main())

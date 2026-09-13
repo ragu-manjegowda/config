@@ -27,6 +27,8 @@ assert_absent() {
 }
 
 assert_contains "$logind" 'SleepOperation=suspend'
+assert_contains "$logind" 'HandlePowerKey=ignore'
+assert_absent "$logind" 'HandlePowerKeyLongPress='
 assert_contains "$logind" 'HandleLidSwitch=suspend'
 assert_absent "$logind" 'suspend-then-hibernate'
 assert_absent "$logind" 'SleepOperation=suspend hibernate'

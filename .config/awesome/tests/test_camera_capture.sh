@@ -8,6 +8,7 @@ override="$repo_home/.config/misc/etc/systemd/system/v4l2-relayd-ipu7.service.d/
 bootstrap="$repo_home/.config/scripts/bootstrap/04-hardware.sh"
 
 grep -Fq 'width=1920,height=1080' "$override"
+grep -Fxq 'Environment=LIBCAMERA_SOFTISP_MODE=cpu' "$override"
 grep -Fq 'ae-enable=true awb-enable=true sharpness=1.5' "$override"
 grep -Fq 'format=I420,width=1920,height=1080,framerate=30/1' "$override"
 if grep -Fq 'videotestsrc is-live=true' "$override"; then

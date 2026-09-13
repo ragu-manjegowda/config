@@ -23,7 +23,14 @@ on:
       - '.config/systemd/user/lid-brightness-manager.service'
       - '.config/systemd/user/xidlehook.service'
       - '.config/misc/etc/modprobe.d/xe.conf'
+      - '.config/misc/etc/NetworkManager/dispatcher.d/10-ntpd'
+      - '.config/misc/etc/systemd/logind.conf.d/90-local.conf'
+      - '.config/misc/etc/systemd/system/v4l2-relayd-ipu7.service.d/override.conf'
+      - '.config/archiso-backup/**'
+      - '.config/zsh/**'
       - '.config/scripts/bootstrap/03-system.sh'
+      - '.config/scripts/bootstrap/04-hardware.sh'
+      - '.config/scripts/bootstrap/05-services.sh'
       - '.github/workflows/awesome-wm-tests.yml'
   pull_request:
     branches: [ main, master, develop ]
@@ -35,7 +42,14 @@ on:
       - '.config/systemd/user/lid-brightness-manager.service'
       - '.config/systemd/user/xidlehook.service'
       - '.config/misc/etc/modprobe.d/xe.conf'
+      - '.config/misc/etc/NetworkManager/dispatcher.d/10-ntpd'
+      - '.config/misc/etc/systemd/logind.conf.d/90-local.conf'
+      - '.config/misc/etc/systemd/system/v4l2-relayd-ipu7.service.d/override.conf'
+      - '.config/archiso-backup/**'
+      - '.config/zsh/**'
       - '.config/scripts/bootstrap/03-system.sh'
+      - '.config/scripts/bootstrap/04-hardware.sh'
+      - '.config/scripts/bootstrap/05-services.sh'
       - '.github/workflows/awesome-wm-tests.yml'
   workflow_dispatch:
 
@@ -776,10 +790,10 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install Lua
+      - name: Install test dependencies
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm lua luajit lua51-lgi
+          pacman -S --noconfirm lua luajit lua51-lgi python zsh
 
       - name: Test lid brightness recovery
         run: |
@@ -801,9 +815,19 @@ jobs:
           cd "$GITHUB_WORKSPACE"
           HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_lockscreen_fingerprint.lua
           HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_lockscreen_auth.lua
+          HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_lockscreen_lifecycle.lua
+          HOME="$GITHUB_WORKSPACE" python .config/awesome/tests/test_suspend_hook.py
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_lock_before_sleep.sh
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_suspend_only_policy.sh
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_top_panel_lifecycle.sh
+
+      - name: Test system lifecycle configuration
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_camera_capture.sh
+          HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_service_migration.sh
+          HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_package_manifests.sh
+          HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_zsh_dirstack.sh
 
       - name: Test goimapnotify timeout handling
         run: |
