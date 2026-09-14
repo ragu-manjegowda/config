@@ -1,8 +1,8 @@
 .config/bash/bash_extras filter=git-crypt diff=git-crypt
 .config/imapnotify/** filter=git-crypt diff=git-crypt
 .config/neomutt/accounts/** filter=git-crypt diff=git-crypt
+.config/neomutt/accounts/notmuch-identities filter=git-crypt diff=git-crypt
 .config/neomutt/credentials/** filter=git-crypt diff=git-crypt
-.config/neomutt/scripts/setup-paths.sh filter=git-crypt diff=git-crypt
 .config/opencode/dcp.jsonc filter=git-crypt diff=git-crypt
 .config/opencode/get-models.sh filter=git-crypt diff=git-crypt
 .config/opencode/opencode.json filter=git-crypt diff=git-crypt

@@ -35,10 +35,12 @@ for script in create-alias.sh get-mailboxes.sh mu-search.sh \
     fi
 done
 
+setup_paths=~/.config/neomutt/scripts/setup-paths.sh
 echo -n "Testing bootstrap path setup initializes both Notmuch databases... "
-if grep -Fq 'setup_notmuch "$MAILDIR_BASE/outlook"' ~/.config/neomutt/scripts/setup-paths.sh &&
-   grep -Fq 'setup_notmuch "$MAILDIR_BASE/gmail-personal"' ~/.config/neomutt/scripts/setup-paths.sh &&
-   grep -Fq 'NOTMUCH_CONFIG="$config" notmuch new' ~/.config/neomutt/scripts/setup-paths.sh; then
+if grep -Fq 'NOTMUCH_IDENTITIES="$NEOMUTT_DIR/accounts/notmuch-identities"' "$setup_paths" &&
+     grep -Fq "while IFS='|' read -r account email" "$setup_paths" &&
+     grep -Fq 'setup_notmuch "$account" "$email"' "$setup_paths" &&
+     grep -Fq 'NOTMUCH_CONFIG="$config" notmuch new' "$setup_paths"; then
     echo -e "${GREEN}✓ PASSED${NC}"
     ((passed++))
 else
@@ -46,11 +48,18 @@ else
     ((failed++))
 fi
 
+fzf_search=~/.config/neomutt/scripts/fzf-notmuch-search.sh
+work_offline=~/.config/neomutt/accounts/work/config-offline
+personal_offline=~/.config/neomutt/accounts/personal/config-offline
 echo -n "Testing fuzzy search uses a valid persistent command file... "
-if grep -Fq '.gitignored/cache/fzf-cmd.muttrc' ~/.config/neomutt/scripts/fzf-notmuch-search.sh &&
-   ! grep -Fq 'echo "noop"' ~/.config/neomutt/scripts/fzf-notmuch-search.sh &&
-   grep -Fq '.gitignored/cache/fzf-cmd.muttrc' ~/.config/neomutt/accounts/work/config-offline &&
-   grep -Fq '.gitignored/cache/fzf-cmd.muttrc' ~/.config/neomutt/accounts/personal/config-offline; then
+if ! grep -Fq '.gitignored/cache/fzf-cmd.muttrc' "$fzf_search" ||
+   grep -Fq 'echo "noop"' "$fzf_search"; then
+    echo -e "${RED}✗ FAILED${NC}"
+    ((failed++))
+elif is_git_crypt_locked "$work_offline" || is_git_crypt_locked "$personal_offline"; then
+    echo -e "${YELLOW}⚠ SKIPPED${NC} (git-crypt locked)"
+elif grep -Fq '.gitignored/cache/fzf-cmd.muttrc' "$work_offline" &&
+     grep -Fq '.gitignored/cache/fzf-cmd.muttrc' "$personal_offline"; then
     echo -e "${GREEN}✓ PASSED${NC}"
     ((passed++))
 else
@@ -121,10 +130,13 @@ done
 
 # --- Shell script syntax validation ---
 for script in create-alias.sh get-mailboxes.sh mu-search.sh \
-              fzf-notmuch-search.sh setup-paths.sh sync-notmuch-flags.sh; do
-    if [ -r ~/.config/neomutt/scripts/$script ]; then
+               fzf-notmuch-search.sh setup-paths.sh sync-notmuch-flags.sh; do
+    file=~/.config/neomutt/scripts/$script
+    if is_git_crypt_locked "$file"; then
+        echo -e "Testing $script syntax... ${YELLOW}⚠ SKIPPED${NC} (git-crypt locked)"
+    elif [ -r "$file" ]; then
         echo -n "Testing $script syntax... "
-        if bash -n ~/.config/neomutt/scripts/$script 2>/dev/null; then
+        if bash -n "$file" 2>/dev/null; then
             echo -e "${GREEN}✓ PASSED${NC}"
             ((passed++))
         else
