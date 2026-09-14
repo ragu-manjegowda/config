@@ -3,28 +3,31 @@
 ## Author       : Ragu Manjegowda
 ## Github       : @ragu-manjegowda
 ## Description  : Fuzzy notmuch search with filters
-##                Format 1: mtl lidarfree          (all words = fuzzy query)
-##                Format 2: "mtl lidarfree" folder:Inbox date:1week..
+##                Format 1: release planning       (all words = fuzzy query)
+##                Format 2: "release planning" folder:project date:1week..
 ##                          ^^^^^^^^^^^^^^^ fuzzy   ^^^^^^^^^^^^^^^^^^^^ filters
 ###############################################################################
 
 
 # Fallback to default notmuch config, actual config passed as first argument
 NOTMUCH_CONFIG="${1:-$HOME/.config/neomutt/.gitignored/maildir/outlook/.notmuch-config}"
-MUTTRC_FILE="/tmp/neomutt-fzf-cmd.muttrc"
+MUTTRC_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/neomutt/.gitignored/cache/fzf-cmd.muttrc"
 
 export NOTMUCH_CONFIG
 
-echo "noop" > "$MUTTRC_FILE"
+mkdir -p "${MUTTRC_FILE%/*}"
+printf '%s\n' '# No search command generated.' > "$MUTTRC_FILE"
 
 clear
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "Fuzzy Notmuch Search"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "Format 1: release important              (fuzzy search only)"
-echo "Format 2: \"release important\" folder:Inbox  (fuzzy + filters)"
+echo "Format 2: \"release important\" folder:project  (fuzzy + filters)"
+echo "Format 3: folder:project                 (fuzzy folder only)"
 echo ""
 echo "Filters: from: to: folder: date: tag: is: subject:"
+echo "Folder values are fuzzy-matched against full indexed paths."
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 read -r -p "Search: " user_input
@@ -33,22 +36,69 @@ read -r -p "Search: " user_input
 
 fzf_query=""
 notmuch_filters=""
+filter_prefix='^(from:|to:|subject:|date:|tag:|folder:|is:|id:|thread:|path:|mimetype:|attachment:|body:)'
+
+list_mail_folders() {
+    local database_path directory folder
+    database_path="$(notmuch config get database.path 2>/dev/null)" || return 1
+    [[ -d "$database_path" ]] || return 1
+
+    while IFS= read -r directory; do
+        folder="${directory%/cur}"
+        folder="${folder#"$database_path"/}"
+        [[ -n "$folder" && "$folder" != "$directory" ]] && printf '%s\n' "$folder"
+    done < <(find "$database_path" -type d -name cur -print 2>/dev/null)
+}
+
+resolve_folder_filter() {
+    local fragment="$1" matches folder escaped expression=""
+    fragment="${fragment#folder:}"
+    fragment="${fragment#\"}"
+    fragment="${fragment%\"}"
+    [[ -n "$fragment" ]] || return 1
+
+    matches="$(list_mail_folders | sort -u | fzf --filter="$fragment")"
+    if [[ -z "$matches" ]]; then
+        printf 'No fuzzy folder matches for: %s\n' "$fragment" >&2
+        return 1
+    fi
+
+    while IFS= read -r folder; do
+        [[ -n "$folder" ]] || continue
+        escaped="${folder//\\/\\\\}"
+        escaped="${escaped//\"/\\\"}"
+        if [[ -n "$expression" ]]; then
+            expression+=" OR "
+        fi
+        expression+="folder:\"$escaped\""
+    done <<< "$matches"
+    printf '(%s)' "$expression"
+}
+
+append_filters() {
+    local input="$1" word filter
+    for word in $input; do
+        [[ "$word" =~ $filter_prefix ]] || continue
+        if [[ "$word" == folder:* ]]; then
+            filter="$(resolve_folder_filter "$word")" || return 1
+        else
+            filter="$word"
+        fi
+        notmuch_filters+="${notmuch_filters:+ AND }$filter"
+    done
+}
 
 if [[ "$user_input" =~ ^\"([^\"]+)\"(.*)$ ]]; then
     fzf_query="${BASH_REMATCH[1]}"
     remaining="${BASH_REMATCH[2]}"
-
-    for word in $remaining; do
-        if [[ "$word" =~ ^(from:|to:|subject:|date:|tag:|folder:|is:|id:|thread:|path:|mimetype:|attachment:|body:) ]]; then
-            notmuch_filters="$notmuch_filters $word"
-        fi
-    done
+    append_filters "$remaining" || exit 0
+elif [[ "$user_input" =~ $filter_prefix ]]; then
+    append_filters "$user_input" || exit 0
 else
     fzf_query="$user_input"
 fi
 
 fzf_query=$(echo "$fzf_query" | xargs)
-notmuch_filters=$(echo "$notmuch_filters" | xargs)
 
 if [[ -z "$fzf_query" ]]; then
     final_query="${notmuch_filters:-*}"
@@ -98,4 +148,4 @@ fi
 clear
 
 escaped_query=$(echo "$final_query" | sed "s/'/\\\\'/g")
-echo "push '<vfolder-from-query>${escaped_query}<enter>'" > "$MUTTRC_FILE"
+printf "push '<vfolder-from-query>%s<enter>'\n" "$escaped_query" > "$MUTTRC_FILE"

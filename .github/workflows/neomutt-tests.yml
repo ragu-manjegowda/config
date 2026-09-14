@@ -29,6 +29,7 @@ jobs:
         test_suite:
           - test_config_syntax.sh
           - test_scripts.sh
+          - test_fzf_notmuch_search.sh
           - test_settings.sh
           - test_mailcap.sh
         include:
@@ -36,6 +37,8 @@ jobs:
             test_name: "Config Syntax"
           - test_suite: test_scripts.sh
             test_name: "Helper Scripts"
+          - test_suite: test_fzf_notmuch_search.sh
+            test_name: "Fuzzy Folder Search"
           - test_suite: test_settings.sh
             test_name: "Settings Validation"
           - test_suite: test_mailcap.sh
@@ -59,7 +62,7 @@ jobs:
 
       - name: Install Neomutt and dependencies
         run: |
-          pacman -S --noconfirm neomutt python python-pip bash w3m
+          pacman -S --noconfirm neomutt notmuch fzf python python-pip bash w3m
 
           # Install Python packages needed for script validation
           python -m pip install --break-system-packages --quiet vobject

@@ -35,6 +35,29 @@ for script in create-alias.sh get-mailboxes.sh mu-search.sh \
     fi
 done
 
+echo -n "Testing bootstrap path setup initializes both Notmuch databases... "
+if grep -Fq 'setup_notmuch "$MAILDIR_BASE/outlook"' ~/.config/neomutt/scripts/setup-paths.sh &&
+   grep -Fq 'setup_notmuch "$MAILDIR_BASE/gmail-personal"' ~/.config/neomutt/scripts/setup-paths.sh &&
+   grep -Fq 'NOTMUCH_CONFIG="$config" notmuch new' ~/.config/neomutt/scripts/setup-paths.sh; then
+    echo -e "${GREEN}✓ PASSED${NC}"
+    ((passed++))
+else
+    echo -e "${RED}✗ FAILED${NC}"
+    ((failed++))
+fi
+
+echo -n "Testing fuzzy search uses a valid persistent command file... "
+if grep -Fq '.gitignored/cache/fzf-cmd.muttrc' ~/.config/neomutt/scripts/fzf-notmuch-search.sh &&
+   ! grep -Fq 'echo "noop"' ~/.config/neomutt/scripts/fzf-notmuch-search.sh &&
+   grep -Fq '.gitignored/cache/fzf-cmd.muttrc' ~/.config/neomutt/accounts/work/config-offline &&
+   grep -Fq '.gitignored/cache/fzf-cmd.muttrc' ~/.config/neomutt/accounts/personal/config-offline; then
+    echo -e "${GREEN}✓ PASSED${NC}"
+    ((passed++))
+else
+    echo -e "${RED}✗ FAILED${NC}"
+    ((failed++))
+fi
+
 # --- Readable Python scripts ---
 for script in render-calendar-attachment.py mutt-ical.py; do
     echo -n "Testing scripts/$script exists... "

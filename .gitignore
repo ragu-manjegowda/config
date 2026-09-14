@@ -38,6 +38,8 @@
 /.local/share/applications/*
 !/.local/share/applications/Alacritty.desktop
 !/.local/share/applications/codex-app-linux.desktop
+!/.local/share/applications/masterpdfeditor4.desktop
+!/.local/share/applications/org.avidemux.Avidemux.desktop
 !/.local/share/applications/nvim-usercreated.desktop
 !/.local/share/applications/sioyek.desktop
 !/.local/share/xsessions
@@ -81,6 +83,7 @@
 /.conda
 /.config.git
 /.config/Atom
+/.config/Code Industry
 /.config/Codex
 /.config/Cursor
 /.config/Epic
@@ -262,7 +265,6 @@
 /.config/zsh/.zsh_sessions
 /.cups
 /.cursor
-/.dazelrc
 /.dbus
 /.dmrc
 /.docker

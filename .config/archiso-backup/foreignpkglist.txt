@@ -10,10 +10,6 @@ cyrus-sasl-xoauth2-git
 find-cursor
 goimapnotify-git
 gtk-theme-numix-solarized
-intel-vision-drivers-dkms-ipu7-ov08x40
-ipu-bridge-legacy-cvs-dkms
-libcamera-ipu7-ov08x40
-libcamera-ipu7-ov08x40-ipa
 light
 lua-pam-git
 masterpdfeditor-free
@@ -32,6 +28,7 @@ personal-assistant-bin
 picom-git
 prisma-access-agent
 prisma-access-browser-bin
+qt-solarized
 rdrview-git
 reflector-pacman-hook-git
 ruby-neovim

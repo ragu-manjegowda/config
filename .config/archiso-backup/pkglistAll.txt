@@ -47,11 +47,8 @@ gst-plugins-good
 gtk-theme-numix-solarized
 imagemagick
 intel-ucode
-intel-vision-drivers-dkms-ipu7-ov08x40
-ipu-bridge-legacy-cvs-dkms
 iwd
-libcamera-ipu7-ov08x40
-libcamera-ipu7-ov08x40-ipa
+keyd
 libcamera-tools
 libev
 libfido2
@@ -109,6 +106,7 @@ playerctl
 prisma-access-agent
 prisma-access-browser-bin
 python-typing_extensions
+qt-solarized
 ranger
 rdrview-git
 redshift
@@ -148,6 +146,7 @@ vlc
 w3m
 warpd
 webkit2gtk-4.1
+wireless-regdb
 woff2
 xcalib
 xclip

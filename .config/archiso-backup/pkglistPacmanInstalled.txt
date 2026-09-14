@@ -36,6 +36,7 @@ gst-plugins-good
 imagemagick
 intel-ucode
 iwd
+keyd
 libcamera-tools
 libev
 libfido2
@@ -105,6 +106,7 @@ v4l2loopback-utils
 vlc
 w3m
 webkit2gtk-4.1
+wireless-regdb
 woff2
 xcalib
 xclip

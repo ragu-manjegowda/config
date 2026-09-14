@@ -84,6 +84,7 @@ pipewire-pulse
 playerctl
 prisma-access-browser-bin
 python
+qt-solarized
 ranger
 rdrview-git
 redshift
@@ -115,6 +116,7 @@ v4l2loopback-dkms
 v4l2loopback-utils
 w3m
 warpd
+wireless-regdb
 wireplumber
 xclip
 xdg-desktop-portal

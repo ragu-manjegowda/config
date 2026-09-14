@@ -2,6 +2,7 @@
 .config/imapnotify/** filter=git-crypt diff=git-crypt
 .config/neomutt/accounts/** filter=git-crypt diff=git-crypt
 .config/neomutt/credentials/** filter=git-crypt diff=git-crypt
+.config/neomutt/scripts/setup-paths.sh filter=git-crypt diff=git-crypt
 .config/opencode/dcp.jsonc filter=git-crypt diff=git-crypt
 .config/opencode/get-models.sh filter=git-crypt diff=git-crypt
 .config/opencode/opencode.json filter=git-crypt diff=git-crypt
@@ -9,6 +10,7 @@
 .config/openconnect-gp/gateways filter=git-crypt diff=git-crypt
 .config/scripts/sync-wiki.sh filter=git-crypt diff=git-crypt
 .config/zsh/zsh_history filter=git-crypt diff=git-crypt
+.dazelrc filter=git-crypt diff=git-crypt
 .omo/omo.sol.jsonc filter=git-crypt diff=git-crypt
 .omo/omo.terra.jsonc filter=git-crypt diff=git-crypt
 .ssh/config filter=git-crypt diff=git-crypt

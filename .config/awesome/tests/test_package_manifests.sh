@@ -19,9 +19,7 @@ for manifest in "$minimal" "$official" "$foreign" "$all"; do
     fi
 done
 
-test "$(wc -l < "$minimal")" -eq 142
-grep -Fxq 'ipu-bridge-legacy-cvs-dkms' "$foreign"
-grep -Fxq 'ipu-bridge-legacy-cvs-dkms' "$all"
+test "$(wc -l < "$minimal")" -eq 144
 if grep -Fxq 'ntp' "$official" || grep -Fxq 'ntp' "$all" ||
         grep -Fxq 'broadcom-wl-dkms' "$official" || grep -Fxq 'broadcom-wl-dkms' "$all"; then
     printf 'obsolete packages remain in generated manifests\n' >&2
