@@ -69,6 +69,7 @@ nvidia-container-toolkit
 nvidia-open-dkms
 openrazer-daemon
 openssh
+pdfarranger
 perl-cgi
 pinta
 pipewire-alsa

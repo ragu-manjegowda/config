@@ -12,7 +12,6 @@ goimapnotify-git
 gtk-theme-numix-solarized
 light
 lua-pam-git
-masterpdfeditor-free
 mbsync-git
 mu
 neomutt-git

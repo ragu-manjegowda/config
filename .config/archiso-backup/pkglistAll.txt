@@ -70,7 +70,6 @@ lld
 lua-pam-git
 lxqt-policykit
 maim
-masterpdfeditor-free
 mbsync-git
 mpv
 msmtp
@@ -95,6 +94,7 @@ pacman-cleanup-hook
 pam-fprint-grosshack
 paru
 pavucontrol-gtk3
+pdfarranger
 perl-cgi
 personal-assistant-bin
 picom-git
