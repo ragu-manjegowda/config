@@ -116,6 +116,19 @@ else
     ((failed++))
 fi
 
+echo -n "Testing global status reports unread rather than new messages... "
+styles_config="$HOME/.config/neomutt/config/styles.muttrc"
+if grep -Fq "set ts_status_format = 'mutt %m messages%?u?, %u unread?'" "$styles_config" &&
+   grep -Eq "status_format.* %u" "$styles_config" &&
+   ! grep -Eq "status_format.* %n" "$styles_config"; then
+    echo -e "${GREEN}✓ PASSED${NC}"
+    ((passed++))
+else
+    echo -e "${RED}✗ FAILED${NC}"
+    echo "  Global status still distinguishes new mail from total unread mail"
+    ((failed++))
+fi
+
 # Test editor setting contains nvim
 echo -n "Testing editor is nvim... "
 editor=$(neomutt -F "$CONFIG_FILE" -Q editor 2>/dev/null | cut -d'=' -f2- | tr -d '"')

@@ -65,7 +65,7 @@ function manager.new_view()
         show_empty_state()
     end
 
-    view.add_notification = function(n)
+    view.add_notification = function(n, created_at)
         if #view.notifbox_layout.children == 1 and view.remove_notifbox_empty then
             view.notifbox_layout:reset()
             view.remove_notifbox_empty = false
@@ -84,7 +84,8 @@ function manager.new_view()
             n.message,
             n.app_name,
             notifbox_color,
-            view
+            view,
+            created_at
         )
         view.notifbox_layout:insert(1, card)
         return card

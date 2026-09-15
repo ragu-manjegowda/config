@@ -94,7 +94,7 @@ local function add_entry_to_view(entry, view)
         notification_store:set_card(
             entry.notification,
             view,
-            view.add_notification(entry.notification)
+            view.add_notification(entry.notification, entry.created_at)
         )
     end
 end

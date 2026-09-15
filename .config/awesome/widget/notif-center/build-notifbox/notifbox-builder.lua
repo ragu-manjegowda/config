@@ -55,8 +55,8 @@ local function register_age(notifbox, widget, created_at)
     end
 end
 
-local notifbox_box = function(notif, icon, title, message, app, _, notifbox_core)
-    local created_at = os.time()
+local notifbox_box = function(notif, icon, title, message, app, _, notifbox_core, created_at)
+    created_at = tonumber(created_at) or os.time()
 
     local notifbox_timepop = wibox.widget {
         id = 'time_pop',

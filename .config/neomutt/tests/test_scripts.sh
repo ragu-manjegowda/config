@@ -162,6 +162,68 @@ for account in work personal; do
     fi
 done
 
+echo -n "Testing Notmuch synchronization never clears unread globally... "
+if grep -Fq 'notmuch new' ~/.config/neomutt/scripts/sync-notmuch-flags.sh &&
+   ! grep -Fq "notmuch tag -unread -- 'tag:unread'" ~/.config/neomutt/scripts/sync-notmuch-flags.sh; then
+    echo -e "${GREEN}✓ PASSED${NC}"
+    ((passed++))
+else
+    echo -e "${RED}✗ FAILED${NC}"
+    echo "  Notmuch synchronization can erase authoritative Maildir unread flags"
+    ((failed++))
+fi
+
+echo -n "Testing Notmuch synchronization preserves unread Maildir flags... "
+flag_test_dir="$(mktemp -d)"
+flag_test_maildir="$flag_test_dir/mail"
+flag_test_config="$flag_test_dir/notmuch-config"
+mkdir -p "$flag_test_maildir/Inbox/cur" "$flag_test_maildir/Inbox/new" \
+    "$flag_test_maildir/Inbox/tmp"
+cat > "$flag_test_config" <<EOF
+[database]
+path=$flag_test_maildir
+
+[user]
+name=Test User
+primary_email=test@example.com
+
+[new]
+tags=unread;inbox
+
+[maildir]
+synchronize_flags=true
+EOF
+cat > "$flag_test_maildir/Inbox/cur/unread:2," <<'EOF'
+From: sender@example.com
+To: test@example.com
+Subject: Unread message
+Date: Mon, 14 Sep 2026 09:00:00 +0000
+Message-ID: <unread@example.com>
+
+Unread body.
+EOF
+cat > "$flag_test_maildir/Inbox/cur/read:2,S" <<'EOF'
+From: sender@example.com
+To: test@example.com
+Subject: Read message
+Date: Mon, 14 Sep 2026 09:01:00 +0000
+Message-ID: <read@example.com>
+
+Read body.
+EOF
+if ~/.config/neomutt/scripts/sync-notmuch-flags.sh "$flag_test_config" >/dev/null &&
+   [[ -f "$flag_test_maildir/Inbox/cur/unread:2," ]] &&
+   [[ -f "$flag_test_maildir/Inbox/cur/read:2,S" ]] &&
+   [[ $(NOTMUCH_CONFIG="$flag_test_config" notmuch count 'tag:unread') == 1 ]]; then
+    echo -e "${GREEN}✓ PASSED${NC}"
+    ((passed++))
+else
+    echo -e "${RED}✗ FAILED${NC}"
+    echo "  Notmuch synchronization changed read/unread Maildir flags"
+    ((failed++))
+fi
+rm -rf "$flag_test_dir"
+
 echo ""
 echo "========================================="
 echo "  Results: $passed passed, $failed failed"

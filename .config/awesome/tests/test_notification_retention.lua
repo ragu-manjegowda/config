@@ -62,8 +62,16 @@ local evicted_entries = {}
 local store = retention.new(function(entry)
     evicted_entries[#evicted_entries + 1] = entry
 end)
+local before_add = os.time()
 local critical_entry = store:add(critical)
 local email_entry = store:add(email)
+assert(type(critical_entry.created_at) == 'number', 'store omitted notification receipt time')
+assert(critical_entry.created_at >= before_add and critical_entry.created_at <= os.time(),
+    'store recorded an invalid notification receipt time')
+local original_created_at = critical_entry.created_at
+assert(store:add(critical) == critical_entry, 'duplicate notification created a new entry')
+assert(critical_entry.created_at == original_created_at,
+    'duplicate notification reset its original receipt time')
 local primary_view = {}
 local external_view = {}
 local critical_card = {}
@@ -107,5 +115,16 @@ assert(controller_source:match('candidate ~= screen%.primary'),
     'notifications no longer prefer the external screen')
 assert(controller_source:match('screen%.primary or screen%[1%]'),
     'notifications no longer fall back to the primary screen')
+assert(controller_source:match('view%.add_notification%(entry%.notification, entry%.created_at%)'),
+    'notification cards no longer receive the original receipt time')
+
+local view_source_file = assert(io.open(
+    root .. 'widget/notif-center/build-notifbox/init.lua', 'r'))
+local view_source = view_source_file:read('*a')
+view_source_file:close()
+assert(view_source:match('view%.add_notification = function%(n, created_at%)'),
+    'notification view discarded the original receipt time')
+assert(view_source:match('view,%s+created_at%s+%)'),
+    'notification view did not pass receipt time to the card builder')
 
 print('Notification retention tests passed')

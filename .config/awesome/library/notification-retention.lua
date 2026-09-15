@@ -63,6 +63,7 @@ function retention.new(on_evict)
         local entry = {
             notification = notification,
             cards = {},
+            created_at = os.time(),
         }
         self.entries[#self.entries + 1] = entry
         self.by_notification[notification] = entry
