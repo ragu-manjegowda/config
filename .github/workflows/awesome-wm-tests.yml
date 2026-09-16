@@ -23,6 +23,7 @@ on:
       - '.config/systemd/user/lid-brightness-manager.service'
       - '.config/systemd/user/xidlehook.service'
       - '.config/misc/etc/modprobe.d/xe.conf'
+      - '.config/misc/etc/gai.conf'
       - '.config/misc/etc/NetworkManager/dispatcher.d/10-ntpd'
       - '.config/misc/etc/systemd/logind.conf.d/90-local.conf'
       - '.config/misc/etc/systemd/system/v4l2-relayd-ipu7.service.d/override.conf'
@@ -42,6 +43,7 @@ on:
       - '.config/systemd/user/lid-brightness-manager.service'
       - '.config/systemd/user/xidlehook.service'
       - '.config/misc/etc/modprobe.d/xe.conf'
+      - '.config/misc/etc/gai.conf'
       - '.config/misc/etc/NetworkManager/dispatcher.d/10-ntpd'
       - '.config/misc/etc/systemd/logind.conf.d/90-local.conf'
       - '.config/misc/etc/systemd/system/v4l2-relayd-ipu7.service.d/override.conf'
@@ -829,10 +831,11 @@ jobs:
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_package_manifests.sh
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_zsh_dirstack.sh
 
-      - name: Test goimapnotify timeout handling
+      - name: Test goimapnotify and VPN route handling
         run: |
           cd "$GITHUB_WORKSPACE"
           bash .config/awesome/tests/test_imapnotify_timeout.sh
+          HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_vpn_status.sh
 
       - name: Test external display transitions
         run: |

@@ -7,6 +7,15 @@ local config_dir = gears.filesystem.get_configuration_dir()
 local status_command = config_dir .. 'utilities/prisma-vpn-status'
 local icon = config_dir .. 'widget/vpn/icons/prisma-access.svg'
 local current_status = 'disconnected'
+local mail_restart_timer = gears.timer {
+    timeout = 2,
+    single_shot = true,
+    callback = function()
+        awful.spawn({
+            'systemctl', '--user', 'try-restart', 'goimapnotify.service'
+        }, false)
+    end
+}
 
 -- Keep one watcher for all screens. The returned objects must remain referenced.
 local status_widget, status_timer = awful.widget.watch(
@@ -22,6 +31,9 @@ local status_widget, status_timer = awful.widget.watch(
         if status ~= current_status then
             current_status = status
             awesome.emit_signal('module::vpn_status', status)
+            if status == 'connected' or status == 'disconnected' then
+                mail_restart_timer:again()
+            end
         end
     end
 )

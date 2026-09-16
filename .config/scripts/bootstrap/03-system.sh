@@ -3,6 +3,12 @@
 
 log_step "System Configuration"
 
+log_info "Deploying network address selection..."
+_validate_gai() {
+    grep -Eq '^precedence[[:space:]]+::ffff:0:0/96[[:space:]]+100$' "$1"
+}
+install_validated_admin_config "${MISC_DIR}/etc/gai.conf" /etc/gai.conf _validate_gai
+
 log_info "Deploying systemd configs..."
 _logind_dropin="/etc/systemd/logind.conf.d/90-local.conf"
 if [[ ! -f "$_logind_dropin" ]]; then
@@ -133,4 +139,4 @@ fi
 
 unset _logind_dropin _mkinitcpio_dropin _mkinitcpio_changed _rendered_config
 unset _libreoffice_override
-unset -f _validate_exports
+unset -f _validate_gai _validate_exports

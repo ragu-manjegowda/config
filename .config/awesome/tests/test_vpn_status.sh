@@ -6,6 +6,8 @@ repo_home="${HOME}"
 status_script="$repo_home/.config/awesome/utilities/prisma-vpn-status"
 widget="$repo_home/.config/awesome/widget/vpn/init.lua"
 panel="$repo_home/.config/awesome/layout/top-panel.lua"
+gai_config="$repo_home/.config/misc/etc/gai.conf"
+system_bootstrap="$repo_home/.config/scripts/bootstrap/03-system.sh"
 tmp_dir="$(mktemp -d)"
 trap 'rm -rf "$tmp_dir"' EXIT
 
@@ -42,7 +44,11 @@ grep -Fq 'left = dpi(4)' "$widget"
 grep -Fq 'right = 0' "$widget"
 grep -Fq 'timeout = 120' "$widget"
 grep -Fq 'single_shot = true' "$widget"
+grep -Fq "'systemctl', '--user', 'try-restart', 'goimapnotify.service'" "$widget"
+grep -Fq 'mail_restart_timer:again()' "$widget"
 grep -Fq 's.vpn' "$panel"
 grep -Fq "require('widget.vpn')()" "$panel"
+grep -Eq '^precedence[[:space:]]+::ffff:0:0/96[[:space:]]+100$' "$gai_config"
+grep -Fq 'etc/gai.conf' "$system_bootstrap"
 
 printf 'vpn status tests passed\n'

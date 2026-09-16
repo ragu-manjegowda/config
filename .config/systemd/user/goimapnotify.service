@@ -6,6 +6,7 @@ Type=simple
 ExecStart=/usr/bin/goimapnotify -conf %h/.config/imapnotify/imapnotify.yaml
 Restart=on-failure
 RestartSec=30
+TimeoutStopSec=10
 
 [Install]
 WantedBy=default.target
