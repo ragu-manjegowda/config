@@ -23,11 +23,12 @@ has_active_audio() {
         source_outputs="${source_outputs#*$'\nSource Output #'}"
         source_output="${source_outputs%%$'\nSource Output #'*}"
 
-        # Pavucontrol creates uncorked source meters for every input device.
-        # Those monitor streams are not microphone capture and must not keep
-        # an unattended session unlocked indefinitely.
+        # Pavucontrol-compatible peak meters create uncorked source outputs
+        # for every input device. Those monitor streams are not microphone
+        # capture and must not keep an unattended session unlocked.
         if [[ "$source_output" != *'application.process.binary = "pavucontrol"'* &&
             "$source_output" != *'application.name = "PulseAudio Volume Control"'* &&
+            "$source_output" != *'application.id = "org.PulseAudio.pavucontrol"'* &&
             ( "$source_output" == *'State: RUNNING'* || "$source_output" == *'Corked: no'* ) ]]; then
             return 0
         fi

@@ -6,6 +6,7 @@ local dpi = beautiful.xresources.apply_dpi
 local gfs = gears.filesystem
 local config = require('configuration.config')
 local clickable_container = require('widget.clickable-container')
+local xml_escape = gears.string.xml_escape
 
 local config_dir = gfs.get_configuration_dir()
 local fetcher_script = config_dir .. 'library/stocks/stocks_fetcher.sh'
@@ -69,7 +70,7 @@ local stocks_updating = false
 -- Create a single stock card widget
 local function create_stock_card(symbol)
     local symbol_widget = wibox.widget {
-        markup = '<b>' .. symbol .. '</b>',
+        markup = '<b>' .. xml_escape(symbol) .. '</b>',
         font = beautiful.font_bold(11),
         widget = wibox.widget.textbox,
     }
@@ -356,7 +357,7 @@ local update_stocks = function(show_refreshing)
                     widget_set.status_widget:set_markup(
                         '<span foreground="' ..
                         beautiful.colors.red .. '">' ..
-                        (stderr or "Unknown error") .. '</span>')
+                        xml_escape(stderr or "Unknown error") .. '</span>')
                     finish_update()
                     return
                 end
@@ -368,7 +369,7 @@ local update_stocks = function(show_refreshing)
                     widget_set.status_widget:set_markup(
                         '<span foreground="' ..
                         beautiful.colors.red .. '">' ..
-                        (data and data.error or "Parse failed") .. '</span>')
+                        xml_escape(data and data.error or "Parse failed") .. '</span>')
                     finish_update()
                     return
                 end
@@ -415,7 +416,7 @@ local update_stocks = function(show_refreshing)
 
                 widget_set.status_widget:set_markup(
                     '<span foreground="' ..
-                    beautiful.fg_normal .. '">' .. status ..
+                    beautiful.fg_normal .. '">' .. xml_escape(status) ..
                     extended_info .. '</span>')
                 finish_update()
             end

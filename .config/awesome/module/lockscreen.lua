@@ -1202,6 +1202,10 @@ end
 
 -- Apply lockscreen background image
 local apply_ls_bg_image = function(wall_name)
+    if type(wall_name) ~= 'string' or wall_name == '' then
+        return
+    end
+
     -- Iterate through all the screens and create a lockscreen for each of it
     for s in screen do
         local index = s.index .. '-'
@@ -1220,11 +1224,12 @@ local apply_ls_bg_image = function(wall_name)
 
         local target = lockscreen_for_screen(s)
         if target then
+            local output = locker_config.tmp_wall_dir .. index .. wall_name
             awful.spawn.easy_async_with_shell(
                 cmd,
-                function()
-                    if target == lockscreen_for_screen(s) then
-                        target.bgimage = locker_config.tmp_wall_dir .. index .. wall_name
+                function(_, _, _, exit_code)
+                    if exit_code == 0 and filesystem.file_readable(output) and target == lockscreen_for_screen(s) then
+                        target.bgimage = output
                     end
                 end
             )

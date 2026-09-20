@@ -296,8 +296,32 @@ local client_button_source = client_buttons:read('*a')
 client_buttons:close()
 assert_test(
     client_button_source:match("c:activate%s*{%s*context%s*=%s*'mouse_click'%s*}") ~= nil and
-        client_button_source:match("c:emit_signal%('request::activate'%)") == nil,
+    client_button_source:match("c:emit_signal%('request::activate'%)") == nil,
     "client clicks use Awesome's grab-aware activation path"
+)
+
+local tags_file = assert(io.open(
+    home .. '/.config/awesome/configuration/tags/init.lua',
+    'r'
+))
+local tags_source = tags_file:read('*a')
+tags_file:close()
+assert_test(
+    tags_source:match("tag%.connect_signal%(%s*'property::selected'") ~= nil and
+    tags_source:match('attached_connect_signal') == nil,
+    "urgent-tag selection is registered without an undefined screen"
+)
+
+local wallpaper_file = assert(io.open(
+    home .. '/.config/awesome/module/dynamic-wallpaper.lua',
+    'r'
+))
+local wallpaper_source = wallpaper_file:read('*a')
+wallpaper_file:close()
+assert_test(
+    wallpaper_source:match('filesystem%.get_directory_items') ~= nil and
+    wallpaper_source:match('io%.popen') == nil,
+    "wallpaper discovery does not construct a shell command"
 )
 
 -- Summary

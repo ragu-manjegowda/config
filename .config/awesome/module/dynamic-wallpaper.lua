@@ -151,14 +151,8 @@ end
 
 -- Returns a table containing all file paths in a directory
 local function get_dir_contents(dir)
-    -- Command to give list of files in directory
-    local dir_explore = 'find ' .. dir .. ' -printf "%f\\n"'
-    local lines = io.popen(dir_explore):lines() --Done synchronously because we literally can't continue without files
-    local files = {}
-    for line in lines do
-        table.insert(files, line)
-    end
-    return files
+    local ok, files = pcall(filesystem.get_directory_items, dir)
+    return ok and files or {}
 end
 
 -- Returns a table of all the files that were one of the valid file formats
@@ -195,6 +189,10 @@ end
 
 -- Turn an ordered list of files into a scheduled list of files
 local function auto_schedule(wall_list)
+    if #wall_list == 0 then
+        return {}
+    end
+
     local sched = {}
     for index, file in ipairs(wall_list) do
         local auto_time = parse_to_time(parse_to_seconds("24:00:00") * (index - 1) / #wall_list)
@@ -310,6 +308,11 @@ end
 
 -- Updates variables
 local manage_timer = function()
+    if next(wall_config.wallpaper_schedule) == nil then
+        the_countdown = 24 * 3600
+        return
+    end
+
     -- Get current time
     local time_now = parse_to_seconds(current_time())
 

@@ -36,20 +36,20 @@ log_ok "NeoMutt runtime paths initialized"
 
 log_info "Python virtual environment..."
 _venv_dir="${HOME}/.local/share/venv"
-if [[ -d "$_venv_dir" ]]; then
-    log_ok "Python venv already exists at $_venv_dir"
-else
-    if check_command uv; then
+_requirements="${HOME}/.config/pip-backup/packages.in"
+if check_command uv; then
+    if [[ -d "$_venv_dir" ]]; then
+        log_ok "Python venv already exists at $_venv_dir"
+    else
         uv venv --system-site-packages "$_venv_dir"
         log_ok "Python venv created at $_venv_dir"
-        _requirements="${HOME}/.config/pip-backup/packages.in"
-        if [[ -f "$_requirements" ]]; then
-            uv pip install -r "$_requirements" --python "${_venv_dir}/bin/python" || \
-                log_warn "Some pip packages failed to install from requirements.in"
-        fi
-    else
-        log_warn "uv not found, skipping venv creation"
     fi
+    if [[ -f "$_requirements" ]]; then
+        uv pip install -r "$_requirements" --python "${_venv_dir}/bin/python" || \
+            log_warn "Some pip packages failed to install from packages.in"
+    fi
+else
+    log_warn "uv not found, skipping venv setup"
 fi
 
 log_info "Sioyek dictionary extension..."
@@ -87,6 +87,6 @@ else
     REMINDERS+=("Launch Firefox once, close it, then run ~/.config/scripts/firefox-install-extensions.sh")
 fi
 
-unset _cargo_home _legacy_cargo_home _rustup_home _neomutt_setup
+unset _cargo_home _legacy_cargo_home _rustup_home _neomutt_setup _requirements
 unset _firefox_extension_installer
 unset _xdg_firefox_profiles _legacy_firefox_profiles

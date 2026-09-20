@@ -104,6 +104,15 @@ if grep -Fq 'reset-idle' "$XIDLEHOOK_TEST_LOG"; then
 fi
 
 : > "$XIDLEHOOK_TEST_LOG"
+CAPTURE_RUNNING=true CAPTURE_CLIENT='application.id = "org.PulseAudio.pavucontrol"' \
+    "$LOCK_ACTION" "$tmp_dir/xidle.sock"
+grep -Fq 'module::lockscreen_show' "$XIDLEHOOK_TEST_LOG"
+if grep -Fq 'reset-idle' "$XIDLEHOOK_TEST_LOG"; then
+    printf '%s\n' 'pavucontrol-compatible source meters must not defer locking' >&2
+    exit 1
+fi
+
+: > "$XIDLEHOOK_TEST_LOG"
 touch "$XDG_RUNTIME_DIR/awesome-lockscreen.locked"
 AUDIO_RUNNING=true "$LOCK_ACTION" "$tmp_dir/xidle.sock"
 grep -Fq 'module::lockscreen_show' "$XIDLEHOOK_TEST_LOG"

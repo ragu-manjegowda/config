@@ -493,10 +493,10 @@ local function update_weather_card(widget_set, done)
     fetch_weather_with_fallback(widget_set.location, function(ok, weather_data)
         if not ok or not weather_data then
             widget_set.weather_icon:set_image(widget_icon_dir .. 'weather-error.svg')
-            widget_set.weather_location:set_markup(get_location_label(widget_set.location))
-            widget_set.weather_desc_temp:set_markup('Failed to fetch')
-            widget_set.weather_sunrise:set_markup('--:--')
-            widget_set.weather_sunset:set_markup('--:--')
+            widget_set.weather_location:set_text(get_location_label(widget_set.location))
+            widget_set.weather_desc_temp:set_text('Failed to fetch')
+            widget_set.weather_sunrise:set_text('--:--')
+            widget_set.weather_sunset:set_text('--:--')
             done()
             return
         end
@@ -516,10 +516,10 @@ local function update_weather_card(widget_set, done)
 
         local icon_file = icon_tbl[weather_icon_code] or 'weather-error.svg'
         widget_set.weather_icon:set_image(widget_icon_dir .. icon_file)
-        widget_set.weather_location:set_markup(loc)
-        widget_set.weather_desc_temp:set_markup(weather_description)
-        widget_set.weather_sunrise:set_markup(sunrise)
-        widget_set.weather_sunset:set_markup(sunset)
+        widget_set.weather_location:set_text(loc)
+        widget_set.weather_desc_temp:set_text(weather_description)
+        widget_set.weather_sunrise:set_text(sunrise)
+        widget_set.weather_sunset:set_text(sunset)
 
         header_time:set_markup(os.date('%H:%M'))
         done()

@@ -234,8 +234,10 @@ assert_test(
 assert_test(
     source:match("local function lockscreen_for_screen%(s%)") ~= nil and
         source:match("if not s%.valid then") ~= nil and
-        source:match("if target == lockscreen_for_screen%(s%) then") ~= nil,
-    "Wallpaper callbacks ignore removed or undecorated screens"
+        source:match("if type%(wall_name%) ~= 'string' or wall_name == '' then") ~= nil and
+        source:match("exit_code == 0 and filesystem%.file_readable%(output%)") ~= nil and
+        source:match("target == lockscreen_for_screen%(s%)") ~= nil,
+    "Wallpaper callbacks ignore invalid output and removed screens"
 )
 
 print("\n" .. string.rep("=", 50))

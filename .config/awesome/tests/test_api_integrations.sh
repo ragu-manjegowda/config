@@ -75,8 +75,8 @@ else
     fi
 fi
 
-# --- Stocks: yfinance via stocks_fetcher.py ---
-STOCKS_VENV="$AWESOME_DIR/library/stocks/.venv"
+# --- Stocks: yfinance via the shared managed venv ---
+STOCKS_VENV="${XDG_DATA_HOME:-$HOME/.local/share}/venv"
 STOCKS_SCRIPT="$AWESOME_DIR/library/stocks/stocks_fetcher.py"
 
 echo -n "Testing stocks fetcher (yfinance)... "

@@ -119,17 +119,19 @@ tag.connect_signal(
     end
 )
 
--- Focus on urgent clients
-awful.tag.attached_connect_signal(
----@diagnostic disable-next-line: undefined-global
-    s,
+-- Focus urgent clients when their tag becomes selected on any screen.
+tag.connect_signal(
     'property::selected',
-    function()
+    function(t)
+        if not t.selected then
+            return
+        end
+
         local urgent_clients = function(c)
             return awful.rules.match(c, { urgent = true })
         end
         for c in awful.client.iterate(urgent_clients) do
-            if c.first_tag == mouse.screen.selected_tag then
+            if c.first_tag == t then
                 c:emit_signal('request::activate')
                 c:raise()
             end

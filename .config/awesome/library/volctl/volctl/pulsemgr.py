@@ -214,15 +214,14 @@ class PulseManager:
         GLib.idle_add(self._volctl.peak_update, idx, min(val, 1.0))
 
     def start_peak_monitor(self):
-        """Start peak monitoring for all sinks and sink inputs."""
+        """Start peak monitoring for the current default sink only."""
+        self.stop_peak_monitor()
         with self.pulse() as pulse:
-            for sink in pulse.sink_list():
-                stream = self._create_peak_stream(sink.index)
-                self._monitor_streams[sink.index] = stream
-            for sink_input in pulse.sink_input_list():
-                sink_idx = self._pulse.sink_input_info(sink_input.index).sink
-                stream = self._create_peak_stream(sink_idx, sink_input.index)
-                self._monitor_streams[sink_input.index] = stream
+            sink = self.default_sink
+            if sink is None:
+                return
+            stream = self._create_peak_stream(sink.index)
+            self._monitor_streams[sink.index] = stream
 
     def stop_peak_monitor(self):
         """Stop peak monitoring for all sinks and sink inputs."""
