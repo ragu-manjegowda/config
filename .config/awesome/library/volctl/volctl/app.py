@@ -23,20 +23,62 @@ from volctl.slider_win import VolumeSliders
 
 DEFAULT_MIXER_CMD = "pavucontrol"
 
-TOGGLE_BUTTON_CSS = b"""
-button.toggle {
+VOLCTL_CSS = b"""
+/* Keep the popup legible while inheriting the active GTK theme palette. */
+window#volctl {
+    background-color: @VOLCTL_BACKGROUND@;
+    background-image: none;
+    color: @theme_fg_color;
+}
+window#volctl frame {
+    background-color: @VOLCTL_BACKGROUND@;
+    background-image: none;
+    color: @theme_fg_color;
+    border: 1px solid @borders;
+    border-radius: 8px;
+    padding: 8px;
+}
+window#volctl scale trough {
+    background-color: @VOLCTL_TRACK_BACKGROUND@;
+    min-width: 12px;
+    min-height: 10px;
+    border-radius: 5px;
+}
+window#volctl scale highlight {
+    background-color: @VOLCTL_ACCENT@;
+    border-radius: 5px;
+}
+window#volctl scale slider {
+    background-color: @VOLCTL_ACCENT@;
+    border-radius: 50%;
+}
+window#volctl scale {
+    background-color: @VOLCTL_CONTROL_BACKGROUND@;
+    background-image: none;
+    border-radius: 12px;
+    padding: 6px;
+}
+window#volctl button {
+    background-color: @VOLCTL_CONTROL_BACKGROUND@;
+    background-image: none;
+    color: @theme_fg_color;
+    min-width: 24px;
+    min-height: 24px;
+    border-radius: 12px;
+}
+window#volctl button.toggle {
     padding: 0;
     margin-bottom: -5px;
 }
-button.toggle:hover {
-    background-color: transparent;
-    border-color: transparent;
+window#volctl button.toggle:hover {
+    background-color: @VOLCTL_CONTROL_BACKGROUND@;
+    border-color: @borders;
 }
-button.toggle:checked {
-    background-color: transparent;
-    border-color: transparent;
+window#volctl button.toggle:checked {
+    background-color: @VOLCTL_CONTROL_BACKGROUND@;
+    border-color: @borders;
 }
-button.toggle:checked image {
+window#volctl button.toggle:checked image {
     -gtk-icon-effect: dim;
 }
 """
@@ -46,7 +88,14 @@ class VolctlApp:
     """GUI application for volctl."""
 
     def __init__(self):
-        self._set_style(Gtk.CssProvider())
+        self._style_provider = Gtk.CssProvider()
+        Gtk.StyleContext.add_provider_for_screen(
+            Gdk.Screen.get_default(),
+            self._style_provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
+        )
+        self._set_style()
+        Gtk.Settings.get_default().connect("notify::gtk-theme-name", self._set_style)
         self.settings = Gio.Settings("apps.volctl", path="/apps/volctl/")
         self.settings.connect("changed", self._cb_settings_changed)
         self.mouse_wheel_step = self.settings.get_int("mouse-wheel-step")
@@ -88,13 +137,25 @@ class VolctlApp:
         else:
             sys.exit(1)
 
-    @staticmethod
-    def _set_style(provider):
-        provider.load_from_data(TOGGLE_BUTTON_CSS)
-        Gtk.StyleContext.add_provider_for_screen(
-            Gdk.Screen.get_default(),
-            provider,
-            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
+    def _set_style(self, *_):
+        """Keep the popup fully transparent for Picom's blur treatment."""
+        theme_name = Gtk.Settings.get_default().get_property("gtk-theme-name") or ""
+        control_background = (
+            b"#073642" if "dark" in theme_name.lower() else b"#eee8d5"
+        )
+        track_background = (
+            b"#002b36" if "dark" in theme_name.lower() else b"#fdf6e3"
+        )
+        accent = b"#859900" if "dark" in theme_name.lower() else b"#268bd2"
+        background = b"transparent"
+        self._style_provider.load_from_data(
+            VOLCTL_CSS.replace(b"@VOLCTL_BACKGROUND@", background).replace(
+                b"@VOLCTL_CONTROL_BACKGROUND@", control_background
+            ).replace(
+                b"@VOLCTL_TRACK_BACKGROUND@", track_background
+            ).replace(
+                b"@VOLCTL_ACCENT@", accent
+            )
         )
 
     def update_main(self, volume, mute):

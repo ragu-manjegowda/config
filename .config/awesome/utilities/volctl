@@ -24,9 +24,9 @@ if [ ! -d "$VOLCTL_PATH/venv" ]; then
     uv venv --system-site-packages venv
 fi
 
-if [ ! -f "$VOLCTL_PATH/venv/bin/volctl" ]; then
-    uv pip install "$VOLCTL_PATH" --python "$VOLCTL_PATH/venv/bin/python"
-fi
+# This is a locally maintained copy, so launch the checked-out source rather
+# than leaving an older wheel installed after a configuration update.
+uv pip install --quiet --editable "$VOLCTL_PATH" --python "$VOLCTL_PATH/venv/bin/python"
 
 if [ ! -d "$VOLCTL_PATH/venv/share/glib-2.0/schemas" ]; then
     mkdir "$VOLCTL_PATH/venv/share/glib-2.0/schemas"

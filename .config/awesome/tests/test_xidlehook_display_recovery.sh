@@ -45,7 +45,11 @@ cat > "$tmp_dir/pactl" <<'EOF'
 if [[ "$*" == 'list sink-inputs' && "${AUDIO_RUNNING:-false}" == true ]]; then
     printf 'Corked: no\n'
 elif [[ "$*" == 'list source-outputs' && "${CAPTURE_RUNNING:-false}" == true ]]; then
-    printf 'Corked: no\n'
+    cat <<EOF_OUTPUT
+Source Output #1
+    Corked: no
+    ${CAPTURE_CLIENT:-application.process.binary = "call-client"}
+EOF_OUTPUT
 fi
 EOF
 cat > "$tmp_dir/xidlehook-client" <<'EOF'
@@ -87,6 +91,15 @@ CAPTURE_RUNNING=true "$LOCK_ACTION" "$tmp_dir/xidle.sock"
 grep -Fq 'reset-idle' "$XIDLEHOOK_TEST_LOG"
 if grep -Fq 'module::lockscreen_show' "$XIDLEHOOK_TEST_LOG"; then
     printf '%s\n' 'active microphone capture must defer locking while unlocked' >&2
+    exit 1
+fi
+
+: > "$XIDLEHOOK_TEST_LOG"
+CAPTURE_RUNNING=true CAPTURE_CLIENT='application.process.binary = "pavucontrol"' \
+    "$LOCK_ACTION" "$tmp_dir/xidle.sock"
+grep -Fq 'module::lockscreen_show' "$XIDLEHOOK_TEST_LOG"
+if grep -Fq 'reset-idle' "$XIDLEHOOK_TEST_LOG"; then
+    printf '%s\n' 'pavucontrol source meters must not defer locking' >&2
     exit 1
 fi
 

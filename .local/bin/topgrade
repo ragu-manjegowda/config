@@ -91,7 +91,7 @@ upgrade_npm_packages() {
 }
 
 upgrade_pip_packages() {
-    local venv
+    local current_python system_python venv venv_python
 
     [ -f "$pip_packages" ] || return 0
 
@@ -99,8 +99,22 @@ upgrade_pip_packages() {
 
     if have uv; then
         venv="$data_home/venv"
-        if [ ! -x "$venv/bin/python" ]; then
-            uv venv --system-site-packages "$venv"
+        system_python=/usr/bin/python3
+        current_python=$("$system_python" -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')
+
+        if [ -f "$venv/pyvenv.cfg" ]; then
+            while IFS='=' read -r key value; do
+                if [ "${key// /}" = "version_info" ]; then
+                    venv_python=${value//[[:space:]]/}
+                    venv_python=${venv_python%.*}
+                    break
+                fi
+            done <"$venv/pyvenv.cfg"
+        fi
+
+        if [ ! -x "$venv/bin/python" ] || [ "${venv_python:-}" != "$current_python" ]; then
+            log "Rebuilding Python venv for $current_python"
+            uv venv --clear --system-site-packages --python "$system_python" "$venv"
         fi
         uv pip install --upgrade -r "$pip_packages" --python "$venv/bin/python"
         uv cache prune

@@ -2,11 +2,22 @@ local awful = require('awful')
 local gears = require('gears')
 local wibox = require('wibox')
 local beautiful = require('beautiful')
+local naughty = require('naughty')
 local dpi = beautiful.xresources.apply_dpi
 local config_dir = gears.filesystem.get_configuration_dir()
 local status_command = config_dir .. 'utilities/prisma-vpn-status'
+local health_command = config_dir .. 'utilities/prisma-vpn-health'
+local diagnostics_command = config_dir .. 'utilities/prisma-vpn-diagnostics'
 local icon = config_dir .. 'widget/vpn/icons/prisma-access.svg'
+local unhealthy_icon = config_dir .. 'widget/vpn/icons/prisma-access-unhealthy.svg'
 local current_status = 'disconnected'
+local current_health = 'unknown'
+local health_failures = 0
+local health_check_running = false
+local health_reported = false
+local last_health_check = 0
+local health_interval_seconds = 60
+local health_failure_threshold = 3
 local mail_restart_timer = gears.timer {
     timeout = 2,
     single_shot = true,
@@ -16,6 +27,55 @@ local mail_restart_timer = gears.timer {
         }, false)
     end
 }
+
+local function set_health(health)
+    if health ~= current_health then
+        current_health = health
+        awesome.emit_signal('module::vpn_health', health)
+    end
+end
+
+local function capture_health_failure()
+    awful.spawn.easy_async({ diagnostics_command }, function(stdout)
+        local diagnostic_path = stdout:match('([^%s]+%.log)') or 'the Prisma state directory'
+        naughty.notification({
+            title = 'VPN connectivity lost',
+            message = 'Prisma reports connected, but Outlook is unreachable over IPv4. ' ..
+                'Diagnostics: ' .. diagnostic_path,
+            urgency = 'critical',
+            timeout = 0
+        })
+    end)
+end
+
+local function check_health()
+    if health_check_running or os.time() - last_health_check < health_interval_seconds then
+        return
+    end
+
+    last_health_check = os.time()
+    health_check_running = true
+    awful.spawn.easy_async({ health_command }, function(_, _, _, exit_code)
+        health_check_running = false
+        if exit_code == 0 then
+            health_failures = 0
+            health_reported = false
+            set_health('healthy')
+            return
+        end
+
+        health_failures = health_failures + 1
+        if health_failures >= health_failure_threshold then
+            set_health('unhealthy')
+            if not health_reported then
+                health_reported = true
+                capture_health_failure()
+            end
+        else
+            set_health('degraded')
+        end
+    end)
+end
 
 -- Keep one watcher for all screens. The returned objects must remain referenced.
 local status_widget, status_timer = awful.widget.watch(
@@ -34,6 +94,15 @@ local status_widget, status_timer = awful.widget.watch(
             if status == 'connected' or status == 'disconnected' then
                 mail_restart_timer:again()
             end
+        end
+
+        if status == 'connected' then
+            check_health()
+        else
+            health_failures = 0
+            health_reported = false
+            last_health_check = 0
+            set_health('unknown')
         end
     end
 )
@@ -77,7 +146,9 @@ local return_button = function()
     }
 
     local update_vpn = function(status)
-        tooltip:set_text('VPN ' .. status)
+        local health_text = current_health == 'unknown' and '' or ' (' .. current_health .. ')'
+        tooltip:set_text('VPN ' .. status .. health_text)
+        vpn_imagebox.image = current_health == 'unhealthy' and unhealthy_icon or icon
 
         if status == 'connected' then
             has_connected = true
@@ -96,6 +167,9 @@ local return_button = function()
     end
 
     awesome.connect_signal('module::vpn_status', update_vpn)
+    awesome.connect_signal('module::vpn_health', function()
+        update_vpn(current_status)
+    end)
     update_vpn(current_status)
 
     return vpn_widget

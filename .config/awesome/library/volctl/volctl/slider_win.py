@@ -19,6 +19,11 @@ class VolumeSliders(Gtk.Window):
 
     def __init__(self, volctl, xpos, ypos):
         super().__init__(type=Gtk.WindowType.POPUP)
+        rgba_visual = self.get_screen().get_rgba_visual()
+        if rgba_visual is not None:
+            self.set_visual(rgba_visual)
+        self.set_app_paintable(True)
+        self.set_name("volctl")
         self._volctl = volctl
         self._xpos, self._ypos = xpos, ypos
         self._grid = None
@@ -141,6 +146,13 @@ class VolumeSliders(Gtk.Window):
 
         # Sinks
         for sink in sinks:
+            if sink.proplist.get("alsa.card_name") == "sof-soundwire":
+                continue
+            icon_name = (
+                "bluetooth"
+                if sink.proplist.get("device.bus") == "bluetooth"
+                else "audio-card"
+            )
             for prop_name in ["alsa.card_name", "device.description"]:
                 try:
                     card_name = sink.proplist[prop_name]
@@ -151,7 +163,7 @@ class VolumeSliders(Gtk.Window):
 
             props = (
                 card_name,
-                "audio-card",
+                icon_name,
                 sink.volume.value_flat,
                 sink.mute,
             )
@@ -217,7 +229,9 @@ class VolumeSliders(Gtk.Window):
             scale.set_draw_value(False)
 
         if self._volctl.settings.get_boolean("vu-enabled"):
-            scale.set_has_origin(False)
+            # Keep the volume-origin highlight visible beneath the optional
+            # peak meter so the Control Center-style accent shows at idle.
+            scale.set_has_origin(True)
             scale.set_show_fill_level(False)
             scale.set_fill_level(0)
             scale.set_restrict_to_fill_level(False)

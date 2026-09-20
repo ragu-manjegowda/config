@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -eu
+
+curl_bin="${PRISMA_VPN_CURL_BIN:-/usr/bin/curl}"
+url="${PRISMA_VPN_HEALTH_URL:-https://outlook.office.com/}"
+timeout_seconds="${PRISMA_VPN_HEALTH_TIMEOUT_SECONDS:-5}"
+
+exec "$curl_bin" --ipv4 --fail --head --silent --show-error \
+    --connect-timeout "$timeout_seconds" --max-time "$timeout_seconds" "$url"
