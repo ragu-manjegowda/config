@@ -50,7 +50,7 @@ local widget_button = wibox.widget {
         },
         widget = clickable_container
     },
-    bg = beautiful.groups_bg,
+    bg = beautiful.background,
     shape = gears.shape.circle,
     widget = wibox.container.background
 }
@@ -62,7 +62,7 @@ local update_widget = function()
         button_widget.icon:set_image(widget_icon_dir .. 'airplane-mode.svg')
     else
         action_status:set_text('Off')
-        widget_button.bg = beautiful.groups_bg
+        widget_button.bg = beautiful.background
         button_widget.icon:set_image(widget_icon_dir .. 'airplane-mode-off.svg')
     end
 end

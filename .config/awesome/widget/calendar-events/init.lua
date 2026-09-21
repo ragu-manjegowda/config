@@ -3,6 +3,7 @@ local gears = require('gears')
 local wibox = require('wibox')
 local beautiful = require('beautiful')
 local json = require('library.json')
+local calendar_snap = require('library.calendar-snap')
 local clickable_container = require('widget.clickable-container')
 
 local dpi = beautiful.xresources.apply_dpi
@@ -18,10 +19,9 @@ local window_days = calendar_cfg.window_days or 2
 
 local EVENT_HEIGHT = dpi(68)
 local SUB_EVENT_HEIGHT = dpi(54)
-local MAX_EVENTS_VISIBLE = 3
-local MAX_HEIGHT = EVENT_HEIGHT * MAX_EVENTS_VISIBLE + dpi(5)
 local EVENT_SPACING = dpi(5)
-local SCROLL_STEP = dpi(40)
+local MAX_HEIGHT = EVENT_HEIGHT * 2 + EVENT_SPACING * 2
+local EVENT_STRIDE = EVENT_HEIGHT + EVENT_SPACING
 local refresh_in_progress = false
 local refresh_pid
 
@@ -96,6 +96,7 @@ local update_time
 local last_payload = nil
 local expanded_group_key = nil
 local row_anchor_offsets = {}
+local snap_offsets = { 0 }
 
 local scrollbar_thumb = wibox.widget {
     forced_width = dpi(4),
@@ -432,20 +433,15 @@ local scroll_content = wibox.widget {
 local scroll_clip
 
 local function update_scrollbar()
-    local child_count = #event_list_layout.children
-    content_height = 0
+    local row_heights = {}
     for i, child in ipairs(event_list_layout.children) do
-        content_height = content_height + (child.forced_height or EVENT_HEIGHT)
-        if i < child_count then
-            content_height = content_height + EVENT_SPACING
-        end
+        row_heights[i] = child.forced_height or EVENT_HEIGHT
     end
 
+    snap_offsets, max_scroll, content_height = calendar_snap.build(row_heights, EVENT_SPACING, MAX_HEIGHT)
     visible_height = math.min(content_height, MAX_HEIGHT)
     scroll_clip.height = visible_height
     scrollbar_track.forced_height = visible_height
-
-    max_scroll = math.max(0, content_height - MAX_HEIGHT)
     scroll_offset = math.max(0, math.min(scroll_offset, max_scroll))
 
     if max_scroll > 0 then
@@ -528,11 +524,10 @@ local function scroll_to_current_event(events, limit)
 
     local anchor_offset = row_anchor_offsets[target_index]
     if anchor_offset then
-        scroll_offset = math.max(0, anchor_offset - (EVENT_HEIGHT + EVENT_SPACING))
+        scroll_offset = math.max(0, anchor_offset - (EVENT_HEIGHT / 2 + EVENT_SPACING))
     else
-        local top_index = math.max(1, target_index - 1)
-        local row_height = EVENT_HEIGHT + EVENT_SPACING
-        scroll_offset = (top_index - 1) * row_height
+        local target_offset = (target_index - 1) * EVENT_STRIDE
+        scroll_offset = math.max(0, target_offset - (EVENT_HEIGHT / 2 + EVENT_SPACING))
     end
     update_scrollbar()
 end
@@ -590,11 +585,7 @@ end
 
 local function do_scroll(direction)
     local old_offset = scroll_offset
-    if direction == 'up' then
-        scroll_offset = math.max(0, scroll_offset - SCROLL_STEP)
-    elseif direction == 'down' then
-        scroll_offset = math.min(max_scroll, scroll_offset + SCROLL_STEP)
-    end
+    scroll_offset = calendar_snap.step(scroll_offset, snap_offsets, direction)
 
     if old_offset ~= scroll_offset then
         update_scrollbar()
@@ -766,27 +757,36 @@ refresh_button:buttons(
 awesome.connect_signal('widget::update_calendar', refresh)
 refresh()
 
-return wibox.widget {
+local calendar_report = wibox.widget {
     {
         {
-            header_widget,
-            nil,
             {
-                count_badge,
-                header_time,
-                refresh_button,
-                layout = wibox.layout.fixed.horizontal,
-                spacing = dpi(8),
+                header_widget,
+                nil,
+                {
+                    count_badge,
+                    header_time,
+                    refresh_button,
+                    layout = wibox.layout.fixed.horizontal,
+                    spacing = dpi(8),
+                },
+                layout = wibox.layout.align.horizontal,
             },
-            layout = wibox.layout.align.horizontal,
+            {
+                scroll_area,
+                top = dpi(8),
+                widget = wibox.container.margin,
+            },
+            layout = wibox.layout.fixed.vertical,
         },
-        {
-            scroll_area,
-            top = dpi(8),
-            widget = wibox.container.margin,
-        },
-        layout = wibox.layout.fixed.vertical,
+        margins = dpi(10),
+        widget = wibox.container.margin,
     },
-    bg = beautiful.transparent,
-    widget = wibox.container.background,
+    bg = beautiful.groups_bg,
+    shape = function(cr, w, h)
+        gears.shape.rounded_rect(cr, w, h, beautiful.groups_radius)
+    end,
+    widget = wibox.container.background
 }
+
+return calendar_report

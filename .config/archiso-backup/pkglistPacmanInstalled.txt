@@ -76,6 +76,7 @@ pipewire-alsa
 pipewire-libcamera
 pipewire-pulse
 playerctl
+power-profiles-daemon
 python-typing_extensions
 ranger
 redshift

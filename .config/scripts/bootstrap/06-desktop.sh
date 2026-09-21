@@ -43,6 +43,4 @@ log_info "Font cache..."
 fc-cache &>/dev/null || true
 log_ok "Font cache updated"
 
-REMINDERS+=("Allow suspend without a password if needed: sudoedit /etc/sudoers and add 'ragu ALL=(ALL:ALL) NOPASSWD: /usr/bin/systemctl suspend'")
-
 unset -f _validate_greetd

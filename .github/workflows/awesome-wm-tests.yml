@@ -21,7 +21,10 @@ on:
       - '.config/scripts/lid-brightness-monitor'
       - '.config/scripts/start_xidlehook.sh'
       - '.config/systemd/user/lid-brightness-manager.service'
+      - '.config/systemd/user/power-profile-monitor.service'
       - '.config/systemd/user/xidlehook.service'
+      - '.config/misc/etc/sudoers.d/**'
+      - '.config/misc/usr/local/libexec/awesome-power-profile-policy'
       - '.config/misc/etc/modprobe.d/xe.conf'
       - '.config/misc/etc/gai.conf'
       - '.config/misc/etc/NetworkManager/dispatcher.d/10-ntpd'
@@ -41,7 +44,10 @@ on:
       - '.config/scripts/lid-brightness-monitor'
       - '.config/scripts/start_xidlehook.sh'
       - '.config/systemd/user/lid-brightness-manager.service'
+      - '.config/systemd/user/power-profile-monitor.service'
       - '.config/systemd/user/xidlehook.service'
+      - '.config/misc/etc/sudoers.d/**'
+      - '.config/misc/usr/local/libexec/awesome-power-profile-policy'
       - '.config/misc/etc/modprobe.d/xe.conf'
       - '.config/misc/etc/gai.conf'
       - '.config/misc/etc/NetworkManager/dispatcher.d/10-ntpd'
@@ -836,6 +842,8 @@ jobs:
           cd "$GITHUB_WORKSPACE"
           bash .config/awesome/tests/test_imapnotify_timeout.sh
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_vpn_status.sh
+          HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_power_profile.sh
+          HOME="$GITHUB_WORKSPACE" python .config/awesome/tests/test_power_profile_monitor.py
 
       - name: Test external display transitions
         run: |

@@ -82,6 +82,7 @@ pipewire-alsa
 pipewire-libcamera
 pipewire-pulse
 playerctl
+power-profiles-daemon
 prisma-access-browser-bin
 python
 qt-solarized

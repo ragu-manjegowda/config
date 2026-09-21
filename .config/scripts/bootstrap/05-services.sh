@@ -30,6 +30,7 @@ if systemctl is-enabled ntpd.service &>/dev/null; then
 fi
 enable_system_service systemd-timesyncd
 enable_system_service thermald
+enable_system_service power-profiles-daemon
 enable_system_service zramswap
 
 log_info "Legacy NTP network dispatcher..."
@@ -45,6 +46,7 @@ enable_user_service pipewire-pulse
 enable_user_service wireplumber
 enable_user_service darkman
 enable_user_service lid-brightness-manager
+enable_user_service power-profile-monitor
 
 log_info "User tmpfiles..."
 enable_user_service systemd-tmpfiles-setup.service

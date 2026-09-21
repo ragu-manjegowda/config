@@ -324,6 +324,72 @@ assert_test(
     "wallpaper discovery does not construct a shell command"
 )
 
+local clock_file = assert(io.open(
+    home .. '/.config/awesome/widget/clock/init.lua',
+    'r'
+))
+local clock_source = clock_file:read('*a')
+clock_file:close()
+assert_test(
+    clock_source:match('function widget_button:force_update%(%s*%)[%s%S]-clock:force_update%(%s*%)') ~= nil,
+    "panel clock exposes an immediate refresh method"
+)
+
+local battery_file = assert(io.open(
+    home .. '/.config/awesome/widget/battery/init.lua',
+    'r'
+))
+local battery_source = battery_file:read('*a')
+battery_file:close()
+assert_test(
+    battery_source:match("'Battery: ' %.%. battery_summary %.%. consumer_summary") ~= nil and
+        battery_source:match('battery_tooltip:set_markup') ~= nil and
+        battery_source:match('font_family="Hack Nerd Font Mono"') ~= nil and
+        battery_source:match("field%('energy%-rate'%)") ~= nil and
+        battery_source:match('stdout:sub') == nil,
+    "battery tooltip is aligned, concise, and estimates discharge time when needed"
+)
+
+local email_file = assert(io.open(
+    home .. '/.config/awesome/widget/email/init.lua',
+    'r'
+))
+local email_source = email_file:read('*a')
+email_file:close()
+assert_test(
+    email_source:match('local EMAIL_HEIGHT%s*=%s*dpi%(88%)') ~= nil and
+        email_source:match('local MAX_HEIGHT%s*=%s*dpi%(155%)') ~= nil and
+        email_source:match('local MAX_SUBJECT_LINE_LENGTH%s*=%s*42') ~= nil and
+        email_source:match("require%('library%.email%-subject'%)") ~= nil and
+        email_source:match('email_subject%.split%(subject, MAX_SUBJECT_LINE_LENGTH%)') ~= nil and
+        email_source:match("visible%s*=%s*subject_line_two ~= ''") ~= nil and
+        email_source:match("ellipsize%s*=%s*'end'") == nil and
+        email_source:match('forced_height%s*=%s*dpi%(12%)') ~= nil,
+    "email cards cap subjects at two lines without overlapping timestamps"
+)
+
+local calendar_file = assert(io.open(
+    home .. '/.config/awesome/widget/calendar-events/init.lua',
+    'r'
+))
+local calendar_source = calendar_file:read('*a')
+calendar_file:close()
+assert_test(
+    calendar_source:match('local MAX_HEIGHT%s*=%s*EVENT_HEIGHT %* 2 %+ EVENT_SPACING %* 2') ~= nil and
+        calendar_source:match('local EVENT_STRIDE%s*=%s*EVENT_HEIGHT %+ EVENT_SPACING') ~= nil and
+        calendar_source:match('target_offset %- %(EVENT_HEIGHT / 2 %+ EVENT_SPACING%)') ~= nil and
+        calendar_source:match("require%('library%.calendar%-snap'%)") ~= nil and
+        calendar_source:match('calendar_snap%.build%(row_heights, EVENT_SPACING, MAX_HEIGHT%)') ~= nil and
+        calendar_source:match('calendar_snap%.step%(scroll_offset, snap_offsets, direction%)') ~= nil,
+    "calendar viewport centers cards with symmetric snap scrolling"
+)
+assert_test(
+    calendar_source:match('local calendar_report%s*=%s*wibox%.widget') ~= nil and
+        calendar_source:match('local calendar_report.-margins%s*=%s*dpi%(10%).-' ..
+            'bg%s*=%s*beautiful%.groups_bg.-return calendar_report') ~= nil,
+    "calendar header and events share the grouped Info Center background"
+)
+
 -- Summary
 print("\n" .. string.rep("=", 50))
 print(string.format("Results: %d passed, %d failed", tests_passed, tests_failed))

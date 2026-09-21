@@ -240,6 +240,13 @@ assert_test(
     "Wallpaper callbacks ignore invalid output and removed screens"
 )
 
+assert_test(
+    source:match("time:force_update%(%s*%)") ~= nil and
+        source:match("ext_time:force_update%(%s*%)") ~= nil and
+        source:match("s%.clock:force_update%(%s*%)") ~= nil,
+    "Resume immediately refreshes lockscreen and panel clocks"
+)
+
 print("\n" .. string.rep("=", 50))
 print(string.format("Results: %d passed, %d failed", tests_passed, tests_failed))
 

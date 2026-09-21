@@ -103,6 +103,7 @@ pipewire-alsa
 pipewire-libcamera
 pipewire-pulse
 playerctl
+power-profiles-daemon
 prisma-access-agent
 prisma-access-browser-bin
 python-typing_extensions

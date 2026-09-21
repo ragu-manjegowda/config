@@ -21,15 +21,15 @@ end
 
 -- Helper functions to create font strings with DPI scaling
 local function font_regular(size)
-    return 'Hack Nerd Regular ' .. font_size(size)
+    return 'Hack Nerd Font Mono ' .. font_size(size)
 end
 
 local function font_bold(size)
-    return 'Hack Nerd Bold ' .. font_size(size)
+    return 'Hack Nerd Font Mono Bold ' .. font_size(size)
 end
 
 local function font_italic(size)
-    return 'Hack Nerd Italic ' .. font_size(size)
+    return 'Hack Nerd Font Mono Italic ' .. font_size(size)
 end
 
 local function font_mono(size)
@@ -37,7 +37,7 @@ local function font_mono(size)
 end
 
 local function font_emoji(size)
-    return 'Hack Nerd Regular ' .. font_size(size) .. ', Noto Color Emoji'
+    return 'Hack Nerd Font Mono ' .. font_size(size) .. ', Noto Color Emoji'
 end
 
 -- Export font functions for use in widgets (MUST be before any widget loading)

@@ -128,6 +128,13 @@ local main_control_row_two = wibox.widget {
 local main_control_row_sliders = wibox.widget {
     layout = wibox.layout.fixed.vertical,
     spacing = dpi(10),
+    format_item_no_fix_height(
+        {
+            require('widget.power-profile'),
+            margins = dpi(10),
+            widget = wibox.container.margin
+        }
+    ),
     format_item(
         {
             require('widget.blur-slider'),

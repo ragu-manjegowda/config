@@ -1,0 +1,121 @@
+#!/usr/bin/env python3
+
+import os
+import subprocess
+import sys
+
+
+HELPER = os.environ.get(
+    "POWER_PROFILE_HELPER",
+    os.path.expanduser("~/.config/awesome/utilities/power-profile"),
+)
+SOURCE_STATE_FILE = os.environ.get(
+    "POWER_PROFILE_SOURCE_STATE_FILE",
+    os.path.expanduser("~/.local/state/awesome/power-source"),
+)
+
+
+def read_previous_source() -> str | None:
+    try:
+        with open(SOURCE_STATE_FILE, encoding="utf-8") as state_file:
+            return state_file.read().strip() or None
+    except FileNotFoundError:
+        return None
+
+
+def write_source(source: str) -> None:
+    os.makedirs(os.path.dirname(SOURCE_STATE_FILE), exist_ok=True)
+    temporary = f"{SOURCE_STATE_FILE}.tmp"
+    with open(temporary, "w", encoding="utf-8") as state_file:
+        state_file.write(f"{source}\n")
+    os.replace(temporary, SOURCE_STATE_FILE)
+
+
+def apply_default(on_battery: bool) -> bool:
+    source = "battery" if on_battery else "ac"
+    if read_previous_source() == source:
+        return False
+
+    environment = os.environ.copy()
+    environment["POWER_PROFILE_ON_BATTERY"] = "true" if on_battery else "false"
+    result = subprocess.run(
+        ["/bin/bash", HELPER, "default"],
+        capture_output=True,
+        text=True,
+        check=False,
+        env=environment,
+    )
+    if result.returncode:
+        print(f"Failed to apply default power profile: {result.stderr.strip()}", flush=True)
+        return False
+
+    write_source(source)
+
+    profile = result.stdout.strip()
+    if profile in {"performance", "balanced", "power-saver"}:
+        subprocess.run(
+            [
+                "/usr/bin/awesome-client",
+                f"awesome.emit_signal('module::power_profile', '{profile}')",
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    return True
+
+
+def disable_builtin_battery_policy() -> None:
+    result = subprocess.run(
+        ["powerprofilesctl", "configure-battery-aware", "--disable"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode and "already set" not in result.stderr:
+        print(f"Failed to disable power-profiles battery policy: {result.stderr.strip()}", flush=True)
+
+
+def main() -> int:
+    from gi.repository import Gio, GLib
+
+    bus = Gio.bus_get_sync(Gio.BusType.SYSTEM, None)
+    proxy = Gio.DBusProxy.new_sync(
+        bus,
+        Gio.DBusProxyFlags.NONE,
+        None,
+        "org.freedesktop.UPower",
+        "/org/freedesktop/UPower",
+        "org.freedesktop.UPower",
+        None,
+    )
+
+    disable_builtin_battery_policy()
+    on_battery_property = proxy.get_cached_property("OnBattery")
+    if on_battery_property is not None:
+        apply_default(bool(on_battery_property.unpack()))
+
+    def on_properties_changed(_conn, _sender, _path, _interface, _signal, parameters, _data):
+        changed_interface, changed, _invalidated = parameters.unpack()
+        if changed_interface == "org.freedesktop.UPower" and "OnBattery" in changed:
+            on_battery = changed["OnBattery"]
+            if hasattr(on_battery, "unpack"):
+                on_battery = on_battery.unpack()
+            apply_default(bool(on_battery))
+
+    bus.signal_subscribe(
+        "org.freedesktop.UPower",
+        "org.freedesktop.DBus.Properties",
+        "PropertiesChanged",
+        "/org/freedesktop/UPower",
+        None,
+        Gio.DBusSignalFlags.NONE,
+        on_properties_changed,
+        None,
+    )
+    GLib.MainLoop().run()
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

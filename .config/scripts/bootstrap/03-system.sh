@@ -19,6 +19,30 @@ if [[ ! -f "$_logind_dropin" ]]; then
 fi
 check_copy "${MISC_DIR}/etc/systemd/logind.conf.d/90-local.conf" "$_logind_dropin"
 
+log_info "Deploying power-profile policy..."
+_power_profile_policy="${MISC_DIR}/usr/local/libexec/awesome-power-profile-policy"
+_power_profile_sudoers="${MISC_DIR}/etc/sudoers.d/awesome-power-profile"
+bash -n "$_power_profile_policy"
+visudo -cf "$_power_profile_sudoers"
+sudo install -Dm755 "$_power_profile_policy" /usr/local/libexec/awesome-power-profile-policy
+sudo install -Dm440 "$_power_profile_sudoers" /etc/sudoers.d/awesome-power-profile
+
+log_info "Deploying suspend authorization..."
+_suspend_sudoers="${MISC_DIR}/etc/sudoers.d/awesome-suspend"
+visudo -cf "$_suspend_sudoers"
+sudo install -Dm440 "$_suspend_sudoers" /etc/sudoers.d/awesome-suspend
+
+if sudo grep -Eq '^[[:space:]]*[^#].*NOPASSWD:[[:space:]]*/usr/bin/systemctl[[:space:]]+(suspend|hibernate)[[:space:]]*$' /etc/sudoers; then
+    _rendered_sudoers="$(mktemp)"
+    sudo awk '
+        !/^[[:space:]]*[^#].*NOPASSWD:[[:space:]]*\/usr\/bin\/systemctl[[:space:]]+(suspend|hibernate)[[:space:]]*$/
+    ' /etc/sudoers > "$_rendered_sudoers"
+    visudo -cf "$_rendered_sudoers"
+    install_rendered_config "$_rendered_sudoers" /etc/sudoers
+    rm -f "$_rendered_sudoers"
+    log_ok "Removed legacy suspend and hibernate rules from /etc/sudoers"
+fi
+
 log_info "Deploying Intel Xe display workaround..."
 check_copy "${MISC_DIR}/etc/modprobe.d/xe.conf" /etc/modprobe.d/xe.conf
 
@@ -138,5 +162,7 @@ else
 fi
 
 unset _logind_dropin _mkinitcpio_dropin _mkinitcpio_changed _rendered_config
+unset _power_profile_policy _power_profile_sudoers
+unset _suspend_sudoers _rendered_sudoers
 unset _libreoffice_override
 unset -f _validate_gai _validate_exports

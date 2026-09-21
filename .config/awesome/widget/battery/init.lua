@@ -91,28 +91,88 @@ local return_button = function()
         margin_topbottom = dpi(8),
         preferred_positions = { 'right', 'left', 'top', 'bottom' }
     }
+    local consumers_command = config_dir .. 'utilities/battery-power-consumers'
+    local battery_summary = 'Battery status unavailable'
+    local consumer_summary = ''
 
+    local update_tooltip = function()
+        local summary = string.rep(' ', #('CPU activity:') - #('Battery:')) ..
+            'Battery: ' .. battery_summary .. consumer_summary
+        battery_tooltip:set_markup(
+            '<span font_family="Hack Nerd Font Mono">' .. gears.string.xml_escape(summary) .. '</span>'
+        )
+    end
 
     local get_battery_info = function()
         awful.spawn.easy_async_with_shell(
             'upower -i $(upower -e | grep BAT)',
             function(stdout)
                 if stdout == nil or stdout == '' then
-                    battery_tooltip:set_text('No battery detected!')
+                    battery_summary = 'No battery detected!'
+                    consumer_summary = ''
+                    update_tooltip()
                     return
                 end
 
-                -- Remove new line from the last line
-                battery_tooltip:set_text(stdout:sub(1, -2))
+                local function field(name)
+                    return stdout:match('\n%s*' .. name .. ':%s*([^\n]+)')
+                end
+
+                local state = field('state') or 'unknown'
+                local percentage = field('percentage') or 'Unknown'
+                local label = ({
+                    charging = 'Charging',
+                    discharging = 'Discharging',
+                    ['fully-charged'] = 'Fully charged',
+                    ['pending-charge'] = 'Waiting to charge',
+                    ['not charging'] = 'Not charging',
+                })[state] or 'Battery status unavailable'
+                local remaining
+
+                if state == 'charging' then
+                    remaining = field('time to full')
+                elseif state == 'discharging' then
+                    remaining = field('time to empty')
+                    if not remaining then
+                        local energy = tonumber((field('energy') or ''):match('[%d.]+'))
+                        local rate = tonumber((field('energy-rate') or ''):match('[%d.]+'))
+                        if energy and rate and rate > 0 then
+                            local minutes = math.floor((energy / rate) * 60 + 0.5)
+                            local hours = math.floor(minutes / 60)
+                            remaining = hours > 0 and string.format('%dh %02dm', hours, minutes % 60) or
+                                string.format('%dm', minutes)
+                        end
+                    end
+                end
+
+                local time_suffix = state == 'charging' and ' until full' or ' remaining'
+                local summary = percentage .. ' · ' .. label
+                if remaining then
+                    summary = summary .. ' · ' .. remaining .. time_suffix
+                end
+                battery_summary = summary
+                update_tooltip()
             end
         )
     end
+
+    local get_power_consumers = function()
+        awful.spawn.easy_async(
+            { '/bin/bash', consumers_command },
+            function(stdout, _, _, exit_code)
+                consumer_summary = exit_code == 0 and '\n' .. stdout:gsub('%s+$', '') or ''
+                update_tooltip()
+            end
+        )
+    end
+
     get_battery_info()
 
     battery_widget:connect_signal(
         'mouse::enter',
         function()
             get_battery_info()
+            get_power_consumers()
         end
     )
 

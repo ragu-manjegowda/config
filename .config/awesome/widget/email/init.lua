@@ -3,6 +3,7 @@ local gears = require('gears')
 local wibox = require('wibox')
 local naughty = require('naughty')
 local beautiful = require('beautiful')
+local email_subject = require('library.email-subject')
 local dpi = beautiful.xresources.apply_dpi
 local config_dir = gears.filesystem.get_configuration_dir()
 local widget_icon_dir = config_dir .. 'widget/email/icons/'
@@ -16,11 +17,11 @@ local unread_recent_email_subject = ""
 local startup_show = true
 
 -- Constants for scrollable email list
-local EMAIL_HEIGHT = dpi(75)
-local MAX_EMAILS_VISIBLE = 2
-local MAX_HEIGHT = EMAIL_HEIGHT * MAX_EMAILS_VISIBLE + dpi(5)
-local SCROLL_STEP = dpi(40)
+local EMAIL_HEIGHT = dpi(88)
+local EMAIL_SPACING = dpi(5)
+local MAX_HEIGHT = dpi(155)
 local SCROLL_PADDING = dpi(30)
+local MAX_SUBJECT_LINE_LENGTH = 42
 
 local email_header = wibox.widget {
     text   = 'Email',
@@ -56,11 +57,12 @@ local email_count_widget = wibox.widget {
 -- Layout for email items
 local email_list_layout = wibox.widget {
     layout = wibox.layout.fixed.vertical,
-    spacing = dpi(5),
+    spacing = EMAIL_SPACING,
 }
 
 -- Create a single email item widget
 local function create_email_item(from, subject, date)
+    local subject_line_one, subject_line_two = email_subject.split(subject, MAX_SUBJECT_LINE_LENGTH)
     local email_content = wibox.widget {
         layout = wibox.layout.fixed.vertical,
         spacing = dpi(2),
@@ -70,13 +72,23 @@ local function create_email_item(from, subject, date)
             widget = wibox.widget.textbox,
         },
         {
-            markup = '<b>Subject:</b> ' .. gears.string.xml_escape(subject),
-            font = beautiful.font_regular(9),
-            widget = wibox.widget.textbox,
+            {
+                markup = '<b>Subject:</b> ' .. gears.string.xml_escape(subject_line_one),
+                font = beautiful.font_regular(9),
+                widget = wibox.widget.textbox,
+            },
+            {
+                text = subject_line_two,
+                font = beautiful.font_regular(9),
+                visible = subject_line_two ~= '',
+                widget = wibox.widget.textbox,
+            },
+            layout = wibox.layout.fixed.vertical,
         },
         {
             markup = '<span foreground="#888888">' .. gears.string.xml_escape(date) .. '</span>',
             font = beautiful.font_regular(8),
+            forced_height = dpi(12),
             widget = wibox.widget.textbox,
         },
     }
@@ -165,6 +177,7 @@ local scroll_offset = 0
 local max_scroll = 0
 local content_height = 0
 local visible_height = MAX_HEIGHT
+local current_email_index = 1
 
 -- Scrollbar widgets
 local scrollbar_thumb = wibox.widget {
@@ -216,9 +229,9 @@ local scroll_clip = wibox.widget {
 }
 
 -- Function to update scrollbar and height
-local function update_scrollbar()
+local function update_scrollbar(center_current)
     local child_count = #email_list_layout.children
-    content_height = child_count * EMAIL_HEIGHT + (child_count - 1) * dpi(5)
+    content_height = child_count * EMAIL_HEIGHT + (child_count - 1) * EMAIL_SPACING
 
     -- Dynamic height: use content height up to MAX_HEIGHT
     visible_height = math.min(content_height, MAX_HEIGHT)
@@ -227,6 +240,11 @@ local function update_scrollbar()
 
     -- Add extra scroll space to ensure last item is fully visible
     max_scroll = math.max(0, content_height - MAX_HEIGHT + SCROLL_PADDING)
+    current_email_index = math.max(1, math.min(current_email_index, child_count))
+    if center_current then
+        local stride = EMAIL_HEIGHT + EMAIL_SPACING
+        scroll_offset = (current_email_index - 1) * stride - EMAIL_HEIGHT / 2
+    end
     scroll_offset = math.max(0, math.min(scroll_offset, max_scroll))
 
     if max_scroll > 0 then
@@ -248,14 +266,14 @@ end
 
 -- Scroll function
 local function do_scroll(direction)
-    local old_offset = scroll_offset
+    local old_index = current_email_index
     if direction == 'up' then
-        scroll_offset = math.max(0, scroll_offset - SCROLL_STEP)
+        current_email_index = math.max(1, current_email_index - 1)
     elseif direction == 'down' then
-        scroll_offset = math.min(max_scroll, scroll_offset + SCROLL_STEP)
+        current_email_index = math.min(#email_list_layout.children, current_email_index + 1)
     end
-    if old_offset ~= scroll_offset then
-        update_scrollbar()
+    if old_index ~= current_email_index then
+        update_scrollbar(true)
     end
 end
 
@@ -406,7 +424,8 @@ local set_no_connection_msg = function()
         os.date('%d-%m-%Y %H:%M:%S')
     ))
     update_email_count(0)
-    update_scrollbar()
+    current_email_index = 1
+    update_scrollbar(true)
 end
 
 local set_invalid_credentials_msg = function()
@@ -417,14 +436,16 @@ local set_invalid_credentials_msg = function()
         os.date('%d-%m-%Y %H:%M:%S')
     ))
     update_email_count(0)
-    update_scrollbar()
+    current_email_index = 1
+    update_scrollbar(true)
 end
 
 local set_empty_inbox_msg = function()
     email_list_layout:reset()
     email_list_layout:add(empty_email_widget)
     update_email_count(0)
-    update_scrollbar()
+    current_email_index = 1
+    update_scrollbar(true)
 end
 
 local set_latest_email_data = function(email_data)
@@ -457,7 +478,8 @@ local set_latest_email_data = function(email_data)
         update_email_count(0)
     end
 
-    update_scrollbar()
+    current_email_index = 1
+    update_scrollbar(true)
 end
 
 local fetch_email_data = function()

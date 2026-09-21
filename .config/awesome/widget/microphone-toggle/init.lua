@@ -50,7 +50,7 @@ local widget_button = wibox.widget {
         },
         widget = clickable_container
     },
-    bg = beautiful.groups_bg,
+    bg = beautiful.background,
     shape = gears.shape.circle,
     widget = wibox.container.background
 }
@@ -58,7 +58,7 @@ local widget_button = wibox.widget {
 local update_widget = function()
     if mic_muted then
         action_status:set_text('Muted')
-        widget_button.bg = beautiful.groups_bg
+        widget_button.bg = beautiful.background
         button_widget.icon:set_image(icons.microphone_muted)
     else
         action_status:set_text('On')

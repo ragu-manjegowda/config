@@ -1,0 +1,135 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+profilectl="${POWER_PROFILE_CTL:-powerprofilesctl}"
+light_bin="${POWER_PROFILE_LIGHT_BIN:-light}"
+rfkill_bin="${POWER_PROFILE_RFKILL_BIN:-rfkill}"
+bluetoothctl_bin="${POWER_PROFILE_BLUETOOTHCTL_BIN:-bluetoothctl}"
+upower_bin="${POWER_PROFILE_UPOWER_BIN:-upower}"
+timeout_seconds="${POWER_PROFILE_TIMEOUT_SECONDS:-5}"
+policy_bin="${POWER_PROFILE_POLICY_BIN:-/usr/local/libexec/awesome-power-profile-policy}"
+sudo_bin="${POWER_PROFILE_SUDO_BIN:-sudo}"
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/awesome"
+state_file="$state_dir/power-profile"
+
+current_profile() {
+    timeout "$timeout_seconds" "$profilectl" get | tr -d '[:space:]'
+}
+
+visible_profile() {
+    local current
+    current="$(current_profile)"
+    if [[ "$current" == balanced && -r "$state_file" && "$(<"$state_file")" == power-saver ]]; then
+        printf 'power-saver\n'
+    else
+        printf '%s\n' "$current"
+    fi
+}
+
+on_ac_power() {
+    if [[ -n "${POWER_PROFILE_ON_BATTERY:-}" ]]; then
+        [[ "$POWER_PROFILE_ON_BATTERY" != true ]]
+        return
+    fi
+
+    while IFS= read -r device; do
+        if timeout "$timeout_seconds" "$upower_bin" -i "$device" 2>/dev/null |
+            grep -Eq '^[[:space:]]*online:[[:space:]]+yes$'; then
+            return 0
+        fi
+    done < <(timeout "$timeout_seconds" "$upower_bin" -e | grep '/line_power_')
+
+    return 1
+}
+
+set_bluetooth() {
+    local enabled="$1"
+
+    if [[ "$enabled" == true ]]; then
+        "$rfkill_bin" unblock bluetooth >/dev/null 2>&1 || true
+        timeout "$timeout_seconds" "$bluetoothctl_bin" power on >/dev/null 2>&1 || true
+    else
+        timeout "$timeout_seconds" "$bluetoothctl_bin" power off >/dev/null 2>&1 || true
+        "$rfkill_bin" block bluetooth >/dev/null 2>&1 || true
+    fi
+}
+
+apply_baseline() {
+    local profile="$1"
+    local brightness
+    local bluetooth
+
+    case "$profile" in
+        performance)
+            brightness=100
+            bluetooth=true
+            ;;
+        balanced)
+            brightness=60
+            bluetooth=true
+            ;;
+        power-saver)
+            brightness=35
+            bluetooth=false
+            ;;
+        *)
+            return 2
+            ;;
+    esac
+
+    "$light_bin" -S "$brightness" >/dev/null 2>&1 || true
+    set_bluetooth "$bluetooth"
+}
+
+set_profile() {
+    local profile="$1"
+    local daemon_profile="$1"
+
+    case "$profile" in
+        performance|balanced|power-saver) ;;
+        *)
+            printf 'Unsupported power profile: %s\n' "$profile" >&2
+            return 2
+            ;;
+    esac
+
+    if [[ "$profile" == power-saver ]]; then
+        daemon_profile=balanced
+    fi
+
+    timeout "$timeout_seconds" "$profilectl" set "$daemon_profile"
+    "$sudo_bin" -n "$policy_bin" "$profile"
+    apply_baseline "$profile"
+    mkdir -p "$state_dir"
+    printf '%s\n' "$profile" > "$state_file"
+    printf '%s\n' "$profile"
+}
+
+case "${1:-}" in
+    get)
+        visible_profile
+        ;;
+    set)
+        [[ $# -eq 2 ]] || exit 2
+        set_profile "$2"
+        ;;
+    cycle)
+        case "$(visible_profile)" in
+            performance) set_profile balanced ;;
+            balanced) set_profile power-saver ;;
+            *) set_profile performance ;;
+        esac
+        ;;
+    default)
+        if on_ac_power; then
+            set_profile performance
+        else
+            set_profile balanced
+        fi
+        ;;
+    *)
+        printf 'Usage: %s {get|set PROFILE|cycle|default}\n' "${0##*/}" >&2
+        exit 2
+        ;;
+esac

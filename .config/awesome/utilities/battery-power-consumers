@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+profile_helper="${BATTERY_PROFILE_HELPER:-$HOME/.config/awesome/utilities/power-profile}"
+light_bin="${BATTERY_LIGHT_BIN:-light}"
+nvidia_smi="${BATTERY_NVIDIA_SMI:-nvidia-smi}"
+ps_bin="${BATTERY_PS_BIN:-ps}"
+timeout_seconds="${BATTERY_CONSUMER_TIMEOUT_SECONDS:-2}"
+runtime_status="${BATTERY_NVIDIA_RUNTIME_STATUS:-/sys/bus/pci/devices/0000:02:00.0/power/runtime_status}"
+
+profile="$(timeout "$timeout_seconds" /bin/bash "$profile_helper" get 2>/dev/null || printf 'unavailable')"
+brightness="$(timeout "$timeout_seconds" "$light_bin" -G 2>/dev/null | awk 'NR == 1 { printf "%d", $1 }')"
+printf '     Profile: %s · Brightness: %s%%\n' "$profile" "${brightness:-?}"
+
+if [[ -r "$runtime_status" ]] && [[ "$(<"$runtime_status")" == suspended ]]; then
+    printf '      NVIDIA: suspended\n'
+elif command -v "$nvidia_smi" >/dev/null 2>&1; then
+    gpu="$(timeout "$timeout_seconds" "$nvidia_smi" --query-gpu=power.draw,pstate --format=csv,noheader,nounits 2>/dev/null | head -n 1 || true)"
+    if [[ "$gpu" =~ ^[[:space:]]*([^,]+),[[:space:]]*(.+)$ ]]; then
+        printf '      NVIDIA: %s W · %s\n' "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}"
+    else
+        printf '      NVIDIA: active\n'
+    fi
+else
+    printf '      NVIDIA: unavailable\n'
+fi
+
+cpu="$("$ps_bin" -u "${USER:-$(id -un)}" -o comm=,pcpu= --sort=-pcpu 2>/dev/null |
+    awk '$2 >= 0.5 { printf "%s %d%%, ", $1, $2; if (++count == 2) exit }' | sed 's/, $//' || true)"
+printf 'CPU activity: %s\n' "${cpu:-idle}"

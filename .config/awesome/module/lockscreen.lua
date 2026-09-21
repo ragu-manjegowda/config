@@ -822,8 +822,8 @@ local locker = function(s)
         if lock_again == true or lock_again == nil then
             awesome.emit_signal('module::exit_screen:hide')
 
-            -- Force update clock widget
-            time:emit_signal('widget::redraw_needed')
+            -- Recompute the time before showing a lockscreen after idle or sleep.
+            time:force_update()
 
             -- Check capslock status
             check_caps()
@@ -908,6 +908,12 @@ local locker = function(s)
         'module::sleep_resumed',
         function()
             if fingerprint_auth then fingerprint_auth:stop() end
+            time:force_update()
+            for s in screen do
+                if s.clock and s.clock.force_update then
+                    s.clock:force_update()
+                end
+            end
             awesome.emit_signal('module::spawn_apps')
             awesome.emit_signal('module::change_wallpaper')
             awesome.emit_signal('module::change_background_wallpaper')
@@ -1029,6 +1035,13 @@ local locker_ext = function(s)
         awesome.connect_signal(name, handler)
         signal_handlers[#signal_handlers + 1] = { name, handler }
     end
+
+    connect_signal(
+        'module::sleep_resumed',
+        function()
+            if is_active() then ext_time:force_update() end
+        end
+    )
 
     connect_signal(
         'module::lockscreen_user_name',

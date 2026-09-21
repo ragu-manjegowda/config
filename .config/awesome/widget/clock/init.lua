@@ -31,6 +31,10 @@ return function()
         widget = clickable_container
     }
 
+    function widget_button:force_update()
+        clock:force_update()
+    end
+
     widget_button:buttons(
         gears.table.join(
             awful.button(

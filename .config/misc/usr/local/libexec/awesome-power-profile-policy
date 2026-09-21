@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+profile="${1:-}"
+epp_dir="${POWER_PROFILE_EPP_DIR:-/sys/devices/system/cpu/cpufreq}"
+platform_profile="${POWER_PROFILE_PLATFORM_PROFILE:-/sys/firmware/acpi/platform_profile}"
+platform_choices="${POWER_PROFILE_PLATFORM_CHOICES:-/sys/firmware/acpi/platform_profile_choices}"
+no_turbo="${POWER_PROFILE_NO_TURBO:-/sys/devices/system/cpu/intel_pstate/no_turbo}"
+
+case "$profile" in
+    performance)
+        epp=performance
+        platform=performance
+        turbo=0
+        ;;
+    balanced)
+        epp=balance_performance
+        platform=balanced
+        turbo=0
+        ;;
+    power-saver)
+        epp=power
+        platform=balanced
+        turbo=1
+        ;;
+    *)
+        printf 'Unsupported power profile: %s\n' "$profile" >&2
+        exit 2
+        ;;
+esac
+
+shopt -s nullglob
+policies=("$epp_dir"/policy*/energy_performance_preference)
+if [[ ${#policies[@]} -eq 0 ]]; then
+    printf 'No CPU energy-performance policy controls found\n' >&2
+    exit 1
+fi
+
+for policy in "${policies[@]}"; do
+    printf '%s\n' "$epp" > "$policy"
+done
+
+if [[ -w "$platform_profile" && -r "$platform_choices" ]] && grep -qw "$platform" "$platform_choices"; then
+    printf '%s\n' "$platform" > "$platform_profile"
+fi
+
+if [[ -w "$no_turbo" ]]; then
+    printf '%s\n' "$turbo" > "$no_turbo"
+fi

@@ -6,6 +6,7 @@ root="${HOME}"
 logind="$root/.config/misc/etc/systemd/logind.conf.d/90-local.conf"
 sleep_config="$root/.config/misc/etc/systemd/sleep.conf.d/90-disable-hibernation.conf"
 polkit="$root/.config/misc/etc/polkit-1/rules.d/00-early-checks.rules"
+suspend_sudoers="$root/.config/misc/etc/sudoers.d/awesome-suspend"
 exit_screen="$root/.config/awesome/module/exit-screen.lua"
 battery="$root/.config/awesome/widget/battery/init.lua"
 bootstrap_system="$root/.config/scripts/bootstrap/03-system.sh"
@@ -43,6 +44,10 @@ assert_absent "$exit_screen" 'hibernate'
 assert_absent "$battery" 'hibernate'
 assert_absent "$polkit" 'hibernate'
 assert_absent "$polkit" 'hybrid-sleep'
+assert_contains "$suspend_sudoers" '%wheel ALL=(root) NOPASSWD: /usr/bin/systemctl suspend'
+assert_absent "$suspend_sudoers" 'hibernate'
+assert_contains "$bootstrap_system" 'awesome-suspend'
+assert_contains "$bootstrap_system" 'Removed legacy suspend and hibernate rules from /etc/sudoers'
 assert_contains "$bootstrap_system" "sudo rm -f \"\$_mkinitcpio_dropin\""
 assert_contains "$bootstrap_hardware" '90-disable-hibernation.conf'
 assert_contains "$bootstrap_hardware" 'rm -f /etc/systemd/sleep.conf.d/hibernatemode.conf'
