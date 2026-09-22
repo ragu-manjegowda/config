@@ -166,6 +166,10 @@ Panels auto-hide when a client enters fullscreen and restore when exiting.
 - **Control Center Toggle** -- Opens system controls
 - **Info Center Toggle** -- Opens info panel
 
+<p align="center">
+  <img src="../../man/figures/awesome-battery-tooltip.jpg" alt="Battery tooltip in light and dark modes" width="720">
+</p>
+
 ### Control Center
 
 - User profile with hostname
@@ -175,6 +179,10 @@ Panels auto-hide when a client enters fullscreen and restore when exiting.
 - CPU, RAM, hard drive, and temperature meters
 - Blur toggle, blue-light filter (redshift), bluetooth, airplane mode, VPN, do-not-disturb, microphone toggle
 
+<p align="center">
+  <img src="../../man/figures/awesome-control-center.jpg" alt="Control Center in light and dark modes" width="960">
+</p>
+
 ### Info Center
 
 - Notification center with history and clear-all
@@ -182,6 +190,10 @@ Panels auto-hide when a client enters fullscreen and restore when exiting.
 - Stock price ticker (configurable symbols, auto-refresh)
 - **Calendar events** (Outlook via Microsoft Graph API)
 - Weather (multi-provider, multi-location)
+
+<p align="center">
+  <img src="../../man/figures/awesome.jpg" alt="Info Center in light and dark modes" width="960">
+</p>
 
 ### Calendar Center
 

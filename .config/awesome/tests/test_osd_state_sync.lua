@@ -66,9 +66,10 @@ check(
 )
 
 check(
-    widgets.kbd_brightness:find('last_brightness') ~= nil and
-        widgets.kbd_brightness:find('timeout = 0.25', 1, true) ~= nil,
-    'keyboard backlight monitor shows firmware-driven state changes'
+    widgets.kbd_brightness:find("awesome.connect_signal%('control_center::visibility'") ~= nil and
+        widgets.kbd_brightness:find('timeout = 0.25', 1, true) == nil and
+        widgets.kbd_brightness:find("'widget::kbd_brightness'") ~= nil,
+    'keyboard backlight refresh is event-driven without continuous polling'
 )
 
 local keyboard_helper = read('utilities/kbd-bkl')

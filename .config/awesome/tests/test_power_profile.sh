@@ -54,7 +54,7 @@ printf '7.5, P4\n'
 EOF
 cat > "$tmp_dir/ps" <<'EOF'
 #!/usr/bin/env bash
-printf 'browser 4.8\nmail-client 1.2\n'
+printf '101 1 browser 4.8\n102 1 browser 2.2\n103 1 mail-client 1.2\n104 1 ps 200.0\n'
 EOF
 cat > "$tmp_dir/sudo" <<'EOF'
 #!/usr/bin/env bash
@@ -122,7 +122,11 @@ snapshot="$(BATTERY_PROFILE_HELPER="$helper" \
     bash "$consumers")"
 grep -Fq '     Profile: performance · Brightness: 42%' <<< "$snapshot"
 grep -Fq '      NVIDIA: suspended' <<< "$snapshot"
-grep -Fq 'CPU activity: browser 4%, mail-client 1%' <<< "$snapshot"
+grep -Fq 'CPU activity: browser 7%, mail-client 1%' <<< "$snapshot"
+if grep -Fq 'ps 200%' <<< "$snapshot"; then
+    printf 'CPU sampler included its own ps process\n' >&2
+    exit 1
+fi
 
 printf 'active\n' > "$runtime_status"
 snapshot="$(BATTERY_PROFILE_HELPER="$helper" \

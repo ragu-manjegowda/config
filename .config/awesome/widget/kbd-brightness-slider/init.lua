@@ -66,7 +66,6 @@ local slider = wibox.widget {
 
 local kbd_brightness_slider = slider.kbd_brightness_slider
 local is_programmatic_update = false
-local last_brightness
 local pending_brightness
 local brightness_apply_timer = gears.timer {
     timeout = 0.08,
@@ -123,11 +122,6 @@ local update_slider = function(show_osd)
     if input then
         input:close()
     end
-    local changed = last_brightness ~= nil and
-        kbd_brightness ~= nil and
-        kbd_brightness ~= last_brightness
-    last_brightness = kbd_brightness
-
     local slider_value = 0
     if not kbd_brightness then
         slider_value = 0
@@ -142,21 +136,19 @@ local update_slider = function(show_osd)
     kbd_brightness_slider:set_value(slider_value)
     is_programmatic_update = false
     awesome.emit_signal('module::kbd_brightness_osd', slider_value)
-    if show_osd or changed then
+    if show_osd then
         awesome.emit_signal('module::kbd_brightness_osd:show', true)
     end
 end
 
--- Update on startup
+-- Refresh at startup and when the control becomes visible. Hardware keys
+-- already emit widget::kbd_brightness after changing the device value.
 update_slider()
-
-local keyboard_backlight_monitor = gears.timer {
-    timeout = 0.25,
-    autostart = true,
-    callback = function()
+awesome.connect_signal('control_center::visibility', function(visible)
+    if visible then
         update_slider(false)
     end
-}
+end)
 
 local action_jump = function()
     local sli_value = kbd_brightness_slider:get_value()

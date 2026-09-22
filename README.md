@@ -4,11 +4,11 @@
 
 ### [rEFInd](.config/rEFInd)
 
-| ![image](man/figures/rEFInd.png) |
+| <img src="man/figures/rEFInd.png" alt="rEFInd boot picker" width="720"> |
 |:--:|
 | ***EFI boot picker screen*** |
 
-| ![image](man/figures/rEFInd-menu-options.png) |
+| <img src="man/figures/rEFInd-menu-options.png" alt="rEFInd menu options" width="720"> |
 |:--:|
 | ***EFI menu screen*** |
 
@@ -42,9 +42,21 @@
 
 ### [AwesomeWM](.config/awesome)
 
-| ![image](man/figures/awesome.jpg) |
+| <img src="man/figures/awesome.jpg" alt="AwesomeWM Info Center in light and dark modes" width="960"> |
 |:--:|
-| ***AweomeWM - Alacritty, Zim, Zathura and notifications panel*** |
+| ***AwesomeWM Info Center in light and dark modes*** |
+
+| <img src="man/figures/awesome-control-center.jpg" alt="AwesomeWM Control Center in light and dark modes" width="960"> |
+|:--:|
+| ***AwesomeWM Control Center in light and dark modes*** |
+
+| <img src="man/figures/awesome-battery-tooltip.jpg" alt="AwesomeWM battery tooltip in light and dark modes" width="960"> |
+|:--:|
+| ***AwesomeWM battery and power-consumer tooltip*** |
+
+| <img src="man/figures/awesome-legacy.jpg" alt="AwesomeWM with Alacritty, Zim, Zathura, and the notification panel" width="960"> |
+|:--:|
+| ***AwesomeWM - Alacritty, Zim, Zathura and notifications panel*** |
 
 | ![image](man/figures/firefox.jpg) |
 |:--:|

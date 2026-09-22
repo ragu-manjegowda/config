@@ -26,6 +26,32 @@ else
     printf '      NVIDIA: unavailable\n'
 fi
 
-cpu="$("$ps_bin" -u "${USER:-$(id -un)}" -o comm=,pcpu= --sort=-pcpu 2>/dev/null |
-    awk '$2 >= 0.5 { printf "%s %d%%, ", $1, $2; if (++count == 2) exit }' | sed 's/, $//' || true)"
+cpu="$({
+    observer_pid=$BASHPID
+    "$ps_bin" -u "${USER:-$(id -un)}" -o pid=,ppid=,comm=,pcpu= 2>/dev/null |
+        awk -v observer_pid="$observer_pid" '
+            {
+                pid = $1
+                ppid = $2
+                usage = $NF
+                name = ""
+                for (field = 3; field < NF; field++) {
+                    name = name (name == "" ? "" : " ") $field
+                }
+                if (pid != observer_pid && ppid != observer_pid && name != "ps") {
+                    total[name] += usage
+                }
+            }
+            END {
+                for (name in total) {
+                    if (total[name] >= 0.5) {
+                        printf "%.3f\t%s\n", total[name], name
+                    }
+                }
+            }
+        ' |
+        sort -t $'\t' -k1,1nr -k2,2 |
+        awk -F '\t' 'NR <= 2 { printf "%s %d%%, ", $2, $1 }' |
+        sed 's/, $//'
+} || true)"
 printf 'CPU activity: %s\n' "${cpu:-idle}"

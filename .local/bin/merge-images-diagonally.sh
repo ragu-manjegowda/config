@@ -25,7 +25,7 @@ WIDTH=`identify -format %w "$LEFT"`;
 #Read the height of one of the images;
 HEIGHT=`identify -format %h "$LEFT"`;
 
-convert -respect-parenthesis \
+magick -respect-parenthesis \
 \( "$LEFT" -gravity north -crop "$WIDTH"x"$HEIGHT"+0+0 +repage -write "$LEFT_OUT" \) `#Load first image to a new png` \
 \( "$RIGHT" -gravity east -crop "$WIDTH"x"$HEIGHT"+0+0 +repage -write "$RIGHT_OUT" \) `#Load second image to a new png` \
 \( -size "$WIDTH"x"$HEIGHT" xc:black -fill white -draw "polygon 0,0 0,"$HEIGHT" "$WIDTH",0" -write "MASK_$LEFT_OUT" \) `#Create the mask of the upper triangle` \
