@@ -6,7 +6,7 @@ local dpi = beautiful.xresources.apply_dpi
 
 -- Scroll state
 local SCROLL_STEP = dpi(60)
-local MAX_NOTIFS_VISIBLE = 2
+local MAX_HEIGHT = dpi(155)
 
 local notif_center = function(s)
     local notif_manager = require('widget.notif-center.build-notifbox')
@@ -132,7 +132,6 @@ local notif_center = function(s)
         local children = s.notifbox_layout.children
         local spacing = s.notifbox_layout.spacing or 0
         content_height = 0
-        visible_height = 0
         for index, child in ipairs(children) do
             local _, child_height = wibox.widget.base.fit_widget(
                 s.notifbox_layout,
@@ -143,15 +142,10 @@ local notif_center = function(s)
             )
             if index > 1 then
                 content_height = content_height + spacing
-                if index <= MAX_NOTIFS_VISIBLE then
-                    visible_height = visible_height + spacing
-                end
             end
             content_height = content_height + child_height
-            if index <= MAX_NOTIFS_VISIBLE then
-                visible_height = visible_height + child_height
-            end
         end
+        visible_height = math.min(content_height, MAX_HEIGHT)
         scroll_clip.height = visible_height
         scrollbar_track.forced_height = visible_height
 

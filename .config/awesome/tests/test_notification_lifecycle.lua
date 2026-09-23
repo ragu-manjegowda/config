@@ -129,6 +129,26 @@ assert(view_source:match(
     'local function show_empty_state%(%)%s+view%.remove_notifbox_empty = true%s+view%.notifbox_layout:reset%(%s*%)'),
     'empty placeholder is counted before its state flag is updated')
 
+local elements = assert(io.open(root .. 'widget/notif-center/build-notifbox/notifbox-ui-elements.lua', 'r'))
+local elements_source = elements:read('*a')
+elements:close()
+assert(elements_source:match('local TITLE_MAX_HEIGHT%s*=%s*dpi%(24%)') and
+        elements_source:match('local MESSAGE_MAX_HEIGHT%s*=%s*dpi%(40%)') and
+        elements_source:match("wrap%s*=%s*'word_char'") and
+        elements_source:match("ellipsize%s*=%s*'end'") and
+        elements_source:match("strategy%s*=%s*'max'") and
+        elements_source:match('height%s*=%s*max_height'),
+    'notification center text can grow without a bounded ellipsized height')
+
+local center = assert(io.open(root .. 'widget/notif-center/init.lua', 'r'))
+local center_source = center:read('*a')
+center:close()
+assert(center_source:match('local MAX_HEIGHT%s*=%s*dpi%(155%)') and
+        center_source:match('visible_height%s*=%s*math%.min%(content_height, MAX_HEIGHT%)') and
+        center_source:match('max_scroll%s*=%s*math%.max%(0, content_height %- visible_height%)') and
+        not center_source:match('MAX_NOTIFS_VISIBLE'),
+    'notification viewport still grows with the first notification cards')
+
 local keys = assert(io.open(root .. 'configuration/keys/global.lua', 'r'))
 local key_source = keys:read('*a')
 keys:close()

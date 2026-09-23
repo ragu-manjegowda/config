@@ -389,6 +389,24 @@ assert_test(
             'bg%s*=%s*beautiful%.groups_bg.-return calendar_report') ~= nil,
     "calendar header and events share the grouped Info Center background"
 )
+assert_test(
+    calendar_source:match('local EVENT_TITLE_HEIGHT%s*=%s*dpi%(28%)') ~= nil and
+        calendar_source:match('local EVENT_DETAILS_HEIGHT%s*=%s*dpi%(12%)') ~= nil and
+        calendar_source:match("wrap%s*=%s*'word_char'") ~= nil and
+        calendar_source:match("ellipsize%s*=%s*'end'") ~= nil and
+        calendar_source:match('forced_height%s*=%s*EVENT_TITLE_HEIGHT') ~= nil and
+        calendar_source:match('forced_height%s*=%s*EVENT_DETAILS_HEIGHT') ~= nil,
+    "calendar cards cap subjects at two lines and preserve event time"
+)
+assert_test(
+    calendar_source:match("awesome%.connect_signal%('info_center::visibility', function%(visible%)") ~= nil and
+        calendar_source:match('if visible then%s+refresh%(%)') ~= nil and
+        calendar_source:match('local refresh_button%s*=%s*wibox%.widget%s*{%s*{%s*{%s*refresh_icon') ~= nil and
+        calendar_source:match('bg%s*=%s*beautiful%.accent') ~= nil and
+        calendar_source:match('shape%s*=%s*gears%.shape%.circle') ~= nil and
+        calendar_source:match('widget%s*=%s*wibox%.container%.background') ~= nil,
+    "calendar refreshes when Info Center opens and uses the accent refresh button"
+)
 
 -- Summary
 print("\n" .. string.rep("=", 50))

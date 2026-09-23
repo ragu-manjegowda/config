@@ -11,6 +11,27 @@ local widget_icon_dir = config_dir .. 'widget/notif-center/icons/'
 local clickable_container = require('widget.clickable-container')
 
 local ui_noti_builder = {}
+local TITLE_MAX_HEIGHT = dpi(24)
+local MESSAGE_MAX_HEIGHT = dpi(40)
+
+local function bounded_textbox(text, font, max_height)
+    local textbox = wibox.widget {
+        markup = gears.string.xml_escape(text or ''),
+        font = font,
+        align = 'left',
+        valign = 'top',
+        wrap = 'word_char',
+        ellipsize = 'end',
+        widget = wibox.widget.textbox,
+    }
+
+    return wibox.widget {
+        textbox,
+        strategy = 'max',
+        height = max_height,
+        widget = wibox.container.constraint,
+    }
+end
 
 -- Notification icon container
 ui_noti_builder.notifbox_icon = function(ico_image)
@@ -30,24 +51,12 @@ end
 
 -- Notification title container
 ui_noti_builder.notifbox_title = function(title)
-    return wibox.widget {
-        markup = gears.string.xml_escape(title),
-        font   = beautiful.font_bold(8),
-        align  = 'left',
-        valign = 'center',
-        widget = wibox.widget.textbox
-    }
+    return bounded_textbox(title, beautiful.font_bold(8), TITLE_MAX_HEIGHT)
 end
 
 -- Notification message container
 ui_noti_builder.notifbox_message = function(msg)
-    return wibox.widget {
-        markup = gears.string.xml_escape(msg),
-        font   = beautiful.font_regular(6),
-        align  = 'left',
-        valign = 'center',
-        widget = wibox.widget.textbox
-    }
+    return bounded_textbox(msg, beautiful.font_regular(6), MESSAGE_MAX_HEIGHT)
 end
 
 -- Notification app name container

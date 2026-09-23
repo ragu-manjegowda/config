@@ -22,6 +22,8 @@ local SUB_EVENT_HEIGHT = dpi(54)
 local EVENT_SPACING = dpi(5)
 local MAX_HEIGHT = EVENT_HEIGHT * 2 + EVENT_SPACING * 2
 local EVENT_STRIDE = EVENT_HEIGHT + EVENT_SPACING
+local EVENT_TITLE_HEIGHT = dpi(28)
+local EVENT_DETAILS_HEIGHT = dpi(12)
 local refresh_in_progress = false
 local refresh_pid
 
@@ -55,21 +57,26 @@ local count_badge = wibox.widget {
     widget = wibox.container.background,
 }
 
+local refresh_icon = wibox.widget {
+    image = refresh_icon_path,
+    resize = true,
+    forced_height = dpi(14),
+    forced_width = dpi(14),
+    widget = wibox.widget.imagebox,
+}
+
 local refresh_button = wibox.widget {
     {
         {
-            image = refresh_icon_path,
-            resize = true,
-            forced_height = dpi(14),
-            forced_width = dpi(14),
-            widget = wibox.widget.imagebox,
+            refresh_icon,
+            margins = dpi(4),
+            widget = wibox.container.margin,
         },
-        margins = dpi(4),
-        widget = wibox.container.margin,
+        widget = clickable_container,
     },
     bg = beautiful.accent,
     shape = gears.shape.circle,
-    widget = clickable_container,
+    widget = wibox.container.background,
 }
 
 local header_time = wibox.widget {
@@ -256,12 +263,16 @@ local function build_event_row(title_text, details_text, options)
     local title_widget = wibox.widget {
         markup = '<b>' .. gears.string.xml_escape(title_text or '(No title)') .. '</b>',
         font = beautiful.font_regular(10),
+        wrap = 'word_char',
+        ellipsize = 'end',
+        forced_height = EVENT_TITLE_HEIGHT,
         widget = wibox.widget.textbox,
     }
 
     local details_widget = wibox.widget {
         markup = '<span foreground="#AAAAAA">' .. gears.string.xml_escape(details_text or '') .. '</span>',
         font = beautiful.font_regular(9),
+        forced_height = EVENT_DETAILS_HEIGHT,
         widget = wibox.widget.textbox,
     }
 
@@ -755,6 +766,11 @@ refresh_button:buttons(
 )
 
 awesome.connect_signal('widget::update_calendar', refresh)
+awesome.connect_signal('info_center::visibility', function(visible)
+    if visible then
+        refresh()
+    end
+end)
 refresh()
 
 local calendar_report = wibox.widget {
