@@ -183,6 +183,7 @@ jobs:
           cd "$GITHUB_WORKSPACE"
           HOME="$GITHUB_WORKSPACE" lua "${{ env.AWESOME_CONFIG_DIR }}/tests/test_notification_retention.lua"
           HOME="$GITHUB_WORKSPACE" lua "${{ env.AWESOME_CONFIG_DIR }}/tests/test_notification_lifecycle.lua"
+          HOME="$GITHUB_WORKSPACE" lua "${{ env.AWESOME_CONFIG_DIR }}/tests/test_notification_card_action.lua"
           HOME="$GITHUB_WORKSPACE" lua "${{ env.AWESOME_CONFIG_DIR }}/tests/test_notification_suspension.lua"
 
   awesome-config-load:

@@ -207,7 +207,8 @@ local awesome_overrides = function(theme)
     theme.notification_margin = dpi(5)
     theme.notification_border_width = dpi(0)
     theme.notification_border_color = theme.background_light
-    theme.notification_spacing = dpi(5)
+    -- Tiled clients have a gap on both sides of the workarea edge.
+    theme.notification_spacing = theme.useless_gap * 2
     theme.notification_icon_resize_strategy = 'center'
     theme.notification_icon_size = dpi(32)
 

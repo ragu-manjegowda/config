@@ -32,7 +32,11 @@ local function update_bars_visibility()
                 end
             end
             -- Order matter here for shadow
-            s.top_panel.visible = not fullscreen
+            local panel_visible = not fullscreen
+            if s.top_panel.visible ~= panel_visible then
+                s.top_panel.visible = panel_visible
+                awesome.emit_signal('module::notifications:reflow', s)
+            end
             if s.control_center then
                 if fullscreen and s.control_center.visible then
                     s.control_center:toggle()

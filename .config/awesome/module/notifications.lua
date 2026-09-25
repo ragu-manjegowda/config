@@ -11,6 +11,7 @@ local animation = require("library.tween")
 local cst = require("naughty.constants")
 local retention = require('library.notification-retention')
 local lifecycle = require('library.notification-lifecycle')
+local popup_reflow = require('library.notification-popup-reflow')
 local notif_manager = require('widget.notif-center.build-notifbox')
 local displaying_error = false
 
@@ -23,6 +24,9 @@ local active_animations = {}
 local popup_order = {}
 local suspension_handlers = setmetatable({}, { __mode = 'k' })
 local MAX_VISIBLE_POPUPS = 3
+
+awesome.connect_signal('module::notifications:reflow',
+    popup_reflow.new(active_boxes, gears.timer.delayed_call))
 
 local function remove_from_popup_order(notification)
     for index = #popup_order, 1, -1 do
@@ -156,9 +160,8 @@ local function release_popup_box(notification, box)
     end
 
     if box then
-        pcall(function()
-            box.visible = false
-        end)
+        pcall(popup_reflow.release, box, notification)
+        active_boxes[notification] = nil
     end
 
     remove_from_popup_order(notification)
