@@ -68,6 +68,7 @@ linux-lts
 linux-lts-headers
 lld
 lua-pam-git
+luacheck
 lxqt-policykit
 maim
 mbsync-git

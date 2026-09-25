@@ -54,6 +54,7 @@ linux-headers
 linux-lts
 linux-lts-headers
 lld
+luacheck
 lxqt-policykit
 maim
 mpv
