@@ -13,6 +13,7 @@ plugin_cache="${XDG_CACHE_HOME:-$HOME/.cache}/opencode"
 plugin_update_stamp="$plugin_cache/.oc-plugin-update"
 plugin_update_interval=${OC_PLUGIN_UPDATE_INTERVAL_SECONDS:-86400}
 plugin_update_timeout=${OC_PLUGIN_UPDATE_TIMEOUT_SECONDS:-15}
+snapshot_file_limit=${OC_SNAPSHOT_FILE_LIMIT:-50000}
 sandbox_config='{"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"},"agent":{"build":{"mode":"primary","permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}},"general":{"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}},"plan":{"mode":"primary","permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}}}}'
 sandbox_config_no_searxng='{"mcp":{"searxng":{"enabled":false}},"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"},"agent":{"build":{"mode":"primary","permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}},"general":{"permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}},"plan":{"mode":"primary","permission":{"edit":"allow","write":"allow","bash":"allow","webfetch":"allow","external_directory":"allow"}}}}'
 
@@ -33,6 +34,9 @@ Options:
   --session
       Pick an OpenCode session with fzf. Press Enter to continue the selected
       session, or Ctrl-D twice to delete the selected session and refresh the list.
+  Snapshot tracking:
+      Automatically disabled in Git repositories with more than 50,000 tracked
+      files. Set OC_SNAPSHOT_FILE_LIMIT to adjust the threshold.
   Plugin updates:
       Plugin cache dependencies are updated at most once per day before launch,
       except while Prisma Access has an active tunnel. Plugin updates are
@@ -333,7 +337,33 @@ cleanup_sandbox_home_if_unused() {
     fi
 }
 
+configure_snapshot_tracking() {
+    local root file_count config
+
+    if [[ ! $snapshot_file_limit =~ ^[0-9]+$ ]] || [ "$snapshot_file_limit" -eq 0 ]; then
+        echo "oc: invalid OC_SNAPSHOT_FILE_LIMIT: $snapshot_file_limit" >&2
+        return 1
+    fi
+
+    root=$(git rev-parse --show-toplevel 2>/dev/null) || return 0
+    file_count=$(git -C "$root" ls-files -z | tr -cd '\0' | wc -c) || return 0
+    if [ "$file_count" -le "$snapshot_file_limit" ]; then
+        return 0
+    fi
+
+    if ! command -v jq >/dev/null 2>&1; then
+        echo 'oc: jq is required to disable snapshots in a large repository' >&2
+        return 1
+    fi
+    config=${OPENCODE_CONFIG_CONTENT:-"{}"}
+    OPENCODE_CONFIG_CONTENT=$(jq -cn --argjson config "$config" '$config + { snapshot: false }') || return 1
+    export OPENCODE_CONFIG_CONTENT
+    echo "oc: skipping snapshots for $file_count tracked files (limit: $snapshot_file_limit)" >&2
+}
+
 launch_opencode() {
+    configure_snapshot_tracking || return 1
+
     if [ "$sandbox" -eq 1 ]; then
         if ! command -v firejail >/dev/null 2>&1; then
             echo "oc: firejail not found; cannot launch sandboxed opencode" >&2
