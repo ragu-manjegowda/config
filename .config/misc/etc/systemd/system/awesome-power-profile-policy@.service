@@ -1,0 +1,7 @@
+[Unit]
+Description=Apply Awesome CPU EPP and turbo policy (%i)
+
+[Service]
+Type=oneshot
+TimeoutStartSec=10
+ExecStart=/usr/local/libexec/awesome-power-profile-policy %i

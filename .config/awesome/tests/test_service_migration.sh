@@ -34,6 +34,8 @@ NTPD_DISPATCHER_PATH="$dispatcher" source "$script"
 
 grep -Fxq 'sudo systemctl disable ntpd.service' "$log"
 grep -Fxq 'enable-system systemd-timesyncd' "$log"
+grep -Fxq 'systemctl --user reenable power-profile-monitor.service' "$log"
+grep -Fxq 'systemctl --user start power-profile-monitor.service' "$log"
 test ! -e "$dispatcher"
 test ! -e "$repo_home/.config/misc/etc/NetworkManager/dispatcher.d/10-ntpd"
 

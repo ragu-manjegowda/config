@@ -21,11 +21,23 @@ check_copy "${MISC_DIR}/etc/systemd/logind.conf.d/90-local.conf" "$_logind_dropi
 
 log_info "Deploying power-profile policy..."
 _power_profile_policy="${MISC_DIR}/usr/local/libexec/awesome-power-profile-policy"
-_power_profile_sudoers="${MISC_DIR}/etc/sudoers.d/awesome-power-profile"
+_power_profile_unit="${MISC_DIR}/etc/systemd/system/awesome-power-profile-policy@.service"
+_power_profile_polkit="${MISC_DIR}/etc/polkit-1/rules.d/50-awesome-power-profile.rules"
 bash -n "$_power_profile_policy"
-visudo -cf "$_power_profile_sudoers"
 sudo install -Dm755 "$_power_profile_policy" /usr/local/libexec/awesome-power-profile-policy
-sudo install -Dm440 "$_power_profile_sudoers" /etc/sudoers.d/awesome-power-profile
+check_copy "$_power_profile_unit" /etc/systemd/system/awesome-power-profile-policy@.service
+sudo systemctl daemon-reload
+sudo install -Dm644 "$_power_profile_polkit" /etc/polkit-1/rules.d/50-awesome-power-profile.rules
+
+_legacy_profile_sudoers=/etc/sudoers.d/awesome-power-profile
+if sudo test -f "$_legacy_profile_sudoers"; then
+    if [[ "$(sudo grep -c '^' "$_legacy_profile_sudoers")" -ne 1 ]] ||
+        ! sudo grep -Fxq '%wheel ALL=(root) NOPASSWD: /usr/local/libexec/awesome-power-profile-policy performance, /usr/local/libexec/awesome-power-profile-policy balanced, /usr/local/libexec/awesome-power-profile-policy power-saver' "$_legacy_profile_sudoers"; then
+        log_fail "Unexpected contents in $_legacy_profile_sudoers; refusing to remove it"
+        return 1
+    fi
+    sudo rm -- "$_legacy_profile_sudoers"
+fi
 
 log_info "Deploying suspend authorization..."
 _suspend_sudoers="${MISC_DIR}/etc/sudoers.d/awesome-suspend"
@@ -162,7 +174,7 @@ else
 fi
 
 unset _logind_dropin _mkinitcpio_dropin _mkinitcpio_changed _rendered_config
-unset _power_profile_policy _power_profile_sudoers
+unset _power_profile_policy _power_profile_unit _power_profile_polkit _legacy_profile_sudoers
 unset _suspend_sudoers _rendered_sudoers
 unset _libreoffice_override
 unset -f _validate_gai _validate_exports

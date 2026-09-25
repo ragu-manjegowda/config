@@ -1,1 +1,0 @@
-%wheel ALL=(root) NOPASSWD: /usr/local/libexec/awesome-power-profile-policy performance, /usr/local/libexec/awesome-power-profile-policy balanced, /usr/local/libexec/awesome-power-profile-policy power-saver

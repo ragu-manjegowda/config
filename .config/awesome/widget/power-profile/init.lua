@@ -11,13 +11,13 @@ local profiles = {
         key = 'performance',
         label = 'Performance',
         color = beautiful.system_green_light,
-        tooltip = '100% brightness · Bluetooth on · CPU performance · turbo on',
+        tooltip = '100% brightness · keep Bluetooth state · CPU performance · turbo on',
     },
     {
         key = 'balanced',
         label = 'Balanced',
         color = beautiful.system_yellow_light,
-        tooltip = '60% brightness · Bluetooth on · balanced CPU policy',
+        tooltip = '60% brightness · keep Bluetooth state · balanced CPU policy',
     },
     {
         key = 'power-saver',
@@ -27,7 +27,6 @@ local profiles = {
     },
 }
 local buttons = {}
-local tooltips = {}
 
 local action_name = wibox.widget {
     text = 'Power Profile',
@@ -108,7 +107,7 @@ for _, profile in ipairs(profiles) do
     ))
     button.label = label
     buttons[profile.key] = button
-    tooltips[profile.key] = awful.tooltip {
+    awful.tooltip {
         objects = { button },
         text = profile.tooltip,
         mode = 'outside',

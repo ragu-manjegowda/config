@@ -8,23 +8,38 @@ rfkill_bin="${POWER_PROFILE_RFKILL_BIN:-rfkill}"
 bluetoothctl_bin="${POWER_PROFILE_BLUETOOTHCTL_BIN:-bluetoothctl}"
 upower_bin="${POWER_PROFILE_UPOWER_BIN:-upower}"
 timeout_seconds="${POWER_PROFILE_TIMEOUT_SECONDS:-5}"
-policy_bin="${POWER_PROFILE_POLICY_BIN:-/usr/local/libexec/awesome-power-profile-policy}"
-sudo_bin="${POWER_PROFILE_SUDO_BIN:-sudo}"
+systemctl_bin="${POWER_PROFILE_SYSTEMCTL_BIN:-systemctl}"
 state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/awesome"
 state_file="$state_dir/power-profile"
+bluetooth_state_file="$state_dir/power-profile-bluetooth"
+epp_dir="${POWER_PROFILE_EPP_DIR:-/sys/devices/system/cpu/cpufreq}"
+no_turbo="${POWER_PROFILE_NO_TURBO:-/sys/devices/system/cpu/intel_pstate/no_turbo}"
 
 current_profile() {
     timeout "$timeout_seconds" "$profilectl" get | tr -d '[:space:]'
 }
 
 visible_profile() {
-    local current
+    local current policy all_power=true
     current="$(current_profile)"
     if [[ "$current" == balanced && -r "$state_file" && "$(<"$state_file")" == power-saver ]]; then
-        printf 'power-saver\n'
-    else
-        printf '%s\n' "$current"
+        shopt -s nullglob
+        local -a policies=("$epp_dir"/policy*/energy_performance_preference)
+        shopt -u nullglob
+        if [[ ${#policies[@]} -gt 0 && -r "$no_turbo" && "$(<"$no_turbo")" == 1 ]]; then
+            for policy in "${policies[@]}"; do
+                if [[ ! -r "$policy" || "$(<"$policy")" != power ]]; then
+                    all_power=false
+                    break
+                fi
+            done
+            if [[ "$all_power" == true ]]; then
+                printf 'power-saver\n'
+                return
+            fi
+        fi
     fi
+    printf '%s\n' "$current"
 }
 
 on_ac_power() {
@@ -45,46 +60,62 @@ on_ac_power() {
 
 set_bluetooth() {
     local enabled="$1"
+    local current
 
     if [[ "$enabled" == true ]]; then
-        "$rfkill_bin" unblock bluetooth >/dev/null 2>&1 || true
-        timeout "$timeout_seconds" "$bluetoothctl_bin" power on >/dev/null 2>&1 || true
+        "$rfkill_bin" unblock bluetooth >/dev/null 2>&1 ||
+            printf 'Could not unblock Bluetooth\n' >&2
+        if ! timeout "$timeout_seconds" "$bluetoothctl_bin" power on >/dev/null 2>&1; then
+            current="$(bluetooth_power_state 2>/dev/null)" || current=''
+            [[ "$current" == yes ]] || printf 'Could not power on Bluetooth\n' >&2
+        fi
     else
-        timeout "$timeout_seconds" "$bluetoothctl_bin" power off >/dev/null 2>&1 || true
-        "$rfkill_bin" block bluetooth >/dev/null 2>&1 || true
+        if ! timeout "$timeout_seconds" "$bluetoothctl_bin" power off >/dev/null 2>&1; then
+            current="$(bluetooth_power_state 2>/dev/null)" || current=''
+            [[ "$current" == no ]] || printf 'Could not power off Bluetooth\n' >&2
+        fi
+        "$rfkill_bin" block bluetooth >/dev/null 2>&1 ||
+            printf 'Could not block Bluetooth\n' >&2
+    fi
+}
+
+bluetooth_power_state() {
+    local output
+    output="$(timeout "$timeout_seconds" "$bluetoothctl_bin" show)" || return 1
+    if [[ "$output" =~ Powered:[[:space:]]+(yes|no) ]]; then
+        printf '%s\n' "${BASH_REMATCH[1]}"
+    else
+        printf 'Bluetooth power state is unavailable\n' >&2
+        return 1
     fi
 }
 
 apply_baseline() {
     local profile="$1"
     local brightness
-    local bluetooth
 
     case "$profile" in
         performance)
             brightness=100
-            bluetooth=true
             ;;
         balanced)
             brightness=60
-            bluetooth=true
             ;;
         power-saver)
             brightness=35
-            bluetooth=false
             ;;
         *)
             return 2
             ;;
     esac
 
-    "$light_bin" -S "$brightness" >/dev/null 2>&1 || true
-    set_bluetooth "$bluetooth"
+    "$light_bin" -S "$brightness" >/dev/null 2>&1 ||
+        printf 'Could not set brightness to %s%%\n' "$brightness" >&2
 }
 
 set_profile() {
     local profile="$1"
-    local daemon_profile="$1"
+    local previous_profile previous_daemon previous_bluetooth daemon_profile="$profile"
 
     case "$profile" in
         performance|balanced|power-saver) ;;
@@ -94,14 +125,45 @@ set_profile() {
             ;;
     esac
 
+    mkdir -p "$state_dir"
+    exec {lock_fd}> "$state_dir/power-profile.lock"
+    flock -w "$timeout_seconds" "$lock_fd" || {
+        printf 'Another power-profile change is in progress\n' >&2
+        return 1
+    }
+
+    previous_profile="$(visible_profile)"
+    previous_daemon="$(current_profile)"
+    if [[ "$profile" == power-saver && "$previous_profile" != power-saver ]]; then
+        previous_bluetooth="$(bluetooth_power_state)" || return 1
+    fi
+    # This firmware advertises power-saver, but resolves it back to balanced.
+    # The root-owned unit applies its EPP/turbo policy and restores EPP when
+    # leaving power-saver for balanced.
+    if [[ "$profile" == power-saver ]]; then daemon_profile=balanced; fi
+    timeout "$timeout_seconds" "$profilectl" set "$daemon_profile"
+    if ! timeout "$timeout_seconds" "$systemctl_bin" start "awesome-power-profile-policy@${profile}.service"; then
+        timeout "$timeout_seconds" "$profilectl" set "$previous_daemon" ||
+            printf 'Could not restore previous daemon profile: %s\n' "$previous_daemon" >&2
+        timeout "$timeout_seconds" "$systemctl_bin" start "awesome-power-profile-policy@${previous_profile}.service" ||
+            printf 'Could not restore previous CPU policy: %s\n' "$previous_profile" >&2
+        return 1
+    fi
+    apply_baseline "$profile"
+
     if [[ "$profile" == power-saver ]]; then
-        daemon_profile=balanced
+        if [[ "$previous_profile" != power-saver ]]; then
+            printf '%s\n' "$previous_bluetooth" > "$bluetooth_state_file"
+        fi
+        set_bluetooth false
+    else
+        if [[ "$previous_profile" == power-saver && -r "$bluetooth_state_file" &&
+            "$(<"$bluetooth_state_file")" == yes ]]; then
+            set_bluetooth true
+        fi
+        rm -f -- "$bluetooth_state_file"
     fi
 
-    timeout "$timeout_seconds" "$profilectl" set "$daemon_profile"
-    "$sudo_bin" -n "$policy_bin" "$profile"
-    apply_baseline "$profile"
-    mkdir -p "$state_dir"
     printf '%s\n' "$profile" > "$state_file"
     printf '%s\n' "$profile"
 }

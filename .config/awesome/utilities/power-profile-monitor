@@ -1,9 +1,7 @@
-#!/usr/bin/env python3
-
 import os
 import subprocess
 import sys
-
+from pathlib import Path
 
 HELPER = os.environ.get(
     "POWER_PROFILE_HELPER",
@@ -11,23 +9,58 @@ HELPER = os.environ.get(
 )
 SOURCE_STATE_FILE = os.environ.get(
     "POWER_PROFILE_SOURCE_STATE_FILE",
-    os.path.expanduser("~/.local/state/awesome/power-source"),
+    os.path.join(
+        os.environ.get("XDG_STATE_HOME", os.path.expanduser("~/.local/state")),
+        "awesome/power-source",
+    ),
 )
+BOOT_ID_FILE = os.environ.get("POWER_PROFILE_BOOT_ID_FILE", "/proc/sys/kernel/random/boot_id")
+SUPPLY_DIR = Path(os.environ.get("POWER_PROFILE_SUPPLY_DIR", "/sys/class/power_supply"))
+
+
+def read_boot_id() -> str:
+    with open(BOOT_ID_FILE, encoding="utf-8") as boot_file:
+        return boot_file.read().strip()
+
+
+def read_mains_online() -> bool | None:
+    """Use real mains inputs; USB-C source ports can report online while discharging."""
+    try:
+        mains = [device for device in SUPPLY_DIR.iterdir()
+                 if (device / "type").read_text(encoding="utf-8").strip() == "Mains"]
+        if not mains:
+            return None
+        return any((device / "online").read_text(encoding="utf-8").strip() == "1"
+                   for device in mains)
+    except OSError as error:
+        print(f"Unable to read mains power: {error}", flush=True)
+        return None
+
+
+def current_on_battery(proxy) -> bool | None:
+    mains_online = read_mains_online()
+    if mains_online is not None:
+        return not mains_online
+    property_value = proxy.get_cached_property("OnBattery")
+    return bool(property_value.unpack()) if property_value is not None else None
 
 
 def read_previous_source() -> str | None:
     try:
         with open(SOURCE_STATE_FILE, encoding="utf-8") as state_file:
-            return state_file.read().strip() or None
+            boot_id, separator, source = state_file.read().strip().partition("|")
+            if separator and boot_id == read_boot_id() and source in {"ac", "battery"}:
+                return source
     except FileNotFoundError:
-        return None
+        pass
+    return None
 
 
 def write_source(source: str) -> None:
     os.makedirs(os.path.dirname(SOURCE_STATE_FILE), exist_ok=True)
     temporary = f"{SOURCE_STATE_FILE}.tmp"
     with open(temporary, "w", encoding="utf-8") as state_file:
-        state_file.write(f"{source}\n")
+        state_file.write(f"{read_boot_id()}|{source}\n")
     os.replace(temporary, SOURCE_STATE_FILE)
 
 
@@ -38,13 +71,18 @@ def apply_default(on_battery: bool) -> bool:
 
     environment = os.environ.copy()
     environment["POWER_PROFILE_ON_BATTERY"] = "true" if on_battery else "false"
-    result = subprocess.run(
-        ["/bin/bash", HELPER, "default"],
-        capture_output=True,
-        text=True,
-        check=False,
-        env=environment,
-    )
+    try:
+        result = subprocess.run(
+            ["/bin/bash", HELPER, "default"],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=30,
+            env=environment,
+        )
+    except subprocess.TimeoutExpired:
+        print("Timed out applying the default power profile", flush=True)
+        return False
     if result.returncode:
         print(f"Failed to apply default power profile: {result.stderr.strip()}", flush=True)
         return False
@@ -53,27 +91,43 @@ def apply_default(on_battery: bool) -> bool:
 
     profile = result.stdout.strip()
     if profile in {"performance", "balanced", "power-saver"}:
-        subprocess.run(
-            [
-                "/usr/bin/awesome-client",
-                f"awesome.emit_signal('module::power_profile', '{profile}')",
-            ],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
+        try:
+            subprocess.run(
+                [
+                    "/usr/bin/awesome-client",
+                    f"awesome.emit_signal('module::power_profile', '{profile}')",
+                ],
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=5,
+            )
+        except subprocess.TimeoutExpired:
+            print("Timed out notifying Awesome of the power profile", flush=True)
     return True
 
 
 def disable_builtin_battery_policy() -> None:
-    result = subprocess.run(
-        ["powerprofilesctl", "configure-battery-aware", "--disable"],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    if result.returncode and "already set" not in result.stderr:
-        print(f"Failed to disable power-profiles battery policy: {result.stderr.strip()}", flush=True)
+    try:
+        status = subprocess.run(
+            ["powerprofilesctl", "query-battery-aware"],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=5,
+        )
+        if status.returncode or not status.stdout.strip().endswith("False"):
+            result = subprocess.run(
+                ["powerprofilesctl", "configure-battery-aware", "--disable"],
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=5,
+            )
+            if result.returncode:
+                print(f"Failed to disable power-profiles battery policy: {result.stderr.strip()}", flush=True)
+    except subprocess.TimeoutExpired:
+        print("Timed out checking power-profiles battery policy", flush=True)
 
 
 def main() -> int:
@@ -91,28 +145,76 @@ def main() -> int:
     )
 
     disable_builtin_battery_policy()
-    on_battery_property = proxy.get_cached_property("OnBattery")
-    if on_battery_property is not None:
-        apply_default(bool(on_battery_property.unpack()))
+    retry_id = None
+    retries_left = 0
+
+    def apply_source(on_battery: bool) -> None:
+        nonlocal retry_id, retries_left
+        source = "battery" if on_battery else "ac"
+        if read_previous_source() == source or apply_default(on_battery):
+            if retry_id is not None:
+                GLib.source_remove(retry_id)
+                retry_id = None
+            return
+
+        if retry_id is None:
+            retries_left = 3
+
+            def retry() -> bool:
+                nonlocal retry_id, retries_left
+                on_battery_now = current_on_battery(proxy)
+                if on_battery_now is not None:
+                    source_now = "battery" if on_battery_now else "ac"
+                    if read_previous_source() == source_now or apply_default(on_battery_now):
+                        retry_id = None
+                        return GLib.SOURCE_REMOVE
+
+                retries_left -= 1
+                if retries_left == 0:
+                    print("Power profile was not applied after three retries", flush=True)
+                    retry_id = None
+                    return GLib.SOURCE_REMOVE
+                return GLib.SOURCE_CONTINUE
+
+            retry_id = GLib.timeout_add_seconds(10, retry)
 
     def on_properties_changed(_conn, _sender, _path, _interface, _signal, parameters, _data):
         changed_interface, changed, _invalidated = parameters.unpack()
-        if changed_interface == "org.freedesktop.UPower" and "OnBattery" in changed:
-            on_battery = changed["OnBattery"]
-            if hasattr(on_battery, "unpack"):
-                on_battery = on_battery.unpack()
-            apply_default(bool(on_battery))
+        if ((changed_interface == "org.freedesktop.UPower" and "OnBattery" in changed) or
+                (changed_interface == "org.freedesktop.UPower.Device" and "Online" in changed)):
+            on_battery = current_on_battery(proxy)
+            if on_battery is not None:
+                apply_source(on_battery)
+
+    def on_prepare_for_sleep(_conn, _sender, _path, _interface, _signal, parameters, _data):
+        if not parameters.unpack()[0]:
+            on_battery = current_on_battery(proxy)
+            if on_battery is not None:
+                apply_source(on_battery)
 
     bus.signal_subscribe(
         "org.freedesktop.UPower",
         "org.freedesktop.DBus.Properties",
         "PropertiesChanged",
-        "/org/freedesktop/UPower",
+        None,
         None,
         Gio.DBusSignalFlags.NONE,
         on_properties_changed,
         None,
     )
+    bus.signal_subscribe(
+        "org.freedesktop.login1",
+        "org.freedesktop.login1.Manager",
+        "PrepareForSleep",
+        "/org/freedesktop/login1",
+        None,
+        Gio.DBusSignalFlags.NONE,
+        on_prepare_for_sleep,
+        None,
+    )
+    on_battery = current_on_battery(proxy)
+    if on_battery is not None:
+        apply_source(on_battery)
     GLib.MainLoop().run()
     return 0
 

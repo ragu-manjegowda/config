@@ -46,7 +46,10 @@ enable_user_service pipewire-pulse
 enable_user_service wireplumber
 enable_user_service darkman
 enable_user_service lid-brightness-manager
-enable_user_service power-profile-monitor
+# Reenable migrates older graphical-session.target symlinks without restarting
+# an already running monitor or reapplying manually adjusted device settings.
+systemctl --user reenable power-profile-monitor.service
+systemctl --user start power-profile-monitor.service
 
 log_info "User tmpfiles..."
 enable_user_service systemd-tmpfiles-setup.service
