@@ -4,6 +4,7 @@ local gears = require('gears')
 local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 local icons = require('theme.icons')
+local cpu_temperature = require('library.cpu-temperature')
 
 local meter_name = wibox.widget {
     text = 'Temperature',
@@ -55,19 +56,15 @@ local slider = wibox.widget {
     layout = wibox.layout.align.vertical
 }
 
-local max_temp = 80
-
-local temp_t = 0
+local max_temp = 100
+local temp_t
 
 local function update_temperature()
-    local sensor = io.open('/sys/class/thermal/thermal_zone0/temp', 'r')
-    local temp = sensor and tonumber(sensor:read('*l')) or nil
-    if sensor then
-        sensor:close()
+    temp_t = cpu_temperature.read()
+    slider.temp_status.visible = temp_t ~= nil
+    if temp_t then
+        slider.temp_status:set_value(temp_t / max_temp * 100)
     end
-
-    temp_t = temp and temp / 1000 or 0
-    slider.temp_status:set_value(temp_t / max_temp * 100)
 end
 
 local temperature_timer = gears.timer { timeout = 10, callback = update_temperature }
@@ -108,7 +105,8 @@ local mytempmeter_t = awful.tooltip {}
 mytempmeter_t:add_to_object(temp_meter)
 
 temp_meter:connect_signal('mouse::enter', function()
-    mytempmeter_t.text = 'CPU core temp = ' .. tostring(temp_t) .. '\'C'
+    mytempmeter_t.text = temp_t and string.format('CPU package temp = %.1f°C', temp_t) or
+        'CPU package temperature unavailable'
 end)
 
 return temp_meter

@@ -15,6 +15,7 @@ local current_health = 'unknown'
 local health_failures = 0
 local health_check_running = false
 local health_reported = false
+local health_generation = 0
 local last_health_check = 0
 local health_interval_seconds = 60
 local health_failure_threshold = 3
@@ -35,8 +36,9 @@ local function set_health(health)
     end
 end
 
-local function capture_health_failure()
+local function capture_health_failure(generation)
     awful.spawn.easy_async({ diagnostics_command }, function(stdout)
+        if generation ~= health_generation or current_status ~= 'connected' then return end
         local diagnostic_path = stdout:match('([^%s]+%.log)') or 'the Prisma state directory'
         naughty.notification({
             title = 'VPN connectivity lost',
@@ -55,7 +57,9 @@ local function check_health()
 
     last_health_check = os.time()
     health_check_running = true
+    local generation = health_generation
     awful.spawn.easy_async({ health_command }, function(_, _, _, exit_code)
+        if generation ~= health_generation or current_status ~= 'connected' then return end
         health_check_running = false
         if exit_code == 0 then
             health_failures = 0
@@ -69,7 +73,7 @@ local function check_health()
             set_health('unhealthy')
             if not health_reported then
                 health_reported = true
-                capture_health_failure()
+                capture_health_failure(generation)
             end
         else
             set_health('degraded')
@@ -90,6 +94,10 @@ local status_widget, status_timer = awful.widget.watch(
 
         if status ~= current_status then
             current_status = status
+            -- Old probes/diagnostics must not update a new VPN connection.
+            health_generation = health_generation + 1
+            health_check_running = false
+            last_health_check = 0
             awesome.emit_signal('module::vpn_status', status)
             if status == 'connected' or status == 'disconnected' then
                 mail_restart_timer:again()

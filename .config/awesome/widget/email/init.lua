@@ -4,6 +4,7 @@ local wibox = require('wibox')
 local naughty = require('naughty')
 local beautiful = require('beautiful')
 local email_subject = require('library.email-subject')
+local email_refresh = require('library.email-refresh')
 local dpi = beautiful.xresources.apply_dpi
 local config_dir = gears.filesystem.get_configuration_dir()
 local widget_icon_dir = config_dir .. 'widget/email/icons/'
@@ -340,7 +341,7 @@ local email_report = wibox.widget {
 local notify_all_unread_email = function(email_data)
     local unread_counter = email_data:match('Unread Count: (.-)From:'):sub(1, -2)
 
-    local title = nil
+    local title
 
     if tonumber(unread_email_count) > 1 then
         title = 'You have ' .. unread_counter .. ' unread emails!'
@@ -539,46 +540,12 @@ end)
 -- Periodic refresh timer (every 5 minutes)
 -- Workaround for Exchange/Outlook not sending EXPUNGE notifications during IDLE
 local REFRESH_INTERVAL = 300 -- 5 minutes in seconds
-local MIN_UPDATE_AGE = 60    -- Don't refresh if mails.txt updated less than 1 min ago
 local notify_script = os.getenv("HOME") .. "/.config/imapnotify/notify.sh"
-
-local function should_refresh_emails()
-    -- Check if notify.sh or its child processes are already running
-    -- Match the actual script path or its child commands (fetch-emails, mbsync)
-    local check_cmd = string.format(
-        [[(pgrep -f "%s" >/dev/null 2>&1 || pgrep -f "fetch-emails.py" >/dev/null 2>&1 || pgrep -f "mbsync.*imapnotify" >/dev/null 2>&1) && echo "running" || echo "not_running"]],
-        notify_script
-    )
-
-    awful.spawn.easy_async_with_shell(check_cmd, function(stdout)
-        if stdout:match("running") then
-            -- notify.sh is already running, skip
-            return
-        end
-
-        -- Check mails.txt modification time
-        local stat_cmd = string.format(
-            [[stat -c %%Y "%s" 2>/dev/null || echo "0"]],
-            mails_path
-        )
-
-        awful.spawn.easy_async_with_shell(stat_cmd, function(mtime_str)
-            local mtime = tonumber(mtime_str) or 0
-            local now = os.time()
-            local age = now - mtime
-
-            if age < MIN_UPDATE_AGE then
-                -- mails.txt was updated less than 1 minute ago, skip
-                return
-            end
-
-            -- Run notify.sh to refresh emails
-            awful.spawn.easy_async_with_shell(notify_script, function()
-                -- notify.sh will emit 'module::email:show' signal when done
-            end)
-        end)
-    end)
-end
+local should_refresh_emails = email_refresh.new {
+    mails_path = mails_path,
+    notify_script = notify_script,
+    spawn = awful.spawn.easy_async,
+}
 
 -- Start the periodic refresh timer
 gears.timer {
