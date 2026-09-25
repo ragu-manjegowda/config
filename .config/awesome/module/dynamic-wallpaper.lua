@@ -16,6 +16,7 @@
 -- Timeout paused when laptop/pc is suspended or in sleep mode, and there's probably some bugs too so whatever
 local gears = require('gears')
 local beautiful = require('beautiful')
+local Gio = require('lgi').Gio
 local filesystem = gears.filesystem
 local config = require('configuration.config')
 
@@ -151,8 +152,22 @@ end
 
 -- Returns a table containing all file paths in a directory
 local function get_dir_contents(dir)
-    local ok, files = pcall(filesystem.get_directory_items, dir)
-    return ok and files or {}
+    local enumerator, err = Gio.File.new_for_path(dir):enumerate_children(
+        'standard::name,standard::type', Gio.FileQueryInfoFlags.NONE
+    )
+    if not enumerator then
+        gears.debug.print_error('Cannot list wallpapers in ' .. dir .. ': ' .. tostring(err))
+        return {}
+    end
+
+    local files = {}
+    for info in function() return enumerator:next_file() end do
+        if info:get_file_type() == 'REGULAR' then
+            files[#files + 1] = info:get_name()
+        end
+    end
+    enumerator:close()
+    return files
 end
 
 -- Returns a table of all the files that were one of the valid file formats

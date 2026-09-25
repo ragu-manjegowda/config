@@ -8,21 +8,36 @@ local config = require('configuration.config')
 local debug_mode = config.module.auto_start.debug_mode or false
 local auto_start_disabled = os.getenv('AWESOME_SKIP_AUTOSTART') == '1'
 
+-- Only long-lived programs need process checks. Setup commands must run on
+-- each Awesome start; taking their first word as a pgrep pattern suppresses
+-- unrelated commands and does not identify their resulting processes.
+local processes = {
+    picom = { '-x', 'picom' },
+    xiccd = { '-x', 'xiccd' },
+    ['nm-applet'] = { '-x', 'nm-applet' },
+    ['blueman-applet'] = { '-x', 'blueman-applet' },
+}
+
 local run_once = function(cmd)
     if cmd:match('^systemctl%s') then
         awful.spawn.with_shell(cmd)
         return
     end
 
-    local findme = cmd
-    local firstspace = cmd:find(' ')
-    if firstspace then
-        findme = cmd:sub(0, firstspace - 1)
+    local executable = cmd:match('^%s*(%S+)')
+    local process = processes[executable]
+    if executable == '/usr/bin/lxqt-policykit-agent' or
+        (executable and executable:match('/suspend%-hook%.py$')) then
+        process = { '-f', executable }
     end
-    findme = findme:gsub('^~', os.getenv('HOME'))
+
+    if not process then
+        awful.spawn.with_shell(cmd)
+        return
+    end
 
     awful.spawn.easy_async(
-        { 'pgrep', '-f', '-u', os.getenv('USER'), findme },
+        { 'pgrep', process[1], '-u', os.getenv('USER'), process[2] },
         function(_, stderr, _, exit_code)
             if exit_code ~= 0 then
                 awful.spawn.with_shell(cmd)
@@ -50,7 +65,7 @@ awesome.connect_signal(
         -- 'darkman run > ~/.cache/awesome/darkman.log 2>&1 &')
         -- No need for this since they are now part of start-up apps
         -- Just a fail safe mechanism in case user services fails
-        run_once('systemctl --user reload-or-restart --now darkman.service')
+        run_once(apps.utils.ensure_darkman)
 
         run_once('systemctl --user start goimapnotify.service')
     end

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+systemctl_bin="${DARKMAN_SYSTEMCTL_BIN:-systemctl}"
+darkman_bin="${DARKMAN_BIN:-darkman}"
+timeout_bin="${DARKMAN_TIMEOUT_BIN:-timeout}"
+
+if ! "$timeout_bin" 30 "$systemctl_bin" --user start darkman.service; then
+    "$systemctl_bin" --user reset-failed darkman.service
+    "$timeout_bin" 30 "$systemctl_bin" --user start darkman.service
+fi
+
+# A healthy service may already be in a manually selected mode. Restart only
+# if its D-Bus API is unavailable after resume; systemd handles later exits.
+mode="$("$timeout_bin" 3 "$darkman_bin" get 2>/dev/null)" || mode=''
+if [[ "$mode" != light && "$mode" != dark ]]; then
+    "$timeout_bin" 30 "$systemctl_bin" --user restart darkman.service
+fi

@@ -105,7 +105,7 @@ return {
         'systemctl --user reload-or-restart --now xidlehook.service',
         -- Darkman
         -- 'systemctl reload-or-restart --now geoclue.service',
-        'systemctl --user reload-or-restart --now darkman.service',
+        'systemctl --user start darkman.service',
         -- 'killall darkman; ' ..
         -- 'XDG_DATA_DIRS=~/.config/darkman ' ..
         -- 'darkman run > ~/.cache/awesome/darkman.log 2>&1 &',
@@ -135,6 +135,7 @@ return {
         -- Show time with rofi
         show_time       = utils_dir .. 'time',
         -- Toggle touchpad
-        touchpad_toggle = utils_dir .. 'touchpad-toggle'
+        touchpad_toggle = utils_dir .. 'touchpad-toggle',
+        ensure_darkman = utils_dir .. 'ensure-darkman'
     }
 }

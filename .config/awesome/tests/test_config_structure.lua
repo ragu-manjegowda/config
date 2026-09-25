@@ -319,9 +319,11 @@ local wallpaper_file = assert(io.open(
 local wallpaper_source = wallpaper_file:read('*a')
 wallpaper_file:close()
 assert_test(
-    wallpaper_source:match('filesystem%.get_directory_items') ~= nil and
+    wallpaper_source:match('Gio%.File%.new_for_path') ~= nil and
+    wallpaper_source:match('enumerate_children') ~= nil and
+    wallpaper_source:match('filesystem%.get_directory_items') == nil and
     wallpaper_source:match('io%.popen') == nil,
-    "wallpaper discovery does not construct a shell command"
+    "wallpaper discovery uses Gio directory enumeration"
 )
 
 local clock_file = assert(io.open(
