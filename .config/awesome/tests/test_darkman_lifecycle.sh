@@ -41,7 +41,10 @@ run_helper() {
 
 DARKMAN_TEST_HEALTHY=1 run_helper
 grep -Fxq -- '--user start darkman.service' "$tmp_dir/actions"
-! grep -Fq 'restart darkman.service' "$tmp_dir/actions"
+if grep -Fq 'restart darkman.service' "$tmp_dir/actions"; then
+    printf 'Healthy Darkman was restarted\n' >&2
+    exit 1
+fi
 
 : > "$tmp_dir/actions"
 DARKMAN_TEST_HEALTHY=0 run_helper
@@ -50,7 +53,10 @@ grep -Fxq -- '--user restart darkman.service' "$tmp_dir/actions"
 : > "$tmp_dir/actions"
 DARKMAN_TEST_START_FAIL=1 DARKMAN_TEST_HEALTHY=1 run_helper
 grep -Fxq -- '--user reset-failed darkman.service' "$tmp_dir/actions"
-! grep -Fq 'restart darkman.service' "$tmp_dir/actions"
+if grep -Fq 'restart darkman.service' "$tmp_dir/actions"; then
+    printf 'Darkman was restarted after successful recovery\n' >&2
+    exit 1
+fi
 
 grep -Fxq 'Restart=always' "$unit"
 grep -Fxq 'RestartSec=5s' "$unit"

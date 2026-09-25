@@ -111,13 +111,19 @@ run_helper() {
 
 [[ "$(run_helper false default)" == performance ]]
 grep -Fxq 'light -S 100' "$log"
-! grep -Fq 'bluetoothctl power ' "$log"
+if grep -Fq 'bluetoothctl power ' "$log"; then
+    printf 'Performance preset changed Bluetooth power\n' >&2
+    exit 1
+fi
 [[ "$(<"$bluetooth_state")" == no ]]
 
 : > "$log"
 [[ "$(run_helper true default)" == balanced ]]
 grep -Fxq 'light -S 60' "$log"
-! grep -Fq 'bluetoothctl power ' "$log"
+if grep -Fq 'bluetoothctl power ' "$log"; then
+    printf 'Balanced preset changed Bluetooth power\n' >&2
+    exit 1
+fi
 [[ "$(<"$bluetooth_state")" == no ]]
 
 : > "$log"
@@ -170,7 +176,10 @@ printf 'no\n' > "$bluetooth_state"
 [[ "$(run_helper true set balanced)" == balanced ]]
 [[ "$(run_helper false set performance)" == performance ]]
 [[ "$(<"$bluetooth_state")" == no ]]
-! grep -Fq 'bluetoothctl power ' "$log"
+if grep -Fq 'bluetoothctl power ' "$log"; then
+    printf 'Ordinary profile transition changed Bluetooth power\n' >&2
+    exit 1
+fi
 
 : > "$log"
 if POWER_PROFILE_TEST_FAIL_TURBO=balanced run_helper true set balanced >/dev/null 2>&1; then

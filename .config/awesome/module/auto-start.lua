@@ -36,8 +36,16 @@ local run_once = function(cmd)
         return
     end
 
+    local pgrep_args = { 'pgrep', process[1] }
+    local user = os.getenv('USER') or os.getenv('LOGNAME')
+    if user and user ~= '' then
+        pgrep_args[#pgrep_args + 1] = '-u'
+        pgrep_args[#pgrep_args + 1] = user
+    end
+    pgrep_args[#pgrep_args + 1] = process[2]
+
     awful.spawn.easy_async(
-        { 'pgrep', process[1], '-u', os.getenv('USER'), process[2] },
+        pgrep_args,
         function(_, stderr, _, exit_code)
             if exit_code ~= 0 then
                 awful.spawn.with_shell(cmd)
