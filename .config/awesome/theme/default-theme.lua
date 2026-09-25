@@ -10,7 +10,7 @@ local titlebar_icon_path = theme_dir .. '/icons/titlebar/' .. titlebar_theme .. 
 local tip = titlebar_icon_path
 
 -- Create theme table
-local theme = {}
+local base_theme = {}
 
 -- Font size function - NO scaling (fonts stay at specified size)
 -- The xrandr DPI setting affects layout/spacing via dpi() function, not fonts
@@ -41,19 +41,18 @@ local function font_emoji(size)
 end
 
 -- Export font functions for use in widgets (MUST be before any widget loading)
-theme.font_regular = font_regular
-theme.font_bold = font_bold
-theme.font_italic = font_italic
-theme.font_mono = font_mono
-theme.font_emoji = font_emoji
-theme.font_size = font_size
+base_theme.font_regular = font_regular
+base_theme.font_bold = font_bold
+base_theme.font_italic = font_italic
+base_theme.font_mono = font_mono
+base_theme.font_emoji = font_emoji
+base_theme.font_size = font_size
 
 -- Font - Now with DPI scaling
-theme.font = font_regular(12)
-theme.notification_font = font_emoji(12)
-theme.emojifont = font_emoji(12)
+base_theme.font = font_regular(12)
+base_theme.notification_font = font_emoji(12)
+base_theme.emojifont = font_emoji(12)
 
----@diagnostic disable-next-line: redefined-local
 local awesome_overrides = function(theme)
 
     theme.dir = theme_dir
@@ -225,6 +224,6 @@ local awesome_overrides = function(theme)
 end
 
 return {
-    theme = theme,
+    theme = base_theme,
     awesome_overrides = awesome_overrides
 }

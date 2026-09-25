@@ -4,8 +4,6 @@ local gears = require('gears')
 local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 
-PANEL_VISIBLE = false
-
 local format_item = function(widget)
     return wibox.widget {
         {
@@ -263,7 +261,6 @@ local control_center = function(s)
 
     local open_panel = function()
         local focused = awful.screen.focused()
-        PANEL_VISIBLE = true
 
         focused.backdrop_control_center.visible = true
         focused.control_center.visible = true
@@ -277,7 +274,6 @@ local control_center = function(s)
 
     local close_panel = function()
         local focused = awful.screen.focused()
-        PANEL_VISIBLE = false
 
         focused.control_center.visible = false
         focused.backdrop_control_center.visible = false

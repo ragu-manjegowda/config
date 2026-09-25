@@ -565,9 +565,8 @@ local locker = function(s)
                 end
 
                 -- Hide all the lockscreen on all screen
-                ---@diagnostic disable-next-line: redefined-local
-                for s in screen do
-                    local target = lockscreen_for_screen(s)
+                for target_screen in screen do
+                    local target = lockscreen_for_screen(target_screen)
                     if target then
                         target.visible = false
                     end
@@ -832,9 +831,8 @@ local locker = function(s)
             -- check_webcam()
 
             -- Show all the lockscreen on each screen
-            ---@diagnostic disable-next-line: redefined-local
-            for s in screen do
-                local target = lockscreen_for_screen(s)
+            for target_screen in screen do
+                local target = lockscreen_for_screen(target_screen)
                 if target then
                     target.visible = true
                 end
@@ -909,9 +907,9 @@ local locker = function(s)
         function()
             if fingerprint_auth then fingerprint_auth:stop() end
             time:force_update()
-            for s in screen do
-                if s.clock and s.clock.force_update then
-                    s.clock:force_update()
+            for target_screen in screen do
+                if target_screen.clock and target_screen.clock.force_update then
+                    target_screen.clock:force_update()
                 end
             end
             awesome.emit_signal('module::spawn_apps')
@@ -1232,8 +1230,7 @@ local apply_ls_bg_image = function(wall_name)
         aspect_ratio = math.floor(aspect_ratio * 100) / 100
 
         -- Create image filter command
-        local cmd = nil
-        cmd = filter_bg_image(wall_name, index, aspect_ratio, screen_width, screen_height)
+        local cmd = filter_bg_image(wall_name, index, aspect_ratio, screen_width, screen_height)
 
         local target = lockscreen_for_screen(s)
         if target then

@@ -8,7 +8,7 @@ local apps = require('configuration.apps')
 local config_dir = gears.filesystem.get_configuration_dir()
 local widget_icon_dir = config_dir .. 'configuration/user-profile/'
 
-_G.title_table = {
+local title_table = {
     'Hey, I have a message for you',
     'Listen here you little shit!',
     'Le\' me tell you a secret',
@@ -16,7 +16,7 @@ _G.title_table = {
     'Message received from your boss'
 }
 
-_G.message_table = {
+local message_table = {
     'The last thing I want to do is hurt you. But it’s still on the list.',
     'If I agreed with you we’d both be wrong.',
     'I intend to live forever. So far, so good.',

@@ -88,7 +88,7 @@ update_slider_value()
 
 local action_jump = function()
     local sli_value = blur_slider:get_value()
-    local new_value = 0
+    local new_value
 
     if sli_value >= 0 and sli_value < 25 then
         new_value = 25

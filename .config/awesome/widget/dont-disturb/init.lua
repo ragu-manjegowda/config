@@ -97,7 +97,7 @@ local set_disturb_status = function(enabled)
 end
 
 local toggle_action = function()
-    set_disturb_status(not dont_disturb_state)
+    set_disturb_status(not _G.dont_disturb_state)
 end
 
 widget_button:buttons(
@@ -144,7 +144,7 @@ naughty.connect_signal(
     'property::active',
     function()
         local n = naughty.active[#naughty.active]
-        if lifecycle.should_play_sound(n, sound_handled, dont_disturb_state) then
+        if lifecycle.should_play_sound(n, sound_handled, _G.dont_disturb_state) then
             awful.spawn.with_shell('canberra-gtk-play -i message 2>/dev/null')
         end
     end

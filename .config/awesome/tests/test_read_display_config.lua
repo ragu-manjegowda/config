@@ -90,7 +90,7 @@ if f then
     os.execute("chmod +x " .. bash_test_file)
     local bash_result = io.popen(bash_test_file .. " 2>&1"):read("*l")
     os.remove(bash_test_file)
-    
+
     assert_test(
         bash_result == "success",
         "script can be sourced in bash",
@@ -103,8 +103,8 @@ end
 -- Test: Values match config.lua
 print("\nTest Suite: Value Consistency")
 local home = os.getenv("HOME")
-package.path = home .. "/.config/awesome/?.lua;" .. 
-               home .. "/.config/awesome/?/init.lua;" .. 
+package.path = home .. "/.config/awesome/?.lua;" ..
+               home .. "/.config/awesome/?/init.lua;" ..
                package.path
 
 package.loaded['gears.filesystem'] = {
@@ -119,7 +119,7 @@ if success and config.display then
     local dpi = output:match("export DISPLAY_DPI=(%d+)")
     local primary_name = output:match('export PRIMARY_NAME="([^"]*)"')
     local external_name = output:match('export EXTERNAL_NAME="([^"]*)"')
-    
+
     if dpi then
         assert_test(
             tonumber(dpi) == config.display.dpi,
@@ -127,7 +127,7 @@ if success and config.display then
             string.format("Config: %d, Output: %s", config.display.dpi, dpi)
         )
     end
-    
+
     if primary_name then
         assert_test(
             primary_name == config.display.primary.name,
@@ -135,7 +135,7 @@ if success and config.display then
             string.format("Config: %s, Output: %s", config.display.primary.name, primary_name)
         )
     end
-    
+
     if external_name then
         assert_test(
             external_name == config.display.external.name,
@@ -158,4 +158,3 @@ else
     print("✓ All tests passed!")
     os.exit(0)
 end
-

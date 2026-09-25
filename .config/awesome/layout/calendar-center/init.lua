@@ -4,8 +4,6 @@ local gears           = require('gears')
 local beautiful       = require('beautiful')
 local dpi             = beautiful.xresources.apply_dpi
 
-PANEL_VISIBLE         = false
-
 --- Date
 local hours           = wibox.widget.textclock("%I")
 local minutes         = wibox.widget.textclock("%M")
@@ -154,7 +152,6 @@ local calendar_center = function(s)
 
     local open_panel = function()
         local focused                            = awful.screen.focused()
-        PANEL_VISIBLE                            = true
 
         focused.backdrop_calendar_center.visible = true
         focused.calendar_center.visible          = true
@@ -164,7 +161,6 @@ local calendar_center = function(s)
 
     local close_panel = function()
         local focused                            = awful.screen.focused()
-        PANEL_VISIBLE                            = false
 
         focused.calendar_center.visible          = false
         focused.backdrop_calendar_center.visible = false

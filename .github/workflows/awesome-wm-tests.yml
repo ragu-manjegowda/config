@@ -21,10 +21,15 @@ on:
       - '.config/scripts/lid-brightness-monitor'
       - '.config/scripts/start_xidlehook.sh'
       - '.config/systemd/user/lid-brightness-manager.service'
+      - '.config/systemd/user/darkman.service.d/**'
       - '.config/systemd/user/power-profile-monitor.service'
       - '.config/systemd/user/xidlehook.service'
       - '.config/misc/etc/sudoers.d/**'
+      - '.config/misc/etc/polkit-1/rules.d/**'
+      - '.config/misc/etc/systemd/system/awesome-power-profile-policy@.service'
+      - '.config/misc/etc/systemd/system/login-media-keys.service'
       - '.config/misc/usr/local/libexec/awesome-power-profile-policy'
+      - '.config/misc/usr/local/libexec/login-media-keys'
       - '.config/misc/etc/modprobe.d/xe.conf'
       - '.config/misc/etc/gai.conf'
       - '.config/misc/etc/NetworkManager/dispatcher.d/10-ntpd'
@@ -35,6 +40,7 @@ on:
       - '.config/scripts/bootstrap/03-system.sh'
       - '.config/scripts/bootstrap/04-hardware.sh'
       - '.config/scripts/bootstrap/05-services.sh'
+      - '.config/scripts/bootstrap/06-desktop.sh'
       - '.github/workflows/awesome-wm-tests.yml'
   pull_request:
     branches: [ main, master, develop ]
@@ -44,10 +50,15 @@ on:
       - '.config/scripts/lid-brightness-monitor'
       - '.config/scripts/start_xidlehook.sh'
       - '.config/systemd/user/lid-brightness-manager.service'
+      - '.config/systemd/user/darkman.service.d/**'
       - '.config/systemd/user/power-profile-monitor.service'
       - '.config/systemd/user/xidlehook.service'
       - '.config/misc/etc/sudoers.d/**'
+      - '.config/misc/etc/polkit-1/rules.d/**'
+      - '.config/misc/etc/systemd/system/awesome-power-profile-policy@.service'
+      - '.config/misc/etc/systemd/system/login-media-keys.service'
       - '.config/misc/usr/local/libexec/awesome-power-profile-policy'
+      - '.config/misc/usr/local/libexec/login-media-keys'
       - '.config/misc/etc/modprobe.d/xe.conf'
       - '.config/misc/etc/gai.conf'
       - '.config/misc/etc/NetworkManager/dispatcher.d/10-ntpd'
@@ -58,6 +69,7 @@ on:
       - '.config/scripts/bootstrap/03-system.sh'
       - '.config/scripts/bootstrap/04-hardware.sh'
       - '.config/scripts/bootstrap/05-services.sh'
+      - '.config/scripts/bootstrap/06-desktop.sh'
       - '.github/workflows/awesome-wm-tests.yml'
   workflow_dispatch:
 
@@ -90,17 +102,26 @@ jobs:
 
       - name: Run luacheck on all Lua files
         run: |
+          set -o pipefail
           mkdir -p "$GITHUB_WORKSPACE"/test-logs
           luacheck ${{ env.AWESOME_CONFIG_DIR }} \
+            --std luajit \
+            --no-color \
             --globals awesome client root screen tag \
             --globals mouse mousegrabber \
             --globals button awful beautiful gears naughty wibox \
             --globals menubar dpi \
-            --max-line-length 120 \
+            --read-globals drawable drawin key get_wallpaper_name \
+            --no-max-line-length \
             --ignore 211 212 213 \
-            --exclude-files "${{ env.AWESOME_CONFIG_DIR }}/library/**" \
+            --exclude-files "${{ env.AWESOME_CONFIG_DIR }}/library/battery/**" \
+            --exclude-files "${{ env.AWESOME_CONFIG_DIR }}/library/revelation/**" \
+            --exclude-files "${{ env.AWESOME_CONFIG_DIR }}/library/stocks/**" \
+            --exclude-files "${{ env.AWESOME_CONFIG_DIR }}/library/tween/**" \
+            --exclude-files "${{ env.AWESOME_CONFIG_DIR }}/library/volctl/**" \
+            --exclude-files "${{ env.AWESOME_CONFIG_DIR }}/library/json.lua" \
             --exclude-files "${{ env.AWESOME_CONFIG_DIR }}/theme/solarized-*/**" \
-            2>&1 | tee "$GITHUB_WORKSPACE"/test-logs/luacheck.log || true
+            2>&1 | tee "$GITHUB_WORKSPACE"/test-logs/luacheck.log
 
       - name: Check Lua syntax for all files
         run: |
@@ -817,6 +838,15 @@ jobs:
         run: |
           cd "$GITHUB_WORKSPACE"
           bash .config/awesome/tests/test_xidlehook_display_recovery.sh
+
+      - name: Test desktop controls and CPU sensor selection
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_cpu_temperature.sh
+          HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_darkman_lifecycle.sh
+          HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_kbd_battery_lifecycle.sh
+          HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_login_media_keys.sh
+          HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_presentation_mode.sh
 
       - name: Test hardware-independent lockscreen power policy
         run: |

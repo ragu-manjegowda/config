@@ -120,7 +120,7 @@ local filesystem = require('gears.filesystem')
 local config_dir = filesystem.get_configuration_dir()
 local utils_dir = config_dir .. 'utilities/'
 
-_G.ws_fname = utils_dir .. "/awesome-last-ws"
+local ws_fname = utils_dir .. "/awesome-last-ws"
 
 local save_current_tag = function()
     -- Get the currently selected tag from mouse screen (more reliable than focused)

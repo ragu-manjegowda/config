@@ -243,7 +243,7 @@ assert_test(
 assert_test(
     source:match("time:force_update%(%s*%)") ~= nil and
         source:match("ext_time:force_update%(%s*%)") ~= nil and
-        source:match("s%.clock:force_update%(%s*%)") ~= nil,
+        source:match("target_screen%.clock:force_update%(%s*%)") ~= nil,
     "Resume immediately refreshes lockscreen and panel clocks"
 )
 

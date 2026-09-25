@@ -34,7 +34,7 @@ local art = wibox.widget {
 local get_time_from_minutes = function(minutes)
     local hour = 0
     local min = 0
-    local seconds = 0
+    local seconds
     if minutes > 1 then
         min = math.floor(minutes / 60)
         if min > 60 then
@@ -44,28 +44,28 @@ local get_time_from_minutes = function(minutes)
     end
     seconds = math.floor(minutes % 60)
 
-    local hour_str = ""
+    local hour_str
     if hour < 10 then
         hour_str = '0' .. tostring(hour)
     else
         hour_str = tostring(hour)
     end
 
-    local min_str = ""
+    local min_str
     if min < 10 then
         min_str = '0' .. tostring(min)
     else
         min_str = tostring(min)
     end
 
-    local seconds_str = ""
+    local seconds_str
     if seconds < 10 then
         seconds_str = '0' .. tostring(seconds)
     else
         seconds_str = tostring(seconds)
     end
 
-    local time = ""
+    local time
     if hour > 0 then
         time = hour_str .. ':' .. min_str .. ':' .. seconds_str
     else

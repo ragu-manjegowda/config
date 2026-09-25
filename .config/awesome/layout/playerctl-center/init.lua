@@ -4,8 +4,6 @@ local gears            = require('gears')
 local beautiful        = require('beautiful')
 local dpi              = beautiful.xresources.apply_dpi
 
-PANEL_VISIBLE          = false
-
 local playerctl_center = function(s)
     -- Set the playerctl center geometry
     local panel_width = s.geometry.width / 6
@@ -82,7 +80,6 @@ local playerctl_center = function(s)
 
     local open_panel = function()
         local focused                             = awful.screen.focused()
-        PANEL_VISIBLE                             = true
 
         focused.backdrop_playerctl_center.visible = true
         focused.playerctl_center.visible          = true
@@ -92,7 +89,6 @@ local playerctl_center = function(s)
 
     local close_panel = function()
         local focused                             = awful.screen.focused()
-        PANEL_VISIBLE                             = false
 
         focused.playerctl_center.visible          = false
         focused.backdrop_playerctl_center.visible = false

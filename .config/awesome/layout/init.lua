@@ -21,7 +21,7 @@ screen.connect_signal(
 )
 
 -- Hide bars when app go fullscreen
-function UPDATE_BARS_VISIBILITY()
+local function update_bars_visibility()
     for s in screen do
         if s.selected_tag then
             local fullscreen = false
@@ -76,7 +76,7 @@ end
 tag.connect_signal(
     'property::selected',
     function(_)
-        UPDATE_BARS_VISIBILITY()
+        update_bars_visibility()
     end
 )
 
@@ -86,7 +86,7 @@ client.connect_signal(
         if c.first_tag then
             c.first_tag.fullscreen_mode = c.fullscreen
         end
-        UPDATE_BARS_VISIBILITY()
+        update_bars_visibility()
     end
 )
 
@@ -95,7 +95,7 @@ client.connect_signal(
     function(c)
         if c.fullscreen then
             c.screen.selected_tag.fullscreen_mode = false
-            UPDATE_BARS_VISIBILITY()
+            update_bars_visibility()
         end
     end
 )

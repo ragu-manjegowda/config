@@ -149,8 +149,8 @@ local function list_update(w, buttons, label, data, objects)
 
             -- Check if utf8 library is available
             local has_utf8, utf8 = pcall(require, "utf8")
-            local text_len = 0
-            local text_end_pos = 0
+            local text_len
+            local text_end_pos
 
             if has_utf8 and utf8.len(text_only) then
                 ---@diagnostic disable-next-line: cast-local-type

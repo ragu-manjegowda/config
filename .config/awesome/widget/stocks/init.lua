@@ -380,7 +380,7 @@ local update_stocks = function(show_refreshing)
                 local status = data.status
 
                 -- Format price display
-                local price_str = ""
+                local price_str
                 local change_color = beautiful.fg_normal
                 if price and price > 0 then
                     local abs_change = math.abs(change)

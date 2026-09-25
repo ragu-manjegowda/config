@@ -58,7 +58,7 @@ function source_hint:set_text(value) self.text = value end
 local cancel_hint = { text = '' }
 function cancel_hint:set_text(value) self.text = value end
 local escaped = false
-local area_requested = false
+local area_requested
 
 local settings = require("widget.screen-recorder.screen-recorder-settings").new {
     source_controller = source_controller,

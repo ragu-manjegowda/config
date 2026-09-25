@@ -123,7 +123,7 @@ update_slider()
 
 local action_jump = function()
     local sli_value = brightness_slider:get_value()
-    local new_value = 0
+    local new_value
 
     if sli_value >= 0 and sli_value < 50 then
         new_value = 50

@@ -29,19 +29,17 @@ local function list_update(w, _, label, data, objects)
     w:reset()
     for i, o in ipairs(objects) do
         local cache = data[o]
-        local ib, tb, bgb, tbm, ibm, l, bg_clickable
+        local ib, tb, bgb, ibm, l, bg_clickable
         if cache then
             ib = cache.ib
             tb = cache.tb
             bgb = cache.bgb
-            tbm = cache.tbm
             ibm = cache.ibm
         else
             local icondpi = 5
             ib = wibox.widget.imagebox()
             tb = wibox.widget.textbox()
             bgb = wibox.container.background()
-            tbm = wibox.container.margin(tb, dpi(4), dpi(16))
             ibm = wibox.container.margin(ib, dpi(icondpi), dpi(icondpi), dpi(icondpi), dpi(icondpi))
             l = wibox.layout.fixed.horizontal()
             bg_clickable = clickable_container()
@@ -58,7 +56,6 @@ local function list_update(w, _, label, data, objects)
                 ib = ib,
                 tb = tb,
                 bgb = bgb,
-                tbm = tbm,
                 ibm = ibm
             }
         end

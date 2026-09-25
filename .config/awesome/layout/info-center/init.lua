@@ -5,13 +5,11 @@ local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 local suspension = require('library.notification-suspension')
 
-PANEL_VISIBLE = false
 local open_centers = setmetatable({}, { __mode = 'k' })
 local active_panel
 
 local function update_suspension()
-    PANEL_VISIBLE = next(open_centers) ~= nil
-    suspension.set('center_open', PANEL_VISIBLE)
+    suspension.set('center_open', next(open_centers) ~= nil)
 end
 
 local info_center = function(s)

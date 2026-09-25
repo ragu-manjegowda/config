@@ -8,8 +8,8 @@ local tests_failed = 0
 
 -- Setup path for loading modules
 local home = os.getenv("HOME")
-package.path = home .. "/.config/awesome/?.lua;" .. 
-               home .. "/.config/awesome/?/init.lua;" .. 
+package.path = home .. "/.config/awesome/?.lua;" ..
+               home .. "/.config/awesome/?/init.lua;" ..
                package.path
 
 -- Mock gears.filesystem
@@ -76,7 +76,7 @@ print("\nTest Suite: DPI Configuration")
 assert_not_nil(config.display.dpi, "dpi is defined")
 assert_type(config.display.dpi, "number", "dpi is a number")
 assert_test(config.display.dpi > 0, "dpi is positive")
-assert_test(config.display.dpi >= 96 and config.display.dpi <= 384, 
+assert_test(config.display.dpi >= 96 and config.display.dpi <= 384,
     "dpi is in reasonable range (96-384)")
 
 -- Test: Primary display config
@@ -185,7 +185,7 @@ if prim_x and prim_y and ext_x and ext_y then
     assert_test(prim_y >= 0, "primary y position >= 0")
     assert_test(ext_x >= 0, "external x position >= 0")
     assert_test(ext_y >= 0, "external y position >= 0")
-    
+
     -- For extended displays, positions should differ unless stacked
     if ext_x == prim_x and ext_y == prim_y then
         print("  ⚠ Warning: displays have same position (overlapping)")
@@ -203,4 +203,3 @@ else
     print("✓ All tests passed!")
     os.exit(0)
 end
-
