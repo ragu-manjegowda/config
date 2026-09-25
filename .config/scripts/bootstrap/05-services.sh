@@ -41,6 +41,7 @@ if [[ -e "$_ntpd_dest" ]]; then
 fi
 
 log_info "User services..."
+systemctl --user daemon-reload
 enable_user_service pipewire
 enable_user_service pipewire-pulse
 enable_user_service wireplumber

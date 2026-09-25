@@ -3,6 +3,7 @@ set -euo pipefail
 
 helper="$HOME/.config/awesome/utilities/ensure-darkman"
 unit="$HOME/.config/systemd/user/darkman.service.d/override.conf"
+xsettings_unit="$HOME/.config/systemd/user/xsettingsd.service.d/override.conf"
 apps="$HOME/.config/awesome/configuration/apps.lua"
 tmp_dir="$(mktemp -d)"
 trap 'rm -rf "$tmp_dir"' EXIT
@@ -61,6 +62,13 @@ fi
 grep -Fxq 'Restart=always' "$unit"
 grep -Fxq 'RestartSec=5s' "$unit"
 grep -Fq "'systemctl --user start darkman.service'" "$apps"
+grep -Fxq 'ExecStart=/usr/bin/xsettingsd -c %h/.config/xsettingsd/xsettingsd.conf' "$xsettings_unit"
+grep -Fq "'systemctl --user start xsettingsd.service'" "$apps"
+for mode in dark light; do
+    script="$HOME/.config/darkman/$mode-mode.d/set-gtk-theme.sh"
+    grep -Fq 'systemctl --user reload xsettingsd.service' "$script"
+    grep -Fq 'systemctl --user start xsettingsd.service' "$script"
+done
 if grep -Fq 'reload-or-restart --now darkman.service' "$apps"; then
     printf 'Awesome startup still resets manual Darkman mode\n' >&2
     exit 1

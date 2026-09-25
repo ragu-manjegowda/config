@@ -105,6 +105,7 @@ return {
         'systemctl --user reload-or-restart --now xidlehook.service',
         -- Darkman
         -- 'systemctl reload-or-restart --now geoclue.service',
+        'systemctl --user start xsettingsd.service',
         'systemctl --user start darkman.service',
         -- 'killall darkman; ' ..
         -- 'XDG_DATA_DIRS=~/.config/darkman ' ..

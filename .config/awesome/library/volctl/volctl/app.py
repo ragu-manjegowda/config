@@ -94,6 +94,8 @@ class VolctlApp:
             self._style_provider,
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
         )
+        self._interface_settings = Gio.Settings.new("org.gnome.desktop.interface")
+        self._interface_settings.connect("changed::gtk-theme", self._set_style)
         self._set_style()
         Gtk.Settings.get_default().connect("notify::gtk-theme-name", self._set_style)
         self.settings = Gio.Settings("apps.volctl", path="/apps/volctl/")
@@ -139,7 +141,11 @@ class VolctlApp:
 
     def _set_style(self, *_):
         """Keep the popup fully transparent for Picom's blur treatment."""
-        theme_name = Gtk.Settings.get_default().get_property("gtk-theme-name") or ""
+        # Darkman updates GSettings even when an existing GTK process does not
+        # receive a gtk-theme-name notification through XSettings.
+        theme_name = self._interface_settings.get_string("gtk-theme") or (
+            Gtk.Settings.get_default().get_property("gtk-theme-name") or ""
+        )
         control_background = (
             b"#073642" if "dark" in theme_name.lower() else b"#eee8d5"
         )

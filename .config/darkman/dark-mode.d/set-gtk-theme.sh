@@ -43,11 +43,11 @@ then
     gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
 fi
 
-if ! pgrep -x "xsettingsd" > /dev/null
+if systemctl --user is-active --quiet xsettingsd.service
 then
-    xsettingsd &
+    systemctl --user reload xsettingsd.service
 else
-    killall -HUP xsettingsd
+    systemctl --user start xsettingsd.service
 fi
 
 # Mouse cursor theme is not updated on the root window (background) or
