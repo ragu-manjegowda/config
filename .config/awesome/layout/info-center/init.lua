@@ -4,9 +4,10 @@ local gears = require('gears')
 local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 local suspension = require('library.notification-suspension')
+local center_backdrop = require('layout.center-backdrop')
+local center_manager = require('layout.center-manager')
 
 local open_centers = setmetatable({}, { __mode = 'k' })
-local active_panel
 
 local function update_suspension()
     suspension.set('center_open', next(open_centers) ~= nil)
@@ -80,14 +81,11 @@ local info_center = function(s)
     }
 
     local open_panel = function()
-        if active_panel and active_panel ~= panel then
-            active_panel:hide_dashboard()
-        end
-        active_panel = panel
+        center_manager.open(panel)
         panel.opened = true
         open_centers[panel] = true
         update_suspension()
-        s.backdrop_info_center.visible = true
+        center_backdrop.show(s.backdrop_info_center, s)
         panel.visible = true
 
         awesome.emit_signal('info_center::visibility', true)
@@ -98,17 +96,12 @@ local info_center = function(s)
     end
 
     local close_panel = function()
-        if active_panel == panel then
-            active_panel = nil
-        end
         panel.opened = false
         open_centers[panel] = nil
-        if active_panel == panel then
-            active_panel = nil
-        end
         update_suspension()
         panel.visible = false
         s.backdrop_info_center.visible = false
+        center_manager.close(panel)
 
         awesome.emit_signal('info_center::visibility', false)
 
@@ -134,6 +127,7 @@ local info_center = function(s)
             return
         end
         open_centers[panel] = nil
+        center_manager.close(panel)
         update_suspension()
         screen.disconnect_signal('removed', removed_handler)
     end

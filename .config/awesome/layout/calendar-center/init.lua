@@ -2,6 +2,8 @@ local awful           = require('awful')
 local wibox           = require('wibox')
 local gears           = require('gears')
 local beautiful       = require('beautiful')
+local center_backdrop = require('layout.center-backdrop')
+local center_manager = require('layout.center-manager')
 local dpi             = beautiful.xresources.apply_dpi
 
 --- Date
@@ -151,19 +153,19 @@ local calendar_center = function(s)
     }
 
     local open_panel = function()
-        local focused                            = awful.screen.focused()
-
-        focused.backdrop_calendar_center.visible = true
-        focused.calendar_center.visible          = true
+        center_manager.open(panel)
+        panel.opened = true
+        center_backdrop.show(s.backdrop_calendar_center, s)
+        panel.visible = true
 
         panel:emit_signal('opened')
     end
 
     local close_panel = function()
-        local focused                            = awful.screen.focused()
-
-        focused.calendar_center.visible          = false
-        focused.backdrop_calendar_center.visible = false
+        panel.opened = false
+        panel.visible = false
+        s.backdrop_calendar_center.visible = false
+        center_manager.close(panel)
 
         panel:emit_signal('closed')
     end
@@ -174,12 +176,11 @@ local calendar_center = function(s)
     end
 
     function panel:toggle()
-        self.opened = not self.opened
         if self.opened then
+            close_panel()
+        else
             require("widget.calendar"):update()
             open_panel()
-        else
-            close_panel()
         end
     end
 

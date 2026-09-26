@@ -2,6 +2,8 @@ local awful = require('awful')
 local wibox = require('wibox')
 local gears = require('gears')
 local beautiful = require('beautiful')
+local center_backdrop = require('layout.center-backdrop')
+local center_manager = require('layout.center-manager')
 local dpi = beautiful.xresources.apply_dpi
 
 local format_item = function(widget)
@@ -260,12 +262,12 @@ local control_center = function(s)
     }
 
     local open_panel = function()
-        local focused = awful.screen.focused()
+        center_manager.open(panel)
+        panel.opened = true
+        center_backdrop.show(s.backdrop_control_center, s)
+        panel.visible = true
 
-        focused.backdrop_control_center.visible = true
-        focused.control_center.visible = true
-
-        local monitor = focused.control_center.widget:get_children_by_id('monitor_control')[1]
+        local monitor = panel.widget:get_children_by_id('monitor_control')[1]
         awesome.emit_signal('control_center::visibility', true)
         awesome.emit_signal('control_center::monitor_visibility', monitor.visible)
 
@@ -273,10 +275,10 @@ local control_center = function(s)
     end
 
     local close_panel = function()
-        local focused = awful.screen.focused()
-
-        focused.control_center.visible = false
-        focused.backdrop_control_center.visible = false
+        panel.opened = false
+        panel.visible = false
+        s.backdrop_control_center.visible = false
+        center_manager.close(panel)
 
         awesome.emit_signal('control_center::visibility', false)
         awesome.emit_signal('control_center::monitor_visibility', false)
@@ -290,11 +292,10 @@ local control_center = function(s)
     end
 
     function panel:toggle()
-        self.opened = not self.opened
         if self.opened then
-            open_panel()
-        else
             close_panel()
+        else
+            open_panel()
         end
     end
 

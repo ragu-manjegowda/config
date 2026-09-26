@@ -3,6 +3,7 @@ local control_center = require('layout.control-center')
 local info_center = require('layout.info-center')
 local calendar_center = require('layout.calendar-center')
 local playerctl_center = require('layout.playerctl-center')
+local center_manager = require('layout.center-manager')
 
 -- Create a wibox panel for each screen and add it
 screen.connect_signal(
@@ -42,8 +43,8 @@ local function update_bars_visibility()
                     s.control_center:toggle()
                     s.control_center_show_again = true
                 elseif not fullscreen and not s.control_center.visible and s.control_center_show_again then
-                    s.control_center:toggle()
                     s.control_center_show_again = false
+                    if not center_manager.active() then s.control_center:toggle() end
                 end
             end
             if s.info_center then
@@ -51,8 +52,8 @@ local function update_bars_visibility()
                     s.info_center:toggle()
                     s.info_center_show_again = true
                 elseif not fullscreen and not s.info_center.visible and s.info_center_show_again then
-                    s.info_center:toggle()
                     s.info_center_show_again = false
+                    if not center_manager.active() then s.info_center:toggle() end
                 end
             end
             if s.calendar_center then
@@ -60,8 +61,8 @@ local function update_bars_visibility()
                     s.calendar_center:toggle()
                     s.calendar_center_show_again = true
                 elseif not fullscreen and not s.calendar_center.visible and s.calendar_center_show_again then
-                    s.calendar_center:toggle()
                     s.calendar_center_show_again = false
+                    if not center_manager.active() then s.calendar_center:toggle() end
                 end
             end
             if s.playerctl_center then
@@ -69,8 +70,8 @@ local function update_bars_visibility()
                     s.playerctl_center:toggle()
                     s.playerctl_center_show_again = true
                 elseif not fullscreen and not s.playerctl_center.visible and s.playerctl_center_show_again then
-                    s.playerctl_center:toggle()
                     s.playerctl_center_show_again = false
+                    if not center_manager.active() then s.playerctl_center:toggle() end
                 end
             end
         end

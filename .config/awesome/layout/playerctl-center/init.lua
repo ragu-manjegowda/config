@@ -2,6 +2,8 @@ local awful            = require('awful')
 local wibox            = require('wibox')
 local gears            = require('gears')
 local beautiful        = require('beautiful')
+local center_backdrop  = require('layout.center-backdrop')
+local center_manager   = require('layout.center-manager')
 local dpi              = beautiful.xresources.apply_dpi
 
 local playerctl_center = function(s)
@@ -79,19 +81,19 @@ local playerctl_center = function(s)
     }
 
     local open_panel = function()
-        local focused                             = awful.screen.focused()
-
-        focused.backdrop_playerctl_center.visible = true
-        focused.playerctl_center.visible          = true
+        center_manager.open(panel)
+        panel.opened = true
+        center_backdrop.show(s.backdrop_playerctl_center, s)
+        panel.visible = true
 
         panel:emit_signal('opened')
     end
 
     local close_panel = function()
-        local focused                             = awful.screen.focused()
-
-        focused.playerctl_center.visible          = false
-        focused.backdrop_playerctl_center.visible = false
+        panel.opened = false
+        panel.visible = false
+        s.backdrop_playerctl_center.visible = false
+        center_manager.close(panel)
 
         panel:emit_signal('closed')
     end
@@ -102,11 +104,10 @@ local playerctl_center = function(s)
     end
 
     function panel:toggle()
-        self.opened = not self.opened
         if self.opened then
-            open_panel()
-        else
             close_panel()
+        else
+            open_panel()
         end
     end
 
