@@ -38,7 +38,8 @@
 │   └── styles.muttrc            # Status bar, index format
 │
 ├── scripts/                     # Helper scripts
-│   ├── create-alias.sh          # Auto-create aliases from mail
+│   ├── create-alias.py          # Auto-create aliases from mail
+│   ├── query-aliases.py         # Fuzzy address completion for Tab
 │   ├── fzf-notmuch-search.sh    # Fuzzy search with fzf
 │   ├── get-mailboxes.sh         # List mailboxes from mbsync
 │   ├── mu-search.sh             # mu mail search
@@ -54,7 +55,8 @@
 │   ├── token_outlook_graph      # Work OAuth2 token (Microsoft Graph API)
 │   └── token_gmail-personal     # Personal OAuth2 token
 │
-├── accounts/                    # Per-account configuration
+├── accounts/                    # Encrypted account data and configuration
+│   ├── aliases                  # Shared From/To aliases (git-crypt)
 │   ├── work/
 │   │   ├── config               # Online mode (IMAP direct)
 │   │   ├── config-offline       # Offline mode (Maildir)
@@ -77,9 +79,16 @@
     │   ├── outlook/             # Work account emails
     │   └── gmail-personal/      # Personal account emails
     └── data/
-        ├── aliases              # Auto-generated aliases
         └── history              # Command history
 ```
+
+Opening a message in the pager adds new From and To addresses to the shared
+alias file. Existing aliases, account identities, and automated senders are
+skipped. NeoMutt loads aliases at startup, so restart or re-source the file
+to use newly saved entries in recipient completion.
+During recipient entry, Ctrl+T opens NeoMutt's native alias menu, including
+when the field is empty. After typing part of a name, key, or email, Tab uses
+fzf to rank matches and NeoMutt's native query menu to select multiple matches.
 
 ## Account Overview
 

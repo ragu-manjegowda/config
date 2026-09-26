@@ -17,7 +17,7 @@ Validates that all configuration files exist, are readable, and have correct syn
 
 ### 2. Helper Scripts Tests (`test_scripts.sh`)
 Checks that all helper scripts exist, are executable, and have valid syntax:
-- `create-alias.sh` - Auto-creates email aliases
+- `create-alias.py` - Auto-creates email aliases
 - `get-mailboxes.sh` - Retrieves mailbox list
 - `mu-search.sh` - Mail search functionality
 - `viewmailattachments.py` - View HTML attachments in browser
@@ -87,4 +87,3 @@ Each test prints:
 Exit codes:
 - `0` - All tests passed
 - `1` - One or more tests failed
-

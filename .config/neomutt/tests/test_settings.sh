@@ -153,15 +153,39 @@ else
     ((failed++))
 fi
 
-# Test alias_file contains neomutt/aliases
-echo -n "Testing alias file path points to neomutt/.gitignored/data/aliases... "
+# Test alias_file contains neomutt/accounts/aliases
+echo -n "Testing alias file path points to neomutt/accounts/aliases... "
 alias_file=$(neomutt -F "$CONFIG_FILE" -Q alias_file 2>/dev/null | cut -d'=' -f2- | tr -d '"')
-if echo "$alias_file" | grep -q "neomutt/.gitignored/data/aliases"; then
+if echo "$alias_file" | grep -q "neomutt/accounts/aliases"; then
     echo -e "${GREEN}✓ PASSED${NC}"
     ((passed++))
 else
     echo -e "${RED}✗ FAILED${NC}"
-    echo "  Alias file doesn't point to neomutt/.gitignored/data/aliases: $alias_file"
+    echo "  Alias file doesn't point to neomutt/accounts/aliases: $alias_file"
+    ((failed++))
+fi
+
+echo -n "Testing alias menu preserves name/email file order... "
+alias_sort=$(neomutt -F "$CONFIG_FILE" -Q alias_sort 2>/dev/null | cut -d'=' -f2- | tr -d '" ')
+if [[ "$alias_sort" == unsorted ]]; then
+    echo -e "${GREEN}✓ PASSED${NC}"
+    ((passed++))
+else
+    echo -e "${RED}✗ FAILED${NC}"
+    echo "  Alias menu does not follow the sorted alias file: $alias_sort"
+    ((failed++))
+fi
+
+echo -n "Testing fuzzy query uses Tab while Ctrl+T keeps alias completion... "
+query_command=$(neomutt -F "$CONFIG_FILE" -Q query_command 2>/dev/null | cut -d'=' -f2- | tr -d '"')
+if [[ "$query_command" == *neomutt/scripts/query-aliases.py* ]] &&
+   grep -Fqx 'bind editor <Tab> complete-query' ~/.config/neomutt/config/bindings.mutt &&
+   grep -Fqx 'bind editor \CT complete' ~/.config/neomutt/config/bindings.mutt; then
+    echo -e "${GREEN}✓ PASSED${NC}"
+    ((passed++))
+else
+    echo -e "${RED}✗ FAILED${NC}"
+    echo "  Fuzzy completion changed native Ctrl+T or is not attached to Tab"
     ((failed++))
 fi
 

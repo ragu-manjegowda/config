@@ -22,7 +22,7 @@ is_git_crypt_locked() {
 }
 
 # --- Executable shell scripts ---
-for script in create-alias.sh get-mailboxes.sh mu-search.sh \
+for script in create-alias.py query-aliases.py get-mailboxes.sh mu-search.sh \
               fzf-notmuch-search.sh setup-paths.sh sync-notmuch-flags.sh; do
     echo -n "Testing scripts/$script exists and executable... "
     if [ -x ~/.config/neomutt/scripts/$script ]; then
@@ -34,6 +34,174 @@ for script in create-alias.sh get-mailboxes.sh mu-search.sh \
         ((failed++))
     fi
 done
+
+echo -n "Testing sender aliases are extracted once without blank entries... "
+alias_test_dir="$(mktemp -d)"
+mkdir -p "$alias_test_dir/.config/neomutt/accounts"
+alias_test_file="$alias_test_dir/.config/neomutt/accounts/aliases"
+touch "$alias_test_file"
+alias_script=~/.config/neomutt/scripts/create-alias.py
+if printf 'From: Ada Lovelace <ADA@example.org>\nSubject: Example\n\nBody\n' |
+       HOME="$alias_test_dir" XDG_CONFIG_HOME="$alias_test_dir/.config" "$alias_script" >/dev/null &&
+   printf 'From: Ada Lovelace <ADA@example.org>\n\nBody\n' |
+       HOME="$alias_test_dir" XDG_CONFIG_HOME="$alias_test_dir/.config" "$alias_script" >/dev/null &&
+   printf 'From: noreply@example.org\n\nBody\n' |
+       HOME="$alias_test_dir" XDG_CONFIG_HOME="$alias_test_dir/.config" "$alias_script" >/dev/null &&
+   printf 'Subject: No sender\n\nBody\n' |
+       HOME="$alias_test_dir" XDG_CONFIG_HOME="$alias_test_dir/.config" "$alias_script" >/dev/null &&
+   [[ $(wc -l < "$alias_test_file") -eq 1 ]] &&
+   grep -Fxq 'alias ada Ada Lovelace <ada@example.org>' "$alias_test_file"; then
+    echo -e "${GREEN}✓ PASSED${NC}"
+    ((passed++))
+else
+    echo -e "${RED}✗ FAILED${NC}"
+    echo "  Sender aliases were missing, duplicated, or blank"
+    ((failed++))
+fi
+
+echo -n "Testing NeoMutt loads aliases and ignores locked git-crypt content... "
+alias_source_config="$alias_test_dir/source.muttrc"
+printf 'set alias_file = "%s"\n' "$alias_test_file" > "$alias_source_config"
+grep -F 'source "sed -n ' ~/.config/neomutt/neomuttrc >> "$alias_source_config"
+alias_lookup=$(neomutt -n -F "$alias_source_config" -A ada 2>/dev/null)
+printf '\0GITCRYPT\0encrypted-placeholder\n' > "$alias_test_file"
+locked_query=$(neomutt -n -F "$alias_source_config" -Q alias_file 2>&1)
+locked_alias_before=$(sha256sum "$alias_test_file")
+printf 'From: Another Person <another@example.org>\n\nBody\n' |
+    HOME="$alias_test_dir" XDG_CONFIG_HOME="$alias_test_dir/.config" "$alias_script" >/dev/null
+if [[ "$alias_lookup" == *ada@example.org* ]] &&
+   [[ "$locked_query" == *"$alias_test_file"* ]] &&
+   [[ "$locked_query" != *Error* ]] &&
+   [[ $(sha256sum "$alias_test_file") == "$locked_alias_before" ]]; then
+    echo -e "${GREEN}✓ PASSED${NC}"
+    ((passed++))
+else
+    echo -e "${RED}✗ FAILED${NC}"
+    echo "  Alias lookup failed or encrypted content was parsed as aliases"
+    ((failed++))
+fi
+
+echo -n "Testing saved addresses, same-name senders, and automated sender filters... "
+printf 'alias saved Saved Person <saved@example.org>\nalias alex Existing Person <old@example.org>\n' > "$alias_test_file"
+add_test_sender() {
+    printf 'From: %s\n\nBody\n' "$1" |
+        HOME="$alias_test_dir" XDG_CONFIG_HOME="$alias_test_dir/.config" "$alias_script" >/dev/null
+}
+if add_test_sender 'Ada Lovelace <alex@example.org>' &&
+   add_test_sender 'Ada Lovelace <ada@other.example.org>' &&
+   add_test_sender 'Ada Lovelace <ada@third.example.org>' &&
+   add_test_sender 'Saved Person <SAVED@EXAMPLE.ORG>' &&
+   add_test_sender 'Notifier <DO_NOT_REPLY+alerts@example.org>' &&
+   add_test_sender 'Do Not Reply <newsletter@example.org>' &&
+   add_test_sender 'Service <sender@paypal.com>' &&
+   add_test_sender 'Joy Reply <joy@example.org>' &&
+   [[ $(wc -l < "$alias_test_file") -eq 6 ]] &&
+   grep -Fxq 'alias alex-example.org Ada Lovelace <alex@example.org>' "$alias_test_file" &&
+   grep -Fxq 'alias ada Ada Lovelace <ada@other.example.org>' "$alias_test_file" &&
+   grep -Fxq 'alias ada-third.example.org Ada Lovelace <ada@third.example.org>' "$alias_test_file" &&
+   grep -Fxq 'alias joy Joy Reply <joy@example.org>' "$alias_test_file"; then
+    echo -e "${GREEN}✓ PASSED${NC}"
+    ((passed++))
+else
+    echo -e "${RED}✗ FAILED${NC}"
+    echo "  Existing aliases changed, senders collided, or automated mail was saved"
+    ((failed++))
+fi
+
+echo -n "Testing display filter preserves message bytes exactly... "
+printf 'fRoM: Joy Reply <joy@example.org>\r\nSubject: Example\r\n\r\nBody without newline' > "$alias_test_dir/message"
+HOME="$alias_test_dir" XDG_CONFIG_HOME="$alias_test_dir/.config" "$alias_script" \
+    < "$alias_test_dir/message" > "$alias_test_dir/rendered"
+if cmp -s "$alias_test_dir/message" "$alias_test_dir/rendered" &&
+   [[ $(wc -l < "$alias_test_file") -eq 6 ]]; then
+    echo -e "${GREEN}✓ PASSED${NC}"
+    ((passed++))
+else
+    echo -e "${RED}✗ FAILED${NC}"
+    echo "  Display filter changed the rendered message"
+    ((failed++))
+fi
+
+echo -n "Testing concurrent reads append a sender only once... "
+for attempt in {1..8}; do
+    add_test_sender 'Parallel Person <parallel@example.org>' &
+done
+wait
+if [[ $(wc -l < "$alias_test_file") -eq 7 ]] &&
+   [[ $(grep -Fxc 'alias parallel Parallel Person <parallel@example.org>' "$alias_test_file") -eq 1 ]]; then
+    echo -e "${GREEN}✓ PASSED${NC}"
+    ((passed++))
+else
+    echo -e "${RED}✗ FAILED${NC}"
+    echo "  Concurrent alias generation created duplicate or missing entries"
+    ((failed++))
+fi
+
+echo -n "Testing folded To recipients, self-addresses, and existing aliases... "
+printf 'alias alex Existing Person <old@example.org>\nalias saved Saved Sender <saved@example.org>\n' > "$alias_test_file"
+printf 'work|me@example.org\n' > "$alias_test_dir/.config/neomutt/accounts/notmuch-identities"
+printf 'From: Saved Sender <saved@example.org>\nTo: Alex One <alex@first.example.org>,\n Alex Two <alex@second.example.org>, recipient@example.org,\n Me <me@example.org>, do.not.reply@example.org,\n Alex One <ALEX@FIRST.EXAMPLE.ORG>\nSubject: Example\n\nTo: forwarded@example.org\n' \
+    > "$alias_test_dir/to-message"
+if HOME="$alias_test_dir" XDG_CONFIG_HOME="$alias_test_dir/.config" "$alias_script" \
+       < "$alias_test_dir/to-message" > "$alias_test_dir/to-rendered" &&
+   HOME="$alias_test_dir" XDG_CONFIG_HOME="$alias_test_dir/.config" "$alias_script" \
+       < "$alias_test_dir/to-message" >/dev/null &&
+   cmp -s "$alias_test_dir/to-message" "$alias_test_dir/to-rendered" &&
+   [[ $(wc -l < "$alias_test_file") -eq 5 ]] &&
+   grep -Fxq 'alias alex-first.example.org Alex One <alex@first.example.org>' "$alias_test_file" &&
+   grep -Fxq 'alias alex-second.example.org Alex Two <alex@second.example.org>' "$alias_test_file" &&
+   grep -Fxq 'alias recipient <recipient@example.org>' "$alias_test_file"; then
+    echo -e "${GREEN}✓ PASSED${NC}"
+    ((passed++))
+else
+    echo -e "${RED}✗ FAILED${NC}"
+    echo "  To recipients were missing, duplicated, or incorrectly filtered"
+    ((failed++))
+fi
+
+echo -n "Testing file ordering by display name with email fallback... "
+printf '# Curated contacts\nalias zed Zed Person <zed@example.org>\nalias jane Jane Doe <jane@example.org>\nalias anonymous <aaron@example.org>\n' > "$alias_test_file"
+if HOME="$alias_test_dir" XDG_CONFIG_HOME="$alias_test_dir/.config" "$alias_script" --sort &&
+   add_test_sender 'Alex Sort <alex@example.org>' &&
+   HOME="$alias_test_dir" XDG_CONFIG_HOME="$alias_test_dir/.config" "$alias_script" --sort; then
+    mapfile -t alias_rows < "$alias_test_file"
+fi
+if [[ ${#alias_rows[@]} -eq 5 ]] &&
+   [[ "${alias_rows[0]}" == '# Curated contacts' ]] &&
+   [[ "${alias_rows[1]}" == 'alias anonymous <aaron@example.org>' ]] &&
+   [[ "${alias_rows[2]}" == 'alias alex Alex Sort <alex@example.org>' ]] &&
+   [[ "${alias_rows[3]}" == 'alias jane Jane Doe <jane@example.org>' ]] &&
+   [[ "${alias_rows[4]}" == 'alias zed Zed Person <zed@example.org>' ]]; then
+    echo -e "${GREEN}✓ PASSED${NC}"
+    ((passed++))
+else
+    echo -e "${RED}✗ FAILED${NC}"
+    echo "  Aliases were not sorted by name/email or a curated entry changed"
+    ((failed++))
+fi
+
+echo -n "Testing fuzzy alias queries, duplicate addresses, and locked checkout... "
+query_script=~/.config/neomutt/scripts/query-aliases.py
+printf 'alias alice1 Alice Adams <alice1@example.org>\nalias alice2 Alice Rose <alice2@example.org>\nalias duplicate Another Name <alice1@example.org>\nalias bob Bob Brown <bob@example.org>\n' > "$alias_test_file"
+query_result=$(HOME="$alias_test_dir" XDG_CONFIG_HOME="$alias_test_dir/.config" "$query_script" ALICE)
+empty_query=$(HOME="$alias_test_dir" XDG_CONFIG_HOME="$alias_test_dir/.config" "$query_script" '' 2>/dev/null)
+empty_status=$?
+printf '\0GITCRYPT\0encrypted-placeholder\n' > "$alias_test_file"
+locked_query=$(HOME="$alias_test_dir" XDG_CONFIG_HOME="$alias_test_dir/.config" "$query_script" alice 2>/dev/null)
+locked_status=$?
+if [[ $(printf '%s\n' "$query_result" | wc -l) -eq 3 ]] &&
+   grep -Fq $'alice1@example.org\tAlice Adams\talice1' <<< "$query_result" &&
+   grep -Fq $'alice2@example.org\tAlice Rose\talice2' <<< "$query_result" &&
+   [[ "$empty_status" -ne 0 && "$empty_query" == *'before pressing Tab'* ]] &&
+   [[ "$locked_status" -ne 0 && "$locked_query" == *'Unlock git-crypt'* ]]; then
+    echo -e "${GREEN}✓ PASSED${NC}"
+    ((passed++))
+else
+    echo -e "${RED}✗ FAILED${NC}"
+    echo "  Fuzzy query produced incorrect matches or accessed encrypted data"
+    ((failed++))
+fi
+rm -rf "$alias_test_dir"
 
 setup_paths=~/.config/neomutt/scripts/setup-paths.sh
 echo -n "Testing bootstrap path setup initializes both Notmuch databases... "
@@ -97,7 +265,7 @@ for account in work personal; do
 done
 
 # --- Python script syntax validation ---
-for script in scripts/render-calendar-attachment.py scripts/mutt-ical.py; do
+for script in scripts/create-alias.py scripts/query-aliases.py scripts/render-calendar-attachment.py scripts/mutt-ical.py; do
     if [ -r ~/.config/neomutt/$script ]; then
         echo -n "Testing $script syntax... "
         if python -m py_compile ~/.config/neomutt/$script 2>/dev/null; then
@@ -129,7 +297,7 @@ for script in accounts/work/oauth2.py accounts/personal/oauth2.py; do
 done
 
 # --- Shell script syntax validation ---
-for script in create-alias.sh get-mailboxes.sh mu-search.sh \
+for script in get-mailboxes.sh mu-search.sh \
                fzf-notmuch-search.sh setup-paths.sh sync-notmuch-flags.sh; do
     file=~/.config/neomutt/scripts/$script
     if is_git_crypt_locked "$file"; then

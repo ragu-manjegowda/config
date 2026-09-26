@@ -16,7 +16,8 @@ STATE_NEOMUTT="$STATE_HOME/neomutt"
 mkdir -p "$MAILDIR_BASE/outlook" "$MAILDIR_BASE/gmail-personal"
 mkdir -p "$CACHE_DIR" "$DATA_DIR" "$STATE_NEOMUTT"
 
-touch "$DATA_DIR/aliases" "$DATA_DIR/history"
+touch "$NEOMUTT_DIR/accounts/aliases" "$DATA_DIR/history"
+chmod 600 "$NEOMUTT_DIR/accounts/aliases"
 
 setup_notmuch() {
     local account="$1" email="$2"

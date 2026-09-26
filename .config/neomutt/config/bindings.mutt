@@ -104,7 +104,6 @@ macro attach s '<save-entry><kill-line>~/Downloads/<enter>a' "Save file to ~/Dow
 bind index,pager $ imap-fetch-mail # more like a refresh than a sync
 bind index,pager * sync-mailbox # more like a refresh than a sync
 macro index,pager \cr "<tag-pattern>~T<enter><tag-prefix><untag-pattern>~T<enter>" "untag all tagged messages"
-macro index,pager \ca "<tag-pattern>.<enter><tag-prefix><clear-flag>N<clear-flag>U<untag-pattern>.<enter>" "clear new/unread for all"
 macro index,pager ,tr "<read-thread>" "mark thread read"
 macro index,pager ,tu "<unread-thread>" "mark thread unread"
 macro index,pager ,tt "<tag-thread>" "tag thread"
@@ -117,11 +116,14 @@ macro index ,mf ":set auto_tag=yes<enter><save-message>?<toggle-mailboxes>" \
     "move to..."
 
 # Set message priority
-macro compose ,sp \
+macro compose ,ps \
 "\
-<enter-command>my_hdr X-Priority: 1<enter>\
-<enter-command>my_hdr Importance: high<enter>\
+<enter-command>my-header X-Priority: 1<enter>\
+<enter-command>my-header Importance: high<enter>\
 " "Set priority/importance to high"
+macro compose ,pc \
+"<enter-command>unmy-header X-Priority Importance<enter>" \
+"Clear priority/importance"
 
 # Open attachment with
 macro attach ,ow \
