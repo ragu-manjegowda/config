@@ -13,7 +13,6 @@
 local awful = require('awful')
 local wibox = require('wibox')
 local dpi = require('beautiful').xresources.apply_dpi
-local clickable_container = require('widget.clickable-container')
 
 -- define module table
 local tag_list = {}
@@ -29,7 +28,7 @@ local function list_update(w, _, label, data, objects)
     w:reset()
     for i, o in ipairs(objects) do
         local cache = data[o]
-        local ib, tb, bgb, ibm, l, bg_clickable
+        local ib, tb, bgb, ibm, l
         if cache then
             ib = cache.ib
             tb = cache.tb
@@ -42,15 +41,12 @@ local function list_update(w, _, label, data, objects)
             bgb = wibox.container.background()
             ibm = wibox.container.margin(ib, dpi(icondpi), dpi(icondpi), dpi(icondpi), dpi(icondpi))
             l = wibox.layout.fixed.horizontal()
-            bg_clickable = clickable_container()
-
             -- All of this is added in a fixed widget
             l:fill_space(true)
             l:add(ibm)
-            bg_clickable:set_widget(l)
 
             -- And all of this gets a background
-            bgb:set_widget(bg_clickable)
+            bgb:set_widget(l)
 
             data[o] = {
                 ib = ib,

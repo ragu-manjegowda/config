@@ -5,6 +5,7 @@ local dpi = beautiful.xresources.apply_dpi
 local task_list = require('widget.task-list')
 local tag_list = require('widget.tag-list')
 local vseparator = require('widget.vseparator')
+local systray_cursor = require('layout.systray-cursor')
 
 local function hide_existing_panel(s)
     local panel = s.top_panel
@@ -159,6 +160,17 @@ local top_panel = function(s)
         top = dpi(10),
         widget = wibox.container.margin,
     }
+
+    if systray_screen then
+        -- Registration happens when the tray is drawn. Retry briefly until
+        -- the XEmbed selection has an owner; no persistent watcher is needed.
+        local attempts = 0
+        gears.timer.start_new(0.1, function()
+            attempts = attempts + 1
+            if systray_cursor.apply() then return false end
+            return attempts < 25
+        end)
+    end
 
     return panel
 end

@@ -5,6 +5,7 @@ local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 local icons = require('theme.icons')
 local clickable_container = require('widget.clickable-container')
+local slider_hover = require('widget.slider-hover')
 
 local action_name = wibox.widget {
     text = 'Blur Strength',
@@ -63,6 +64,7 @@ local slider = wibox.widget {
 }
 
 local blur_slider = slider.blur_strength_slider
+slider_hover.attach(blur_slider)
 
 local start_up = true
 local pending_strength

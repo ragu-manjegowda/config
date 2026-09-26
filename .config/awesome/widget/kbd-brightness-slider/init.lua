@@ -5,6 +5,7 @@ local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 local icons = require('theme.icons')
 local clickable_container = require('widget.clickable-container')
+local slider_hover = require('widget.slider-hover')
 local config = require('configuration.config')
 
 local action_name = wibox.widget {
@@ -65,6 +66,7 @@ local slider = wibox.widget {
 }
 
 local kbd_brightness_slider = slider.kbd_brightness_slider
+slider_hover.attach(kbd_brightness_slider)
 local is_programmatic_update = false
 local pending_brightness
 local brightness_apply_timer = gears.timer {

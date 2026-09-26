@@ -220,6 +220,11 @@ class VolumeSliders(Gtk.Window):
         scale.set_size_request(24, scale_size)
         scale.set_margin_top(self.SPACING)
         scale.set_tooltip_markup(name)
+        scale.add_events(
+            Gdk.EventMask.ENTER_NOTIFY_MASK | Gdk.EventMask.LEAVE_NOTIFY_MASK
+        )
+        scale.connect("enter-notify-event", self._cb_control_enter)
+        scale.connect("leave-notify-event", self._cb_control_leave)
         self._set_increments_on_scale(scale)
         if self._show_percentage:
             scale.set_draw_value(True)
@@ -244,6 +249,11 @@ class VolumeSliders(Gtk.Window):
         btn.set_relief(Gtk.ReliefStyle.NONE)
         btn.set_margin_bottom(self.SPACING)
         btn.set_tooltip_markup(name)
+        btn.add_events(
+            Gdk.EventMask.ENTER_NOTIFY_MASK | Gdk.EventMask.LEAVE_NOTIFY_MASK
+        )
+        btn.connect("enter-notify-event", self._cb_control_enter)
+        btn.connect("leave-notify-event", self._cb_control_leave)
 
         self._update_scale_values((scale, btn), val, mute)
         self._grid.attach(scale, pos, 0, 1, 1)
@@ -357,6 +367,18 @@ class VolumeSliders(Gtk.Window):
                 print(f"Warning: Could not set volume on {idx}: {err}")
 
     # GUI callbacks
+
+    @staticmethod
+    def _cb_control_enter(widget, event):
+        event.window.set_cursor(
+            Gdk.Cursor.new_from_name(event.window.get_display(), "pointer")
+        )
+        return False
+
+    @staticmethod
+    def _cb_control_leave(widget, event):
+        event.window.set_cursor(None)
+        return False
 
     def _cb_destroy(self, win):
         self._remove_timeout()

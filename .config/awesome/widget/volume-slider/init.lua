@@ -6,6 +6,7 @@ local spawn = awful.spawn
 local dpi = beautiful.xresources.apply_dpi
 local icons = require('theme.icons')
 local clickable_container = require('widget.clickable-container')
+local slider_hover = require('widget.slider-hover')
 local audio_monitor = require('library.audio-monitor')
 
 local action_name = wibox.widget {
@@ -68,6 +69,7 @@ local slider = wibox.widget {
 }
 
 local volume_slider = slider.volume_slider
+slider_hover.attach(volume_slider)
 
 -- Track if we're updating the slider programmatically (from event monitor)
 local is_programmatic_update = false

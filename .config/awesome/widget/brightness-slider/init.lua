@@ -6,6 +6,7 @@ local spawn = awful.spawn
 local dpi = beautiful.xresources.apply_dpi
 local icons = require('theme.icons')
 local clickable_container = require('widget.clickable-container')
+local slider_hover = require('widget.slider-hover')
 
 local action_name = wibox.widget {
     text = 'Brightness',
@@ -65,6 +66,7 @@ local slider = wibox.widget {
 }
 
 local brightness_slider = slider.brightness_slider
+slider_hover.attach(brightness_slider)
 local is_programmatic_update = false
 local pending_brightness
 local brightness_apply_timer = gears.timer {

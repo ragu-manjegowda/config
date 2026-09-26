@@ -852,6 +852,7 @@ jobs:
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_kbd_battery_lifecycle.sh
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_login_media_keys.sh
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_presentation_mode.sh
+          HOME="$GITHUB_WORKSPACE" python -B .config/awesome/tests/test_volctl_slider_cursor.py
 
       - name: Test hardware-independent lockscreen power policy
         run: |
