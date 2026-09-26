@@ -3,8 +3,7 @@ local awful = require('awful')
 local gears = require('gears')
 local beautiful = require('beautiful')
 local naughty = require('naughty')
-local apps = require('configuration.apps')
-local clickable_container = require('widget.clickable-container')
+local check_battery_alert = require('library.battery-alert').new()
 local dpi = beautiful.xresources.apply_dpi
 local config_dir = gears.filesystem.get_configuration_dir()
 local widget_icon_dir = config_dir .. 'widget/battery/icons/'
@@ -26,6 +25,7 @@ if not battery_lib then
         }
     end
 end
+local upower = require('lgi').UPowerGlib
 
 local return_button = function()
     local battery_imagebox = wibox.widget {
@@ -66,21 +66,8 @@ local return_button = function()
             margins = dpi(7),
             widget = wibox.container.margin
         },
-        widget = clickable_container
+        widget = wibox.container.background
     }
-
-    battery_button:buttons(
-        gears.table.join(
-            awful.button(
-                {},
-                1,
-                nil,
-                function()
-                    awful.spawn(apps.default.power_manager, false)
-                end
-            )
-        )
-    )
 
     local battery_tooltip = awful.tooltip {
         objects = { battery_button },
@@ -176,17 +163,13 @@ local return_button = function()
         end
     )
 
-    local last_battery_check = os.time()
-    local notify_critcal_battery = true
-    local suspend_critical_battery = true
-
-    local show_battery_warning = function()
+    local show_battery_warning = function(critical)
         naughty.notification({
             icon = widget_icon_dir .. 'battery-alert.svg',
             app_name = 'System notification',
-            title = 'Battery is dying!',
-            message = 'Hey, I think we have a problem here. ' ..
-                'Save your work before reaching the oblivion.',
+            title = critical and 'Battery critically low!' or 'Battery is dying!',
+            message = critical and 'Save your work; suspending now.' or
+                'Save your work and connect power before the battery runs out.',
             urgency = 'critical'
         })
     end
@@ -195,107 +178,95 @@ local return_button = function()
         awesome.emit_signal('module::suspend')
     end
 
-    local update_battery = function(battery_percentage)
-        awful.spawn.easy_async_with_shell(
-            [[sh -c "
-                upower -i $(upower -e | grep BAT) | grep state | \
-                awk '{print \$2}' | tr -d '\n'
-            "]],
-            function(stdout)
-                local status = stdout:gsub('%\n', '')
+    local update_battery = function(battery_percentage, device)
+        local states = upower.DeviceState
+        local status = 'unknown'
+        if device.state == states.CHARGING then
+            status = 'charging'
+        elseif device.state == states.DISCHARGING or device.state == states.EMPTY then
+            status = 'discharging'
+        elseif device.state == states.FULLY_CHARGED then
+            status = 'fully-charged'
+        elseif device.state == states.PENDING_CHARGE then
+            status = 'pending-charge'
+        elseif device.state == states.PENDING_DISCHARGE then
+            status = 'not charging'
+        end
+        if status == 'unknown' then
+            battery_widget.spacing = dpi(0)
+            battery_percentage_text.visible = false
+            battery_tooltip:set_text('Battery status unavailable!')
+            battery_imagebox.icon:set_image(
+                gears.surface.load_uncached(
+                ---@diagnostic disable-next-line: param-type-mismatch
+                    widget_icon_dir .. 'battery-unknown.svg'))
+            return
+        end
 
-                -- If no output or no battery detected
-                if status == nil or status == '' then
-                    battery_widget.spacing = dpi(0)
-                    battery_percentage_text.visible = false
-                    battery_tooltip:set_text('No battery detected!')
-                    battery_imagebox.icon:set_image(
-                        gears.surface.load_uncached(
-                        ---@diagnostic disable-next-line: param-type-mismatch
-                            widget_icon_dir .. 'battery-unknown' .. '.svg'))
-                end
+        battery_widget.spacing = dpi(5)
+        battery_percentage_text.visible = true
+        battery_percentage_text:set_text(battery_percentage .. '%')
 
-                battery_widget.spacing = dpi(5)
-                battery_percentage_text.visible = true
-                battery_percentage_text:set_text(battery_percentage .. '%')
+        local icon_name = 'battery'
+        local alert = check_battery_alert(battery_percentage, status, device.update_time)
+        if alert == 'critical' then
+            show_battery_warning(true)
+            suspend_on_critical_battery()
+            return
+        elseif alert == 'low' then
+            show_battery_warning(false)
+        end
 
-                if status ~= 'discharging' or battery_percentage > 5 then
-                    suspend_critical_battery = true
-                end
+        if (status == 'fully-charged' or status == 'charging') and
+            battery_percentage == 100 then
+            icon_name = icon_name .. '-fully-charged'
+            battery_imagebox.icon:set_image(
+                gears.surface.load_uncached(
+                ---@diagnostic disable-next-line: param-type-mismatch
+                    widget_icon_dir .. icon_name .. '.svg'))
+            return
+        end
 
-                local icon_name = 'battery'
+        -- Only charging and discharging icon variants exist.
+        local icon_status = status
+        if status == 'fully-charged' or status == 'pending-charge' or
+            status == 'not charging' then
+            icon_status = 'charging'
+        end
 
-                if status == 'discharging' and battery_percentage <= 5 and
-                    suspend_critical_battery then
-                    suspend_critical_battery = false
-                    show_battery_warning()
-                    suspend_on_critical_battery()
-                    return
-                end
-
-                -- Fully charged
-                if (status == 'fully-charged' or status == 'charging') and
-                    battery_percentage == 100 then
-                    icon_name = icon_name .. '-' .. 'fully-charged'
-                    battery_imagebox.icon:set_image(
-                        gears.surface.load_uncached(
-                        ---@diagnostic disable-next-line: param-type-mismatch
-                            widget_icon_dir .. icon_name .. '.svg'))
-                    return
-                end
-
-                -- Normalize status for icon lookup: only 'charging' and
-                -- 'discharging' icon variants exist. Map other UPower states
-                -- to the closest visual equivalent.
-                local icon_status = status
-                if status == 'fully-charged' or status == 'pending-charge' or
-                    status == 'not charging' then
-                    icon_status = 'charging'
-                end
-
-                if (battery_percentage > 0 and battery_percentage < 20) then
-                    -- Critical level warning message
-                    if status == 'discharging' then
-                        icon_name = icon_name .. '-' .. 'alert-red'
-
-                        if os.difftime(os.time(), last_battery_check) > 300 or
-                            notify_critcal_battery then
-                            last_battery_check = os.time()
-                            notify_critcal_battery = false
-                            show_battery_warning()
-                        end
-                        battery_imagebox.icon:set_image(
-                            gears.surface.load_uncached(
-                            ---@diagnostic disable-next-line: param-type-mismatch
-                                widget_icon_dir .. icon_name .. '.svg'))
-                        return
-                    else
-                        icon_name = icon_name .. '-' .. icon_status .. '-' .. '10'
-                    end
-                end
-
-                if battery_percentage >= 20 and battery_percentage < 30 then
-                    icon_name = icon_name .. '-' .. icon_status .. '-' .. '20'
-                elseif battery_percentage >= 30 and battery_percentage < 50 then
-                    icon_name = icon_name .. '-' .. icon_status .. '-' .. '30'
-                elseif battery_percentage >= 50 and battery_percentage < 60 then
-                    icon_name = icon_name .. '-' .. icon_status .. '-' .. '50'
-                elseif battery_percentage >= 60 and battery_percentage < 80 then
-                    icon_name = icon_name .. '-' .. icon_status .. '-' .. '60'
-                elseif battery_percentage >= 80 and battery_percentage < 90 then
-                    icon_name = icon_name .. '-' .. icon_status .. '-' .. '80'
-                elseif battery_percentage >= 90 and battery_percentage < 100 then
-                    icon_name = icon_name .. '-' .. icon_status .. '-' .. '90'
-                elseif battery_percentage == 100 then
-                    icon_name = icon_name .. '-' .. icon_status .. '-' .. '100'
-                end
-
+        if battery_percentage > 0 and battery_percentage < 20 then
+            if status == 'discharging' then
+                icon_name = icon_name .. '-alert-red'
                 battery_imagebox.icon:set_image(
                     gears.surface.load_uncached(
                     ---@diagnostic disable-next-line: param-type-mismatch
                         widget_icon_dir .. icon_name .. '.svg'))
+                return
+            else
+                icon_name = icon_name .. '-' .. icon_status .. '-10'
             end
-        )
+        end
+
+        if battery_percentage >= 20 and battery_percentage < 30 then
+            icon_name = icon_name .. '-' .. icon_status .. '-20'
+        elseif battery_percentage >= 30 and battery_percentage < 50 then
+            icon_name = icon_name .. '-' .. icon_status .. '-30'
+        elseif battery_percentage >= 50 and battery_percentage < 60 then
+            icon_name = icon_name .. '-' .. icon_status .. '-50'
+        elseif battery_percentage >= 60 and battery_percentage < 80 then
+            icon_name = icon_name .. '-' .. icon_status .. '-60'
+        elseif battery_percentage >= 80 and battery_percentage < 90 then
+            icon_name = icon_name .. '-' .. icon_status .. '-80'
+        elseif battery_percentage >= 90 and battery_percentage < 100 then
+            icon_name = icon_name .. '-' .. icon_status .. '-90'
+        elseif battery_percentage == 100 then
+            icon_name = icon_name .. '-' .. icon_status .. '-100'
+        end
+
+        battery_imagebox.icon:set_image(
+            gears.surface.load_uncached(
+            ---@diagnostic disable-next-line: param-type-mismatch
+                widget_icon_dir .. icon_name .. '.svg'))
     end
 
     -- Create the battery widget (wrapped in pcall for CI environment):
@@ -323,11 +294,24 @@ local return_button = function()
         }
     end
 
-    -- When UPower updates the battery status, the widget is notified
-    -- and calls a signal you need to connect to:
+    -- UPower notifies separately for changed properties in one sample. Let
+    -- those changes settle before checking the sample's update timestamp.
+    local pending_device
+    local update_timer = gears.timer {
+        timeout = 0.1,
+        single_shot = true,
+        callback = function()
+            local device = pending_device
+            pending_device = nil
+            if device then
+                update_battery(tonumber(string.format('%3d', device.percentage)), device)
+            end
+        end
+    }
     my_battery_widget:connect_signal('upower::update',
         function(_, device)
-            update_battery(tonumber(string.format('%3d', device.percentage)))
+            pending_device = device
+            update_timer:again()
         end)
 
     return battery_button
