@@ -19,9 +19,10 @@
 !/.local/bin/findip
 !/.local/bin/git-bare-clone.sh
 !/.local/bin/merge-images-diagonally.sh
-!/.local/bin/merge_zsh_histories.rb
+!/.local/bin/merge-zsh-histories.rb
 !/.local/bin/oc
 !/.local/bin/omni
+!/.local/bin/paru-clean-cache
 !/.local/bin/printcolors
 !/.local/bin/render-wiki.sh
 !/.local/bin/rgfzf.sh

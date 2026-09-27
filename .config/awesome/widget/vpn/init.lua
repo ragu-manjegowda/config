@@ -9,8 +9,12 @@ local status_command = config_dir .. 'utilities/prisma-vpn-status'
 local health_command = config_dir .. 'utilities/prisma-vpn-health'
 local diagnostics_command = config_dir .. 'utilities/prisma-vpn-diagnostics'
 local icon = config_dir .. 'widget/vpn/icons/prisma-access.svg'
+local connecting_icon = config_dir .. 'widget/vpn/icons/prisma-access-connecting.svg'
 local unhealthy_icon = config_dir .. 'widget/vpn/icons/prisma-access-unhealthy.svg'
+local namespace_icon = config_dir .. 'widget/vpn/icons/prisma-access-namespace.svg'
+local namespace_connecting_icon = config_dir .. 'widget/vpn/icons/prisma-access-namespace-connecting.svg'
 local current_status = 'disconnected'
+local current_mode = 'none'
 local current_health = 'unknown'
 local health_failures = 0
 local health_check_running = false
@@ -87,24 +91,28 @@ local status_widget, status_timer = awful.widget.watch(
     5,
     function(_, stdout)
         local status = stdout:match('^%s*(%a+)') or 'unavailable'
+        local mode = stdout:match('^%s*%a+%s+(%a+)') or 'none'
         if status ~= 'connected' and status ~= 'connecting' and
             status ~= 'disconnected' and status ~= 'unavailable' then
             status = 'unavailable'
         end
+        if mode ~= 'namespace' and mode ~= 'global' then mode = 'none' end
+        if status == 'connected' and mode == 'none' then status = 'unavailable' end
 
-        if status ~= current_status then
+        if status ~= current_status or mode ~= current_mode then
             current_status = status
+            current_mode = mode
             -- Old probes/diagnostics must not update a new VPN connection.
             health_generation = health_generation + 1
             health_check_running = false
             last_health_check = 0
-            awesome.emit_signal('module::vpn_status', status)
+            awesome.emit_signal('module::vpn_status', status, mode)
             if status == 'connected' or status == 'disconnected' then
                 mail_restart_timer:again()
             end
         end
 
-        if status == 'connected' then
+        if status == 'connected' and mode == 'global' then
             check_health()
         else
             health_failures = 0
@@ -144,41 +152,39 @@ local return_button = function()
         align = 'right'
     }
 
-    local has_connected = false
-    local hide_timer = gears.timer {
-        timeout = 120,
-        single_shot = true,
-        callback = function()
-            vpn_widget.visible = false
-        end
-    }
+    local recent_connected_mode = 'none'
 
-    local update_vpn = function(status)
-        local health_text = current_health == 'unknown' and '' or ' (' .. current_health .. ')'
-        tooltip:set_text('VPN ' .. status .. health_text)
-        vpn_imagebox.image = current_health == 'unhealthy' and unhealthy_icon or icon
+    local update_vpn = function(status, mode)
+        mode = mode or current_mode
+        local status_text = status == 'connecting' and mode == recent_connected_mode and
+            'reconnecting' or status
+        local scope = mode == 'namespace' and ' (namespace: opt-in SSH/browser)' or
+            mode == 'global' and ' (host-wide)' or ''
+        local health_text = current_health == 'unknown' and '' or ' · ' .. current_health
+        tooltip:set_text('VPN ' .. status_text .. scope .. health_text)
+        if status == 'connecting' then
+            vpn_imagebox.image = mode == 'namespace' and namespace_connecting_icon or connecting_icon
+        else
+            vpn_imagebox.image = mode == 'namespace' and namespace_icon or
+                current_health == 'unhealthy' and unhealthy_icon or icon
+        end
 
         if status == 'connected' then
-            has_connected = true
-            hide_timer:stop()
+            recent_connected_mode = mode
             vpn_widget.visible = true
         elseif status == 'connecting' then
-            hide_timer:stop()
             vpn_widget.visible = true
-        elseif has_connected or vpn_widget.visible then
-            has_connected = false
-            vpn_widget.visible = true
-            hide_timer:again()
         else
+            recent_connected_mode = 'none'
             vpn_widget.visible = false
         end
     end
 
     awesome.connect_signal('module::vpn_status', update_vpn)
     awesome.connect_signal('module::vpn_health', function()
-        update_vpn(current_status)
+        update_vpn(current_status, current_mode)
     end)
-    update_vpn(current_status)
+    update_vpn(current_status, current_mode)
 
     return vpn_widget
 end

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 64 64">
+  <path fill="#073642" d="M40 0 8 32l32 32V42H19l21-29Z"/>
+  <path fill="#073642" d="M40 13v29h15Z"/>
+  <!-- Keep the namespace N visible alongside the connecting indicator. -->
+  <path fill="#073642" d="M45 57V45h3l6 7v-7h3v12h-3l-6-7v7Z"/>
+  <path fill="#073642" fill-rule="evenodd" d="M53 3a10 10 0 1 1 0 20a10 10 0 1 1 0-20Z M51.5 7h3l-.6 8h-1.8Z M51.5 18h3v3h-3Z"/>
+</svg>

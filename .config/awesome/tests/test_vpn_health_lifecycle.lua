@@ -41,14 +41,14 @@ local widget = dofile(home .. '/.config/awesome/widget/vpn/init.lua')
 assert(type(widget) == 'function' and status_callback)
 local function status(value) status_callback(nil, value .. '\n') end
 
-status('connected')
+status('connected global')
 assert(#callbacks == 1, 'first connection did not start health probe')
 local old_probe = callbacks[1].callback
 status('disconnected')
 old_probe('', '', '', 0)
 assert(#health_events == 0, 'late successful probe marked a disconnected VPN healthy')
 
-status('connected')
+status('connected global')
 assert(#callbacks == 2, 'new connection remained blocked by old in-flight probe')
 old_probe('', '', '', 1)
 assert(#health_events == 0, 'old failed probe affected the new connection')
@@ -57,7 +57,7 @@ for failure = 1, 3 do
     callbacks[#callbacks].callback('', '', '', 1)
     if failure < 3 then
         now = now + 60
-        status('connected')
+        status('connected global')
     end
 end
 assert(health_events[#health_events] == 'unhealthy')
@@ -66,6 +66,17 @@ local old_diagnostics = callbacks[5].callback
 status('disconnected')
 old_diagnostics(home .. '/.local/state/prisma-access-agent/vpn-health.log\n')
 assert(notifications == 0, 'late diagnostics notified after disconnect')
+
+status('connected namespace')
+assert(#callbacks == 5, 'namespace connection probed the host instead of the namespace')
+assert(health_events[#health_events] == 'unknown', 'namespace connection inherited global health')
+status('connected global')
+assert(#callbacks == 6, 'switching to global mode did not start a fresh host probe')
+local global_probe = callbacks[6].callback
+status('connected namespace')
+global_probe('', '', '', 1)
+assert(#callbacks == 6 and health_events[#health_events] == 'unknown',
+    'old global probe affected namespace-only connection')
 
 os.time = old_time
 print('VPN health lifecycle tests passed')
