@@ -62,7 +62,7 @@ jobs:
 
       - name: Install Neomutt and dependencies
         run: |
-          pacman -S --noconfirm neomutt notmuch fzf python python-pip bash w3m
+          pacman -S --noconfirm neomutt notmuch fzf python python-pip bash w3m diffutils
 
           # Install Python packages needed for script validation
           python -m pip install --break-system-packages --quiet vobject
