@@ -122,6 +122,12 @@ end
 
 -- Update on startup
 update_slider()
+awesome.connect_signal('control_center::visibility', function(visible)
+    if visible then update_slider(false) end
+end)
+awesome.connect_signal('module::power_profile', function()
+    update_slider(false)
+end)
 
 local action_jump = function()
     local sli_value = brightness_slider:get_value()

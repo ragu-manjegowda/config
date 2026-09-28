@@ -50,7 +50,7 @@ pager = [
 
 # Generic open (xdg-open fallback)
 open = [
-	{ run = "xdg-open %s", desc = "Open", for = "linux" },
+	{ run = "xdg-open %s1", desc = "Open with system default", for = "linux" },
 	{ run = "open %s", desc = "Open", for = "macos" },
 ]
 
@@ -70,12 +70,7 @@ play = [
 
 # Image viewers
 image = [
-	{ run = "viewnior %s", orphan = true, desc = "Viewnior", for = "linux" },
-	{ run = "imv %s", orphan = true, desc = "imv", for = "linux" },
-	{ run = "sxiv %s", orphan = true, desc = "sxiv", for = "linux" },
 	{ run = "feh %s", orphan = true, desc = "feh", for = "linux" },
-	{ run = "eog %s", orphan = true, desc = "Eye of GNOME", for = "linux" },
-	{ run = "gimp %s", orphan = true, desc = "GIMP", for = "linux" },
 ]
 
 # PDF viewers
@@ -173,6 +168,7 @@ rules = [
 	{ url = "*.odp", use = "open" },
 
 	# Images
+	{ mime = "image/gif", use = ["play", "image", "open"] },
 	{ mime = "image/*", use = ["image", "open"] },
 	{ url = "*.kra", use = "open" },
 	{ url = "*.xcf", use = "open" },

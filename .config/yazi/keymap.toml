@@ -5,6 +5,11 @@
 prepend_keymap = [
 	# ranger: map q quit
 	{ on = "q", run = "quit", desc = "Quit" },
+	# Enter navigates directories; l navigates directories or opens the hovered file.
+	{ on = "<Enter>", run = "enter", desc = "Enter directory" },
+	{ on = "l", run = "plugin ranger-open", desc = "Enter directory or open file" },
+	# Space toggles selection, Ctrl+A selects all, and v enters visual mode (Yazi defaults).
+	{ on = "u", run = "escape --select", desc = "Clear all selections" },
 
 	# ranger: map <A-j> scroll_preview 1 / map <A-k> scroll_preview -1
 	{ on = "<A-j>", run = "seek 1", desc = "Scroll preview down" },
