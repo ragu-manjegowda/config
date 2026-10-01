@@ -36,7 +36,7 @@ else
 fi
 
 # Get the current theme (you may want to change this if the format is different)
-current_theme="solarized-light"
+current_theme="solarized-dark"
 
 # Check if themes are different
 if [[ "$previous_theme" != "$current_theme" ]]; then
@@ -51,9 +51,9 @@ if [[ "$previous_theme" != "$current_theme" ]]; then
     if [[ "$choice" == "y" ]]; then
         echo "Reprocessing all files..."
 
-        cp "${HOME}/.config/misc/wiki/css/solarized-light.css" "${css_dir}/solarized.css"
-        cp "${HOME}/.config/misc/wiki/highlight/solarized-light.theme" "${hl_dir}/solarized.theme"
-        cp "${HOME}/.config/misc/wiki/assets/favicon-light.ico" html_output/favicon.ico
+        cp "${HOME}/.config/misc/wiki/css/solarized-dark.css" "${css_dir}/solarized.css"
+        cp "${HOME}/.config/misc/wiki/highlight/solarized-dark.theme" "${hl_dir}/solarized.theme"
+        cp "${HOME}/.config/misc/wiki/assets/favicon-dark.ico" html_output/favicon.ico
         cp "${HOME}/.config/misc/wiki/lua-filters/filters.lua" html_output/filters.lua
 
         # Touch .last_run with the reference time in the past to reprocess all files
@@ -75,17 +75,17 @@ if [ ! -f html_output/.last_run ]; then
 fi
 
 ### Iterate over all modified files in the wiki directory since last run
-### excluding html_output directory
-find . -path ./html_output -prune -o -type f -newer html_output/.last_run -print | while read -r file; do
-
-    echo "Converting $file"
+### excluding generated output and Git metadata at any depth
+find . \( -path ./html_output -o -name .git \) -prune -o \
+    -type f -newer html_output/.last_run -print0 | while IFS= read -r -d '' file; do
 
     # Create the output directory
-    output_dir="html_output/$(dirname "$file" | cut -c 3-)"  # Remove leading "./" from path
+    output_dir="html_output/${file%/*}"
     mkdir -p "$output_dir"
 
     # Check the file extension
     if [[ "$file" == *.md ]]; then
+        printf 'Converting Markdown: %s\n' "$file"
         # Extract the first H1 from the markdown file to use as the title
         # Get the first line that starts with # and remove the #
         title=$(grep -m 1 '^# ' "$file" | sed 's/^# //')
@@ -97,12 +97,13 @@ find . -path ./html_output -prune -o -type f -newer html_output/.last_run -print
 
         # Convert to HTML with Pandoc, generating a fresh TOC
         pandoc --from=gfm --to=html5 --standalone --embed-resources "$file" \
-            --output="$output_dir/$(basename "${file%.md}.html")" \
+            --output="html_output/${file%.md}.html" \
             --lua-filter=html_output/filters.lua --metadata=base_path:/ \
             --syntax-highlighting="${hl_dir}/solarized.theme" \
             --css="${css_dir}/solarized.css" --metadata pagetitle="$title"
     else
         # Copy non-Markdown files to the output directory
+        printf 'Copying asset: %s\n' "$file"
         cp "$file" "$output_dir/"
     fi
 done

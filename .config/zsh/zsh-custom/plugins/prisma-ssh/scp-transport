@@ -1,0 +1,5 @@
+#!/usr/bin/zsh -f
+
+# SCP needs an executable SSH transport, not a shell alias or function.
+source "${0:A:h}/prisma-ssh.plugin.zsh"
+PRISMA_SSH_CALLER=scp ssh "$@"
