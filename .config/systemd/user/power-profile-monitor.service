@@ -3,7 +3,7 @@ Description=Apply power-profile defaults when the power source changes
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python3 %h/.config/awesome/utilities/power-profile-monitor
+ExecStart=/usr/bin/python3 %h/.config/awesome/utilities/power/power-profile-monitor
 Restart=on-failure
 RestartSec=3
 

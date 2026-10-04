@@ -2,15 +2,15 @@
 set -euo pipefail
 
 ROOT="${REPO_HOME:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}"
-CONNECT="$ROOT/.config/awesome/utilities/connect-external"
-DISCONNECT="$ROOT/.config/awesome/utilities/disconnect-external"
-SETUP="$ROOT/.config/awesome/utilities/setup-monitors"
+CONNECT="$ROOT/.config/awesome/utilities/display/connect-external"
+DISCONNECT="$ROOT/.config/awesome/utilities/display/disconnect-external"
+SETUP="$ROOT/.config/awesome/utilities/display/setup-monitors"
 
 tmp_dir="$(mktemp -d)"
 trap 'rm -rf "$tmp_dir"' EXIT
-mkdir -p "$tmp_dir/home/.config/awesome/utilities" "$tmp_dir/bin"
+mkdir -p "$tmp_dir/home/.config/awesome/utilities/display" "$tmp_dir/bin"
 
-cat > "$tmp_dir/home/.config/awesome/utilities/read-display-config" <<'EOF'
+cat > "$tmp_dir/home/.config/awesome/utilities/display/read-display-config" <<'EOF'
 #!/usr/bin/env bash
 if [[ "${CONFIG_EXIT:-0}" != 0 ]]; then
     exit "$CONFIG_EXIT"
@@ -27,13 +27,13 @@ export EXTERNAL_SCALE_FROM="2880x1620"
 CONFIG
 EOF
 
-cat > "$tmp_dir/home/.config/awesome/utilities/setup-monitors" <<'EOF'
+cat > "$tmp_dir/home/.config/awesome/utilities/display/setup-monitors" <<'EOF'
 #!/usr/bin/env bash
 printf 'setup-monitors\n' >> "$DISPLAY_TEST_LOG"
 exit "${SETUP_EXIT:-0}"
 EOF
 
-cat > "$tmp_dir/home/.config/awesome/utilities/reset-primary-display" <<'EOF'
+cat > "$tmp_dir/home/.config/awesome/utilities/display/reset-primary-display" <<'EOF'
 #!/usr/bin/env bash
 printf 'reset-primary-display %s\n' "$*" >> "$DISPLAY_TEST_LOG"
 EOF
@@ -90,7 +90,7 @@ cat > "$tmp_dir/bin/sleep" <<'EOF'
 printf 'sleep %s\n' "$*" >> "$DISPLAY_TEST_LOG"
 EOF
 
-chmod +x "$tmp_dir/home/.config/awesome/utilities/"* "$tmp_dir/bin/"*
+chmod +x "$tmp_dir/home/.config/awesome/utilities/display/"* "$tmp_dir/bin/"*
 
 export HOME="$tmp_dir/home"
 export PATH="$tmp_dir/bin:/usr/bin:/bin"

@@ -3,9 +3,9 @@
 set -euo pipefail
 
 repo_home="${HOME}"
-status_script="$repo_home/.config/awesome/utilities/prisma-vpn-status"
-health_script="$repo_home/.config/awesome/utilities/prisma-vpn-health"
-diagnostics_script="$repo_home/.config/awesome/utilities/prisma-vpn-diagnostics"
+status_script="$repo_home/.config/awesome/utilities/network/prisma-vpn-status"
+health_script="$repo_home/.config/awesome/utilities/network/prisma-vpn-health"
+diagnostics_script="$repo_home/.config/awesome/utilities/network/prisma-vpn-diagnostics"
 widget="$repo_home/.config/awesome/widget/vpn/init.lua"
 panel="$repo_home/.config/awesome/layout/top-panel.lua"
 gai_config="$repo_home/.config/misc/etc/gai.conf"

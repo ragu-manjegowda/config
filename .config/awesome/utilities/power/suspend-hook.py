@@ -26,7 +26,10 @@ def onPrepareForSleep(conn, sender, obj, interface, signal, parameters, data):
             check=False,
         )
         if result.returncode != 0:
-            print(f"Failed to notify Awesome after resume: {result.stderr.strip()}", flush=True)
+            print(
+                f"Failed to notify Awesome after resume: {result.stderr.strip()}",
+                flush=True,
+            )
 
 
 def main():
@@ -39,21 +42,23 @@ def main():
         shell=True,
         check=False,
     )
-    if process_count.stdout.strip().decode('utf-8') != '2':
+    if process_count.stdout.strip().decode("utf-8") != "2":
         return
 
     system_bus = Gio.bus_get_sync(Gio.BusType.SYSTEM, None)
-    system_bus.signal_subscribe('org.freedesktop.login1',
-                                'org.freedesktop.login1.Manager',
-                                'PrepareForSleep',
-                                '/org/freedesktop/login1',
-                                None,
-                                Gio.DBusSignalFlags.NONE,
-                                onPrepareForSleep,
-                                None)
+    system_bus.signal_subscribe(
+        "org.freedesktop.login1",
+        "org.freedesktop.login1.Manager",
+        "PrepareForSleep",
+        "/org/freedesktop/login1",
+        None,
+        Gio.DBusSignalFlags.NONE,
+        onPrepareForSleep,
+        None,
+    )
 
     GLib.MainLoop().run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

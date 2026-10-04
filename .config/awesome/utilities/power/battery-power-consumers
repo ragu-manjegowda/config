@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-profile_helper="${BATTERY_PROFILE_HELPER:-$HOME/.config/awesome/utilities/power-profile}"
+profile_helper="${BATTERY_PROFILE_HELPER:-$HOME/.config/awesome/utilities/power/power-profile}"
 light_bin="${BATTERY_LIGHT_BIN:-light}"
 nvidia_smi="${BATTERY_NVIDIA_SMI:-nvidia-smi}"
 ps_bin="${BATTERY_PS_BIN:-ps}"

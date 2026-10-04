@@ -1,7 +1,7 @@
 local awful = require('awful')
 local gears = require('gears')
 local config = require('configuration.config')
-local helper = gears.filesystem.get_configuration_dir() .. 'utilities/display-control'
+local helper = gears.filesystem.get_configuration_dir() .. 'utilities/display/display-control'
 local M = {}
 local pending, order = {}, {}
 local busy = false

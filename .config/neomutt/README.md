@@ -163,7 +163,7 @@ tentatively accept a calendar invitation. This uses `mutt-ical.py` which:
 
 The neomutt OAuth2 infrastructure is reused by the AwesomeWM calendar widget to
 fetch Outlook calendar events via the Microsoft Graph API. A dedicated script
-(`~/.config/awesome/utilities/outlook-calendar`) calls `oauth2.py` with a
+(`~/.config/awesome/utilities/network/outlook-calendar`) calls `oauth2.py` with a
 separate Graph API token to query `graph.microsoft.com/v1.0/me/calendarview`.
 
 This enables a desktop calendar events widget in the AwesomeWM info-center panel
@@ -244,7 +244,7 @@ This token requires the `Calendars.Read` scope:
 
 Test fetching events:
 ```bash
-~/.config/awesome/utilities/outlook-calendar --days 2
+~/.config/awesome/utilities/network/outlook-calendar --days 2
 ```
 
 ## Common Commands

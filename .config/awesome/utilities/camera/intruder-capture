@@ -1,0 +1,144 @@
+#!/usr/bin/python3
+"""Prefer the active external display's camera, with bounded built-in fallback."""
+
+import argparse
+import datetime
+import glob
+import os
+import re
+import signal
+import stat
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+
+def external_output_active(output):
+    if not output:
+        return False
+    try:
+        result = subprocess.run(
+            ["/usr/bin/xrandr", "--current"],
+            capture_output=True,
+            text=True,
+            timeout=3,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    return (
+        result.returncode == 0
+        and re.search(
+            r"(?m)^"
+            + re.escape(output)
+            + r" connected(?: primary)? \d+x\d+[+-]\d+[+-]\d+(?:\s|$)",
+            result.stdout,
+        )
+        is not None
+    )
+
+
+def camera_available(device):
+    try:
+        return stat.S_ISCHR(os.stat(device).st_mode) and os.access(
+            device, os.R_OK | os.W_OK
+        )
+    except OSError:
+        return False
+
+
+def camera_devices(internal, external, output):
+    devices = []
+    if external and external_output_active(output):
+        for device in sorted(glob.glob(external)):
+            if camera_available(device):
+                devices.append(device)
+                break
+    if internal and camera_available(internal):
+        if all(
+            os.path.realpath(device) != os.path.realpath(internal) for device in devices
+        ):
+            devices.append(internal)
+    return devices
+
+
+def capture_frame(script, device, destination, timeout=7):
+    try:
+        process = subprocess.Popen(
+            [script, device, str(destination)],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            start_new_session=True,
+        )
+    except OSError as error:
+        return False, str(error)
+    try:
+        _, stderr = process.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        try:
+            process.communicate(timeout=2)
+        except subprocess.TimeoutExpired:
+            # A stuck descendant may retain a pipe even after the capture script
+            # is killed. Do not make fallback wait indefinitely for that pipe.
+            process.stdout.close()
+            process.stderr.close()
+        return False, "Camera capture timed out"
+    valid_image = destination.is_file() and destination.stat().st_size > 0
+    return process.returncode == 0 and valid_image, stderr.strip()
+
+
+def capture_photo(internal, external, output, script, save_dir, timeout=7):
+    devices = camera_devices(internal, external, output)
+    if not devices:
+        raise RuntimeError("No intruder capture camera is currently available")
+    directory = Path(os.path.expandvars(os.path.expanduser(save_dir)))
+    directory.mkdir(parents=True, exist_ok=True, mode=0o700)
+    prefix = "SUSPECT-" + datetime.datetime.now().strftime("%Y%m%d_%H%M%S-")
+    errors = []
+    for device in devices:
+        fd, name = tempfile.mkstemp(prefix=prefix, suffix=".png", dir=directory)
+        os.close(fd)
+        destination = Path(name)
+        success = False
+        try:
+            success, error = capture_frame(script, device, destination, timeout)
+            if success:
+                return destination
+            errors.append(f"{device}: {error or 'No image produced'}")
+        finally:
+            if not success:
+                destination.unlink(missing_ok=True)
+    raise RuntimeError("Intruder capture failed: " + "; ".join(errors))
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--camera-device", required=True)
+    parser.add_argument("--external-camera-device", default="")
+    parser.add_argument("--external-output", default="")
+    parser.add_argument("--capture-script", required=True)
+    parser.add_argument("--save-dir", required=True)
+    args = parser.parse_args()
+    print(
+        capture_photo(
+            args.camera_device,
+            args.external_camera_device,
+            args.external_output,
+            args.capture_script,
+            args.save_dir,
+        )
+    )
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except (OSError, RuntimeError) as error:
+        print(f"intruder-capture: {error}", file=sys.stderr)
+        sys.exit(1)

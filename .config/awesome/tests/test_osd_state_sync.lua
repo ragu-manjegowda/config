@@ -67,12 +67,12 @@ check(
 
 check(
     widgets.kbd_brightness:find("awesome.connect_signal%('control_center::visibility'") ~= nil and
-        widgets.kbd_brightness:find('timeout = 0.25', 1, true) == nil and
-        widgets.kbd_brightness:find("'widget::kbd_brightness'") ~= nil,
+    widgets.kbd_brightness:find('timeout = 0.25', 1, true) == nil and
+    widgets.kbd_brightness:find("'widget::kbd_brightness'") ~= nil,
     'keyboard backlight refresh is event-driven without continuous polling'
 )
 
-local keyboard_helper = read('utilities/kbd-bkl')
+local keyboard_helper = read('utilities/input/kbd-bkl')
 check(
     keyboard_helper:find('max_brightness', 1, true) ~= nil,
     'keyboard helper uses the device brightness range'

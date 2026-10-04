@@ -24,12 +24,12 @@ return {
             -- Keep the ultrawide's native aspect ratio and pointer coordinates.
             -- Scaling it from 2880x1800 distorts the image on NVIDIA-G0.
             scale_from = '3440x1440',
-            rate = nil,               -- Optional: refresh rate
+            rate = nil, -- Optional: refresh rate
         },
     },
 
     keyboard = {
-        script = utils_dir .. 'kbd-bkl',
+        script = utils_dir .. 'input/kbd-bkl',
         file = '/sys/class/leds/dell::kbd_backlight/brightness'
         -- file = '/sys/class/leds/smc::kbd_backlight/brightness'
         -- file = '/sys/class/leds/tpacpi::kbd_backlight/brightness'
@@ -96,7 +96,7 @@ return {
         },
 
         calendar_events = {
-            script = config_dir .. 'utilities/outlook-calendar',
+            script = config_dir .. 'utilities/network/outlook-calendar',
             window_days = 2,
             max_items = 0,
             show_cancelled = false,
@@ -197,7 +197,10 @@ return {
             -- camera, pick the right one with this command
             -- $ v4l2-ctl --list-devices
             camera_device = '/dev/video90',
-            capture_script = utils_dir .. 'capture',
+            -- Prefer the monitor's color camera while the external output is active.
+            -- Resolve this stable USB path/glob per attempt; fall back to camera_device.
+            external_camera_device = '/dev/v4l/by-id/usb-*_DELL_Display_4MP_Webcam_*-video-index0',
+            capture_script = utils_dir .. 'camera/capture',
             -- Intruder image save location (Will create directory if it doesn't exist)
             face_capture_dir = '$HOME/Pictures/Intruders/',
             -- Background directory - Defaults to 'awesome/config/theme/wallpapers/' if null

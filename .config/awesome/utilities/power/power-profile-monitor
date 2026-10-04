@@ -5,7 +5,7 @@ from pathlib import Path
 
 HELPER = os.environ.get(
     "POWER_PROFILE_HELPER",
-    os.path.expanduser("~/.config/awesome/utilities/power-profile"),
+    str(Path(__file__).with_name("power-profile")),
 )
 SOURCE_STATE_FILE = os.environ.get(
     "POWER_PROFILE_SOURCE_STATE_FILE",

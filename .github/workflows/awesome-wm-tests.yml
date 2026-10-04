@@ -584,17 +584,16 @@ jobs:
           EXIT_CODE=0
 
           SCRIPTS=(
-            "utilities/setup-monitors"
-            "utilities/connect-external"
-            "utilities/disconnect-external"
-            "utilities/read-display-config"
-            "utilities/kbd-bkl"
-            "utilities/capture"
-            "utilities/location"
-            "utilities/outlook-calendar"
-            "utilities/snap"
-            "utilities/time"
-            "utilities/touchpad-toggle"
+            "utilities/display/setup-monitors"
+            "utilities/display/connect-external"
+            "utilities/display/disconnect-external"
+            "utilities/display/read-display-config"
+            "utilities/input/kbd-bkl"
+            "utilities/camera/capture"
+            "utilities/network/outlook-calendar"
+            "utilities/display/snap"
+            "utilities/desktop/time"
+            "utilities/input/touchpad-toggle"
           )
 
           for script in "${SCRIPTS[@]}"; do
@@ -662,9 +661,9 @@ jobs:
           # Test read-display-config
           export LUA_PATH="/tmp/?.lua;/tmp/?/init.lua;;"
 
-          if [ -x "${{ env.AWESOME_CONFIG_DIR }}/utilities/read-display-config" ]; then
+          if [ -x "${{ env.AWESOME_CONFIG_DIR }}/utilities/display/read-display-config" ]; then
             echo "Testing read-display-config..." | tee -a "$GITHUB_WORKSPACE"/test-logs/display-config.log
-            OUTPUT=$(${{ env.AWESOME_CONFIG_DIR }}/utilities/read-display-config 2>&1 | tee -a "$GITHUB_WORKSPACE"/test-logs/display-config.log)
+            OUTPUT=$(${{ env.AWESOME_CONFIG_DIR }}/utilities/display/read-display-config 2>&1 | tee -a "$GITHUB_WORKSPACE"/test-logs/display-config.log)
 
             if echo "$OUTPUT" | grep -q "export DISPLAY_DPI"; then
               echo "✓ read-display-config works" | tee -a "$GITHUB_WORKSPACE"/test-logs/display-config.log
@@ -868,6 +867,7 @@ jobs:
           HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_lockscreen_fingerprint.lua
           HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_lockscreen_auth.lua
           HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_lockscreen_lifecycle.lua
+          python -B .config/awesome/tests/test_intruder_capture.py
           HOME="$GITHUB_WORKSPACE" python .config/awesome/tests/test_suspend_hook.py
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_lock_before_sleep.sh
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_suspend_only_policy.sh
@@ -927,11 +927,11 @@ jobs:
           export LUA_PATH="/tmp/?.lua;/tmp/?/init.lua;;"
 
           # Test that setup-monitors can source the config
-          if [ -x "${{ env.AWESOME_CONFIG_DIR }}/utilities/setup-monitors" ]; then
+          if [ -x "${{ env.AWESOME_CONFIG_DIR }}/utilities/display/setup-monitors" ]; then
             echo "Testing setup-monitors config sourcing..."
 
             # Extract just the config sourcing part
-            if grep -q "read-display-config" "${{ env.AWESOME_CONFIG_DIR }}/utilities/setup-monitors"; then
+            if grep -q "read-display-config" "${{ env.AWESOME_CONFIG_DIR }}/utilities/display/setup-monitors"; then
               echo "✓ setup-monitors uses read-display-config"
             else
               echo "❌ setup-monitors doesn't use read-display-config"
@@ -940,8 +940,8 @@ jobs:
           fi
 
           # Test connect-external
-          if [ -x "${{ env.AWESOME_CONFIG_DIR }}/utilities/connect-external" ]; then
-            if grep -q "read-display-config" "${{ env.AWESOME_CONFIG_DIR }}/utilities/connect-external"; then
+          if [ -x "${{ env.AWESOME_CONFIG_DIR }}/utilities/display/connect-external" ]; then
+            if grep -q "read-display-config" "${{ env.AWESOME_CONFIG_DIR }}/utilities/display/connect-external"; then
               echo "✓ connect-external uses read-display-config"
             else
               echo "❌ connect-external doesn't use read-display-config"
@@ -950,8 +950,8 @@ jobs:
           fi
 
           # Test disconnect-external
-          if [ -x "${{ env.AWESOME_CONFIG_DIR }}/utilities/disconnect-external" ]; then
-            if grep -q "read-display-config" "${{ env.AWESOME_CONFIG_DIR }}/utilities/disconnect-external"; then
+          if [ -x "${{ env.AWESOME_CONFIG_DIR }}/utilities/display/disconnect-external" ]; then
+            if grep -q "read-display-config" "${{ env.AWESOME_CONFIG_DIR }}/utilities/display/disconnect-external"; then
               echo "✓ disconnect-external uses read-display-config"
             else
               echo "❌ disconnect-external doesn't use read-display-config"

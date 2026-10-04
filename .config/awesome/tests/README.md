@@ -286,7 +286,7 @@ your-feature-test:
 1. Check Lua version: `lua -v` (should be 5.3+)
 2. Verify config syntax: `awesome --check`
 3. Test with awmtt: `awmtt start -C ~/.config/awesome/rc.lua`
-4. Check file permissions: `ls -la utilities/`
+4. Check helper permissions in the relevant `utilities/` subfolder.
 5. Review error messages in test output
 
 ### CI test failures

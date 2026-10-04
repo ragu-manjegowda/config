@@ -446,62 +446,33 @@ local locker = function(s)
         awesome.emit_signal('module::lockscreen_ring_feedback', direction, color)
     end
 
-    -- Check webcam
-    local check_webcam = function()
-        awful.spawn.easy_async_with_shell(
-            'ls -l /dev/video* | grep ' .. config.module.lockscreen.camera_device,
-            function(stdout)
-                if not locker_config.capture_intruder then
-                    capture_now = false
-                    return
-                end
-
-                if not stdout:match(config.module.lockscreen.camera_device) then
-                    capture_now = false
-                else
-                    capture_now = true
-                end
-            end
-        )
-    end
-
-    check_webcam()
-
     local auth_succeeded = false
 
     -- Snap an image of the intruder
     local intruder_capture = function()
         if capture_in_progress then return end
         capture_in_progress = true
-        local capture_image = [[
-        set -eu
-        save_dir="]] .. locker_config.face_capture_dir .. [["
-        date="$(date +%Y%m%d_%H%M%S)"
-        file_loc="${save_dir}SUSPECT-${date}.png"
-
-        if [ ! -d "$save_dir" ]; then
-            mkdir -p "$save_dir";
-        fi
-
-        if ]] .. config.module.lockscreen.capture_script ..
-            " " .. config.module.lockscreen.camera_device .. [[ "${file_loc}"; then
-            canberra-gtk-play -i camera-shutter 2>/dev/null &
-            echo "${file_loc}"
-        else
-            rm -f "${file_loc}"
-            exit 1
-        fi
-        ]]
-
-        -- Capture the filthy intruder face
-        awful.spawn.easy_async_with_shell(
-            capture_image,
+        -- Select cameras on every attempt so hotplug does not need a WM restart.
+        -- Pass paths as argv rather than interpolating them into a shell command.
+        local camera_config = config.module.lockscreen
+        awful.spawn.easy_async(
+            {
+                '/usr/bin/python3', config_dir .. 'utilities/camera/intruder-capture',
+                '--camera-device', camera_config.camera_device or '',
+                '--external-camera-device', camera_config.external_camera_device or '',
+                '--external-output', config.display.external.name,
+                '--capture-script', camera_config.capture_script,
+                '--save-dir', locker_config.face_capture_dir
+            },
             function(stdout, _, _, exit_code)
                 capture_in_progress = false
                 if not lockscreen_lifecycle.can_show_intruder(
                         exit_code, stdout, auth_succeeded, is_lock_state_set()
-                    ) then return end
+                    ) then
+                    return
+                end
 
+                awful.spawn({ 'canberra-gtk-play', '-i', 'camera-shutter' }, false)
                 -- Humiliate the intruder by showing his/her hideous face
                 wanted_image:set_image(stdout:gsub('%s+$', ''))
                 wanted_msg:set_markup(msg_table[math.random(#msg_table)])
@@ -803,7 +774,7 @@ local locker = function(s)
                     {
                         bg     = beautiful.bg_normal,
                         widget = wibox.container.background,
-                    uname_text
+                        uname_text
                     },
                     fingerprint_text_widget,
                     caps_text_widget

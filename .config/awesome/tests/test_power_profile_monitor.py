@@ -13,6 +13,7 @@ SCRIPT = os.path.join(
     ".config",
     "awesome",
     "utilities",
+    "power",
     "power-profile-monitor",
 )
 
@@ -43,7 +44,11 @@ with tempfile.TemporaryDirectory() as temporary:
     def successful_run(command, **kwargs):
         calls.append((command, kwargs.get("env")))
         if command[:2] == ["/bin/bash", module.HELPER]:
-            profile = "balanced" if kwargs["env"]["POWER_PROFILE_ON_BATTERY"] == "true" else "performance"
+            profile = (
+                "balanced"
+                if kwargs["env"]["POWER_PROFILE_ON_BATTERY"] == "true"
+                else "performance"
+            )
             return SimpleNamespace(returncode=0, stdout=profile + "\n", stderr="")
         return SimpleNamespace(returncode=0, stdout="", stderr="")
 
@@ -53,7 +58,9 @@ with tempfile.TemporaryDirectory() as temporary:
         first_count = len(calls)
 
         assert not module.apply_default(False)
-        assert len(calls) == first_count, "same-source restart reapplied the profile baseline"
+        assert len(calls) == first_count, (
+            "same-source restart reapplied the profile baseline"
+        )
 
         assert module.apply_default(True)
         assert module.read_previous_source() == "battery"
@@ -61,7 +68,9 @@ with tempfile.TemporaryDirectory() as temporary:
 
         with open(module.BOOT_ID_FILE, "w", encoding="utf-8") as boot_file:
             boot_file.write("boot-two\n")
-        assert module.read_previous_source() is None, "previous boot suppressed profile initialization"
+        assert module.read_previous_source() is None, (
+            "previous boot suppressed profile initialization"
+        )
         assert module.apply_default(True), "new boot did not apply the source baseline"
         assert module.read_previous_source() == "battery"
 
@@ -73,18 +82,24 @@ with tempfile.TemporaryDirectory() as temporary:
 
     with mock.patch.object(module.subprocess, "run", side_effect=failed_run):
         assert not module.apply_default(False)
-        assert module.read_previous_source() == "battery", "failed transition updated persisted source"
+        assert module.read_previous_source() == "battery", (
+            "failed transition updated persisted source"
+        )
 
     with mock.patch.object(module.subprocess, "run", side_effect=subprocess_timeout):
         assert not module.apply_default(False)
-        assert module.read_previous_source() == "battery", "timed-out transition updated persisted source"
+        assert module.read_previous_source() == "battery", (
+            "timed-out transition updated persisted source"
+        )
 
     commands = []
 
     def battery_policy_run(command, **_kwargs):
         commands.append(command)
         if "query-battery-aware" in command:
-            return SimpleNamespace(returncode=0, stdout="Dynamic changes: False\n", stderr="")
+            return SimpleNamespace(
+                returncode=0, stdout="Dynamic changes: False\n", stderr=""
+            )
         return SimpleNamespace(returncode=0, stdout="", stderr="")
 
     with mock.patch.object(module.subprocess, "run", side_effect=battery_policy_run):
@@ -95,7 +110,9 @@ with tempfile.TemporaryDirectory() as temporary:
 
     def enabled_policy_run(command, **_kwargs):
         commands.append(command)
-        return SimpleNamespace(returncode=0, stdout="Dynamic changes: True\n", stderr="")
+        return SimpleNamespace(
+            returncode=0, stdout="Dynamic changes: True\n", stderr=""
+        )
 
     with mock.patch.object(module.subprocess, "run", side_effect=enabled_policy_run):
         module.disable_builtin_battery_policy()
@@ -105,11 +122,23 @@ with tempfile.TemporaryDirectory() as temporary:
 
     class FakeProxy:
         def get_cached_property(self, _name):
-            assert subscription.active, "initial power source read preceded D-Bus subscription"
+            assert subscription.active, (
+                "initial power source read preceded D-Bus subscription"
+            )
             return SimpleNamespace(unpack=lambda: False)
 
     class FakeBus:
-        def signal_subscribe(self, sender, _interface, _member, path, _arg, _flags, callback, _data):
+        def signal_subscribe(
+            self,
+            sender,
+            _interface,
+            _member,
+            path,
+            _arg,
+            _flags,
+            callback,
+            _data,
+        ):
             if sender == "org.freedesktop.UPower":
                 assert path is None, "monitor will miss AC device Online changes"
                 subscription.active = True
@@ -130,15 +159,26 @@ with tempfile.TemporaryDirectory() as temporary:
     fake_glib = SimpleNamespace(
         SOURCE_REMOVE=False,
         SOURCE_CONTINUE=True,
-        timeout_add_seconds=lambda _delay, callback: setattr(subscription, "retry", callback) or 1,
+        timeout_add_seconds=lambda _delay, callback: (
+            setattr(subscription, "retry", callback) or 1
+        ),
         source_remove=lambda _source: setattr(subscription, "retry", None),
         MainLoop=lambda: SimpleNamespace(run=lambda: None),
     )
     fake_repository = SimpleNamespace(Gio=fake_gio, GLib=fake_glib)
-    with mock.patch.dict(sys.modules, {"gi": SimpleNamespace(repository=fake_repository),
-                                       "gi.repository": fake_repository}), \
-            mock.patch.object(module, "disable_builtin_battery_policy"), \
-            mock.patch.object(module, "apply_default", side_effect=[False, True, True, True]) as apply:
+    with (
+        mock.patch.dict(
+            sys.modules,
+            {
+                "gi": SimpleNamespace(repository=fake_repository),
+                "gi.repository": fake_repository,
+            },
+        ),
+        mock.patch.object(module, "disable_builtin_battery_policy"),
+        mock.patch.object(
+            module, "apply_default", side_effect=[False, True, True, True]
+        ) as apply,
+    ):
         assert module.main() == 0
         assert subscription.retry is not None, "failed startup had no bounded retry"
         assert subscription.retry() is False, "successful retry kept running"
@@ -150,14 +190,33 @@ with tempfile.TemporaryDirectory() as temporary:
         (ac / "online").write_text("0\n")
         assert module.current_on_battery(FakeProxy()) is True
         assert subscription.resume is not None
-        subscription.resume(None, None, None, None, None,
-                            SimpleNamespace(unpack=lambda: (False,)), None)
+        subscription.resume(
+            None,
+            None,
+            None,
+            None,
+            None,
+            SimpleNamespace(unpack=lambda: (False,)),
+            None,
+        )
         assert apply.call_count == 3 and apply.call_args_list[-1].args == (True,)
 
         module.write_source("ac")
-        subscription.callback(None, None, str(ac), None, None,
-                              SimpleNamespace(unpack=lambda: (
-                                  "org.freedesktop.UPower.Device", {"Online": False}, [])), None)
+        subscription.callback(
+            None,
+            None,
+            str(ac),
+            None,
+            None,
+            SimpleNamespace(
+                unpack=lambda: (
+                    "org.freedesktop.UPower.Device",
+                    {"Online": False},
+                    [],
+                )
+            ),
+            None,
+        )
         assert apply.call_count == 4 and apply.call_args_list[-1].args == (True,)
 
 

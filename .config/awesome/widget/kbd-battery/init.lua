@@ -7,7 +7,7 @@ local clickable_container = require('widget.clickable-container')
 local dpi = beautiful.xresources.apply_dpi
 local config_dir = gears.filesystem.get_configuration_dir()
 local icon_dir = config_dir .. 'widget/kbd-battery/icons/'
-local battery_command = config_dir .. 'utilities/read-kbd-battery'
+local battery_command = config_dir .. 'utilities/input/read-kbd-battery'
 
 local current = {
     connected = false,

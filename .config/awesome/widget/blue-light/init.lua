@@ -77,7 +77,7 @@ run_filter = function(action)
         return
     end
     filter_busy = true
-    awful.spawn.easy_async({ '/bin/bash', config_dir .. 'utilities/blue-light', action },
+    awful.spawn.easy_async({ '/bin/bash', config_dir .. 'utilities/display/blue-light', action },
         function(stdout, _, _, exit_code)
             filter_busy = false
             blue_light_state = exit_code == 0 and stdout:match('ON') ~= nil

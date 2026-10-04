@@ -6,7 +6,7 @@ LIGHT_BIN="${LID_BRIGHTNESS_LIGHT_BIN:-light}"
 XRANDR_BIN="${LID_BRIGHTNESS_XRANDR_BIN:-xrandr}"
 INHIBIT_BIN="${LID_BRIGHTNESS_INHIBIT_BIN:-/usr/bin/systemd-inhibit}"
 EVENT_BIN="${LID_BRIGHTNESS_EVENT_BIN:-gdbus}"
-CONFIG_READER="${LID_BRIGHTNESS_CONFIG_READER:-$HOME/.config/awesome/utilities/read-display-config}"
+CONFIG_READER="${LID_BRIGHTNESS_CONFIG_READER:-$HOME/.config/awesome/utilities/display/read-display-config}"
 STATE_DIR="${XDG_STATE_HOME:-${HOME}/.local/state}/lid-brightness-manager"
 BRIGHTNESS_CACHE="${LID_BRIGHTNESS_CACHE:-${STATE_DIR}/brightness}"
 LEGACY_CACHE="/tmp/laptop_brightness_${USER}"
@@ -103,7 +103,7 @@ manage_brightness() {
     local lid_state
     update_lid_inhibitor
     lid_state=$(get_lid_state)
-    
+
     if [ "$lid_state" = "closed" ] && is_external_connected; then
         # Save current brightness if not already saved
         if [ ! -s "$BRIGHTNESS_CACHE" ]; then
@@ -111,11 +111,11 @@ manage_brightness() {
             "$LIGHT_BIN" -G > "$BRIGHTNESS_CACHE" 2>/dev/null
             echo "[$(date '+%H:%M:%S')] Lid closed with external monitor - saved brightness: $(cat "$BRIGHTNESS_CACHE")%"
         fi
-        
+
         # Set brightness to 0
         "$LIGHT_BIN" -S 0 2>/dev/null
         echo "[$(date '+%H:%M:%S')] Laptop display brightness set to 0"
-        
+
     elif [ "$lid_state" = "open" ] || ! is_external_connected; then
         restore_brightness
     fi

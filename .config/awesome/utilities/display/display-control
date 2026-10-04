@@ -17,9 +17,13 @@ from pathlib import Path
 
 
 def run(argv):
-    result = subprocess.run(argv, capture_output=True, text=True, timeout=8, check=False)
+    result = subprocess.run(
+        argv, capture_output=True, text=True, timeout=8, check=False
+    )
     if result.returncode:
-        raise RuntimeError(result.stderr.strip() or result.stdout.strip() or f"{argv[0]} failed")
+        raise RuntimeError(
+            result.stderr.strip() or result.stdout.strip() or f"{argv[0]} failed"
+        )
     # Successful DDC commands can warn about NVIDIA's missing connector mapping.
     # Parse their VCP stdout; nonzero exits and invalid replies still fail loudly.
     return result.stdout
@@ -27,11 +31,19 @@ def run(argv):
 
 def output_edid(output):
     text = run([os.environ.get("DISPLAY_CONTROL_XRANDR", "/usr/bin/xrandr"), "--props"])
-    section = re.search(r"(?ms)^" + re.escape(output) + r" connected\b.*?(?=^\S|\Z)", text)
-    match = re.search(r"EDID:\s*\n((?:\s+[0-9a-fA-F]{32}\s*\n)+)", section[0]) if section else None
+    section = re.search(
+        r"(?ms)^" + re.escape(output) + r" connected\b.*?(?=^\S|\Z)", text
+    )
+    match = (
+        re.search(r"EDID:\s*\n((?:\s+[0-9a-fA-F]{32}\s*\n)+)", section[0])
+        if section
+        else None
+    )
     edid = "".join(match[1].split())[:256].lower() if match else ""
     if len(edid) != 256:
-        raise RuntimeError(f"No active EDID for {output}; refusing an arbitrary DDC monitor")
+        raise RuntimeError(
+            f"No active EDID for {output}; refusing an arbitrary DDC monitor"
+        )
     return edid
 
 
@@ -56,7 +68,9 @@ def temperature_gains(kelvin):
         blue = 0 if t <= 19 else 138.5177312231 * math.log(t - 10) - 305.0447927307
         return 255, max(0, min(255, green)), max(0, min(255, blue))
 
-    return tuple(min(1, channel / neutral) for channel, neutral in zip(rgb(kelvin), rgb(6500)))
+    return tuple(
+        min(1, channel / neutral) for channel, neutral in zip(rgb(kelvin), rgb(6500))
+    )
 
 
 class DisplayControl:
@@ -65,14 +79,21 @@ class DisplayControl:
         self.internal = output.startswith(("eDP", "LVDS")) and edid is None
         self.edid = None if self.internal else edid or output_edid(output)
         self.key = hashlib.sha256((self.edid or output).encode()).hexdigest()[:24]
-        self.state_dir = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state")) / "awesome/display-control"
+        self.state_dir = (
+            Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state"))
+            / "awesome/display-control"
+        )
         self.state_file = self.state_dir / (self.key + ".json")
         self.last_gains = None
 
     @contextlib.contextmanager
     def lock(self):
         runtime = Path(os.environ.get("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}"))
-        fd = os.open(runtime / ("display-control-" + self.key + ".lock"), os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
+        fd = os.open(
+            runtime / ("display-control-" + self.key + ".lock"),
+            os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW,
+            0o600,
+        )
         try:
             deadline = time.monotonic() + 10
             while True:
@@ -90,11 +111,26 @@ class DisplayControl:
     def ddc(self, *args):
         if self.internal:
             raise RuntimeError("DDC color control is only for external displays")
-        return run([os.environ.get("DISPLAY_CONTROL_DDCUTIL", "/usr/bin/ddcutil"), "--edid", self.edid, "--brief", *args])
+        return run(
+            [
+                os.environ.get("DISPLAY_CONTROL_DDCUTIL", "/usr/bin/ddcutil"),
+                "--edid",
+                self.edid,
+                "--brief",
+                *args,
+            ]
+        )
 
     def brightness(self):
         if self.internal:
-            value = float(run([os.environ.get("DISPLAY_CONTROL_LIGHT", "/usr/bin/light"), "-G"]).strip())
+            value = float(
+                run(
+                    [
+                        os.environ.get("DISPLAY_CONTROL_LIGHT", "/usr/bin/light"),
+                        "-G",
+                    ]
+                ).strip()
+            )
             if not math.isfinite(value) or not 0 <= value <= 100:
                 raise RuntimeError("Invalid backlight percentage")
             return value, 100
@@ -112,7 +148,13 @@ class DisplayControl:
             value += 100 * current / maximum
         value = max(5, min(100, value))
         if self.internal:
-            run([os.environ.get("DISPLAY_CONTROL_LIGHT", "/usr/bin/light"), "-S", str(value)])
+            run(
+                [
+                    os.environ.get("DISPLAY_CONTROL_LIGHT", "/usr/bin/light"),
+                    "-S",
+                    str(value),
+                ]
+            )
             return self.get_brightness()
         raw = round(value * maximum / 100)
         self.ddc("setvcp", "10", str(raw))  # ddcutil verifies writes by default.
@@ -125,8 +167,12 @@ class DisplayControl:
         preset = re.search(r"(?mi)^VCP 14 (?:SNC|S) x([0-9a-f]+)\s*$", text)
         if not preset:
             raise RuntimeError("Cannot save the monitor's original color preset")
-        state = {"output": self.output, "edid": self.edid, "preset": int(preset[1], 16),
-                 "gains": {code: parse_vcp(text, code) for code in ("16", "18", "1A")}}
+        state = {
+            "output": self.output,
+            "edid": self.edid,
+            "preset": int(preset[1], 16),
+            "gains": {code: parse_vcp(text, code) for code in ("16", "18", "1A")},
+        }
         self.state_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
         fd, name = tempfile.mkstemp(prefix=".color-", dir=self.state_dir)
         try:
@@ -140,7 +186,10 @@ class DisplayControl:
     def set_temperature(self, kelvin):
         ratios = temperature_gains(kelvin)
         state = self.save_color()
-        gains = tuple(round(state["gains"][code][0] * ratio) for code, ratio in zip(("16", "18", "1A"), ratios))
+        gains = tuple(
+            round(state["gains"][code][0] * ratio)
+            for code, ratio in zip(("16", "18", "1A"), ratios)
+        )
         if gains == self.last_gains:
             return  # No I2C traffic for unchanged temperature/gain values.
         preset = state["preset"] if state["preset"] in (0x0B, 0x0C) else 0x0B
@@ -165,7 +214,10 @@ class DisplayControl:
 
 
 def restore_output(output):
-    directory = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state")) / "awesome/display-control"
+    directory = (
+        Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state"))
+        / "awesome/display-control"
+    )
     for path in directory.glob("*.json"):
         state = json.loads(path.read_text())
         if state["output"] == output:
@@ -197,7 +249,13 @@ def main():
                 value = control.get_brightness()
             else:
                 relative = args.S is None
-                change = args.S if not relative else args.A if args.A is not None else -args.U
+                change = (
+                    args.S
+                    if not relative
+                    else args.A
+                    if args.A is not None
+                    else -args.U
+                )
                 value = control.set_brightness(change, relative)
             print(f"{value:.2f}")
 
@@ -205,6 +263,11 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except (RuntimeError, ValueError, OSError, subprocess.TimeoutExpired) as error:
+    except (
+        RuntimeError,
+        ValueError,
+        OSError,
+        subprocess.TimeoutExpired,
+    ) as error:
         print(f"display-control: {error}", file=sys.stderr)
         sys.exit(1)

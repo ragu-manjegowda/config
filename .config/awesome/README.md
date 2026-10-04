@@ -100,22 +100,13 @@ version on top of it with extensive modifications for a production desktop envir
 │   ├── notifications.lua         # Notification handling
 │   └── screen-manager.lua        # Multi-monitor connect/disconnect
 │
-├── utilities/                    # Shell/Python helper scripts
-│   ├── outlook-calendar          # Fetch Outlook events via Graph API
-│   ├── setup-monitors            # Configure display arrangement
-│   ├── connect-external          # Handle external monitor connection
-│   ├── disconnect-external       # Handle external monitor disconnection
-│   ├── read-display-config       # Read display config from config.lua
-│   ├── snap                      # Screenshot (full/area)
-│   ├── capture                   # Webcam capture (lockscreen intruder)
-│   ├── kbd-bkl                   # Keyboard backlight control
-│   ├── suspend-hook.py           # Wallpaper update on resume from sleep
-│   ├── volctl                    # Volume control tray applet
-│   ├── touchpad-toggle           # Toggle touchpad on/off
-│   ├── profile-image             # Update user profile picture
-│   ├── time                      # Show time via rofi
-│   ├── location                  # Geolocation utility
-│   └── icc-matcher               # ICC color profile matcher
+├── utilities/                    # Functional helper groups (see utilities/README.md)
+│   ├── camera/                   # Webcam capture and intruder photos
+│   ├── desktop/                  # Theme recovery, profile, clock and volume applet
+│   ├── display/                  # Topology, brightness, color and screenshots
+│   ├── input/                    # Keyboard and touchpad controls
+│   ├── network/                  # Outlook calendar and Prisma VPN helpers
+│   └── power/                    # Power profiles, battery consumers and resume hook
 │
 ├── theme/                        # Theme configuration
 │   ├── init.lua                  # Theme loader (selects active theme)
@@ -230,10 +221,27 @@ coalesced slider writes; there is no continuous brightness poller.
 | `notifications` | Custom notification handling and display |
 | `screen-manager` | Graceful handling of monitor connect/disconnect events |
 
+### Intruder camera selection
+
+When intruder capture is enabled, the lockscreen prefers
+`module.lockscreen.external_camera_device` while the configured external display
+is active. This accepts a stable `/dev/v4l/by-id/` path or glob; the Dell monitor
+pattern selects its color camera's `video-index0`, not a metadata or IR node.
+The device is resolved on every attempt, so USB reconnects and changed
+`/dev/videoN` numbering do not require restarting Awesome.
+
+If the external camera is absent, busy, or fails to capture, the helper tries
+`module.lockscreen.camera_device` instead. With no active external display, it
+uses that built-in camera directly. Attempts are bounded and asynchronous,
+partial images are removed, and successful photos are saved with private
+permissions in `face_capture_dir`. Capture completion cannot reopen the wanted
+poster after successful authentication. The camera-selection tests use fake
+devices and capture scripts and require no camera or X server in CI.
+
 ## Outlook Calendar via Microsoft Graph API
 
 The calendar events widget fetches events from Outlook via the Microsoft Graph
-API. The `utilities/outlook-calendar` script:
+API. The `utilities/network/outlook-calendar` script:
 
 - Reuses the neomutt OAuth2 infrastructure (`~/.config/neomutt/accounts/work/oauth2.py`)
 - Uses a dedicated Graph API token (`~/.config/neomutt/credentials/token_outlook_graph`)
@@ -278,7 +286,7 @@ display = {
 }
 ```
 
-The `utilities/read-display-config` script reads this Lua config for use by
+The `utilities/display/read-display-config` script reads this Lua config for use by
 shell scripts (`setup-monitors`, `connect-external`, `disconnect-external`).
 
 ### Weather
@@ -299,7 +307,7 @@ stocks = {
 
 ```lua
 calendar_events = {
-    script = config_dir .. 'utilities/outlook-calendar',
+    script = config_dir .. 'utilities/network/outlook-calendar',
     window_days = 2,
     max_items = 0,        -- 0 = show all
     show_cancelled = false,
@@ -403,24 +411,14 @@ Configured in `configuration/apps.lua`, launched via `module/auto-start.lua`:
 
 ## Utilities
 
-| Script | Description |
-|--------|-------------|
-| `outlook-calendar` | Fetch Outlook calendar events via Microsoft Graph API |
-| `setup-monitors` | Configure primary and external display arrangement |
-| `connect-external` | Handle external monitor connection |
-| `disconnect-external` | Handle external monitor disconnection |
-| `read-display-config` | Read display settings from `config.lua` for shell scripts |
-| `snap` | Take screenshots (full or area selection) |
-| `capture` | Webcam capture for lockscreen intruder detection |
-| `kbd-bkl` | Control keyboard backlight brightness |
-| `read-kbd-battery` | Read external keyboard battery level |
-| `suspend-hook.py` | Update wallpaper and services when resuming from suspend |
-| `volctl` | Start per-application volume control tray |
-| `touchpad-toggle` | Toggle touchpad on/off |
-| `profile-image` | Update user profile picture |
-| `time` | Display current time via rofi |
-| `location` | Geolocation utility |
-| `icc-matcher` | Match ICC color profiles to displays |
+Utilities are organized into `camera/`, `desktop/`, `display/`, `input/`,
+`network/` and `power/`. See [the helper inventory](utilities/README.md) for
+individual scripts and their dependencies.
+
+Generated workspace state is stored in
+`${XDG_STATE_HOME:-$HOME/.local/state}/awesome/last-workspace`, with migration
+from the old utility-directory marker. Runtime state does not belong in the
+helper source tree.
 
 ## CI/CD
 

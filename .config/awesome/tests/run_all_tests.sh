@@ -94,10 +94,10 @@ echo "$(printf '─%.0s' {1..60})"
 # Test 1: Check all scripts are executable
 echo -e "\n${YELLOW}▶ Checking script executability${NC}"
 SCRIPTS=(
-    "utilities/setup-monitors"
-    "utilities/connect-external"
-    "utilities/disconnect-external"
-    "utilities/read-display-config"
+    "utilities/display/setup-monitors"
+    "utilities/display/connect-external"
+    "utilities/display/disconnect-external"
+    "utilities/display/read-display-config"
 )
 
 SCRIPT_CHECK_PASSED=true

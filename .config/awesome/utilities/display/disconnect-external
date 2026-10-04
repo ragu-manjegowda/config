@@ -7,7 +7,7 @@ set -euo pipefail
 # Configuration is read from config.lua via read-display-config
 
 # Source the configuration from config.lua
-display_config="$("$HOME/.config/awesome/utilities/read-display-config")"
+display_config="$("$HOME/.config/awesome/utilities/display/read-display-config")"
 source /dev/stdin <<<"$display_config"
 unset display_config
 

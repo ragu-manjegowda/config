@@ -78,7 +78,7 @@ local return_button = function()
         margin_topbottom = dpi(8),
         preferred_positions = { 'right', 'left', 'top', 'bottom' }
     }
-    local consumers_command = config_dir .. 'utilities/battery-power-consumers'
+    local consumers_command = config_dir .. 'utilities/power/battery-power-consumers'
     local battery_summary = 'Battery status unavailable'
     local consumer_summary = ''
 

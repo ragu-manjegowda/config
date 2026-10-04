@@ -116,33 +116,21 @@ screen.connect_signal(
 --                                                __/ |
 --                                               |___/
 
-local filesystem = require('gears.filesystem')
-local config_dir = filesystem.get_configuration_dir()
-local utils_dir = config_dir .. 'utilities/'
-
-local ws_fname = utils_dir .. "/awesome-last-ws"
+local workspace_state = require('library.workspace-state')
 
 local save_current_tag = function()
     -- Get the currently selected tag from mouse screen (more reliable than focused)
     local s = mouse.screen
     local t = s.selected_tag
 
-    -- Write to file: save both tag name and screen index
-    local f = assert(io.open(ws_fname, "w"))
     if t ~= nil then
         -- Save format: "tag_name|screen_index"
-        f:write(t.name .. "|" .. s.index, "\n")
+        workspace_state.save(t.name .. "|" .. s.index)
     end
-    f:close()
 end
 
 local load_last_active_tag = function()
-    local f = io.open(ws_fname, "r")
-    if not f then
-        return -- File doesn't exist yet
-    end
-    local saved_line = f:read("*line")
-    f:close()
+    local saved_line = workspace_state.load()
 
     if not saved_line then
         return -- No data saved

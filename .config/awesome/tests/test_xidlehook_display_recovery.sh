@@ -6,8 +6,8 @@ SERVICE="$REPO_HOME/.config/systemd/user/xidlehook.service"
 IDLE_SCRIPT="$REPO_HOME/.config/scripts/start_xidlehook.sh"
 LOCK_ACTION="$REPO_HOME/.config/scripts/xidlehook-lock-action.sh"
 DISPLAY_ACTION="$REPO_HOME/.config/scripts/xidlehook-display-action.sh"
-RESET_SCRIPT="$REPO_HOME/.config/awesome/utilities/reset-primary-display"
-SETUP_SCRIPT="$REPO_HOME/.config/awesome/utilities/setup-monitors"
+RESET_SCRIPT="$REPO_HOME/.config/awesome/utilities/display/reset-primary-display"
+SETUP_SCRIPT="$REPO_HOME/.config/awesome/utilities/display/setup-monitors"
 
 if grep -Fq 'ExecCondition=' "$SERVICE"; then
     printf '%s\n' 'xidlehook service must not depend on a missing session environment' >&2

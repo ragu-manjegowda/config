@@ -27,7 +27,7 @@ print(string.rep("=", 50))
 
 -- Test: Script exists and is executable
 print("\nTest Suite: Script Availability")
-local script_path = os.getenv("HOME") .. "/.config/awesome/utilities/read-display-config"
+local script_path = os.getenv("HOME") .. "/.config/awesome/utilities/display/read-display-config"
 local stat = io.popen("test -f '" .. script_path .. "' && echo 'exists' || echo 'missing'"):read("*l")
 assert_test(stat == "exists", "read-display-config file exists", "Path: " .. script_path)
 
@@ -104,8 +104,8 @@ end
 print("\nTest Suite: Value Consistency")
 local home = os.getenv("HOME")
 package.path = home .. "/.config/awesome/?.lua;" ..
-               home .. "/.config/awesome/?/init.lua;" ..
-               package.path
+    home .. "/.config/awesome/?/init.lua;" ..
+    package.path
 
 package.loaded['gears.filesystem'] = {
     get_configuration_dir = function()

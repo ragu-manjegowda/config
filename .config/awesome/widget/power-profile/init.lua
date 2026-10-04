@@ -5,7 +5,7 @@ local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 local clickable_container = require('widget.clickable-container')
 
-local helper = gears.filesystem.get_configuration_dir() .. 'utilities/power-profile'
+local helper = gears.filesystem.get_configuration_dir() .. 'utilities/power/power-profile'
 local profiles = {
     {
         key = 'performance',

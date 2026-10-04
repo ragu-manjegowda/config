@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-helper="$HOME/.config/awesome/utilities/ensure-darkman"
+helper="$HOME/.config/awesome/utilities/desktop/ensure-darkman"
 unit="$HOME/.config/systemd/user/darkman.service.d/override.conf"
 xsettings_unit="$HOME/.config/systemd/user/xsettingsd.service.d/override.conf"
 apps="$HOME/.config/awesome/configuration/apps.lua"

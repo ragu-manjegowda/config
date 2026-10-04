@@ -65,7 +65,6 @@ git --git-dir="$HOME/.config.git" --work-tree="$HOME" update-index --assume-unch
     .config/awesome/theme/icons/volume-high.svg \
     .config/awesome/theme/icons/volume-muted.svg \
     .config/awesome/theme/init.lua \
-    .config/awesome/utilities/awesome-last-ws \
     .config/awesome/widget/airplane-mode/icons/airplane-mode-off.svg \
     .config/awesome/widget/airplane-mode/icons/airplane-mode.svg \
     .config/awesome/widget/battery/icons/battery-alert.svg \

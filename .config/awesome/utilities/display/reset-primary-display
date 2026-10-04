@@ -11,7 +11,7 @@ xrandr_bin="${DISPLAY_RESET_XRANDR_BIN:-xrandr}"
 xset_bin="${DISPLAY_RESET_XSET_BIN:-xset}"
 sleep_bin="${DISPLAY_RESET_SLEEP_BIN:-sleep}"
 settle_seconds="${DISPLAY_RESET_SETTLE_SECONDS:-3}"
-config_reader="${DISPLAY_RESET_CONFIG_READER:-$HOME/.config/awesome/utilities/read-display-config}"
+config_reader="${DISPLAY_RESET_CONFIG_READER:-$HOME/.config/awesome/utilities/display/read-display-config}"
 if [[ -n "${DISPLAY_RESET_STATE_FILE:-}" ]]; then
     state_file="$DISPLAY_RESET_STATE_FILE"
 else

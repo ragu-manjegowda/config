@@ -31,7 +31,7 @@ PY
 fi
 
 root="${REPO_HOME:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}"
-helper="$root/.config/awesome/utilities/blue-light"
+helper="$root/.config/awesome/utilities/display/blue-light"
 if grep -Fq 'killall -9 redshift' "$root/.config/awesome/configuration/apps.lua"; then
     printf 'Autostart must not replace the per-output color workers\n' >&2
     exit 1

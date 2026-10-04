@@ -17,12 +17,32 @@ def main():
     parser.add_argument("--config", required=True)
     parser.add_argument("--ready-file", required=True)
     args = parser.parse_args()
-    control_type = runpy.run_path(str(Path(__file__).with_name("display-control")))["DisplayControl"]
+    control_type = runpy.run_path(str(Path(__file__).with_name("display-control")))[
+        "DisplayControl"
+    ]
     control = control_type(args.output)
     process = subprocess.Popen(
-        ["/usr/bin/stdbuf", "-oL", "/usr/bin/redshift", "-c", args.config,
-         "-m", "dummy", "-v", "-r", "-P", "-t", "5500:4500", "-b", "1", "-g", "1:1:1"],
-        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+        [
+            "/usr/bin/stdbuf",
+            "-oL",
+            "/usr/bin/redshift",
+            "-c",
+            args.config,
+            "-m",
+            "dummy",
+            "-v",
+            "-r",
+            "-P",
+            "-t",
+            "5500:4500",
+            "-b",
+            "1",
+            "-g",
+            "1:1:1",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
     )
     stopping = False
 
@@ -38,17 +58,25 @@ def main():
         for line in process.stdout:
             if stopping:
                 break
-            match = re.fullmatch(r"(?:Color temperature: (\d+)K|Temperature: (\d+))\s*", line)
+            match = re.fullmatch(
+                r"(?:Color temperature: (\d+)K|Temperature: (\d+))\s*", line
+            )
             if match:
                 temperature = int(match[1] or match[2])
                 with control.lock():
                     control.set_temperature(temperature)
                 if not Path(args.ready_file).exists():
-                    fd = os.open(args.ready_file, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+                    fd = os.open(
+                        args.ready_file,
+                        os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+                        0o600,
+                    )
                     os.close(fd)
         code = process.wait(timeout=3)
         if not stopping:
-            raise RuntimeError(f"Redshift schedule worker stopped unexpectedly ({code})")
+            raise RuntimeError(
+                f"Redshift schedule worker stopped unexpectedly ({code})"
+            )
     finally:
         Path(args.ready_file).unlink(missing_ok=True)
         if process.poll() is None:
@@ -62,6 +90,11 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except (RuntimeError, ValueError, OSError, subprocess.TimeoutExpired) as error:
+    except (
+        RuntimeError,
+        ValueError,
+        OSError,
+        subprocess.TimeoutExpired,
+    ) as error:
         print(f"monitor-color: {error}", file=sys.stderr)
         sys.exit(1)

@@ -106,7 +106,7 @@ assert 'error' not in d or d.get('price') is not None, 'got error with no price'
 fi
 
 # --- Outlook Calendar: outlook-calendar utility ---
-CALENDAR_SCRIPT="$AWESOME_DIR/utilities/outlook-calendar"
+CALENDAR_SCRIPT="$AWESOME_DIR/utilities/network/outlook-calendar"
 NEOMUTT_DIR="$HOME/.config/neomutt"
 OAUTH_SCRIPT="$NEOMUTT_DIR/accounts/work/oauth2.py"
 TOKEN_FILE="$NEOMUTT_DIR/credentials/token_outlook_graph"

@@ -3,7 +3,7 @@
 set -euo pipefail
 
 repo_home="${HOME}"
-capture="$repo_home/.config/awesome/utilities/capture"
+capture="$repo_home/.config/awesome/utilities/camera/capture"
 override="$repo_home/.config/misc/etc/systemd/system/v4l2-relayd-ipu7.service.d/override.conf"
 bootstrap="$repo_home/.config/scripts/bootstrap/04-hardware.sh"
 

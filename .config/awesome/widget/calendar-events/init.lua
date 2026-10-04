@@ -12,7 +12,7 @@ local refresh_icon_path = config_dir .. 'widget/weather/icons/refresh.svg'
 local config = require('configuration.config')
 
 local calendar_cfg = config.widget.calendar_events or {}
-local fetch_script = calendar_cfg.script or (config_dir .. 'utilities/outlook-calendar')
+local fetch_script = calendar_cfg.script or (config_dir .. 'utilities/network/outlook-calendar')
 local max_items = tonumber(calendar_cfg.max_items) or 0
 local show_cancelled = calendar_cfg.show_cancelled or false
 local window_days = calendar_cfg.window_days or 2
@@ -241,7 +241,8 @@ end
 
 local function event_time_label(event)
     local day_label = event_day_label(event)
-    local time_label = event.is_all_day and 'All Day' or ((event.start_label or '--:--') .. ' - ' .. (event.end_label or '--:--'))
+    local time_label = event.is_all_day and 'All Day' or
+    ((event.start_label or '--:--') .. ' - ' .. (event.end_label or '--:--'))
     local details = day_label .. ' | ' .. time_label
     if is_missed_today(event) then
         details = details .. ' | Missed'
@@ -374,7 +375,8 @@ local function event_group_key(event)
     if event.is_all_day then
         return 'allday|' .. (start_text ~= '' and start_text or event.start_label or event.subject or '')
     end
-    return 'timed|' .. (start_text ~= '' and start_text or ((event_date_text(event) or '') .. '|' .. (event.start_label or '')))
+    return 'timed|' ..
+    (start_text ~= '' and start_text or ((event_date_text(event) or '') .. '|' .. (event.start_label or '')))
 end
 
 local function group_visible_events(visible, limit)

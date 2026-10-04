@@ -91,7 +91,7 @@ return {
         -- '/usr/bin/lxqt-policykit-agent &' ..
         -- ' eval $(gnome-keyring-daemon -s --components=gpg)',
         -- Set monitors dpi
-        config_dir .. 'utilities/setup-monitors',
+        config_dir .. 'utilities/display/setup-monitors',
         -- Set the dpi for GDK applications
         'xrdb -merge ~/.Xresources',
         -- Set keyboard repeat rate (delay in ms, rate per second)
@@ -117,9 +117,9 @@ return {
         --'systemctl --user reload-or-restart goimapnotify.service',
         'systemctl --user start goimapnotify.service',
         -- Sleep hook to update wallpaper when coming back from sleep
-        config_dir .. 'utilities/suspend-hook.py &',
+        config_dir .. 'utilities/power/suspend-hook.py &',
         -- Start volctl
-        config_dir .. 'utilities/volctl',
+        config_dir .. 'utilities/desktop/volctl',
         -- Set colemak dh layout and enable right alt key
         -- 'setxkbmap us colemak_dh && setxkbmap -option "lv3:ralt_alt"'
     },
@@ -127,15 +127,15 @@ return {
     -- List of binaries/shell scripts that will execute for a certain task
     utils = {
         -- Fullscreen screenshot
-        full_screenshot = utils_dir .. 'snap full',
+        full_screenshot = utils_dir .. 'display/snap full',
         -- Area screenshot
-        area_screenshot = utils_dir .. 'snap area',
+        area_screenshot = utils_dir .. 'display/snap area',
         -- Update profile picture
-        update_profile  = utils_dir .. 'profile-image',
+        update_profile  = utils_dir .. 'desktop/profile-image',
         -- Show time with rofi
-        show_time       = utils_dir .. 'time',
+        show_time       = utils_dir .. 'desktop/time',
         -- Toggle touchpad
-        touchpad_toggle = utils_dir .. 'touchpad-toggle',
-        ensure_darkman = utils_dir .. 'ensure-darkman'
+        touchpad_toggle = utils_dir .. 'input/touchpad-toggle',
+        ensure_darkman  = utils_dir .. 'desktop/ensure-darkman'
     }
 }
