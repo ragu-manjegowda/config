@@ -10,6 +10,7 @@ tap "anomalyco/tap"
 brew "bat"                          # cat clone with syntax highlighting
 brew "coreutils"                    # GNU core utilities
 brew "dateutils"                    # date/time utilities
+brew "delta"                        # diff tool
 brew "diff-so-fancy"                # better diff output
 brew "diffnav"                      # diff navigator
 brew "exiftool"                     # image metadata tool

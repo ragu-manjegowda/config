@@ -23,6 +23,7 @@ cppreference
 cups
 cyrus-sasl-xoauth2-git
 darkman
+ddcutil
 docker
 docker-buildx
 docker-compose
@@ -87,6 +88,7 @@ noto-fonts-emoji
 numix-cursor-theme
 nvidia-container-toolkit
 nvidia-open-dkms
+nvidia-settings
 openconnect-gp-git
 openrazer-daemon
 openssh

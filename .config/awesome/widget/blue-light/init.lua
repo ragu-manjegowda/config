@@ -54,7 +54,7 @@ local widget_button = wibox.widget {
     widget = wibox.container.background
 }
 
-local blue_light_state = true
+local blue_light_state = false
 
 local update_widget = function()
     if blue_light_state then
@@ -68,60 +68,50 @@ local update_widget = function()
     end
 end
 
-local kill_state = function()
-    awful.spawn.easy_async_with_shell(
-        [[
-		redshift -x
-		kill -9 $(pgrep redshift)
-		]],
-        function(stdout)
-            stdout = tonumber(stdout)
-            if stdout then
-                blue_light_state = false
-                update_widget()
-            end
-        end
-    )
-end
-
-kill_state()
-
-local toggle_action = function()
-    awful.spawn.easy_async_with_shell(
-        [[
-		if [ ! -z $(pgrep redshift) ];
-		then
-			redshift -x && pkill redshift && killall redshift
-			echo 'OFF'
-		else
-			redshift &>/dev/null &
-			echo 'ON'
-		fi
-		]],
-        function(stdout)
-            if stdout:match('ON') then
-                blue_light_state = true
-            else
-                blue_light_state = false
-            end
+local filter_busy = false
+local pending_action
+local run_filter
+run_filter = function(action)
+    if filter_busy then
+        pending_action = action
+        return
+    end
+    filter_busy = true
+    awful.spawn.easy_async({ '/bin/bash', config_dir .. 'utilities/blue-light', action },
+        function(stdout, _, _, exit_code)
+            filter_busy = false
+            blue_light_state = exit_code == 0 and stdout:match('ON') ~= nil
             update_widget()
-        end
-    )
+            if pending_action then
+                local next_action = pending_action
+                pending_action = nil
+                run_filter(next_action)
+            end
+        end)
 end
 
-local enable_filter = function()
-    awful.spawn.easy_async_with_shell(
-        [[
-            redshift &>/dev/null &
-        ]],
-        function()
-            blue_light_state = true
-            update_widget()
-        end
-    )
+local toggle_action = function() run_filter('toggle') end
+local refresh_pending = false
+local refresh_filter = function()
+    if refresh_pending then return end
+    refresh_pending = true
+    gears.timer.delayed_call(function()
+        refresh_pending = false
+        run_filter('refresh')
+    end)
 end
-
-enable_filter()
+screen.connect_signal('added', refresh_filter)
+screen.connect_signal('removed', refresh_filter)
+screen.connect_signal('property::geometry', refresh_filter)
+local wake_refresh = function()
+    gears.timer.start_new(1, function()
+        refresh_filter()
+        return false
+    end)
+end
+awesome.connect_signal('module::unlocked', wake_refresh)
+awesome.connect_signal('module::sleep_resumed', wake_refresh)
+run_filter('start')
 
 widget_button:buttons(
     gears.table.join(

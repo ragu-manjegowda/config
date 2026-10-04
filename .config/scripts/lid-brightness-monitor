@@ -3,6 +3,10 @@
 # Monitors systemd-logind for lid state changes via D-Bus
 
 LIGHT_BIN="${LID_BRIGHTNESS_LIGHT_BIN:-light}"
+XRANDR_BIN="${LID_BRIGHTNESS_XRANDR_BIN:-xrandr}"
+INHIBIT_BIN="${LID_BRIGHTNESS_INHIBIT_BIN:-/usr/bin/systemd-inhibit}"
+EVENT_BIN="${LID_BRIGHTNESS_EVENT_BIN:-gdbus}"
+CONFIG_READER="${LID_BRIGHTNESS_CONFIG_READER:-$HOME/.config/awesome/utilities/read-display-config}"
 STATE_DIR="${XDG_STATE_HOME:-${HOME}/.local/state}/lid-brightness-manager"
 BRIGHTNESS_CACHE="${LID_BRIGHTNESS_CACHE:-${STATE_DIR}/brightness}"
 LEGACY_CACHE="/tmp/laptop_brightness_${USER}"
@@ -32,7 +36,9 @@ if [ "${1:-}" = "--restore" ]; then
 fi
 
 # Source display configuration from AwesomeWM config
-source <("$HOME/.config/awesome/utilities/read-display-config")
+display_config="$("$CONFIG_READER")" || exit 1
+source /dev/stdin <<< "$display_config"
+unset display_config
 
 # Use the centralized configuration
 EXTERNAL_DISPLAY="$EXTERNAL_NAME"
@@ -40,17 +46,62 @@ PRIMARY_DISPLAY="$PRIMARY_NAME"
 
 # Function to check if external monitor is connected
 is_external_connected() {
-    xrandr 2>/dev/null | grep -q "^${EXTERNAL_DISPLAY} connected"
+    local line output connection geometry
+    while IFS= read -r line; do
+        read -r output connection geometry _ <<< "$line"
+        if [[ "$output" == "$EXTERNAL_DISPLAY" && "$connection" == connected ]]; then
+            if [[ "$geometry" == primary ]]; then
+                read -r _ _ _ geometry _ <<< "$line"
+            fi
+            [[ "$geometry" =~ ^[0-9]+x[0-9]+[+]-?[0-9]+[+]-?[0-9]+$ ]]
+            return
+        fi
+    done < <("$XRANDR_BIN" --current 2>/dev/null)
+    return 1
 }
 
 # Function to get current lid state
 get_lid_state() {
+    if [[ -n "${LID_BRIGHTNESS_LID_STATE_FILE:-}" ]]; then
+        cat "$LID_BRIGHTNESS_LID_STATE_FILE"
+        return
+    fi
     cat /proc/acpi/button/lid/LID*/state 2>/dev/null | awk '{print $2}'
 }
+
+inhibitor_pid=''
+monitor_pid=''
+update_lid_inhibitor() {
+    if is_external_connected; then
+        if [[ -n "$inhibitor_pid" ]] && kill -0 "$inhibitor_pid" 2>/dev/null; then return; fi
+        "$INHIBIT_BIN" --no-ask-password --what=handle-lid-switch \
+            --who=awesome-lid-brightness --why='External display is active' \
+            --mode=block /usr/bin/sleep infinity &
+        inhibitor_pid=$!
+        sleep 0.15
+        if ! kill -0 "$inhibitor_pid" 2>/dev/null; then
+            echo 'Unable to inhibit lid-triggered suspend while external display is active' >&2
+            inhibitor_pid=''
+        fi
+    elif [[ -n "$inhibitor_pid" ]]; then
+        kill "$inhibitor_pid" 2>/dev/null || true
+        wait "$inhibitor_pid" 2>/dev/null || true
+        inhibitor_pid=''
+    fi
+}
+
+cleanup() {
+    if [[ -n "$inhibitor_pid" ]]; then kill "$inhibitor_pid" 2>/dev/null || true; fi
+    if [[ -n "$monitor_pid" ]]; then kill "$monitor_pid" 2>/dev/null || true; fi
+    restore_brightness
+}
+trap cleanup EXIT
+trap 'exit 0' INT TERM
 
 # Function to manage brightness based on lid state
 manage_brightness() {
     local lid_state
+    update_lid_inhibitor
     lid_state=$(get_lid_state)
     
     if [ "$lid_state" = "closed" ] && is_external_connected; then
@@ -78,8 +129,9 @@ manage_brightness
 # This monitors the systemd-logind Manager interface for any property changes
 # which includes lid switch state changes
 echo "[$(date '+%H:%M:%S')] Monitoring for lid events via D-Bus..."
-gdbus monitor --system --dest org.freedesktop.login1 --object-path /org/freedesktop/login1 2>/dev/null | \
-while read -r line; do
+exec 3< <("$EVENT_BIN" monitor --system --dest org.freedesktop.login1 --object-path /org/freedesktop/login1 2>/dev/null)
+monitor_pid=$!
+while read -r line <&3; do
     # React to any signal from logind (including PropertyChanged)
     # Sleep briefly to let the lid state file update
     sleep 0.3

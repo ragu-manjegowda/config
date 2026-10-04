@@ -18,12 +18,12 @@ return {
 
         -- External display
         external = {
-            name = 'DP-4',
+            name = 'DP-1-1',
             mode = '3440x1440',
             position = '2880x0', -- Position relative to primary
-            -- Scaling: scale external to match primary height
-            -- This makes cursor movement smooth between displays
-            scale_from = '2880x1800', -- Scale to match primary dimensions
+            -- Keep the ultrawide's native aspect ratio and pointer coordinates.
+            -- Scaling it from 2880x1800 distorts the image on NVIDIA-G0.
+            scale_from = '3440x1440',
             rate = nil,               -- Optional: refresh rate
         },
     },

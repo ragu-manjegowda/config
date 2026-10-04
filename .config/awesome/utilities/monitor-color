@@ -1,0 +1,67 @@
+#!/usr/bin/python3
+"""Use Redshift's location/schedule with reversible hardware DDC RGB gains."""
+
+import argparse
+import os
+import re
+import runpy
+import signal
+import subprocess
+import sys
+from pathlib import Path
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", required=True)
+    parser.add_argument("--config", required=True)
+    parser.add_argument("--ready-file", required=True)
+    args = parser.parse_args()
+    control_type = runpy.run_path(str(Path(__file__).with_name("display-control")))["DisplayControl"]
+    control = control_type(args.output)
+    process = subprocess.Popen(
+        ["/usr/bin/stdbuf", "-oL", "/usr/bin/redshift", "-c", args.config,
+         "-m", "dummy", "-v", "-r", "-P", "-t", "5500:4500", "-b", "1", "-g", "1:1:1"],
+        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+    )
+    stopping = False
+
+    def stop(_signum, _frame):
+        nonlocal stopping
+        stopping = True
+        if process.poll() is None:
+            process.kill()  # Only the owned dummy worker; it changes no gamma ramp.
+
+    signal.signal(signal.SIGTERM, stop)
+    signal.signal(signal.SIGINT, stop)
+    try:
+        for line in process.stdout:
+            if stopping:
+                break
+            match = re.fullmatch(r"(?:Color temperature: (\d+)K|Temperature: (\d+))\s*", line)
+            if match:
+                temperature = int(match[1] or match[2])
+                with control.lock():
+                    control.set_temperature(temperature)
+                if not Path(args.ready_file).exists():
+                    fd = os.open(args.ready_file, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+                    os.close(fd)
+        code = process.wait(timeout=3)
+        if not stopping:
+            raise RuntimeError(f"Redshift schedule worker stopped unexpectedly ({code})")
+    finally:
+        Path(args.ready_file).unlink(missing_ok=True)
+        if process.poll() is None:
+            process.kill()
+            process.wait(timeout=3)
+        process.stdout.close()
+        with control.lock():
+            control.restore_color()
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except (RuntimeError, ValueError, OSError, subprocess.TimeoutExpired) as error:
+        print(f"monitor-color: {error}", file=sys.stderr)
+        sys.exit(1)

@@ -29,7 +29,17 @@ fi
 
 log_info "Updating submodules..."
 git --git-dir="${HOME}/.config.git" --work-tree="${HOME}" \
-    submodule update --init --recursive
+    submodule update --init --recursive --depth 1 --jobs 4 || {
+    log_warn "Shallow submodule initialization failed; retrying with full history"
+    git --git-dir="${HOME}/.config.git" --work-tree="${HOME}" \
+        submodule foreach --recursive '
+            if test "$(git rev-parse --is-shallow-repository)" = true; then
+                git fetch --unshallow origin || exit 1
+            fi
+        ' || return 1
+    git --git-dir="${HOME}/.config.git" --work-tree="${HOME}" \
+        submodule update --init --recursive --jobs 4 || return 1
+}
 
 log_info "Setting git assume-unchanged for local config files..."
 if [[ -f "${HOME}/.config/scripts/config-ignore-local.sh" ]]; then

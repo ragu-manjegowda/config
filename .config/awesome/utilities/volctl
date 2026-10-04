@@ -21,12 +21,16 @@ export GSETTINGS_SCHEMA_DIR=$VOLCTL_PATH/venv/share/glib-2.0/schemas
 export XDG_DATA_DIRS=/usr/local/share:/usr/share
 
 if [ ! -d "$VOLCTL_PATH/venv" ]; then
-    uv venv --system-site-packages venv
+    uv venv --system-site-packages --python /usr/bin/python3 venv
 fi
 
 # This is a locally maintained copy, so launch the checked-out source rather
 # than leaving an older wheel installed after a configuration update.
-uv pip install --quiet --editable "$VOLCTL_PATH" --python "$VOLCTL_PATH/venv/bin/python"
+uv pip install --quiet pulsectl --python "$VOLCTL_PATH/venv/bin/python"
+
+# GTK/Cairo come from Arch's system-site-packages, keeping their typelibs and
+# shared libraries aligned rather than rebuilding them against Homebrew.
+uv pip install --quiet --no-deps --editable "$VOLCTL_PATH" --python "$VOLCTL_PATH/venv/bin/python"
 
 if [ ! -d "$VOLCTL_PATH/venv/share/glib-2.0/schemas" ]; then
     mkdir "$VOLCTL_PATH/venv/share/glib-2.0/schemas"

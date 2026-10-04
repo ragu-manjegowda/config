@@ -173,11 +173,20 @@ Panels auto-hide when a client enters fullscreen and restore when exiting.
 ### Control Center
 
 - User profile with hostname
-- Display brightness slider
+- Focused-display brightness slider and screen-brightness keys: `light` for the
+  laptop panel, DDC/CI (`ddcutil`) for external monitors selected by EDID.
 - Volume slider
 - Keyboard brightness slider
 - CPU, RAM, hard drive, and temperature meters
 - Blur toggle, blue-light filter (redshift), bluetooth, airplane mode, VPN, do-not-disturb, microphone toggle
+
+The laptop blue-light filter retains its Redshift configuration. External
+monitors use Redshift's location and a gentler 5500 K/4500 K schedule to adjust
+DDC RGB gains, without lowering hardware brightness. This requires Custom Color
+and RGB gain support. Kelvin-to-gain conversion is approximate; the original
+preset and gains are saved under `$XDG_STATE_HOME/awesome/display-control` and
+restored when filtering is disabled. DDC requests run asynchronously with
+coalesced slider writes; there is no continuous brightness poller.
 
 <p align="center">
   <img src="../../man/figures/awesome-control-center.jpg" alt="Control Center in light and dark modes" width="960">

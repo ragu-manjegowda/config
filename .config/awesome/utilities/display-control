@@ -1,0 +1,210 @@
+#!/usr/bin/python3
+"""Bounded hardware brightness and reversible DDC color gain control."""
+
+import argparse
+import contextlib
+import fcntl
+import hashlib
+import json
+import math
+import os
+import re
+import subprocess
+import sys
+import tempfile
+import time
+from pathlib import Path
+
+
+def run(argv):
+    result = subprocess.run(argv, capture_output=True, text=True, timeout=8, check=False)
+    if result.returncode:
+        raise RuntimeError(result.stderr.strip() or result.stdout.strip() or f"{argv[0]} failed")
+    # Successful DDC commands can warn about NVIDIA's missing connector mapping.
+    # Parse their VCP stdout; nonzero exits and invalid replies still fail loudly.
+    return result.stdout
+
+
+def output_edid(output):
+    text = run([os.environ.get("DISPLAY_CONTROL_XRANDR", "/usr/bin/xrandr"), "--props"])
+    section = re.search(r"(?ms)^" + re.escape(output) + r" connected\b.*?(?=^\S|\Z)", text)
+    match = re.search(r"EDID:\s*\n((?:\s+[0-9a-fA-F]{32}\s*\n)+)", section[0]) if section else None
+    edid = "".join(match[1].split())[:256].lower() if match else ""
+    if len(edid) != 256:
+        raise RuntimeError(f"No active EDID for {output}; refusing an arbitrary DDC monitor")
+    return edid
+
+
+def parse_vcp(text, code):
+    match = re.search(r"(?mi)^VCP " + code + r" C (\d+) (\d+)\s*$", text)
+    if not match:
+        raise RuntimeError(f"Invalid DDC reply for VCP {code}")
+    current, maximum = map(int, match.groups())
+    if maximum <= 0 or not 0 <= current <= maximum:
+        raise RuntimeError(f"Invalid DDC range for VCP {code}")
+    return current, maximum
+
+
+def temperature_gains(kelvin):
+    """Approximate black-body RGB, normalized to neutral at 6500 K."""
+    if not math.isfinite(kelvin):
+        raise ValueError("Temperature must be finite")
+
+    def rgb(value):
+        t = max(1000, min(6500, value)) / 100
+        green = 99.4708025861 * math.log(t) - 161.1195681661
+        blue = 0 if t <= 19 else 138.5177312231 * math.log(t - 10) - 305.0447927307
+        return 255, max(0, min(255, green)), max(0, min(255, blue))
+
+    return tuple(min(1, channel / neutral) for channel, neutral in zip(rgb(kelvin), rgb(6500)))
+
+
+class DisplayControl:
+    def __init__(self, output, edid=None):
+        self.output = output
+        self.internal = output.startswith(("eDP", "LVDS")) and edid is None
+        self.edid = None if self.internal else edid or output_edid(output)
+        self.key = hashlib.sha256((self.edid or output).encode()).hexdigest()[:24]
+        self.state_dir = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state")) / "awesome/display-control"
+        self.state_file = self.state_dir / (self.key + ".json")
+        self.last_gains = None
+
+    @contextlib.contextmanager
+    def lock(self):
+        runtime = Path(os.environ.get("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}"))
+        fd = os.open(runtime / ("display-control-" + self.key + ".lock"), os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
+        try:
+            deadline = time.monotonic() + 10
+            while True:
+                try:
+                    fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    break
+                except BlockingIOError:
+                    if time.monotonic() >= deadline:
+                        raise RuntimeError("Display hardware is busy") from None
+                    time.sleep(0.05)
+            yield
+        finally:
+            os.close(fd)
+
+    def ddc(self, *args):
+        if self.internal:
+            raise RuntimeError("DDC color control is only for external displays")
+        return run([os.environ.get("DISPLAY_CONTROL_DDCUTIL", "/usr/bin/ddcutil"), "--edid", self.edid, "--brief", *args])
+
+    def brightness(self):
+        if self.internal:
+            value = float(run([os.environ.get("DISPLAY_CONTROL_LIGHT", "/usr/bin/light"), "-G"]).strip())
+            if not math.isfinite(value) or not 0 <= value <= 100:
+                raise RuntimeError("Invalid backlight percentage")
+            return value, 100
+        return parse_vcp(self.ddc("getvcp", "10"), "10")
+
+    def get_brightness(self):
+        current, maximum = self.brightness()
+        return 100 * current / maximum
+
+    def set_brightness(self, value, relative=False):
+        if not math.isfinite(value):
+            raise ValueError("Brightness must be finite")
+        current, maximum = self.brightness()
+        if relative:
+            value += 100 * current / maximum
+        value = max(5, min(100, value))
+        if self.internal:
+            run([os.environ.get("DISPLAY_CONTROL_LIGHT", "/usr/bin/light"), "-S", str(value)])
+            return self.get_brightness()
+        raw = round(value * maximum / 100)
+        self.ddc("setvcp", "10", str(raw))  # ddcutil verifies writes by default.
+        return 100 * raw / maximum
+
+    def save_color(self):
+        if self.state_file.exists():
+            return json.loads(self.state_file.read_text())
+        text = self.ddc("getvcp", "14", "16", "18", "1a")
+        preset = re.search(r"(?mi)^VCP 14 (?:SNC|S) x([0-9a-f]+)\s*$", text)
+        if not preset:
+            raise RuntimeError("Cannot save the monitor's original color preset")
+        state = {"output": self.output, "edid": self.edid, "preset": int(preset[1], 16),
+                 "gains": {code: parse_vcp(text, code) for code in ("16", "18", "1A")}}
+        self.state_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
+        fd, name = tempfile.mkstemp(prefix=".color-", dir=self.state_dir)
+        try:
+            with os.fdopen(fd, "w") as stream:
+                json.dump(state, stream)
+            os.replace(name, self.state_file)
+        finally:
+            Path(name).unlink(missing_ok=True)
+        return state
+
+    def set_temperature(self, kelvin):
+        ratios = temperature_gains(kelvin)
+        state = self.save_color()
+        gains = tuple(round(state["gains"][code][0] * ratio) for code, ratio in zip(("16", "18", "1A"), ratios))
+        if gains == self.last_gains:
+            return  # No I2C traffic for unchanged temperature/gain values.
+        preset = state["preset"] if state["preset"] in (0x0B, 0x0C) else 0x0B
+        if self.last_gains is None:
+            self.ddc("setvcp", "14", f"0x{preset:02x}")
+        for code, value in zip(("16", "18", "1a"), gains):
+            self.ddc("setvcp", code, str(value))
+        self.last_gains = gains
+
+    def restore_color(self):
+        if not self.state_file.exists():
+            return
+        state = json.loads(self.state_file.read_text())
+        # Restore gain values before leaving Custom Color, then the exact preset.
+        custom = state["preset"] if state["preset"] in (0x0B, 0x0C) else 0x0B
+        self.ddc("setvcp", "14", f"0x{custom:02x}")
+        for code in ("16", "18", "1A"):
+            self.ddc("setvcp", code, str(state["gains"][code][0]))
+        self.ddc("setvcp", "14", f"0x{state['preset']:02x}")
+        self.state_file.unlink()  # Retain recovery data if any command failed.
+        self.last_gains = None
+
+
+def restore_output(output):
+    directory = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state")) / "awesome/display-control"
+    for path in directory.glob("*.json"):
+        state = json.loads(path.read_text())
+        if state["output"] == output:
+            control = DisplayControl(output, state["edid"])
+            with control.lock():
+                control.restore_color()
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", required=True)
+    actions = parser.add_mutually_exclusive_group(required=True)
+    actions.add_argument("-G", action="store_true")
+    actions.add_argument("-S", type=float)
+    actions.add_argument("-A", type=float)
+    actions.add_argument("-U", type=float)
+    actions.add_argument("--temperature", type=float)
+    actions.add_argument("--restore-color", action="store_true")
+    args = parser.parse_args()
+    if args.restore_color:
+        restore_output(args.output)
+        return
+    control = DisplayControl(args.output)
+    with control.lock():
+        if args.temperature is not None:
+            control.set_temperature(args.temperature)
+        else:
+            if args.G:
+                value = control.get_brightness()
+            else:
+                relative = args.S is None
+                change = args.S if not relative else args.A if args.A is not None else -args.U
+                value = control.set_brightness(change, relative)
+            print(f"{value:.2f}")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except (RuntimeError, ValueError, OSError, subprocess.TimeoutExpired) as error:
+        print(f"display-control: {error}", file=sys.stderr)
+        sys.exit(1)

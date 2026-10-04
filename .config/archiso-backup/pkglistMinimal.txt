@@ -16,6 +16,7 @@ cups
 curl
 cyrus-sasl-xoauth2-git
 darkman
+ddcutil
 docker
 docker-buildx
 docker-compose
@@ -39,6 +40,7 @@ gst-plugins-good
 gtk-theme-numix-solarized
 imagemagick
 intel-ucode
+less
 libcamera-tools
 libfido2
 libreoffice-still
@@ -68,6 +70,7 @@ noto-fonts-emoji
 numix-cursor-theme
 nvidia-container-toolkit
 nvidia-open-dkms
+nvidia-settings
 nvidia-utils
 openconnect-gp-git
 openssh

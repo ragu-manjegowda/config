@@ -2,7 +2,7 @@ local wibox = require('wibox')
 local gears = require('gears')
 local awful = require('awful')
 local beautiful = require('beautiful')
-local spawn = awful.spawn
+local display_brightness = require('library.display-brightness')
 local dpi = beautiful.xresources.apply_dpi
 local icons = require('theme.icons')
 local clickable_container = require('widget.clickable-container')
@@ -68,14 +68,7 @@ local slider = wibox.widget {
 local brightness_slider = slider.brightness_slider
 slider_hover.attach(brightness_slider)
 local is_programmatic_update = false
-local pending_brightness
-local brightness_apply_timer = gears.timer {
-    timeout = 0.08,
-    single_shot = true,
-    callback = function()
-        spawn('light -S ' .. math.max(pending_brightness, 5), false)
-    end,
-}
+local refresh_generation = 0
 
 brightness_slider:connect_signal(
     'property::value',
@@ -85,8 +78,8 @@ brightness_slider:connect_signal(
         end
 
         local brightness_level = brightness_slider:get_value()
-        pending_brightness = brightness_level
-        brightness_apply_timer:again()
+        refresh_generation = refresh_generation + 1
+        display_brightness.set(display_brightness.output(), brightness_level)
 
         -- Show brightness osd
         awesome.emit_signal(
@@ -97,22 +90,25 @@ brightness_slider:connect_signal(
         -- Update the OSD slider value
         awesome.emit_signal(
             'module::brightness_osd',
-            brightness_level
+            brightness_level,
+            display_brightness.output()
         )
     end
 )
 
 local update_slider = function(show_osd)
-    awful.spawn.easy_async_with_shell(
-        'light -G',
-        function(stdout)
-            local brightness = string.match(stdout, '(%d+)')
-            local slider_value = tonumber(brightness) or 0
+    refresh_generation = refresh_generation + 1
+    local generation = refresh_generation
+    local output = display_brightness.output()
+    display_brightness.read(
+        output,
+        function(slider_value)
+            if not slider_value or generation ~= refresh_generation or output ~= display_brightness.output() then return end
 
             is_programmatic_update = true
             brightness_slider:set_value(slider_value)
             is_programmatic_update = false
-            awesome.emit_signal('module::brightness_osd', slider_value)
+            awesome.emit_signal('module::brightness_osd', slider_value, output)
             if show_osd then
                 awesome.emit_signal('module::brightness_osd:show', true)
             end
@@ -127,6 +123,14 @@ awesome.connect_signal('control_center::visibility', function(visible)
 end)
 awesome.connect_signal('module::power_profile', function()
     update_slider(false)
+end)
+awesome.connect_signal('widget::brightness:changed', function(value, output)
+    if output ~= display_brightness.output() then return end
+    refresh_generation = refresh_generation + 1
+    is_programmatic_update = true
+    brightness_slider:set_value(value)
+    is_programmatic_update = false
+    awesome.emit_signal('module::brightness_osd', value, output)
 end)
 
 local action_jump = function()
@@ -167,7 +171,9 @@ awesome.connect_signal(
 -- The emit will come from the OSD
 awesome.connect_signal(
     'widget::brightness:update',
-    function(value)
+    function(value, output)
+        if output and output ~= display_brightness.output() then return end
+        refresh_generation = refresh_generation + 1
         is_programmatic_update = true
         brightness_slider:set_value(tonumber(value))
         is_programmatic_update = false
@@ -202,6 +208,7 @@ local mybrightnessmeter_t = awful.tooltip {}
 mybrightnessmeter_t:add_to_object(brightness_setting)
 
 brightness_setting:connect_signal('mouse::enter', function()
+    update_slider(false)
     mybrightnessmeter_t.text = 'Brightness value = ' .. tostring(brightness_slider:get_value()) .. '%'
 end)
 

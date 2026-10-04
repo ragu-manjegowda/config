@@ -1,0 +1,147 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+action="${1:-status}"
+config_dir="${XDG_CONFIG_HOME:-$HOME/.config}"
+redshift_config="$config_dir/redshift/redshift.conf"
+redshift_bin="${BLUE_LIGHT_REDSHIFT_BIN:-/usr/bin/redshift}"
+config_reader="${BLUE_LIGHT_CONFIG_READER:-$HOME/.config/awesome/utilities/read-display-config}"
+xrandr_bin="${BLUE_LIGHT_XRANDR_BIN:-xrandr}"
+color_bin="${BLUE_LIGHT_COLOR_BIN:-$HOME/.config/awesome/utilities/monitor-color}"
+display_control="${BLUE_LIGHT_DISPLAY_CONTROL:-$HOME/.config/awesome/utilities/display-control}"
+: "${XDG_RUNTIME_DIR:?XDG_RUNTIME_DIR is required}"
+state_dir="$XDG_RUNTIME_DIR/awesome-blue-light"
+mkdir -p "$state_dir"
+exec 9>"$state_dir/lock"
+flock 9
+
+display_config="$("$config_reader")"
+source /dev/stdin <<<"$display_config"
+unset display_config
+
+stop_filters() {
+    local file pid cmdline attempts
+    shopt -s nullglob
+    for file in "$state_dir/"*.pid; do
+        read -r pid < "$file"
+        if [[ "$pid" =~ ^[0-9]+$ && -r "/proc/$pid/cmdline" ]]; then
+            cmdline="$(tr '\0' ' ' < "/proc/$pid/cmdline")"
+            # Redshift tokenizes colon-separated options in place, so /proc
+            # shows "randr crtc N" after it starts rather than "randr:crtc=N".
+            if [[ "$cmdline" == *"$redshift_config"* && ( "$cmdline" == *' -m randr'* || "$cmdline" == *"$color_bin"* ) ]]; then
+                kill "$pid" 2>/dev/null || true
+                attempts=20
+                # The DDC worker must finish restoring the original RGB profile.
+                if [[ "$cmdline" == *"$color_bin"* ]]; then attempts=400; fi
+                for ((i=0; i<attempts; i++)); do
+                    kill -0 "$pid" 2>/dev/null || break
+                    sleep 0.05
+                done
+                if kill -0 "$pid" 2>/dev/null; then kill -KILL "$pid" 2>/dev/null || true; fi
+            fi
+        fi
+        rm -f "$file"
+    done
+}
+
+output_crtcs() {
+    local line output='' name connection crtc
+    while IFS= read -r line; do
+        if [[ "$line" != [[:space:]]* ]]; then
+            output=''
+            read -r name connection _ <<< "$line"
+            if [[ "$connection" == connected && "$line" =~ [0-9]+x[0-9]+[+]-?[0-9]+[+]-?[0-9]+ ]]; then
+                output="$name"
+            fi
+        elif [[ -n "$output" && "$line" =~ ^[[:space:]]*CRTC:[[:space:]]*([0-9]+) ]]; then
+            crtc="${BASH_REMATCH[1]}"
+            printf '%s %s\n' "$output" "$crtc"
+        fi
+    done < <("$xrandr_bin" --verbose)
+}
+
+filters_alive() {
+    local output _ pid
+    while read -r output _; do
+        [[ -r "$state_dir/$output.pid" ]] || return 1
+        read -r pid < "$state_dir/$output.pid"
+        [[ "$pid" =~ ^[0-9]+$ ]] && kill -0 "$pid" 2>/dev/null || return 1
+    done < <(output_crtcs)
+}
+
+start_filters() {
+    stop_filters
+    local output crtc pid ready
+    local -a args
+    while read -r output crtc; do
+        args=(-c "$redshift_config" -m "randr:crtc=$crtc" -P)
+        if [[ "$output" == "$EXTERNAL_NAME" ]]; then
+            # NVIDIA PRIME can ignore RandR gamma. Control actual monitor gains;
+            # the worker follows Redshift's schedule without changing brightness.
+            "$redshift_bin" -x -m "randr:crtc=$crtc"
+            ready="$state_dir/$output.ready"
+            rm -f "$ready"
+            "$color_bin" --output "$output" --config "$redshift_config" --ready-file "$ready" 9>&- >"$state_dir/$output.log" 2>&1 &
+        else
+            "$redshift_bin" "${args[@]}" 9>&- >"$state_dir/$output.log" 2>&1 &
+        fi
+        pid=$!
+        printf '%s\n' "$pid" > "$state_dir/$output.pid"
+        sleep 0.15
+        if [[ "$output" == "$EXTERNAL_NAME" ]]; then
+            for _ in {1..200}; do
+                [[ -e "$ready" ]] && break
+                kill -0 "$pid" 2>/dev/null || break
+                sleep 0.05
+            done
+        fi
+        if ! kill -0 "$pid" 2>/dev/null || [[ "$output" == "$EXTERNAL_NAME" && ! -e "$ready" ]]; then
+            printf 'Unable to start blue-light filter for %s\n' "$output" >&2
+            stop_filters
+            rm -f "$state_dir/enabled"
+            return 1
+        fi
+    done < <(output_crtcs)
+    output_crtcs > "$state_dir/topology"
+    : > "$state_dir/enabled"
+    printf 'ON\n'
+}
+
+turn_off() {
+    stop_filters
+    local output crtc
+    while read -r output crtc; do
+        "$redshift_bin" -x -m "randr:crtc=$crtc"
+        if [[ "$output" == "$EXTERNAL_NAME" ]]; then
+            "$display_control" --output "$output" --restore-color
+        fi
+    done < <(output_crtcs)
+    rm -f "$state_dir/enabled"
+    printf 'OFF\n'
+}
+
+case "$action" in
+    start) start_filters ;;
+    stop) turn_off ;;
+    toggle) if [[ -e "$state_dir/enabled" ]]; then turn_off; else start_filters; fi ;;
+    refresh)
+        if [[ ! -e "$state_dir/enabled" ]]; then
+            # A monitor may have been unplugged before its saved profile could
+            # be restored. Reconcile it when it returns while filtering is OFF.
+            while read -r output _; do
+                if [[ "$output" == "$EXTERNAL_NAME" ]]; then
+                    "$display_control" --output "$output" --restore-color
+                fi
+            done < <(output_crtcs)
+            printf 'OFF\n'
+        elif [[ -r "$state_dir/topology" && "$(output_crtcs)" == "$(<"$state_dir/topology")" ]] && filters_alive; then
+            # Gamma updates can also produce RandR notifications. Do not reset
+            # the ramps/restart workers unless output-to-CRTC routing changed.
+            printf 'ON\n'
+        else
+            start_filters
+        fi
+        ;;
+    status) if [[ -e "$state_dir/enabled" ]]; then printf 'ON\n'; else printf 'OFF\n'; fi ;;
+    *) printf 'Usage: %s [start|stop|toggle|refresh|status]\n' "$0" >&2; exit 2 ;;
+esac

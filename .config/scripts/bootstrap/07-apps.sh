@@ -41,7 +41,7 @@ if check_command uv; then
     if [[ -d "$_venv_dir" ]]; then
         log_ok "Python venv already exists at $_venv_dir"
     else
-        uv venv --system-site-packages "$_venv_dir"
+        uv venv --system-site-packages --python /usr/bin/python3 "$_venv_dir"
         log_ok "Python venv created at $_venv_dir"
     fi
     if [[ -f "$_requirements" ]]; then
@@ -50,6 +50,17 @@ if check_command uv; then
     fi
 else
     log_warn "uv not found, skipping venv setup"
+fi
+
+log_info "Volctl Python environment..."
+_volctl_dir="${HOME}/.config/awesome/library/volctl"
+if check_command uv && [[ -f "${_volctl_dir}/pyproject.toml" ]]; then
+    require_package python-gobject python-cairo
+    if [[ ! -d "${_volctl_dir}/venv" ]]; then
+        uv venv --system-site-packages --python /usr/bin/python3 "${_volctl_dir}/venv"
+    fi
+    uv pip install pulsectl --python "${_volctl_dir}/venv/bin/python"
+    uv pip install --no-deps --editable "$_volctl_dir" --python "${_volctl_dir}/venv/bin/python"
 fi
 
 log_info "Sioyek dictionary extension..."
@@ -87,6 +98,6 @@ else
     REMINDERS+=("Launch Firefox once, close it, then run ~/.config/scripts/firefox-install-extensions.sh")
 fi
 
-unset _cargo_home _legacy_cargo_home _rustup_home _neomutt_setup _requirements
+unset _cargo_home _legacy_cargo_home _rustup_home _neomutt_setup _requirements _volctl_dir
 unset _firefox_extension_installer
 unset _xdg_firefox_profiles _legacy_firefox_profiles

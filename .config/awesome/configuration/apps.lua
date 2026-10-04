@@ -98,7 +98,6 @@ return {
         'xset r rate 180 45',
         -- Audio equalizer
         -- Enable blue light filter
-        'killall -9 redshift &>/dev/null; redshift &>/dev/null &',
         -- Reload user configs
         'systemctl --user daemon-reload',
         -- Auto screen look

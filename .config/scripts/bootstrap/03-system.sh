@@ -159,19 +159,8 @@ log_info "Setting up archiso-backup symlink..."
 check_symlink "${HOME}/.config/archiso-backup" /var/archiso-backup sudo
 
 log_info "Keyboard layout..."
-_current_keymap="$(localectl status 2>/dev/null | awk -F: '$1 ~ /VC Keymap/ {gsub(/^[[:space:]]+/, "", $2); print $2}')"
-if [[ "$_current_keymap" == "mod-dh-ansi-us" ]]; then
-    log_ok "Colemak DH console layout already set"
-else
-    sudo localectl set-keymap us mod-dh-ansi-us || log_warn "Failed to set console keymap"
-fi
-
-_current_x11_variant="$(localectl status 2>/dev/null | awk -F: '$1 ~ /X11 Variant/ {gsub(/^[[:space:]]+/, "", $2); print $2}')"
-if [[ "$_current_x11_variant" == "colemak_dh" ]]; then
-    log_ok "Colemak DH X11 layout already set"
-else
-    sudo localectl set-x11-keymap us "" colemak_dh "lv3:ralt_alt" || log_warn "Failed to set X11 keymap"
-fi
+sudo localectl --no-convert set-keymap us || log_warn "Failed to set console keymap"
+sudo localectl --no-convert set-x11-keymap us "" "" "" || log_warn "Failed to set X11 keymap"
 
 unset _logind_dropin _mkinitcpio_dropin _mkinitcpio_changed _rendered_config
 unset _power_profile_policy _power_profile_unit _power_profile_polkit _legacy_profile_sudoers

@@ -834,6 +834,7 @@ local locker = function(s)
             for target_screen in screen do
                 local target = lockscreen_for_screen(target_screen)
                 if target then
+                    lockscreen_lifecycle.sync_geometry(target_screen)
                     target.visible = true
                 end
             end
@@ -876,17 +877,12 @@ local locker = function(s)
             keygrabbing_instance:stop()
         end
 
-        -- Unselect all tags and minimize the focused client
-        -- These will fix the problem with virtualbox or
-        -- any other program that has keygrabbing enabled
-        if client.focus then
-            client_focused = client.focus
-            client.focus.minimized = true
-        end
-        for _, t in ipairs(mouse.screen.selected_tags) do
-            locked_tag = t
-            t.selected = false
-        end
+        -- Retain the existing keygrab workaround except for fullscreen Prisma,
+        -- whose surface can fail to repaint after being unmapped for the lock.
+        client_focused = client.focus
+        locked_tag = lockscreen_lifecycle.hide_for_lock(
+            client_focused, mouse.screen.selected_tags
+        )
     end
 
     awesome.connect_signal(
@@ -1279,3 +1275,10 @@ screen.connect_signal(
         end)
     end
 )
+
+-- RandR can resize an existing screen without recreating its lockscreen.
+screen.connect_signal('property::geometry', function(s)
+    if lockscreen_lifecycle.sync_geometry(s) then
+        apply_ls_bg_image(get_wallpaper_name())
+    end
+end)

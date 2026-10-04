@@ -2,8 +2,7 @@
 
 set -euo pipefail
 
-# Extended display with scaled external monitor to match laptop height
-# This makes cursor movement smooth across displays
+# Extended display with an explicit framebuffer covering both logical outputs.
 # Configuration is read from config.lua via read-display-config
 
 # Source the configuration from config.lua
@@ -29,7 +28,25 @@ fi
 xrandr_args=(
     xrandr --dpi "$DISPLAY_DPI"
     --output "$PRIMARY_NAME" --primary --mode "$PRIMARY_MODE" --pos "$PRIMARY_POS"
+    --scale 1x1
 )
+
+framebuffer_width=0
+framebuffer_height=0
+include_output_extent() {
+    local width height x y
+    IFS=x read -r width height <<< "$1"
+    IFS=x read -r x y <<< "$2"
+    width=$((10#$width)); height=$((10#$height))
+    x=$((10#$x)); y=$((10#$y))
+    if (( width <= 0 || height <= 0 )); then
+        printf '%s\n' 'Display dimensions must be positive' >&2
+        return 1
+    fi
+    (( x + width <= framebuffer_width )) || framebuffer_width=$((x + width))
+    (( y + height <= framebuffer_height )) || framebuffer_height=$((y + height))
+}
+include_output_extent "$PRIMARY_MODE" "$PRIMARY_POS"
 
 # Check if external monitor is connected
 external_connected=false
@@ -52,9 +69,13 @@ if [[ "$external_connected" == true ]]; then
     # Add scaling if configured
     if [ -n "$EXTERNAL_SCALE_FROM" ]; then
         external_args+=(--scale-from "$EXTERNAL_SCALE_FROM")
+    else
+        external_args+=(--scale 1x1)
     fi
 
+    include_output_extent "${EXTERNAL_SCALE_FROM:-$EXTERNAL_MODE}" "$EXTERNAL_POS"
     xrandr_args+=("${external_args[@]:1}")
+    xrandr_args+=(--fb "${framebuffer_width}x${framebuffer_height}")
     "${xrandr_args[@]}"
 
     echo "✓ Extended display configured:"
@@ -63,6 +84,7 @@ if [[ "$external_connected" == true ]]; then
     [ -n "$EXTERNAL_SCALE_FROM" ] && echo "  - Scaling: from $EXTERNAL_SCALE_FROM"
     echo "  - DPI: $DISPLAY_DPI"
 else
+    xrandr_args+=(--fb "${framebuffer_width}x${framebuffer_height}")
     "${xrandr_args[@]}"
     echo "$EXTERNAL_NAME not connected, using $PRIMARY_NAME only"
 fi

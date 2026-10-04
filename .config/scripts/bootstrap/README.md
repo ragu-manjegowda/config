@@ -28,10 +28,22 @@ Package restoration always reads the manifests committed at Git `HEAD`. The
 working copies under `~/.config/archiso-backup/` may be refreshed by pacman
 hooks, but bootstrap never uses those generated changes as restore input.
 
-Before restoring system packages, bootstrap installs the Homebrew bundle and
+Before installing the Homebrew bundle or restoring system packages, bootstrap
 checks the configured `GNUPGHOME` for a secret key. You can import a key file,
-re-check after importing through another terminal or hardware token, or defer
-encrypted dotfiles and continue with a reminder to unlock them later.
+or re-check after importing through another terminal or hardware token.
+Continuing requires a usable secret key and successful `git-crypt unlock`;
+otherwise bootstrap stops instead of deploying incomplete encrypted settings.
+
+Application setup creates the shared and Volctl virtual environments with
+`/usr/bin/python3` and system-site packages, preserving access to Arch's
+GTK/GObject bindings. Volctl is installed from its maintained local source;
+only its pure-Python PulseAudio dependency is installed with uv. GTK/Cairo
+bindings remain package-managed to avoid linking them against Homebrew.
+
+Initial submodule downloads use depth-one history and four parallel workers.
+If a pinned revision cannot be obtained, bootstrap retries with full history.
+Later rebases or work involving older commits may require running
+`git fetch --unshallow origin` inside the affected submodule.
 
 Official packages restore non-interactively. AUR packages restore one at a
 time so provider and PKGBUILD prompts remain interactive. Package pruning is

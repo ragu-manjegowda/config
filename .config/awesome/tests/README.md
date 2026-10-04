@@ -58,6 +58,27 @@ Tests run automatically on GitHub when you push changes to:
 
 View test results in the "Actions" tab of your GitHub repository.
 
+### Hardware-free brightness and blue-light checks
+
+These tests run in GitHub CI without a monitor, GPU, I2C access, X server, or
+desktop D-Bus session:
+
+| Test | What is mocked | Test dependencies |
+| --- | --- | --- |
+| `test_blue_light_outputs.sh` | Display configuration, xrandr, Redshift, monitor-color, and DDC restoration commands | Bash, Python 3, coreutils, grep, util-linux; Linux `/proc` |
+| `test_display_control.py` | All hardware subprocesses and the Redshift schedule worker | Python standard library |
+| `test_display_brightness.lua` | Awesome widgets, screens, timers, and asynchronous hardware replies | Lua or LuaJIT |
+
+The Bash test uses a test-only child subreaper so orphaned fake workers are
+reaped even in CI containers whose PID 1 does not reap children. The Python
+test rejects any subprocess call that the case has not explicitly mocked.
+Temporary lock files, color profiles, and fake command logs stay in disposable
+test directories.
+
+Real brightness changes, monitor color readback, and visible rendering are
+manual hardware validation, not CI requirements. Do not invoke the production
+display-control or blue-light helpers directly as a hardware CI test.
+
 ## Test Structure
 
 ### Unit Tests (Lua)

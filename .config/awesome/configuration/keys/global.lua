@@ -6,6 +6,7 @@ local revelation = require("library.revelation")
 local playerctl_daemon = require("library.playerctl")
 local keyboard = require('awful.keyboard')
 local center_manager = require('layout.center-manager')
+local display_brightness = require('library.display-brightness')
 
 require('awful.autofocus')
 
@@ -560,7 +561,7 @@ local global_keys = awful.util.table.join(
         {},
         'XF86MonBrightnessUp',
         function()
-            run_and_refresh_osd('light -A 10', 'widget::brightness')
+            display_brightness.adjust(10)
         end,
         { description = 'increase brightness by 10%', group = 'hotkeys' }
     ),
@@ -569,7 +570,7 @@ local global_keys = awful.util.table.join(
         {},
         'XF86MonBrightnessDown',
         function()
-            run_and_refresh_osd('light -U 10', 'widget::brightness')
+            display_brightness.adjust(-10)
         end,
         { description = 'decrease brightness by 10%', group = 'hotkeys' }
     ),

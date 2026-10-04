@@ -291,7 +291,7 @@ printf '%s\n' \
 : > "$DISPLAY_TEST_LOG"
 "$SETUP" >"$tmp_dir/output" 2>&1
 [[ "$(grep -c '^xrandr --dpi' "$DISPLAY_TEST_LOG")" == 1 ]]
-grep -Fq -- '--output eDP-1 --primary --mode 2880x1800 --pos 0x0 --output DP-4 --mode 3840x2160 --pos 2880x0 --scale-from 2880x1620' \
+grep -Fq -- '--output eDP-1 --primary --mode 2880x1800 --pos 0x0 --scale 1x1 --output DP-4 --mode 3840x2160 --pos 2880x0 --scale-from 2880x1620 --fb 5760x1800' \
     "$DISPLAY_TEST_LOG"
 
 printf '%s\n' 'external display script tests passed'

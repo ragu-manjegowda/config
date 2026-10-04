@@ -854,6 +854,14 @@ jobs:
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_presentation_mode.sh
           HOME="$GITHUB_WORKSPACE" python -B .config/awesome/tests/test_volctl_slider_cursor.py
 
+      - name: Test mocked blue-light lifecycle (no display hardware)
+        run: HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_blue_light_outputs.sh
+
+      - name: Test mocked display routing and color restoration (no display hardware)
+        run: |
+          python -B .config/awesome/tests/test_display_control.py
+          HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_display_brightness.lua
+
       - name: Test hardware-independent lockscreen power policy
         run: |
           cd "$GITHUB_WORKSPACE"

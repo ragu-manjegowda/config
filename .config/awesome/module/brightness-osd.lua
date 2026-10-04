@@ -4,7 +4,8 @@ local wibox = require('wibox')
 local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 local icons = require('theme.icons')
-local spawn = require('awful.spawn')
+local display_brightness = require('library.display-brightness')
+local shown_screen
 
 local osd_header = wibox.widget {
     text = 'Brightness',
@@ -55,10 +56,11 @@ bri_osd_slider:connect_signal(
             return
         end
 
-        spawn('light -S ' .. math.max(brightness_level, 5), false)
+        local output = display_brightness.output(shown_screen)
+        display_brightness.set(output, brightness_level)
 
         -- Update the brightness slider if values here change
-        awesome.emit_signal('widget::brightness:update', brightness_level)
+        awesome.emit_signal('widget::brightness:update', brightness_level, output)
 
         if awful.screen.focused().show_bri_osd then
             awesome.emit_signal(
@@ -86,7 +88,8 @@ bri_osd_slider:connect_signal(
 -- The emit will come from brightness slider
 awesome.connect_signal(
     'module::brightness_osd',
-    function(brightness)
+    function(brightness, output)
+        if output and output ~= display_brightness.output() then return end
         is_programmatic_update = true
         bri_osd_slider:set_value(brightness)
         is_programmatic_update = false
@@ -186,9 +189,11 @@ local hide_osd = gears.timer {
     timeout   = 2,
     single_shot = true,
     callback  = function()
-        local focused = awful.screen.focused()
-        focused.brightness_osd_overlay.visible = false
-        focused.show_bri_osd = false
+        if shown_screen and shown_screen.valid ~= false and shown_screen.brightness_osd_overlay then
+            shown_screen.brightness_osd_overlay.visible = false
+            shown_screen.show_bri_osd = false
+        end
+        shown_screen = nil
     end
 }
 
@@ -204,7 +209,7 @@ awesome.connect_signal(
 )
 
 local placement_placer = function()
-    local focused = awful.screen.focused()
+    local focused = shown_screen or awful.screen.focused()
     local brightness_osd = focused.brightness_osd_overlay
     awful.placement.bottom(
         brightness_osd,
@@ -222,6 +227,16 @@ end
 awesome.connect_signal(
     'module::brightness_osd:show',
     function(bool)
+        local focused = awful.screen.focused()
+        if shown_screen and shown_screen ~= focused and shown_screen.valid ~= false then
+            shown_screen.brightness_osd_overlay.visible = false
+            shown_screen.show_bri_osd = false
+        end
+        if not bool and shown_screen and shown_screen.valid ~= false then
+            shown_screen.brightness_osd_overlay.visible = false
+            shown_screen.show_bri_osd = false
+        end
+        shown_screen = bool and focused or nil
         placement_placer()
         awful.screen.focused().brightness_osd_overlay.visible = bool
         if bool then
