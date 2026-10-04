@@ -2,12 +2,12 @@ name: Neovim Configuration Tests
 
 on:
   push:
-    branches: [main, master, develop]
+    branches: ["**"]
     paths:
       - ".config/nvim/**"
       - ".github/workflows/neovim-tests.yml"
   pull_request:
-    branches: [main, master, develop]
+    branches: ["**"]
     paths:
       - ".config/nvim/**"
       - ".github/workflows/neovim-tests.yml"

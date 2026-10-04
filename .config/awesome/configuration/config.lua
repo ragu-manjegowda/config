@@ -36,6 +36,11 @@ return {
     },
 
     widget = {
+        audio           = {
+            -- Stable ALSA card names; numeric PipeWire IDs change after hotplug.
+            primary_device_pattern = 'alsa_card.pci-0000_00_1f.3-platform-sof_sdw',
+            external_device_pattern = 'alsa_card.usb-Dell_DELL_P3424WEB_USB_*-00'
+        },
         email           = {
             -- Email address
             address = '',

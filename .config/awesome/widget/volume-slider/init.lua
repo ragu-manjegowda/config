@@ -2,7 +2,7 @@ local wibox = require('wibox')
 local gears = require('gears')
 local awful = require('awful')
 local beautiful = require('beautiful')
-local spawn = awful.spawn
+local display_audio = require('library.display-audio')
 local dpi = beautiful.xresources.apply_dpi
 local icons = require('theme.icons')
 local clickable_container = require('widget.clickable-container')
@@ -73,14 +73,8 @@ slider_hover.attach(volume_slider)
 
 -- Track if we're updating the slider programmatically (from event monitor)
 local is_programmatic_update = false
-local pending_volume
-local volume_apply_timer = gears.timer {
-    timeout = 0.08,
-    single_shot = true,
-    callback = function()
-        spawn('wpctl set-volume @DEFAULT_AUDIO_SINK@ ' .. pending_volume .. '%', false)
-    end,
-}
+local refresh_generation = 0
+local current_state = { available = false }
 
 volume_slider:connect_signal(
     'property::value',
@@ -91,8 +85,9 @@ volume_slider:connect_signal(
         end
 
         local volume_level = volume_slider:get_value()
-        pending_volume = volume_level
-        volume_apply_timer:again()
+        refresh_generation = refresh_generation + 1
+        local output = display_audio.output()
+        display_audio.set(output, volume_level)
 
         -- Show volume osd
         awesome.emit_signal(
@@ -103,39 +98,32 @@ volume_slider:connect_signal(
         -- Update the OSD slider value
         awesome.emit_signal(
             'module::volume_osd',
-            volume_level
+            volume_level,
+            output
         )
     end
 )
 
+local function apply_state(state, output)
+    current_state = state
+    action_name:set_text(display_audio.scope(output) == 'external' and 'Monitor Volume' or 'Volume')
+    if not state.available then action_name:set_text(action_name.text .. ' — unavailable') end
+    is_programmatic_update = true
+    volume_slider:set_value(state.available and math.min(100, state.volume) or 0)
+    is_programmatic_update = false
+    volume_icon:set_image(state.available and not state.muted and icons.volume or icons.volume_muted)
+    awesome.emit_signal('module::volume_osd:update_icon', not state.available or state.muted, output)
+    awesome.emit_signal('module::volume_osd', state.available and state.volume or 0, output)
+end
+
 local update_slider = function(show_osd)
-    local cmd = "wpctl get-volume @DEFAULT_AUDIO_SINK@"
-    awful.spawn.easy_async_with_shell(
-        cmd,
-        function(stdout)
-            local muted = string.match(stdout, 'MUTED')
-            local volume = tonumber(string.match(stdout, "%d+%.%d+"))
-            local slider_value = volume and volume * 100 or 0
-
-            is_programmatic_update = true
-            volume_slider:set_value(slider_value)
-            is_programmatic_update = false
-            if muted ~= 'MUTED' then
-                volume_icon:set_image(icons.volume)
-            else
-                volume_icon:set_image(icons.volume_muted)
-            end
-
-            awesome.emit_signal(
-                'module::volume_osd:update_icon',
-                muted == 'MUTED'
-            )
-            awesome.emit_signal('module::volume_osd', slider_value)
-            if show_osd then
-                awesome.emit_signal('module::volume_osd:show', true)
-            end
-        end
-    )
+    refresh_generation = refresh_generation + 1
+    local generation, output = refresh_generation, display_audio.output()
+    display_audio.read(output, 'sink', function(state)
+        if generation ~= refresh_generation or output ~= display_audio.output() or display_audio.pending(output, 'sink') then return end
+        apply_state(state, output)
+        if show_osd and state.available then awesome.emit_signal('module::volume_osd:show', true) end
+    end)
 end
 
 -- Update on startup
@@ -147,12 +135,10 @@ local action_jump = function()
 
     if sli_value >= 0 and sli_value < 50 then
         new_value = 50
-        volume_icon:set_image(icons.volume)
     elseif sli_value >= 50 and sli_value < 100 then
         new_value = 100
     else
         new_value = 0
-        volume_icon:set_image(icons.volume_muted)
     end
     volume_slider:set_value(new_value)
 end
@@ -181,13 +167,26 @@ awesome.connect_signal(
 -- The emit will come from the OSD
 awesome.connect_signal(
     'widget::volume:update',
-    function(value)
+    function(value, output)
+        if output and output ~= display_audio.output() then return end
+        is_programmatic_update = true
         volume_slider:set_value(tonumber(value))
+        is_programmatic_update = false
     end
 )
 
 audio_monitor:connect_signal('sink', function()
     update_slider(false)
+end)
+
+awesome.connect_signal('widget::audio:changed', function(output, kind, state)
+    if kind == 'sink' and output == display_audio.output() and not display_audio.pending(output, kind) then
+        refresh_generation = refresh_generation + 1
+        apply_state(state, output)
+    end
+end)
+awesome.connect_signal('control_center::visibility', function(visible)
+    if visible then update_slider(false) end
 end)
 
 local volume_setting = wibox.widget {
@@ -219,7 +218,8 @@ local myvolumemeter_t = awful.tooltip {}
 myvolumemeter_t:add_to_object(volume_setting)
 
 volume_setting:connect_signal('mouse::enter', function()
-    myvolumemeter_t.text = 'Volume = ' .. tostring(volume_slider:get_value()) .. '%'
+    update_slider(false)
+    myvolumemeter_t.text = current_state.description or 'Audio status unavailable'
 end)
 
 return volume_setting

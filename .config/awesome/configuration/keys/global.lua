@@ -7,6 +7,7 @@ local playerctl_daemon = require("library.playerctl")
 local keyboard = require('awful.keyboard')
 local center_manager = require('layout.center-manager')
 local display_brightness = require('library.display-brightness')
+local display_audio = require('library.display-audio')
 
 require('awful.autofocus')
 
@@ -613,10 +614,7 @@ local global_keys = awful.util.table.join(
         {},
         'XF86AudioRaiseVolume',
         function()
-            run_and_refresh_osd(
-                'wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+',
-                'widget::volume'
-            )
+            display_audio.adjust(5)
         end,
         { description = 'increase volume up by 5%', group = 'hotkeys' }
     ),
@@ -625,10 +623,7 @@ local global_keys = awful.util.table.join(
         {},
         'XF86AudioLowerVolume',
         function()
-            run_and_refresh_osd(
-                'wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-',
-                'widget::volume'
-            )
+            display_audio.adjust(-5)
         end,
         { description = 'decrease volume up by 5%', group = 'hotkeys' }
     ),
@@ -637,10 +632,7 @@ local global_keys = awful.util.table.join(
         {},
         'XF86AudioMute',
         function()
-            run_and_refresh_osd(
-                'wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle',
-                'widget::volume'
-            )
+            display_audio.toggle('sink')
         end,
         { description = 'toggle mute', group = 'hotkeys' }
     ),
@@ -677,9 +669,7 @@ local global_keys = awful.util.table.join(
         {},
         'XF86AudioMicMute',
         function()
-            awful.spawn('wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle', false)
-            awesome.emit_signal('widget::microphone')
-            awesome.emit_signal('module::mic_osd:show', true)
+            display_audio.toggle('source')
         end,
         { description = 'mute microphone', group = 'hotkeys' }
     ),

@@ -1,0 +1,163 @@
+#!/usr/bin/python3
+"""Read/change one display-associated audio endpoint without changing defaults."""
+
+import argparse
+import fnmatch
+import json
+import math
+import subprocess
+import sys
+
+
+def run(*arguments):
+    result = subprocess.run(
+        ["/usr/bin/pactl", *arguments],
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=4,
+    )
+    if result.returncode:
+        raise RuntimeError(result.stderr.strip() or "Audio command failed")
+    return result.stdout
+
+
+def matches(node, pattern):
+    props = node.get("properties", {})
+    return bool(pattern) and any(
+        fnmatch.fnmatchcase(value, pattern)
+        for value in (node.get("name", ""), props.get("device.name", ""))
+    )
+
+
+def usable(node, kind):
+    props = node.get("properties", {})
+    if kind == "source" and (
+        node.get("name", "").endswith(".monitor")
+        or props.get("device.class") == "monitor"
+    ):
+        return False
+    ports = node.get("ports", [])
+    active = node.get("active_port")
+    port = next((p for p in ports if p.get("name") == active), None)
+    return not port or port.get("availability") != "not available"
+
+
+def select(nodes, kind, scope, pattern, external_pattern, default):
+    candidates = [n for n in nodes if usable(n, kind) and matches(n, pattern)]
+    if not candidates and scope == "primary":
+        # Generic desktop configurations can use the current default, but never
+        # silently substitute the monitor for the laptop's own controls.
+        candidates = [
+            n
+            for n in nodes
+            if usable(n, kind)
+            and n.get("name") == default
+            and not matches(n, external_pattern)
+        ]
+    if not candidates:
+        return None
+
+    def rank(node):
+        props = node.get("properties", {})
+        text = (
+            props.get("device.profile.description", "")
+            + " "
+            + node.get("description", "")
+        ).lower()
+        preferred = (
+            "speaker" in text
+            if kind == "sink"
+            else "microphone" in text or "mic" in text
+        )
+        return (node.get("name") == default, preferred, node.get("name", ""))
+
+    return max(candidates, key=rank)
+
+
+def describe(node, kind, scope):
+    if node is None:
+        return {
+            "available": False,
+            "kind": kind,
+            "scope": scope,
+            "description": "No matching audio device is available",
+        }
+    channels = list(node.get("volume", {}).values())
+    volume = (
+        100 * sum(c.get("value", 0) for c in channels) / (65536 * len(channels))
+        if channels
+        else 0
+    )
+    return {
+        "available": True,
+        "kind": kind,
+        "scope": scope,
+        "name": node["name"],
+        "description": node.get("description", node["name"]),
+        "volume": volume,
+        "muted": bool(node.get("mute")),
+    }
+
+
+def control(kind, scope, pattern, external_pattern, action, value=None):
+    nodes = json.loads(run("--format=json", "list", kind + "s"))
+    default = run("get-default-" + kind).strip()
+    node = select(nodes, kind, scope, pattern, external_pattern, default)
+    if action == "status" or node is None:
+        return describe(node, kind, scope)
+    name = node["name"]
+    if action == "mute":
+        run("set-" + kind + "-mute", name, "toggle")
+    else:
+        if value is None or not math.isfinite(value):
+            raise ValueError("Volume must be finite")
+        if action == "adjust":
+            value += describe(node, kind, scope)["volume"]
+        run("set-" + kind + "-volume", name, f"{max(0, min(100, value)):.4f}%")
+    # Read back the same identity. A removed endpoint never redirects this write
+    # or its status to a new numeric object ID or the global default.
+    nodes = json.loads(run("--format=json", "list", kind + "s"))
+    return describe(
+        next((n for n in nodes if n.get("name") == name), None), kind, scope
+    )
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--kind", choices=["sink", "source"], required=True)
+    parser.add_argument("--scope", choices=["primary", "external"], required=True)
+    parser.add_argument("--device-pattern", default="")
+    parser.add_argument("--external-pattern", default="")
+    parser.add_argument(
+        "--action",
+        choices=["status", "set", "adjust", "mute"],
+        default="status",
+    )
+    parser.add_argument("--value", type=float)
+    args = parser.parse_args()
+    state = control(
+        args.kind,
+        args.scope,
+        args.device_pattern,
+        args.external_pattern,
+        args.action,
+        args.value,
+    )
+    print(json.dumps(state))
+    if args.action != "status" and not state["available"]:
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        sys.exit(main())
+    except (
+        OSError,
+        RuntimeError,
+        ValueError,
+        subprocess.TimeoutExpired,
+    ) as error:
+        print(f"audio-control: {error}", file=sys.stderr)
+        sys.exit(1)

@@ -14,7 +14,7 @@ name: AwesomeWM Configuration Tests
 
 on:
   push:
-    branches: [ main, master, develop ]
+    branches: ['**']
     paths:
       - '.config/awesome/**'
       - '.config/imapnotify/**'
@@ -45,7 +45,7 @@ on:
       - '.config/scripts/bootstrap/06-desktop.sh'
       - '.github/workflows/awesome-wm-tests.yml'
   pull_request:
-    branches: [ main, master, develop ]
+    branches: ['**']
     paths:
       - '.config/awesome/**'
       - '.config/imapnotify/**'
@@ -859,6 +859,8 @@ jobs:
       - name: Test mocked display routing and color restoration (no display hardware)
         run: |
           python -B .config/awesome/tests/test_display_control.py
+          python -B .config/awesome/tests/test_audio_control.py
+          HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_display_audio.lua
           HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_display_brightness.lua
 
       - name: Test hardware-independent lockscreen power policy

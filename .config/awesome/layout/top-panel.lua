@@ -56,7 +56,7 @@ local top_panel = function(s)
 
     -- Systray can only be shown on ONE screen at a time (X11 limitation)
     -- Show on non-primary screen if available (external monitor), otherwise primary
-    local systray_screen = (screen.count() == 1 or s ~= screen.primary) and s or nil
+    local systray_screen      = (screen.count() == 1 or s ~= screen.primary) and s or nil
 
     s.systray                 = wibox.widget {
         base_size = dpi(24), -- DPI-scaled icon size (24 @ 96 DPI, 36 @ 144 DPI)

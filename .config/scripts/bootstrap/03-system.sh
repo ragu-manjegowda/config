@@ -10,6 +10,8 @@ _validate_gai() {
 install_validated_admin_config "${MISC_DIR}/etc/gai.conf" /etc/gai.conf _validate_gai
 
 log_info "Deploying systemd configs..."
+check_copy "${MISC_DIR}/etc/systemd/resolved.conf.d/mdns-client.conf" "/etc/systemd/resolved.conf.d/90-mdns-client.conf"
+check_copy "${MISC_DIR}/etc/NetworkManager/conf.d/mdns-client.conf" "/etc/NetworkManager/conf.d/20-mdns-client.conf"
 _logind_dropin="/etc/systemd/logind.conf.d/90-local.conf"
 if [[ ! -f "$_logind_dropin" ]]; then
     _rendered_config="$(mktemp)"

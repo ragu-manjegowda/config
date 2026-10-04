@@ -7,7 +7,7 @@ configuration directory; these are not global commands on `PATH`.
 | Folder | Helpers | Purpose |
 | --- | --- | --- |
 | `camera/` | `capture`, `intruder-capture` | Bounded webcam capture and external-first intruder photos |
-| `desktop/` | `ensure-darkman`, `profile-image`, `time`, `volctl` | Theme recovery, profile image, clock menu and volume applet launcher |
+| `desktop/` | `audio-control`, `ensure-darkman`, `profile-image`, `time`, `volctl` | Targeted audio endpoints, theme recovery, profile image, clock menu and volume applet launcher |
 | `display/` | `blue-light`, `connect-external`, `disconnect-external`, `display-control`, `monitor-color`, `read-display-config`, `reset-primary-display`, `setup-monitors`, `snap` | Display topology, focused brightness, reversible monitor warmth and screenshots |
 | `input/` | `kbd-bkl`, `read-kbd-battery`, `touchpad-toggle` | Keyboard backlight/battery and touchpad controls |
 | `network/` | `outlook-calendar`, `prisma-vpn-diagnostics`, `prisma-vpn-health`, `prisma-vpn-status` | Calendar API and VPN status/health helpers |
@@ -35,3 +35,8 @@ their existing executable permissions and interpreters.
 Before moving or removing a helper, update its callers in configuration,
 widgets/modules, user units, scripts, tests and GitHub Actions. Preserve hardware
 mocking in tests; do not run a real display or camera operation from CI.
+
+`audio-control` selects the configured ALSA card for the focused display, then
+operates on a fresh endpoint name. It excludes playback-monitor sources and
+unavailable ports. Missing external audio is reported as unavailable rather than
+redirecting a monitor control to the laptop. It does not change audio defaults.

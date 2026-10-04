@@ -60,6 +60,19 @@ Administrator-owned package configs require a file-specific validator and
 bootstrap stops when a `.pacnew` needs review. Rendered files are installed
 atomically only after their expected settings or anchors are confirmed.
 
+## Hostname and Local Discovery
+
+Avahi advertises the current system hostname. NetworkManager and resolved use
+client-only mDNS so they do not compete to publish the same name. SSH aliases
+can target `<hostname>.local` rather than a changing DHCP address.
+
+Changing a hostname during an existing X11 session also changes the name used
+to look up local Xauthority cookies. Those cookies are generated session data,
+not hardcoded application configuration. Prefer changing the hostname before
+graphical login, or preserve the existing cookie under the new local hostname
+before switching names. Never print or regenerate the cookie just to rename a
+running session. A new graphical login generates credentials for the new name.
+
 ## Steps
 
 | Step | Name |

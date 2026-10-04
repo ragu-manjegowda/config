@@ -70,13 +70,10 @@ unset markers
 set tilde
 set quote_regexp = "^( {0,4}[>|:#%]| {0,4}[a-z0-9]+[>|]+)+"
 
-## Sorting the mails in threads in index (mails-list-view)
-# set sort = 'reverse-date'
-# set sort = 'threads'
-## and the thread themselves reverse-date
-# set sort_aux = reverse-last-date-received
+## Keep reply arrows, with newest-received conversations and branches first.
 set use_threads = reverse
 set sort = last-date-received
+set sort_aux = last-date-received
 set narrow_tree = yes
 # thread based on regex
 set sort_re

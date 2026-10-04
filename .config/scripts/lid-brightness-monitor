@@ -10,6 +10,22 @@ CONFIG_READER="${LID_BRIGHTNESS_CONFIG_READER:-$HOME/.config/awesome/utilities/d
 STATE_DIR="${XDG_STATE_HOME:-${HOME}/.local/state}/lid-brightness-manager"
 BRIGHTNESS_CACHE="${LID_BRIGHTNESS_CACHE:-${STATE_DIR}/brightness}"
 LEGACY_CACHE="/tmp/laptop_brightness_${USER}"
+refresh_requested=false
+display_query_failed=false
+monitor_ready=false
+handling_lid_state=false
+request_refresh() {
+    refresh_requested=true
+    if [[ "$monitor_ready" == true && "$handling_lid_state" != true ]]; then
+        if read_configuration; then
+            manage_brightness
+        else
+            echo 'Unable to reload display configuration; retaining lid protection' >&2
+        fi
+    fi
+}
+# Install this before startup work so a reload cannot terminate the new process.
+trap request_refresh HUP
 
 restore_brightness() {
     local cache_file="$BRIGHTNESS_CACHE"
@@ -35,18 +51,20 @@ if [ "${1:-}" = "--restore" ]; then
     exit
 fi
 
-# Source display configuration from AwesomeWM config
-display_config="$("$CONFIG_READER")" || exit 1
-source /dev/stdin <<< "$display_config"
-unset display_config
-
-# Use the centralized configuration
-EXTERNAL_DISPLAY="$EXTERNAL_NAME"
-PRIMARY_DISPLAY="$PRIMARY_NAME"
+read_configuration() {
+    local display_config
+    display_config="$("$CONFIG_READER")" || return 1
+    source /dev/stdin <<< "$display_config"
+    EXTERNAL_DISPLAY="$EXTERNAL_NAME"
+}
+read_configuration || exit 1
 
 # Function to check if external monitor is connected
 is_external_connected() {
-    local line output connection geometry
+    local line output connection geometry display_state
+    if ! display_state="$(timeout --kill-after=1 3 "$XRANDR_BIN" --current 2>/dev/null)"; then
+        return 2 # Unknown is not the same as a verified disconnected display.
+    fi
     while IFS= read -r line; do
         read -r output connection geometry _ <<< "$line"
         if [[ "$output" == "$EXTERNAL_DISPLAY" && "$connection" == connected ]]; then
@@ -56,7 +74,7 @@ is_external_connected() {
             [[ "$geometry" =~ ^[0-9]+x[0-9]+[+]-?[0-9]+[+]-?[0-9]+$ ]]
             return
         fi
-    done < <("$XRANDR_BIN" --current 2>/dev/null)
+    done <<< "$display_state"
     return 1
 }
 
@@ -72,7 +90,7 @@ get_lid_state() {
 inhibitor_pid=''
 monitor_pid=''
 update_lid_inhibitor() {
-    if is_external_connected; then
+    if [[ "$1" == true ]]; then
         if [[ -n "$inhibitor_pid" ]] && kill -0 "$inhibitor_pid" 2>/dev/null; then return; fi
         "$INHIBIT_BIN" --no-ask-password --what=handle-lid-switch \
             --who=awesome-lid-brightness --why='External display is active' \
@@ -91,8 +109,14 @@ update_lid_inhibitor() {
 }
 
 cleanup() {
-    if [[ -n "$inhibitor_pid" ]]; then kill "$inhibitor_pid" 2>/dev/null || true; fi
-    if [[ -n "$monitor_pid" ]]; then kill "$monitor_pid" 2>/dev/null || true; fi
+    if [[ -n "$inhibitor_pid" ]]; then
+        kill "$inhibitor_pid" 2>/dev/null || true
+        wait "$inhibitor_pid" 2>/dev/null || true
+    fi
+    if [[ -n "$monitor_pid" ]]; then
+        kill "$monitor_pid" 2>/dev/null || true
+        wait "$monitor_pid" 2>/dev/null || true
+    fi
     restore_brightness
 }
 trap cleanup EXIT
@@ -100,11 +124,27 @@ trap 'exit 0' INT TERM
 
 # Function to manage brightness based on lid state
 manage_brightness() {
-    local lid_state
-    update_lid_inhibitor
+    local lid_state external_active query_status
+    handling_lid_state=true
+    if is_external_connected; then
+        external_active=true
+    else
+        query_status=$?
+        if [[ "$query_status" == 2 ]]; then
+            if [[ "$display_query_failed" != true ]]; then
+                echo 'Unable to query X11 display state; retaining lid inhibition and brightness state' >&2
+            fi
+            display_query_failed=true
+            handling_lid_state=false
+            return
+        fi
+        external_active=false
+    fi
+    display_query_failed=false
+    update_lid_inhibitor "$external_active"
     lid_state=$(get_lid_state)
 
-    if [ "$lid_state" = "closed" ] && is_external_connected; then
+    if [ "$lid_state" = "closed" ] && [[ "$external_active" == true ]]; then
         # Save current brightness if not already saved
         if [ ! -s "$BRIGHTNESS_CACHE" ]; then
             mkdir -p "$(dirname "$BRIGHTNESS_CACHE")"
@@ -116,12 +156,14 @@ manage_brightness() {
         "$LIGHT_BIN" -S 0 2>/dev/null
         echo "[$(date '+%H:%M:%S')] Laptop display brightness set to 0"
 
-    elif [ "$lid_state" = "open" ] || ! is_external_connected; then
+    elif [ "$lid_state" = "open" ] || [[ "$external_active" != true ]]; then
         restore_brightness
     fi
+    handling_lid_state=false
 }
 
 # Run once on startup
+monitor_ready=true
 echo "[$(date '+%H:%M:%S')] Starting lid brightness monitor..."
 manage_brightness
 
@@ -131,9 +173,16 @@ manage_brightness
 echo "[$(date '+%H:%M:%S')] Monitoring for lid events via D-Bus..."
 exec 3< <("$EVENT_BIN" monitor --system --dest org.freedesktop.login1 --object-path /org/freedesktop/login1 2>/dev/null)
 monitor_pid=$!
-while read -r line <&3; do
-    # React to any signal from logind (including PropertyChanged)
-    # Sleep briefly to let the lid state file update
-    sleep 0.3
-    manage_brightness
+while true; do
+    if read -r line <&3; then
+        # Let the lid state file catch up with the signal.
+        sleep 0.3
+        manage_brightness
+    elif [[ "$refresh_requested" != true ]]; then
+        break
+    fi
+    if [[ "$refresh_requested" == true ]]; then
+        refresh_requested=false
+        if read_configuration; then manage_brightness; fi
+    fi
 done

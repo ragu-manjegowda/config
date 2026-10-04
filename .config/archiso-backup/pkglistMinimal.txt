@@ -1,6 +1,7 @@
 alacritty
 alsa-utils
 apparmor
+avahi
 awesome-luajit-git
 awmtt
 base

@@ -179,6 +179,16 @@ preset and gains are saved under `$XDG_STATE_HOME/awesome/display-control` and
 restored when filtering is disabled. DDC requests run asynchronously with
 coalesced slider writes; there is no continuous brightness poller.
 
+Volume and microphone controls also follow the focused display. Their ALSA card
+selectors are configured in `widget.audio`; gestures capture the target before
+asynchronous work starts, and status/OSD replies are tagged with that output.
+Audio events, panel opening and hover refresh the current endpoint without a
+repeating status timer. Missing monitor audio is explicitly unavailable and is
+never redirected to the laptop's device. Default audio devices remain under the
+session manager/user's control. Blue light and blur remain global controls;
+system-wide controls such as Bluetooth, airplane mode and power profiles manage
+the host rather than a particular screen.
+
 <p align="center">
   <img src="../../man/figures/awesome-control-center.jpg" alt="Control Center in light and dark modes" width="960">
 </p>
@@ -327,6 +337,21 @@ updates wallpaper when resuming from sleep.
 - Optional webcam capture on rejected password and fingerprint attempts
 - Idle locking waits for active audio only while unlocked; a locked display turns off after one minute
 - Blurred background option
+
+### Docked Lid and Display Recovery
+
+The lid brightness manager owns a `handle-lid-switch` inhibitor while the
+configured external output has active geometry. Closing the lid saves the
+internal backlight level and sets it to zero; reopening restores that level.
+
+A failed or timed-out X11 query is an unknown state, not a disconnected monitor.
+It preserves existing inhibition and brightness state until a successful query
+allows reconciliation. Display setup reloads the manager with SIGHUP so routine
+screen reconfiguration does not drop the inhibitor by restarting the service.
+
+Behavioral tests exercise close/open, inactive outputs, failed queries, recovery,
+and live-process reloads with mocked hardware. Idle locking remains separate:
+`xidlehook` locks and applies DPMS, without requesting system suspend.
 
 ### Screen Recorder
 

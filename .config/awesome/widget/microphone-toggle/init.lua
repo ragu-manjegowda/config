@@ -6,8 +6,11 @@ local dpi = beautiful.xresources.apply_dpi
 local clickable_container = require('widget.clickable-container')
 local icons = require('theme.icons')
 local audio_monitor = require('library.audio-monitor')
+local display_audio = require('library.display-audio')
 
 local mic_muted = false
+local mic_available = false
+local refresh_generation = 0
 
 local action_name = wibox.widget {
     text = 'Microphone',
@@ -56,7 +59,11 @@ local widget_button = wibox.widget {
 }
 
 local update_widget = function()
-    if mic_muted then
+    if not mic_available then
+        action_status:set_text('Unavailable')
+        widget_button.bg = beautiful.background
+        button_widget.icon:set_image(icons.microphone_muted)
+    elseif mic_muted then
         action_status:set_text('Muted')
         widget_button.bg = beautiful.background
         button_widget.icon:set_image(icons.microphone_muted)
@@ -67,36 +74,27 @@ local update_widget = function()
     end
 end
 
+local function apply_state(state, output)
+    mic_available, mic_muted = state.available, state.muted or false
+    action_name:set_text(display_audio.scope(output) == 'external' and 'Monitor Mic' or 'Microphone')
+    update_widget()
+    awesome.emit_signal('module::mic_osd:update', mic_muted, output, mic_available)
+end
+
 local check_mic_status = function()
-    awful.spawn.easy_async_with_shell(
-        'wpctl get-volume @DEFAULT_AUDIO_SOURCE@ | grep -o MUTED',
-        function(stdout)
-            if stdout:match('MUTED') then
-                mic_muted = true
-            else
-                mic_muted = false
-            end
-            update_widget()
-            awesome.emit_signal('module::mic_osd:update', mic_muted)
-        end
-    )
+    refresh_generation = refresh_generation + 1
+    local generation, output = refresh_generation, display_audio.output()
+    display_audio.read(output, 'source', function(state)
+        if generation ~= refresh_generation or output ~= display_audio.output() or display_audio.pending(output, 'source') then return end
+        apply_state(state, output)
+    end)
 end
 
 check_mic_status()
 
 local toggle_mic = function()
-
-    awful.spawn('wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle', false)
-    awful.spawn.easy_async_with_shell(
-        'wpctl get-volume @DEFAULT_AUDIO_SOURCE@',
-        function(stdout)
-            mic_muted = stdout:match('%[MUTED%]') ~= nil
-            update_widget()
-            -- Emit signal to update OSD
-            awesome.emit_signal('module::mic_osd:update', mic_muted)
-            awesome.emit_signal('module::mic_osd:show', true)
-        end
-    )
+    refresh_generation = refresh_generation + 1
+    display_audio.toggle('source')
 end
 
 widget_button:buttons(
@@ -139,6 +137,16 @@ local action_widget = wibox.widget {
 }
 
 audio_monitor:connect_signal('source', check_mic_status)
+awesome.connect_signal('control_center::visibility', function(visible)
+    if visible then check_mic_status() end
+end)
+action_widget:connect_signal('mouse::enter', check_mic_status)
+awesome.connect_signal('widget::audio:changed', function(output, kind, state)
+    if kind == 'source' and output == display_audio.output() and not display_audio.pending(output, kind) then
+        refresh_generation = refresh_generation + 1
+        apply_state(state, output)
+    end
+end)
 
 -- Subscribe to global mic OSD updates
 awesome.connect_signal(

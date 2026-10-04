@@ -6,6 +6,7 @@ After=graphical-session.target
 Type=simple
 Environment=DISPLAY=:0
 ExecStart=%h/.config/scripts/lid-brightness-monitor
+ExecReload=/usr/bin/kill -HUP $MAINPID
 ExecStop=%h/.config/scripts/lid-brightness-monitor --restore
 Restart=always
 RestartSec=3

@@ -4,7 +4,8 @@ local wibox = require('wibox')
 local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 local icons = require('theme.icons')
-local spawn = require('awful.spawn')
+local display_audio = require('library.display-audio')
+local shown_screen
 
 local osd_header = wibox.widget {
     text = 'Volume',
@@ -55,10 +56,11 @@ vol_osd_slider:connect_signal(
             return
         end
 
-        spawn('wpctl set-volume @DEFAULT_AUDIO_SINK@ ' .. volume_level .. '%', false)
+        local output = display_audio.output(shown_screen)
+        display_audio.set(output, volume_level)
 
         -- Update the volume slider if values here change
-        awesome.emit_signal('widget::volume:update', volume_level)
+        awesome.emit_signal('widget::volume:update', volume_level, output)
 
         if awful.screen.focused().show_vol_osd then
             awesome.emit_signal(
@@ -86,7 +88,8 @@ vol_osd_slider:connect_signal(
 -- The emit will come from volume slider
 awesome.connect_signal(
     'module::volume_osd',
-    function(volume)
+    function(volume, output)
+        if output and output ~= display_audio.output() then return end
         is_programmatic_update = true
         vol_osd_slider:set_value(volume)
         is_programmatic_update = false
@@ -185,12 +188,14 @@ screen.connect_signal(
 )
 
 local hide_osd = gears.timer {
-    timeout   = 2,
+    timeout     = 2,
     single_shot = true,
-    callback  = function()
-        local focused = awful.screen.focused()
-        focused.volume_osd_overlay.visible = false
-        focused.show_vol_osd = false
+    callback    = function()
+        if shown_screen and shown_screen.valid then
+            shown_screen.volume_osd_overlay.visible = false
+            shown_screen.show_vol_osd = false
+        end
+        shown_screen = nil
     end
 }
 
@@ -223,7 +228,8 @@ end
 
 awesome.connect_signal(
     'module::volume_osd:update_icon',
-    function(muted)
+    function(muted, output)
+        if output and output ~= display_audio.output() then return end
         if muted then
             vol_icon:set_image(icons.volume_muted)
             vol_osd_slider.bar_active_color = beautiful.background_light
@@ -241,6 +247,12 @@ awesome.connect_signal(
 awesome.connect_signal(
     'module::volume_osd:show',
     function(bool)
+        local focused = awful.screen.focused()
+        if shown_screen and shown_screen.valid and shown_screen ~= focused then
+            shown_screen.volume_osd_overlay.visible = false
+            shown_screen.show_vol_osd = false
+        end
+        shown_screen = bool and focused or nil
         placement_placer()
         awful.screen.focused().volume_osd_overlay.visible = bool
         if bool then

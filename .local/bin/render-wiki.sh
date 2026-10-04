@@ -36,7 +36,7 @@ else
 fi
 
 # Get the current theme (you may want to change this if the format is different)
-current_theme="solarized-dark"
+current_theme="solarized-light"
 
 # Check if themes are different
 if [[ "$previous_theme" != "$current_theme" ]]; then
@@ -51,9 +51,9 @@ if [[ "$previous_theme" != "$current_theme" ]]; then
     if [[ "$choice" == "y" ]]; then
         echo "Reprocessing all files..."
 
-        cp "${HOME}/.config/misc/wiki/css/solarized-dark.css" "${css_dir}/solarized.css"
-        cp "${HOME}/.config/misc/wiki/highlight/solarized-dark.theme" "${hl_dir}/solarized.theme"
-        cp "${HOME}/.config/misc/wiki/assets/favicon-dark.ico" html_output/favicon.ico
+        cp "${HOME}/.config/misc/wiki/css/solarized-light.css" "${css_dir}/solarized.css"
+        cp "${HOME}/.config/misc/wiki/highlight/solarized-light.theme" "${hl_dir}/solarized.theme"
+        cp "${HOME}/.config/misc/wiki/assets/favicon-light.ico" html_output/favicon.ico
         cp "${HOME}/.config/misc/wiki/lua-filters/filters.lua" html_output/filters.lua
 
         # Touch .last_run with the reference time in the past to reprocess all files

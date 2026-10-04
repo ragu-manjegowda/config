@@ -92,6 +92,6 @@ fi
 "$HOME/.config/awesome/utilities/display/reset-primary-display" --once
 
 if systemctl --user cat lid-brightness-manager.service &>/dev/null; then
-    systemctl --user restart lid-brightness-manager.service ||
-        echo "Warning: failed to restart lid brightness manager" >&2
+    systemctl --user reload-or-restart lid-brightness-manager.service ||
+        echo "Warning: failed to refresh lid brightness manager" >&2
 fi

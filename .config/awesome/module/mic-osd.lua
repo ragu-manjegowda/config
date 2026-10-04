@@ -4,6 +4,8 @@ local wibox = require('wibox')
 local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 local icons = require('theme.icons')
+local display_audio = require('library.display-audio')
+local shown_screen
 
 local osd_header = wibox.widget {
     text = 'Microphone',
@@ -125,11 +127,11 @@ screen.connect_signal(
 )
 
 local hide_osd = gears.timer {
-    timeout   = 2,
+    timeout     = 2,
     single_shot = true,
-    callback  = function()
-        local focused = awful.screen.focused()
-        focused.mic_osd_overlay.visible = false
+    callback    = function()
+        if shown_screen and shown_screen.valid then shown_screen.mic_osd_overlay.visible = false end
+        shown_screen = nil
     end
 }
 
@@ -162,8 +164,12 @@ end
 
 awesome.connect_signal(
     'module::mic_osd:update',
-    function(muted)
-        if muted then
+    function(muted, output, available)
+        if output and output ~= display_audio.output() then return end
+        if available == false then
+            icon.children[1]:set_image(icons.microphone_muted)
+            osd_value.text = 'Unavailable'
+        elseif muted then
             icon.children[1]:set_image(icons.microphone_muted)
             osd_value.text = 'Muted'
         else
@@ -176,6 +182,11 @@ awesome.connect_signal(
 awesome.connect_signal(
     'module::mic_osd:show',
     function(bool)
+        local focused = awful.screen.focused()
+        if shown_screen and shown_screen.valid and shown_screen ~= focused then
+            shown_screen.mic_osd_overlay.visible = false
+        end
+        shown_screen = bool and focused or nil
         placement_placer()
         awful.screen.focused().mic_osd_overlay.visible = bool
         if bool then
@@ -200,16 +211,5 @@ awesome.connect_signal(
     end
 )
 
--- Handle microphone status update signal
-awesome.connect_signal(
-    'widget::microphone',
-    function()
-        awful.spawn.easy_async_with_shell(
-            'wpctl get-volume @DEFAULT_AUDIO_SOURCE@',
-            function(stdout)
-                local muted = stdout:match('%[MUTED%]') ~= nil
-                awesome.emit_signal('module::mic_osd:update', muted)
-            end
-        )
-    end
-)
+-- The microphone widget publishes output-tagged status for this OSD, avoiding
+-- a second global-default query that could overwrite the focused device state.

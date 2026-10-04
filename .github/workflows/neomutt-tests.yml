@@ -3,15 +3,15 @@ name: Neomutt Configuration Tests
 # Run tests only when Neomutt config files change
 on:
   push:
-    branches: [ main, master, develop ]
+    branches: ["**"]
     paths:
-      - '.config/neomutt/**'
-      - '.github/workflows/neomutt-tests.yml'
+      - ".config/neomutt/**"
+      - ".github/workflows/neomutt-tests.yml"
   pull_request:
-    branches: [ main, master, develop ]
+    branches: ["**"]
     paths:
-      - '.config/neomutt/**'
-      - '.github/workflows/neomutt-tests.yml'
+      - ".config/neomutt/**"
+      - ".github/workflows/neomutt-tests.yml"
   workflow_dispatch:
 
 env:

@@ -12,6 +12,7 @@ else
 fi
 enable_system_service sshd
 enable_system_service NetworkManager
+enable_system_service avahi-daemon
 enable_system_service bluetooth
 enable_system_service cups
 enable_system_service greetd
