@@ -6,6 +6,7 @@ local task_list = require('widget.task-list')
 local tag_list = require('widget.tag-list')
 local vseparator = require('widget.vseparator')
 local systray_cursor = require('layout.systray-cursor')
+local machine = require('library.machine')
 
 local function hide_existing_panel(s)
     local panel = s.top_panel
@@ -73,7 +74,8 @@ local top_panel = function(s)
     s.playerctl_center_toggle = require('widget.playerctl-center-toggle')()
     s.kbd_battery             = require('widget.kbd-battery')()
     s.vpn                     = require('widget.vpn')()
-    s.battery                 = require('widget.battery')()
+    s.battery                 = machine.battery and require('widget.battery')() or
+        wibox.widget { visible = false, widget = wibox.container.background }
     s.control_center_toggle   = require('widget.control-center-toggle')()
     s.info_center_toggle      = require('widget.info-center-toggle')()
 

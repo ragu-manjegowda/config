@@ -4,6 +4,7 @@ local gears = require('gears')
 local beautiful = require('beautiful')
 local center_backdrop = require('layout.center-backdrop')
 local center_manager = require('layout.center-manager')
+local machine = require('library.machine')
 local dpi = beautiful.xresources.apply_dpi
 
 local format_item = function(widget)
@@ -93,77 +94,33 @@ local main_control_row_two = wibox.widget {
         }
     ),
     {
-        layout = wibox.layout.flex.vertical,
+        layout = wibox.layout.fixed.vertical,
         spacing = dpi(10),
-        format_item_no_fix_height(
-            {
-                layout = wibox.layout.align.vertical,
-                expand = 'none',
-                nil,
-                require('widget.dont-disturb'),
-                nil
-            }
-        ),
-        format_item_no_fix_height(
-            {
-                layout = wibox.layout.align.vertical,
-                expand = 'none',
-                nil,
-                require('widget.blur-toggle'),
-                nil
-            }
-        ),
-        format_item_no_fix_height(
-            {
-                layout = wibox.layout.align.vertical,
-                expand = 'none',
-                nil,
-                require('widget.presentation-mode'),
-                nil
-            }
-        )
+        format_item(require('widget.dont-disturb')),
+        format_item(require('widget.blur-toggle')),
+        format_item(require('widget.presentation-mode'))
     }
 }
 
-local main_control_row_sliders = wibox.widget {
+local slider_items = {
+    id = 'control_sliders',
     layout = wibox.layout.fixed.vertical,
     spacing = dpi(10),
-    format_item_no_fix_height(
-        {
-            require('widget.power-profile'),
-            margins = dpi(10),
-            widget = wibox.container.margin
-        }
-    ),
-    format_item(
-        {
-            require('widget.blur-slider'),
-            margins = dpi(10),
-            widget = wibox.container.margin
-        }
-    ),
-    format_item(
-        {
-            require('widget.brightness-slider'),
-            margins = dpi(10),
-            widget = wibox.container.margin
-        }
-    ),
-    format_item(
-        {
-            require('widget.volume-slider'),
-            margins = dpi(10),
-            widget = wibox.container.margin
-        }
-    ),
-    format_item(
-        {
-            require('widget.kbd-brightness-slider'),
-            margins = dpi(10),
-            widget = wibox.container.margin
-        }
-    )
 }
+local function add_slider(name, flexible_height)
+    local contents = {
+        require('widget.' .. name),
+        margins = dpi(10),
+        widget = wibox.container.margin
+    }
+    slider_items[#slider_items + 1] = flexible_height and format_item_no_fix_height(contents) or format_item(contents)
+end
+if machine.power_profile then add_slider('power-profile', true) end
+add_slider('blur-slider')
+add_slider('brightness-slider')
+add_slider('volume-slider')
+if machine.keyboard_backlight then add_slider('kbd-brightness-slider') end
+local main_control_row_sliders = wibox.widget(slider_items)
 
 local monitor_control_row_progressbars = wibox.widget {
     layout = wibox.layout.fixed.vertical,

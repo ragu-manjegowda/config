@@ -3,6 +3,9 @@ local config_dir = filesystem.get_configuration_dir()
 local utils_dir = config_dir .. 'utilities/'
 
 return {
+    -- Shared UI uses this profile plus hardware checks. Set 'imac' or 'desktop'
+    -- on batteryless machines instead of editing panels and widget imports.
+    machine = 'laptop',
     display = {
         -- DPI setting for all displays
         dpi = 144,

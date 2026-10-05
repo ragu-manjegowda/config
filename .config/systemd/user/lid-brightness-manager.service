@@ -1,6 +1,7 @@
 [Unit]
 Description=Laptop Display Brightness Manager (Event-based)
 After=graphical-session.target
+ConditionPathExistsGlob=/proc/acpi/button/lid/*/state
 
 [Service]
 Type=simple

@@ -1,5 +1,6 @@
 [Unit]
 Description=Apply power-profile defaults when the power source changes
+ConditionPathExistsGlob=/sys/class/power_supply/BAT*/type
 
 [Service]
 Type=simple

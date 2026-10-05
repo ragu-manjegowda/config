@@ -130,6 +130,21 @@ version on top of it with extensive modifications for a production desktop envir
 
 ## Panels and Layouts
 
+### Machine profile
+
+Set the top-level `machine` field in `configuration/config.lua` to `laptop`,
+`desktop`, or `imac`. Shared layouts omit whole battery, power-profile and
+keyboard-backlight components when the profile or hardware does not support
+them; disabled controls do not leave empty cards or instantiate unsupported
+widgets. Display/audio identifiers and camera settings remain device data in
+the same configuration file.
+
+The shared brightness backend uses `light` for eDP/LVDS panels and EDID-selected
+DDC for other outputs, including the iMac's DP-1 internal panel. No iMac-specific
+brightness script or layout copy is required. User units remain installed:
+systemd skips the lid manager without an ACPI lid and the power-source monitor
+without a BAT battery, rather than requiring per-machine service drop-ins.
+
 Five panels are created per screen:
 
 | Panel | Key | Position | Content |

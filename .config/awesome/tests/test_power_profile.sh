@@ -266,7 +266,7 @@ grep -Fq 'button.bg = selected and beautiful.accent or beautiful.background' "$w
 grep -Fq 'button.label:set_markup' "$widget"
 grep -Fq 'forced_width = dpi(118)' "$widget"
 grep -Fq 'forced_height = dpi(40)' "$widget"
-grep -Fq "require('widget.power-profile')" "$panel"
+grep -Fq "if machine.power_profile then add_slider('power-profile', true) end" "$panel"
 grep -Fq "main_control_row_sliders" "$panel"
 grep -Fq 'ExecStart=/usr/bin/python3 %h/.config/awesome/utilities/power/power-profile-monitor' "$service"
 grep -Fq 'configure-battery-aware", "--disable' "$repo_home/.config/awesome/utilities/power/power-profile-monitor"

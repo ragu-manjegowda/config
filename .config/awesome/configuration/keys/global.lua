@@ -8,6 +8,7 @@ local keyboard = require('awful.keyboard')
 local center_manager = require('layout.center-manager')
 local display_brightness = require('library.display-brightness')
 local display_audio = require('library.display-audio')
+local machine = require('library.machine')
 
 require('awful.autofocus')
 
@@ -580,6 +581,7 @@ local global_keys = awful.util.table.join(
         {},
         'XF86KbdBrightnessUp',
         function()
+            if not machine.keyboard_backlight then return end
             run_and_refresh_osd(
                 config.keyboard.script .. ' -inc 10 ' .. config.keyboard.file,
                 'widget::kbd_brightness'
@@ -592,6 +594,7 @@ local global_keys = awful.util.table.join(
         {},
         'XF86KbdBrightnessDown',
         function()
+            if not machine.keyboard_backlight then return end
             run_and_refresh_osd(
                 config.keyboard.script .. ' -dec 10 ' .. config.keyboard.file,
                 'widget::kbd_brightness'
@@ -604,6 +607,7 @@ local global_keys = awful.util.table.join(
         {},
         'XF86KbdLightOnOff',
         function()
+            if not machine.keyboard_backlight then return end
             awesome.emit_signal('widget::kbd_brightness', true)
         end,
         { description = 'Toggle keyboard brightness', group = 'hotkeys' }

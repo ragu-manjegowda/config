@@ -3,6 +3,9 @@ package.path = config_dir .. '?.lua;' .. config_dir .. '?/init.lua;' .. package.
 
 local suspension_state = false
 local transitions = {}
+package.preload['library.machine'] = function()
+    return { battery = true, power_profile = true, keyboard_backlight = true }
+end
 package.preload['library.notification-suspension'] = function()
     return { set = function(_, active) suspension_state = active end }
 end
@@ -11,15 +14,19 @@ local function widget(args)
     local value = args or {}
     if value.visible == nil then value.visible = false end
     function value:buttons(buttons) self.clicks = buttons end
+
     function value:emit_signal(name)
         if self.test_name and (name == 'opened' or name == 'closed') then
             transitions[#transitions + 1] = self.test_name .. ':' .. name
         end
     end
+
     function value:connect_signal() end
+
     function value:get_children_by_id()
         return { { visible = false } }
     end
+
     return value
 end
 
@@ -49,8 +56,10 @@ package.preload.awful = function()
 end
 package.preload.gears = function() return { shape = {} } end
 package.preload.beautiful = function()
-    return { font_bold = function() return 'mock-font' end,
-        xresources = { apply_dpi = function(value) return value end } }
+    return {
+        font_bold = function() return 'mock-font' end,
+        xresources = { apply_dpi = function(value) return value end }
+    }
 end
 
 local calendar_updates = 0
@@ -88,8 +97,10 @@ end
 local manager = require('layout.center-manager')
 
 local function make_screen(x)
-    local s = { geometry = { x = x, y = 0, width = 1200, height = 800 },
-        top_panel = { visible = true, height = 45 } }
+    local s = {
+        geometry = { x = x, y = 0, width = 1200, height = 800 },
+        top_panel = { visible = true, height = 45 }
+    }
     focused = s
     for _, name in ipairs(names) do
         s[name] = constructors[name](s)
@@ -160,10 +171,12 @@ package.preload['layout.top-panel'] = function()
 end
 tag = { connect_signal = function(_, callback) tag_handler = callback end }
 client = { connect_signal = function() end }
-setmetatable(screen, { __call = function(_, _, previous)
-    if not previous then return first end
-    if previous == first then return second end
-end })
+setmetatable(screen, {
+    __call = function(_, _, previous)
+        if not previous then return first end
+        if previous == first then return second end
+    end
+})
 require('layout.init')
 
 first.selected_tag = { clients = function() return {} end }
