@@ -210,8 +210,9 @@ the host rather than a particular screen.
 
 ### Info Center
 
-All four centers retain their screen-relative width and top offset. Height limits
-use the owning screen's usable pixels without applying DPI twice. Info Center's
+All four centers retain their screen-relative width and align their top edge
+with tiled clients and notification popups using the theme's outer gap. Height
+limits use the owning screen's usable pixels without applying DPI twice. Info Center's
 existing list viewports share the available height; headers remain visible and
 wheel scrolling stays inside the original notification, mail, stock, calendar
 and weather sections. There is no extra whole-panel scrollbar.

@@ -20,6 +20,7 @@ package.loaded['wibox.widget.base'] = {
     end
 }
 package.loaded.beautiful = {
+    useless_gap = 8,
     xresources = {
         apply_dpi = function(value, s) return value * s.dpi / 96 end,
         get_dpi = function(s) return s.dpi end,
@@ -50,12 +51,16 @@ for _, s in ipairs { primary, external, small } do
     assert(bounds.y >= s.workarea.y and bounds.y + bounds.height <= s.workarea.y + s.workarea.height,
         'Screen pixel height must not get multiplied by DPI again')
 end
-assert(geometry.bounds(external).height == 1349)
+assert(geometry.bounds(external).height == 1339)
 local contents = {}
 local panel = object { widget = contents, height = 2000, visible = false }
 geometry.bind(panel, external, 'top_right')
-assert(panel.height == 1349 and panel.maximum_height == 1349)
-assert(panel.x == 5445 and panel.y == 76 and panel.width == 860)
+assert(panel.height == 1339 and panel.maximum_height == 1339)
+assert(panel.x == 5444 and panel.y == 85 and panel.width == 860)
+assert(geometry.bounds(primary).y == panel.y,
+    'Different screen heights must not change client/notification top-edge alignment')
+assert(panel.y == external.workarea.y + 2 * package.loaded.beautiful.useless_gap,
+    'Center top edge must match the tiled-client outer gap')
 assert(panel.widget == contents, 'Sizing must not replace the layout with a scrolling wrapper')
 
 local sections = {}
@@ -90,11 +95,15 @@ for _, section in ipairs(sections) do assert(section.limit == 232, 'Larger scree
 external.geometry = { x = -3440, y = 300, width = 3440, height = 1080 }
 external.workarea = { x = -3440, y = 369, width = 3440, height = 1011 }
 external:emit_signal('property::geometry')
-assert(panel.maximum_height == 996 and panel.y == 369 and panel.x == -875,
+assert(panel.maximum_height == 979 and panel.y == 385 and panel.x == -876,
     'Resize/reposition must use the owning screen geometry')
 local centered = object { widget = contents, height = 100 }
 geometry.bind(centered, small, 'top')
-assert(centered.x == -1120 and centered.y == 260)
+assert(centered.x == -1120 and centered.y == 262)
+small.workarea = small.geometry
+small:emit_signal('property::workarea')
+assert(centered.y == small.geometry.y + 16,
+    'A hidden top panel must align centers with the screen-edge client/notification gap')
 for _, callback in ipairs(removed_handlers) do callback(external) end
 assert(external.handlers['property::geometry'] == nil)
 print('screen-relative center and existing section sizing tests passed')

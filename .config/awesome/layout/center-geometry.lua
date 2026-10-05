@@ -7,8 +7,10 @@ local center_geometry = {}
 function center_geometry.bounds(s)
     local geometry = s.geometry
     local area = s.workarea or geometry
-    local gap = beautiful.xresources.apply_dpi(10, s)
-    local top = math.ceil(math.max(area.y, geometry.y + geometry.height / 22 + 10))
+    -- The theme gap is already in pixels. Tiled outer edges and Naughty's
+    -- popup spacing use two gaps outside the workarea's top-panel edge.
+    local gap = 2 * (beautiful.useless_gap or beautiful.xresources.apply_dpi(5, s))
+    local top = math.ceil(math.max(area.y, geometry.y) + gap)
     local bottom = math.min(area.y + area.height, geometry.y + geometry.height) - gap
     return {
         x = area.x + gap,
