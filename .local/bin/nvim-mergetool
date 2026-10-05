@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+exec nvim --cmd 'lua vim.g.blazing_fast=1' "$@"

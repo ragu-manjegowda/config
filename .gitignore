@@ -20,6 +20,7 @@
 !/.local/bin/git-bare-clone.sh
 !/.local/bin/merge-images-diagonally.sh
 !/.local/bin/merge-zsh-histories.rb
+!/.local/bin/nvim-mergetool
 !/.local/bin/oc
 !/.local/bin/omni
 !/.local/bin/paru-clean-cache

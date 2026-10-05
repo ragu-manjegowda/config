@@ -67,7 +67,8 @@
     prompt = false
 
 [mergetool "nvimdiff1"]
-    cmd = nvim --cmd '+lua vim.g.blazing_fast=1' -d "$LOCAL" "$REMOTE"
+    ; Keep Git's built-in merge handling; the launcher only selects fast plugins.
+    path = nvim-mergetool
 
 [pager]
     diff = delta | less --tabs=1,5 -RFX
