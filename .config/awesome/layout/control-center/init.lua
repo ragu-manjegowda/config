@@ -4,6 +4,7 @@ local gears = require('gears')
 local beautiful = require('beautiful')
 local center_backdrop = require('layout.center-backdrop')
 local center_manager = require('layout.center-manager')
+local center_geometry = require('layout.center-geometry')
 local machine = require('library.machine')
 local dpi = beautiful.xresources.apply_dpi
 
@@ -141,7 +142,7 @@ local monitor_control_row_progressbars = wibox.widget {
 
 local control_center = function(s)
     -- Set the control center geometry
-    local panel_width = s.geometry.width / 6
+    local panel_width = center_geometry.width(s)
 
     local panel = awful.popup {
         widget = {
@@ -183,9 +184,8 @@ local control_center = function(s)
         type = 'dock',
         visible = false,
         ontop = true,
-        width = dpi(panel_width),
-        maximum_width = dpi(panel_width),
-        maximum_height = dpi(s.geometry.height - 38),
+        width = panel_width,
+        maximum_width = panel_width,
         bg = beautiful.transparent,
         fg = beautiful.fg_normal,
         shape = function(cr, width, height)
@@ -193,17 +193,7 @@ local control_center = function(s)
         end,
     }
 
-    awful.placement.top_right(
-        panel,
-        {
-            honor_workarea = true,
-            parent = s,
-            margins = {
-                top = (s.geometry.height / 22) + 10,
-                right = dpi(10)
-            }
-        }
-    )
+    center_geometry.bind(panel, s, 'top_right')
 
     panel.opened = false
 

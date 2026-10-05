@@ -210,6 +210,18 @@ the host rather than a particular screen.
 
 ### Info Center
 
+All four centers retain their screen-relative width and top offset. Height limits
+use the owning screen's usable pixels without applying DPI twice. Info Center's
+existing list viewports share the available height; headers remain visible and
+wheel scrolling stays inside the original notification, mail, stock, calendar
+and weather sections. There is no extra whole-panel scrollbar.
+
+Email and notification lists snap one card per wheel step, using the same
+card-centering calculations as the calendar. Forward and reverse scrolling use
+the same valid positions, including at the top/bottom boundaries. When space
+allows, those viewports reserve at least one complete card instead of cutting
+off its subject, timestamp or notification actions.
+
 - Notification center with history and clear-all
 - Email unread count (fetched via OAuth2 IMAP)
 - Stock price ticker (configurable symbols, auto-refresh)
@@ -340,6 +352,12 @@ calendar_events = {
 ```
 
 ### Dynamic Wallpaper
+
+By default, the scheduled image fills each screen independently while preserving
+its aspect ratio (cropping excess edges rather than distorting the image).
+`module.dynamic_wallpaper.stretch = true` explicitly opts into a panorama across
+the combined desktop. Wallpaper fitting and center sizing use the geometry
+reported by X11; RandR `scale_from` is not an additional wallpaper/UI scale.
 
 Time-scheduled wallpaper rotation with 25+ time slots across 24 hours.
 Wallpapers stored in `theme/wallpapers/`. The `suspend-hook.py` utility

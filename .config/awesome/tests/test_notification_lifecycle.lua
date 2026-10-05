@@ -126,27 +126,29 @@ assert(not source:match('names%[c%.name%]'),
 assert(view_source:match('function manager%.clear_all%('),
     'notification view manager cannot reset all views')
 assert(view_source:match(
-    'local function show_empty_state%(%)%s+view%.remove_notifbox_empty = true%s+view%.notifbox_layout:reset%(%s*%)'),
+        'local function show_empty_state%(%)%s+view%.remove_notifbox_empty = true%s+view%.notifbox_layout:reset%(%s*%)'),
     'empty placeholder is counted before its state flag is updated')
 
 local elements = assert(io.open(root .. 'widget/notif-center/build-notifbox/notifbox-ui-elements.lua', 'r'))
 local elements_source = elements:read('*a')
 elements:close()
 assert(elements_source:match('local TITLE_MAX_HEIGHT%s*=%s*dpi%(24%)') and
-        elements_source:match('local MESSAGE_MAX_HEIGHT%s*=%s*dpi%(40%)') and
-        elements_source:match("wrap%s*=%s*'word_char'") and
-        elements_source:match("ellipsize%s*=%s*'end'") and
-        elements_source:match("strategy%s*=%s*'max'") and
-        elements_source:match('height%s*=%s*max_height'),
+    elements_source:match('local MESSAGE_MAX_HEIGHT%s*=%s*dpi%(40%)') and
+    elements_source:match("wrap%s*=%s*'word_char'") and
+    elements_source:match("ellipsize%s*=%s*'end'") and
+    elements_source:match("strategy%s*=%s*'max'") and
+    elements_source:match('height%s*=%s*max_height'),
     'notification center text can grow without a bounded ellipsized height')
 
 local center = assert(io.open(root .. 'widget/notif-center/init.lua', 'r'))
 local center_source = center:read('*a')
 center:close()
 assert(center_source:match('local MAX_HEIGHT%s*=%s*dpi%(155%)') and
-        center_source:match('visible_height%s*=%s*math%.min%(content_height, MAX_HEIGHT%)') and
-        center_source:match('max_scroll%s*=%s*math%.max%(0, content_height %- visible_height%)') and
-        not center_source:match('MAX_NOTIFS_VISIBLE'),
+    center_source:match('local viewport_height%s*=%s*MAX_HEIGHT') and
+    center_source:match('visible_height%s*=%s*math%.min%(content_height, viewport_height%)') and
+    center_source:match('math%.max%(MAX_HEIGHT, minimum_viewport_height%)') and
+    center_source:match('card_snap%.build%(row_heights, spacing, viewport_height%)') and
+    not center_source:match('MAX_NOTIFS_VISIBLE'),
     'notification viewport still grows with the first notification cards')
 
 local keys = assert(io.open(root .. 'configuration/keys/global.lua', 'r'))
@@ -159,11 +161,11 @@ assert(key_source:match("awesome%.emit_signal%('module::notifications:dismiss_po
 assert(source:match("awesome%.connect_signal%('module::notifications:dismiss_popup'"),
     'notification controller does not handle scoped popup dismissal')
 assert(source:match('for index = #popup_order, 1, %-1 do') and
-        source:match('local notification = popup_order%[index%]') and
-        source:match('notification:destroy%(cst%.notification_closed_reason%.silent%)'),
+    source:match('local notification = popup_order%[index%]') and
+    source:match('notification:destroy%(cst%.notification_closed_reason%.silent%)'),
     'popup dismissal does not destroy every visible popup')
 assert(key_source:match(
-    "if focused%.info_center and focused%.info_center%.visible then%s+awesome%.emit_signal%('widget::notif%-center:clear_all'%)"),
+        "if focused%.info_center and focused%.info_center%.visible then%s+awesome%.emit_signal%('widget::notif%-center:clear_all'%)"),
     'clear shortcut no longer requires an open Info Center')
 
 local sound = assert(io.open(root .. 'widget/dont-disturb/init.lua', 'r'))

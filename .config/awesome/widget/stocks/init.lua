@@ -21,6 +21,7 @@ local update_interval = stocks_config.update_interval or 300
 local STOCK_HEIGHT = dpi(60)
 local MAX_STOCKS_VISIBLE = 2
 local MAX_HEIGHT = STOCK_HEIGHT * MAX_STOCKS_VISIBLE + dpi(5) -- Exact height for 2 stocks + spacing
+local viewport_height = MAX_HEIGHT
 local SCROLL_STEP = dpi(40)
 
 -- Create icon directory if needed
@@ -214,11 +215,11 @@ local function update_scrollbar()
     content_height = child_count * STOCK_HEIGHT + (child_count - 1) * dpi(5)
 
     -- Dynamic height: use content height up to MAX_HEIGHT
-    visible_height = math.min(content_height, MAX_HEIGHT)
+    visible_height = math.max(0, math.min(content_height, viewport_height))
     scroll_clip.height = visible_height
     scrollbar_track.forced_height = visible_height
 
-    max_scroll = math.max(0, content_height - MAX_HEIGHT)
+    max_scroll = math.max(0, content_height - viewport_height)
     scroll_offset = math.max(0, math.min(scroll_offset, max_scroll))
 
     if max_scroll > 0 then
@@ -490,6 +491,15 @@ local stocksbox = wibox.widget {
     end,
     widget = wibox.container.background
 }
+
+function stocksbox:get_viewport_height() return visible_height end
+
+function stocksbox:set_viewport_height(height)
+    local value = math.min(MAX_HEIGHT, math.max(0, height))
+    if value == viewport_height then return end
+    viewport_height = value
+    update_scrollbar()
+end
 
 awesome.connect_signal(
     'widget::update_stocks',

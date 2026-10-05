@@ -21,6 +21,7 @@ local EVENT_HEIGHT = dpi(68)
 local SUB_EVENT_HEIGHT = dpi(54)
 local EVENT_SPACING = dpi(5)
 local MAX_HEIGHT = EVENT_HEIGHT * 2 + EVENT_SPACING * 2
+local viewport_height = MAX_HEIGHT
 local EVENT_STRIDE = EVENT_HEIGHT + EVENT_SPACING
 local EVENT_TITLE_HEIGHT = dpi(28)
 local EVENT_DETAILS_HEIGHT = dpi(12)
@@ -242,7 +243,7 @@ end
 local function event_time_label(event)
     local day_label = event_day_label(event)
     local time_label = event.is_all_day and 'All Day' or
-    ((event.start_label or '--:--') .. ' - ' .. (event.end_label or '--:--'))
+        ((event.start_label or '--:--') .. ' - ' .. (event.end_label or '--:--'))
     local details = day_label .. ' | ' .. time_label
     if is_missed_today(event) then
         details = details .. ' | Missed'
@@ -376,7 +377,7 @@ local function event_group_key(event)
         return 'allday|' .. (start_text ~= '' and start_text or event.start_label or event.subject or '')
     end
     return 'timed|' ..
-    (start_text ~= '' and start_text or ((event_date_text(event) or '') .. '|' .. (event.start_label or '')))
+        (start_text ~= '' and start_text or ((event_date_text(event) or '') .. '|' .. (event.start_label or '')))
 end
 
 local function group_visible_events(visible, limit)
@@ -451,8 +452,8 @@ local function update_scrollbar()
         row_heights[i] = child.forced_height or EVENT_HEIGHT
     end
 
-    snap_offsets, max_scroll, content_height = calendar_snap.build(row_heights, EVENT_SPACING, MAX_HEIGHT)
-    visible_height = math.min(content_height, MAX_HEIGHT)
+    snap_offsets, max_scroll, content_height = calendar_snap.build(row_heights, EVENT_SPACING, viewport_height)
+    visible_height = math.min(content_height, viewport_height)
     scroll_clip.height = visible_height
     scrollbar_track.forced_height = visible_height
     scroll_offset = math.max(0, math.min(scroll_offset, max_scroll))
@@ -806,5 +807,14 @@ local calendar_report = wibox.widget {
     end,
     widget = wibox.container.background
 }
+
+function calendar_report:get_viewport_height() return visible_height end
+
+function calendar_report:set_viewport_height(height)
+    local value = math.min(MAX_HEIGHT, math.max(0, height))
+    if value == viewport_height then return end
+    viewport_height = value
+    update_scrollbar()
+end
 
 return calendar_report

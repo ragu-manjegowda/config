@@ -13,6 +13,7 @@ end
 local function widget(args)
     local value = args or {}
     if value.visible == nil then value.visible = false end
+    if value.height == nil then value.height = 1 end
     function value:buttons(buttons) self.clicks = buttons end
 
     function value:emit_signal(name)
@@ -40,6 +41,7 @@ local wibox = setmetatable({
     container = { margin = {}, background = {} },
 }, { __call = function(_, args) return widget(args) end })
 package.preload.wibox = function() return wibox end
+package.preload['wibox.widget.base'] = function() return {} end
 
 local focused
 package.preload.awful = function()
@@ -58,7 +60,7 @@ package.preload.gears = function() return { shape = {} } end
 package.preload.beautiful = function()
     return {
         font_bold = function() return 'mock-font' end,
-        xresources = { apply_dpi = function(value) return value end }
+        xresources = { apply_dpi = function(value) return value end, get_dpi = function() return 96 end }
     }
 end
 
@@ -76,6 +78,9 @@ for _, name in ipairs({
     'email', 'stocks', 'calendar-events', 'weather', 'playerctl',
 }) do
     package.preload['widget.' .. name] = function()
+        if name == 'email' or name == 'stocks' or name == 'calendar-events' or name == 'weather' then
+            return widget()
+        end
         return function() return widget() end
     end
 end
@@ -101,6 +106,10 @@ local function make_screen(x)
         geometry = { x = x, y = 0, width = 1200, height = 800 },
         top_panel = { visible = true, height = 45 }
     }
+    function s:connect_signal() end
+
+    function s:disconnect_signal() end
+
     focused = s
     for _, name in ipairs(names) do
         s[name] = constructors[name](s)

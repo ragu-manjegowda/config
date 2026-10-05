@@ -2,13 +2,14 @@ local wibox = require('wibox')
 local gears = require('gears')
 local awful = require('awful')
 local beautiful = require('beautiful')
+local card_snap = require('library.calendar-snap')
 local dpi = beautiful.xresources.apply_dpi
 
 -- Scroll state
-local SCROLL_STEP = dpi(60)
 local MAX_HEIGHT = dpi(155)
 
 local notif_center = function(s)
+    local viewport_height = MAX_HEIGHT
     local notif_manager = require('widget.notif-center.build-notifbox')
     local notif_core = notif_manager.new_view()
     s.clear_all = require('widget.notif-center.clear-all')()
@@ -55,7 +56,7 @@ local notif_center = function(s)
         screen = s,
         dpi = beautiful.xresources.get_dpi(s),
     }
-    local content_width = s.geometry.width / 6 - dpi(20)
+    local content_width = math.max(1, dpi(s.geometry.width / 6, s) - dpi(52))
     local screen_active = true
 
     local function is_screen_active()
@@ -75,6 +76,8 @@ local notif_center = function(s)
     local max_scroll = 0
     local content_height = 0
     local visible_height = 0
+    local snap_offsets = {}
+    local minimum_viewport_height = 0
 
     -- Scrollbar thumb widget
     local scrollbar_thumb = wibox.widget {
@@ -131,7 +134,8 @@ local notif_center = function(s)
         if not is_screen_active() or not s.notifbox_layout then return end
         local children = s.notifbox_layout.children
         local spacing = s.notifbox_layout.spacing or 0
-        content_height = 0
+        local row_heights = {}
+        minimum_viewport_height = 0
         for index, child in ipairs(children) do
             local _, child_height = wibox.widget.base.fit_widget(
                 s.notifbox_layout,
@@ -140,17 +144,15 @@ local notif_center = function(s)
                 content_width,
                 s.geometry.height
             )
-            if index > 1 then
-                content_height = content_height + spacing
-            end
-            content_height = content_height + child_height
+            row_heights[index] = child_height
+            minimum_viewport_height = math.max(minimum_viewport_height, child_height)
         end
-        visible_height = math.min(content_height, MAX_HEIGHT)
+        snap_offsets, max_scroll, content_height = card_snap.build(row_heights, spacing, viewport_height)
+        visible_height = math.min(content_height, viewport_height)
         scroll_clip.height = visible_height
         scrollbar_track.forced_height = visible_height
 
-        max_scroll = math.max(0, content_height - visible_height)
-        scroll_offset = math.max(0, math.min(scroll_offset, max_scroll))
+        scroll_offset = card_snap.nearest(scroll_offset, snap_offsets)
 
         if max_scroll > 0 then
             scrollbar_track.visible = true
@@ -172,11 +174,7 @@ local notif_center = function(s)
     -- Scroll function
     local function do_scroll(direction)
         local old_offset = scroll_offset
-        if direction == 'up' then
-            scroll_offset = math.max(0, scroll_offset - SCROLL_STEP)
-        elseif direction == 'down' then
-            scroll_offset = math.min(max_scroll, scroll_offset + SCROLL_STEP)
-        end
+        scroll_offset = card_snap.step(scroll_offset, snap_offsets, direction)
         if old_offset ~= scroll_offset then
             update_scrollbar()
         end
@@ -230,7 +228,7 @@ local notif_center = function(s)
     gears.timer.delayed_call(on_layout_changed)
 
     -- Main widget with separate header and scroll areas
-    return wibox.widget {
+    local report = wibox.widget {
         {
             {
                 -- Header row (not scrollable)
@@ -267,6 +265,25 @@ local notif_center = function(s)
         end,
         widget = wibox.container.background
     }
+    function report:get_viewport_height() return visible_height end
+
+    function report:get_minimum_viewport_height() return minimum_viewport_height end
+
+    function report:set_viewport_context(width, context)
+        local next_width = math.max(1, width - dpi(20))
+        if next_width == content_width and context.screen == fit_context.screen and context.dpi == fit_context.dpi then return end
+        content_width, fit_context = next_width, context
+        update_scrollbar()
+    end
+
+    function report:set_viewport_height(height)
+        local value = math.min(math.max(MAX_HEIGHT, minimum_viewport_height), math.max(0, height))
+        if value == viewport_height then return end
+        viewport_height = value
+        update_scrollbar()
+    end
+
+    return report
 end
 
 return notif_center

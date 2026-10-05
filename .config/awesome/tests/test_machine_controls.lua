@@ -47,6 +47,10 @@ package.loaded.awful = {
 }
 package.loaded['layout.center-backdrop'] = { show = function() end }
 package.loaded['layout.center-manager'] = { open = function() end, close = function() end }
+package.loaded['layout.center-geometry'] = {
+    width = function(s) return s.geometry.width / 6 end,
+    bind = function() end,
+}
 package.loaded['layout.systray-cursor'] = { apply = function() return true end }
 awesome = { emit_signal = function() end }
 screen = { connect_signal = function() end, count = function() return 1 end }

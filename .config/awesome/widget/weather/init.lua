@@ -54,6 +54,7 @@ local weather_providers = {
 local WEATHER_HEIGHT = dpi(75)
 local MAX_CITIES_VISIBLE = 2
 local MAX_HEIGHT = WEATHER_HEIGHT * MAX_CITIES_VISIBLE + dpi(5)
+local viewport_height = MAX_HEIGHT
 local SCROLL_STEP = dpi(40)
 
 -- Icon mapping
@@ -423,11 +424,11 @@ local function update_scrollbar()
     content_height = child_count * WEATHER_HEIGHT + (child_count - 1) * dpi(5)
 
     -- Dynamic height: use content height up to MAX_HEIGHT
-    visible_height = math.min(content_height, MAX_HEIGHT)
+    visible_height = math.max(0, math.min(content_height, viewport_height))
     scroll_clip.height = visible_height
     scrollbar_track.forced_height = visible_height
 
-    max_scroll = math.max(0, content_height - MAX_HEIGHT)
+    max_scroll = math.max(0, content_height - viewport_height)
     scroll_offset = math.max(0, math.min(scroll_offset, max_scroll))
 
     if max_scroll > 0 then
@@ -593,6 +594,15 @@ local weather_report = wibox.widget {
     end,
     widget = wibox.container.background
 }
+
+function weather_report:get_viewport_height() return visible_height end
+
+function weather_report:set_viewport_height(height)
+    local value = math.min(MAX_HEIGHT, math.max(0, height))
+    if value == viewport_height then return end
+    viewport_height = value
+    update_scrollbar()
+end
 
 -- Connect to existing signals for compatibility
 awesome.connect_signal(

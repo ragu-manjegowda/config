@@ -92,7 +92,7 @@ screen.connect_signal(
                     gears.wallpaper.set(beautiful.wallpaper)
                 elseif beautiful.wallpaper:sub(1, #'/') == '/' then
                     -- If beautiful.wallpaper is path/image
-                    gears.wallpaper.maximized(beautiful.wallpaper, s)
+                    require('module.dynamic-wallpaper').apply(s)
                 end
             else
                 beautiful.wallpaper(s)

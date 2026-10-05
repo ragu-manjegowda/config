@@ -271,9 +271,10 @@ if config.module and config.module.lockscreen then
         assert_type(lock.fingerprint_unlock, "boolean", "fingerprint_unlock is a boolean")
     end
     if lock.capture_intruder then
-        assert_test(lock.camera_device == "/dev/video90",
-            "intruder capture uses the compatibility camera",
-            "Expected /dev/video90, got " .. tostring(lock.camera_device))
+        local camera = config.machine == 'imac' and '/dev/video0' or '/dev/video90'
+        assert_test(lock.camera_device == camera,
+            "intruder capture uses the machine's configured camera",
+            "Expected " .. camera .. ", got " .. tostring(lock.camera_device))
     end
 
     if lock.military_clock ~= nil then
@@ -345,10 +346,10 @@ local battery_source = battery_file:read('*a')
 battery_file:close()
 assert_test(
     battery_source:match("'Battery: ' %.%. battery_summary %.%. consumer_summary") ~= nil and
-        battery_source:match('battery_tooltip:set_markup') ~= nil and
-        battery_source:match('font_family="Hack Nerd Font Mono"') ~= nil and
-        battery_source:match("field%('energy%-rate'%)") ~= nil and
-        battery_source:match('stdout:sub') == nil,
+    battery_source:match('battery_tooltip:set_markup') ~= nil and
+    battery_source:match('font_family="Hack Nerd Font Mono"') ~= nil and
+    battery_source:match("field%('energy%-rate'%)") ~= nil and
+    battery_source:match('stdout:sub') == nil,
     "battery tooltip is aligned, concise, and estimates discharge time when needed"
 )
 
@@ -360,13 +361,13 @@ local email_source = email_file:read('*a')
 email_file:close()
 assert_test(
     email_source:match('local EMAIL_HEIGHT%s*=%s*dpi%(88%)') ~= nil and
-        email_source:match('local MAX_HEIGHT%s*=%s*dpi%(155%)') ~= nil and
-        email_source:match('local MAX_SUBJECT_LINE_LENGTH%s*=%s*42') ~= nil and
-        email_source:match("require%('library%.email%-subject'%)") ~= nil and
-        email_source:match('email_subject%.split%(subject, MAX_SUBJECT_LINE_LENGTH%)') ~= nil and
-        email_source:match("visible%s*=%s*subject_line_two ~= ''") ~= nil and
-        email_source:match("ellipsize%s*=%s*'end'") == nil and
-        email_source:match('forced_height%s*=%s*dpi%(12%)') ~= nil,
+    email_source:match('local MAX_HEIGHT%s*=%s*dpi%(155%)') ~= nil and
+    email_source:match('local MAX_SUBJECT_LINE_LENGTH%s*=%s*42') ~= nil and
+    email_source:match("require%('library%.email%-subject'%)") ~= nil and
+    email_source:match('email_subject%.split%(subject, MAX_SUBJECT_LINE_LENGTH%)') ~= nil and
+    email_source:match("visible%s*=%s*subject_line_two ~= ''") ~= nil and
+    email_source:match("ellipsize%s*=%s*'end'") == nil and
+    email_source:match('forced_height%s*=%s*dpi%(12%)') ~= nil,
     "email cards cap subjects at two lines without overlapping timestamps"
 )
 
@@ -378,35 +379,36 @@ local calendar_source = calendar_file:read('*a')
 calendar_file:close()
 assert_test(
     calendar_source:match('local MAX_HEIGHT%s*=%s*EVENT_HEIGHT %* 2 %+ EVENT_SPACING %* 2') ~= nil and
-        calendar_source:match('local EVENT_STRIDE%s*=%s*EVENT_HEIGHT %+ EVENT_SPACING') ~= nil and
-        calendar_source:match('target_offset %- %(EVENT_HEIGHT / 2 %+ EVENT_SPACING%)') ~= nil and
-        calendar_source:match("require%('library%.calendar%-snap'%)") ~= nil and
-        calendar_source:match('calendar_snap%.build%(row_heights, EVENT_SPACING, MAX_HEIGHT%)') ~= nil and
-        calendar_source:match('calendar_snap%.step%(scroll_offset, snap_offsets, direction%)') ~= nil,
+    calendar_source:match('local EVENT_STRIDE%s*=%s*EVENT_HEIGHT %+ EVENT_SPACING') ~= nil and
+    calendar_source:match('target_offset %- %(EVENT_HEIGHT / 2 %+ EVENT_SPACING%)') ~= nil and
+    calendar_source:match("require%('library%.calendar%-snap'%)") ~= nil and
+    calendar_source:match('local viewport_height%s*=%s*MAX_HEIGHT') ~= nil and
+    calendar_source:match('calendar_snap%.build%(row_heights, EVENT_SPACING, viewport_height%)') ~= nil and
+    calendar_source:match('calendar_snap%.step%(scroll_offset, snap_offsets, direction%)') ~= nil,
     "calendar viewport centers cards with symmetric snap scrolling"
 )
 assert_test(
     calendar_source:match('local calendar_report%s*=%s*wibox%.widget') ~= nil and
-        calendar_source:match('local calendar_report.-margins%s*=%s*dpi%(10%).-' ..
-            'bg%s*=%s*beautiful%.groups_bg.-return calendar_report') ~= nil,
+    calendar_source:match('local calendar_report.-margins%s*=%s*dpi%(10%).-' ..
+        'bg%s*=%s*beautiful%.groups_bg.-return calendar_report') ~= nil,
     "calendar header and events share the grouped Info Center background"
 )
 assert_test(
     calendar_source:match('local EVENT_TITLE_HEIGHT%s*=%s*dpi%(28%)') ~= nil and
-        calendar_source:match('local EVENT_DETAILS_HEIGHT%s*=%s*dpi%(12%)') ~= nil and
-        calendar_source:match("wrap%s*=%s*'word_char'") ~= nil and
-        calendar_source:match("ellipsize%s*=%s*'end'") ~= nil and
-        calendar_source:match('forced_height%s*=%s*EVENT_TITLE_HEIGHT') ~= nil and
-        calendar_source:match('forced_height%s*=%s*EVENT_DETAILS_HEIGHT') ~= nil,
+    calendar_source:match('local EVENT_DETAILS_HEIGHT%s*=%s*dpi%(12%)') ~= nil and
+    calendar_source:match("wrap%s*=%s*'word_char'") ~= nil and
+    calendar_source:match("ellipsize%s*=%s*'end'") ~= nil and
+    calendar_source:match('forced_height%s*=%s*EVENT_TITLE_HEIGHT') ~= nil and
+    calendar_source:match('forced_height%s*=%s*EVENT_DETAILS_HEIGHT') ~= nil,
     "calendar cards cap subjects at two lines and preserve event time"
 )
 assert_test(
     calendar_source:match("awesome%.connect_signal%('info_center::visibility', function%(visible%)") ~= nil and
-        calendar_source:match('if visible then%s+refresh%(%)') ~= nil and
-        calendar_source:match('local refresh_button%s*=%s*wibox%.widget%s*{%s*{%s*{%s*refresh_icon') ~= nil and
-        calendar_source:match('bg%s*=%s*beautiful%.accent') ~= nil and
-        calendar_source:match('shape%s*=%s*gears%.shape%.circle') ~= nil and
-        calendar_source:match('widget%s*=%s*wibox%.container%.background') ~= nil,
+    calendar_source:match('if visible then%s+refresh%(%)') ~= nil and
+    calendar_source:match('local refresh_button%s*=%s*wibox%.widget%s*{%s*{%s*{%s*refresh_icon') ~= nil and
+    calendar_source:match('bg%s*=%s*beautiful%.accent') ~= nil and
+    calendar_source:match('shape%s*=%s*gears%.shape%.circle') ~= nil and
+    calendar_source:match('widget%s*=%s*wibox%.container%.background') ~= nil,
     "calendar refreshes when Info Center opens and uses the accent refresh button"
 )
 

@@ -1,3 +1,4 @@
+-- Shared card-centering math for calendar, email and notification lists.
 local snap = {}
 
 function snap.build(row_heights, spacing, viewport_height)
@@ -46,5 +47,14 @@ function snap.step(current_offset, offsets, direction)
     return current_offset
 end
 
+function snap.nearest(current_offset, offsets)
+    local nearest = offsets[1] or 0
+    for _, offset in ipairs(offsets) do
+        if math.abs(offset - current_offset) < math.abs(nearest - current_offset) then
+            nearest = offset
+        end
+    end
+    return nearest
+end
 
 return snap

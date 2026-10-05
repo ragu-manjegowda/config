@@ -6,6 +6,7 @@ local dpi = beautiful.xresources.apply_dpi
 local suspension = require('library.notification-suspension')
 local center_backdrop = require('layout.center-backdrop')
 local center_manager = require('layout.center-manager')
+local center_geometry = require('layout.center-geometry')
 
 local open_centers = setmetatable({}, { __mode = 'k' })
 
@@ -15,20 +16,22 @@ end
 
 local info_center = function(s)
     -- Set the info center geometry
-    local panel_width = s.geometry.width / 6
+    local panel_width = center_geometry.width(s)
+    local sections = {
+        require('widget.notif-center')(s),
+        require('widget.email'),
+        require('widget.stocks'),
+        require('widget.calendar-events'),
+        (require('widget.weather')),
+    }
 
     local panel = awful.popup {
         widget = {
             {
                 {
                     layout = wibox.layout.fixed.vertical,
-                    forced_width = dpi(panel_width),
                     spacing = dpi(10),
-                    require('widget.notif-center')(s),
-                    require('widget.email'),
-                    require('widget.stocks'),
-                    require('widget.calendar-events'),
-                    (require('widget.weather'))
+                    sections[1], sections[2], sections[3], sections[4], sections[5]
                     -- require('widget.email')
                 },
                 margins = dpi(16),
@@ -45,9 +48,8 @@ local info_center = function(s)
         type = 'dock',
         visible = false,
         ontop = true,
-        width = dpi(panel_width),
-        maximum_width = dpi(panel_width),
-        maximum_height = dpi(s.geometry.height - 38),
+        width = panel_width,
+        maximum_width = panel_width,
         bg = beautiful.transparent,
         fg = beautiful.fg_normal,
         shape = function(cr, w, h)
@@ -55,17 +57,28 @@ local info_center = function(s)
         end,
     }
 
-    awful.placement.top_right(
-        panel,
-        {
-            honor_workarea = true,
-            parent = s,
-            margins = {
-                top = (s.geometry.height / 22) + 10,
-                right = dpi(10)
-            }
-        }
-    )
+    center_geometry.bind(panel, s, 'top_right')
+
+    local sizing = false
+    local function size_sections()
+        if sizing then return end
+        sizing = true
+        center_geometry.fit_sections(panel, s, sections)
+        sizing = false
+    end
+    panel:connect_signal('property::maximum_height', size_sections)
+    panel:connect_signal('property::width', size_sections)
+    local queued = false
+    for _, section in ipairs(sections) do
+        section:connect_signal('widget::layout_changed', function()
+            if sizing or queued or not panel.visible then return end
+            queued = true
+            gears.timer.delayed_call(function()
+                queued = false
+                if panel.visible then size_sections() end
+            end)
+        end)
+    end
 
     panel.opened = false
 
@@ -86,6 +99,7 @@ local info_center = function(s)
         open_centers[panel] = true
         update_suspension()
         center_backdrop.show(s.backdrop_info_center, s)
+        size_sections()
         panel.visible = true
 
         awesome.emit_signal('info_center::visibility', true)

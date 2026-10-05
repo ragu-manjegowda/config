@@ -3,7 +3,8 @@ local wibox           = require('wibox')
 local gears           = require('gears')
 local beautiful       = require('beautiful')
 local center_backdrop = require('layout.center-backdrop')
-local center_manager = require('layout.center-manager')
+local center_manager  = require('layout.center-manager')
+local center_geometry = require('layout.center-geometry')
 local dpi             = beautiful.xresources.apply_dpi
 
 --- Date
@@ -57,10 +58,10 @@ local time            = {
 
 local calendar_center = function(s)
     -- Set the calendar center geometry
-    local panel_width = s.geometry.width / 6
+    local panel_width = center_geometry.width(s)
 
     local panel       = awful.popup {
-        widget         = {
+        widget        = {
             {
                 {
                     {
@@ -114,30 +115,20 @@ local calendar_center = function(s)
             end,
             widget = wibox.container.background
         },
-        screen         = s,
-        type           = 'dock',
-        visible        = false,
-        ontop          = true,
-        width          = dpi(panel_width),
-        maximum_width  = dpi(panel_width),
-        maximum_height = dpi(s.geometry.height - 38),
-        bg             = beautiful.transparent,
-        fg             = beautiful.fg_normal,
-        shape          = function(cr, w, h)
+        screen        = s,
+        type          = 'dock',
+        visible       = false,
+        ontop         = true,
+        width         = panel_width,
+        maximum_width = panel_width,
+        bg            = beautiful.transparent,
+        fg            = beautiful.fg_normal,
+        shape         = function(cr, w, h)
             gears.shape.rounded_rect(cr, w, h, beautiful.groups_radius)
         end,
     }
 
-    awful.placement.top(
-        panel,
-        {
-            honor_workarea = true,
-            parent         = s,
-            margins        = {
-                top = (s.geometry.height / 22) + 10
-            }
-        }
-    )
+    center_geometry.bind(panel, s, 'top')
 
     panel.opened = false
 

@@ -5,15 +5,15 @@ local utils_dir = config_dir .. 'utilities/'
 return {
     -- Shared UI uses this profile plus hardware checks. Set 'imac' or 'desktop'
     -- on batteryless machines instead of editing panels and widget imports.
-    machine = 'laptop',
+    machine = 'imac',
     display = {
         -- DPI setting for all displays
         dpi = 144,
 
-        -- Primary display (laptop)
+        -- Primary display (iMac)
         primary = {
-            name = 'eDP-1',
-            mode = '2880x1800',
+            name = 'DP-1',
+            mode = '2560x1440',
             position = '0x0',
             -- Additional settings
             rate = nil, -- Optional: refresh rate (e.g., '60')
@@ -21,7 +21,7 @@ return {
 
         -- External display
         external = {
-            name = 'DP-1-1',
+            name = 'unused-external',
             mode = '3440x1440',
             position = '2880x0', -- Position relative to primary
             -- Keep the ultrawide's native aspect ratio and pointer coordinates.
@@ -41,7 +41,7 @@ return {
     widget = {
         audio           = {
             -- Stable ALSA card names; numeric PipeWire IDs change after hotplug.
-            primary_device_pattern = 'alsa_card.pci-0000_00_1f.3-platform-sof_sdw',
+            primary_device_pattern = 'alsa_card.pci-0000_00_1b.0',
             external_device_pattern = 'alsa_card.usb-Dell_DELL_P3424WEB_USB_*-00'
         },
         email           = {
@@ -201,11 +201,11 @@ return {
             -- Capture intruder using webcam
             capture_intruder = true,
             -- Allow fingerprint unlock while the locked display is on
-            fingerprint_unlock = true,
+            fingerprint_unlock = false,
             -- Camera path (Some systemts will have more than one built-in
             -- camera, pick the right one with this command
             -- $ v4l2-ctl --list-devices
-            camera_device = '/dev/video90',
+            camera_device = '/dev/video0',
             -- Prefer the monitor's color camera while the external output is active.
             -- Resolve this stable USB path/glob per attempt; fall back to camera_device.
             external_camera_device = '/dev/v4l/by-id/usb-*_DELL_Display_4MP_Webcam_*-video-index0',

@@ -5,6 +5,7 @@ local naughty = require('naughty')
 local beautiful = require('beautiful')
 local email_subject = require('library.email-subject')
 local email_refresh = require('library.email-refresh')
+local card_snap = require('library.calendar-snap')
 local dpi = beautiful.xresources.apply_dpi
 local config_dir = gears.filesystem.get_configuration_dir()
 local widget_icon_dir = config_dir .. 'widget/email/icons/'
@@ -21,7 +22,7 @@ local startup_show = true
 local EMAIL_HEIGHT = dpi(88)
 local EMAIL_SPACING = dpi(5)
 local MAX_HEIGHT = dpi(155)
-local SCROLL_PADDING = dpi(30)
+local viewport_height = MAX_HEIGHT
 local MAX_SUBJECT_LINE_LENGTH = 42
 
 local email_header = wibox.widget {
@@ -178,7 +179,10 @@ local scroll_offset = 0
 local max_scroll = 0
 local content_height = 0
 local visible_height = MAX_HEIGHT
-local current_email_index = 1
+local snap_offsets = {}
+local minimum_viewport_height = 0
+local content_width = dpi(428)
+local fit_context = { dpi = beautiful.xresources.get_dpi() }
 
 -- Scrollbar widgets
 local scrollbar_thumb = wibox.widget {
@@ -230,23 +234,22 @@ local scroll_clip = wibox.widget {
 }
 
 -- Function to update scrollbar and height
-local function update_scrollbar(center_current)
-    local child_count = #email_list_layout.children
-    content_height = child_count * EMAIL_HEIGHT + (child_count - 1) * EMAIL_SPACING
+local function update_scrollbar(reset)
+    local row_heights = {}
+    minimum_viewport_height = 0
+    for index, child in ipairs(email_list_layout.children) do
+        local _, height = wibox.widget.base.fit_widget(email_list_layout, fit_context, child, content_width, 100000)
+        row_heights[index] = height
+        minimum_viewport_height = math.max(minimum_viewport_height, height)
+    end
+    snap_offsets, max_scroll, content_height = card_snap.build(row_heights, EMAIL_SPACING, viewport_height)
 
     -- Dynamic height: use content height up to MAX_HEIGHT
-    visible_height = math.min(content_height, MAX_HEIGHT)
+    visible_height = math.max(0, math.min(content_height, viewport_height))
     scroll_clip.height = visible_height
     scrollbar_track.forced_height = visible_height
 
-    -- Add extra scroll space to ensure last item is fully visible
-    max_scroll = math.max(0, content_height - MAX_HEIGHT + SCROLL_PADDING)
-    current_email_index = math.max(1, math.min(current_email_index, child_count))
-    if center_current then
-        local stride = EMAIL_HEIGHT + EMAIL_SPACING
-        scroll_offset = (current_email_index - 1) * stride - EMAIL_HEIGHT / 2
-    end
-    scroll_offset = math.max(0, math.min(scroll_offset, max_scroll))
+    scroll_offset = reset and 0 or card_snap.nearest(scroll_offset, snap_offsets)
 
     if max_scroll > 0 then
         scrollbar_track.visible = true
@@ -267,14 +270,10 @@ end
 
 -- Scroll function
 local function do_scroll(direction)
-    local old_index = current_email_index
-    if direction == 'up' then
-        current_email_index = math.max(1, current_email_index - 1)
-    elseif direction == 'down' then
-        current_email_index = math.min(#email_list_layout.children, current_email_index + 1)
-    end
-    if old_index ~= current_email_index then
-        update_scrollbar(true)
+    local next_offset = card_snap.step(scroll_offset, snap_offsets, direction)
+    if next_offset ~= scroll_offset then
+        scroll_offset = next_offset
+        update_scrollbar()
     end
 end
 
@@ -337,6 +336,24 @@ local email_report = wibox.widget {
     end,
     widget = wibox.container.background
 }
+
+function email_report:get_viewport_height() return visible_height end
+
+function email_report:get_minimum_viewport_height() return minimum_viewport_height end
+
+function email_report:set_viewport_context(width, context)
+    local next_width = math.max(1, width - dpi(20))
+    if next_width == content_width and context.screen == fit_context.screen and context.dpi == fit_context.dpi then return end
+    content_width, fit_context = next_width, context
+    update_scrollbar()
+end
+
+function email_report:set_viewport_height(height)
+    local value = math.min(MAX_HEIGHT, math.max(0, height))
+    if value == viewport_height then return end
+    viewport_height = value
+    update_scrollbar()
+end
 
 local notify_all_unread_email = function(email_data)
     local unread_counter = email_data:match('Unread Count: (.-)From:'):sub(1, -2)
@@ -425,7 +442,6 @@ local set_no_connection_msg = function()
         os.date('%d-%m-%Y %H:%M:%S')
     ))
     update_email_count(0)
-    current_email_index = 1
     update_scrollbar(true)
 end
 
@@ -437,7 +453,6 @@ local set_invalid_credentials_msg = function()
         os.date('%d-%m-%Y %H:%M:%S')
     ))
     update_email_count(0)
-    current_email_index = 1
     update_scrollbar(true)
 end
 
@@ -445,7 +460,6 @@ local set_empty_inbox_msg = function()
     email_list_layout:reset()
     email_list_layout:add(empty_email_widget)
     update_email_count(0)
-    current_email_index = 1
     update_scrollbar(true)
 end
 
@@ -479,7 +493,6 @@ local set_latest_email_data = function(email_data)
         update_email_count(0)
     end
 
-    current_email_index = 1
     update_scrollbar(true)
 end
 

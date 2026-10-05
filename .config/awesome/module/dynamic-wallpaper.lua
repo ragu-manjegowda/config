@@ -80,7 +80,7 @@ local wall_config = {
         ['22:00:00'] = 'pm_10.jpg'
     },
 
-    -- Don't stretch wallpaper on multihead setups if true
+    -- Explicit opt-in to one panorama across the combined desktop.
     stretch = config.module.dynamic_wallpaper.stretch or false
 }
 
@@ -295,15 +295,15 @@ else --Schedule is list of keywords
 end
 
 -- Set wallpaper
-local set_wallpaper = function(path)
+local set_wallpaper = function(path, target)
     if wall_config.stretch then
-        for s in screen do
-            -- Update wallpaper based on the data in the array
-            gears.wallpaper.maximized(path, s)
-        end
+        gears.wallpaper.maximized(path, nil, false)
+    elseif target then
+        gears.wallpaper.maximized(path, target, false)
     else
-        -- Update wallpaper based on the data in the array
-        gears.wallpaper.maximized(path)
+        for s in screen do
+            gears.wallpaper.maximized(path, s, false)
+        end
     end
 end
 
@@ -416,3 +416,12 @@ awesome.connect_signal(
         wall_updater:again()
     end
 )
+
+local function apply(s)
+    if type(beautiful.wallpaper) == 'string' and beautiful.wallpaper:sub(1, 1) == '/' then
+        set_wallpaper(beautiful.wallpaper, s)
+    end
+end
+screen.connect_signal('property::geometry', apply)
+
+return { apply = apply }

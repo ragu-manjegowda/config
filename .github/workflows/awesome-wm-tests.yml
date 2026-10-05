@@ -149,11 +149,17 @@ jobs:
         with:
           name: lua-syntax-logs
           path: test-logs/
-          retention-days: 30
+          retention-days: 14
           if-no-files-found: ignore
 
   lua-unit-tests:
-    name: Lua Unit Tests
+    name: Lua Unit Tests (${{ matrix.config }})
+    strategy:
+      fail-fast: false
+      matrix:
+        config: [config.lua, config_imac.lua]
+    env:
+      AWESOME_TEST_PROFILE: ${{ matrix.config == 'config_imac.lua' && 'imac' || 'laptop' }}
     runs-on: ubuntu-latest
     needs: lua-syntax-check
     container:
@@ -166,6 +172,14 @@ jobs:
         uses: actions/checkout@v5
         with:
           submodules: recursive
+
+      - name: Select machine configuration
+        env:
+          CONFIG_FILE: ${{ matrix.config }}
+        run: |
+          if [ "$CONFIG_FILE" != config.lua ]; then
+            cp "$AWESOME_CONFIG_DIR/configuration/$CONFIG_FILE" "$AWESOME_CONFIG_DIR/configuration/config.lua"
+          fi
 
       - name: Run general Lua unit tests
         run: |
@@ -187,7 +201,13 @@ jobs:
           HOME="$GITHUB_WORKSPACE" lua "${{ env.AWESOME_CONFIG_DIR }}/tests/test_notification_suspension.lua"
 
   awesome-config-load:
-    name: AwesomeWM Configuration Load Test (Lua)
+    name: AwesomeWM Configuration Load Test (Lua, ${{ matrix.config }})
+    strategy:
+      fail-fast: false
+      matrix:
+        config: [config.lua, config_imac.lua]
+    env:
+      AWESOME_TEST_PROFILE: ${{ matrix.config == 'config_imac.lua' && 'imac' || 'laptop' }}
     runs-on: ubuntu-latest
     needs: [lua-unit-tests, module-imports-test, integration-tests, security-scan]
     container:
@@ -262,6 +282,14 @@ jobs:
         run: |
           sudo -u builder bash -lc 'cd /tmp/awesome-git && MAKEFLAGS="-j$(nproc)" makepkg -si --noconfirm'
 
+      - name: Select machine configuration
+        env:
+          CONFIG_FILE: ${{ matrix.config }}
+        run: |
+          if [ "$CONFIG_FILE" != config.lua ]; then
+            cp "$AWESOME_CONFIG_DIR/configuration/$CONFIG_FILE" "$AWESOME_CONFIG_DIR/configuration/config.lua"
+          fi
+
       - name: Test recorder storage with Lua
         run: |
           cd "$GITHUB_WORKSPACE"
@@ -294,13 +322,19 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: awmtt-logs
+          name: awmtt-logs-${{ matrix.config }}
           path: test-logs/
-          retention-days: 30
+          retention-days: 14
           if-no-files-found: ignore
 
   awesome-luajit-config-load:
-    name: AwesomeWM Configuration Load Test (LuaJIT)
+    name: AwesomeWM Configuration Load Test (LuaJIT, ${{ matrix.config }})
+    strategy:
+      fail-fast: false
+      matrix:
+        config: [config.lua, config_imac.lua]
+    env:
+      AWESOME_TEST_PROFILE: ${{ matrix.config == 'config_imac.lua' && 'imac' || 'laptop' }}
     runs-on: ubuntu-latest
     needs: [lua-unit-tests, module-imports-test, integration-tests, security-scan]
     outputs:
@@ -413,6 +447,14 @@ jobs:
             echo "used=false" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Select machine configuration
+        env:
+          CONFIG_FILE: ${{ matrix.config }}
+        run: |
+          if [ "$CONFIG_FILE" != config.lua ]; then
+            cp "$AWESOME_CONFIG_DIR/configuration/$CONFIG_FILE" "$AWESOME_CONFIG_DIR/configuration/config.lua"
+          fi
+
       - name: Test recorder storage with LuaJIT
         run: |
           cd "$GITHUB_WORKSPACE"
@@ -445,9 +487,9 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: awmtt-logs-luajit
+          name: awmtt-logs-luajit-${{ matrix.config }}
           path: test-logs/
-          retention-days: 30
+          retention-days: 14
           if-no-files-found: ignore
 
   workaround:
@@ -618,11 +660,17 @@ jobs:
         with:
           name: bash-validation-logs
           path: test-logs/
-          retention-days: 30
+          retention-days: 14
           if-no-files-found: ignore
 
   display-config-test:
-    name: Display Configuration Tests
+    name: Display Configuration Tests (${{ matrix.config }})
+    strategy:
+      fail-fast: false
+      matrix:
+        config: [config.lua, config_imac.lua]
+    env:
+      AWESOME_TEST_PROFILE: ${{ matrix.config == 'config_imac.lua' && 'imac' || 'laptop' }}
     runs-on: ubuntu-latest
     needs: lua-syntax-check
     container:
@@ -642,6 +690,14 @@ jobs:
         run: |
           pacman -Syu --noconfirm
           pacman -S --noconfirm lua util-linux coreutils grep
+
+      - name: Select machine configuration
+        env:
+          CONFIG_FILE: ${{ matrix.config }}
+        run: |
+          if [ "$CONFIG_FILE" != config.lua ]; then
+            cp "$AWESOME_CONFIG_DIR/configuration/$CONFIG_FILE" "$AWESOME_CONFIG_DIR/configuration/config.lua"
+          fi
 
       - name: Test display config can be read
         run: |
@@ -718,13 +774,19 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: display-config-logs
+          name: display-config-logs-${{ matrix.config }}
           path: test-logs/
-          retention-days: 30
+          retention-days: 14
           if-no-files-found: ignore
 
   module-imports-test:
-    name: Module Import Tests
+    name: Module Import Tests (${{ matrix.config }})
+    strategy:
+      fail-fast: false
+      matrix:
+        config: [config.lua, config_imac.lua]
+    env:
+      AWESOME_TEST_PROFILE: ${{ matrix.config == 'config_imac.lua' && 'imac' || 'laptop' }}
     runs-on: ubuntu-latest
     needs: lua-syntax-check
     container:
@@ -744,6 +806,14 @@ jobs:
         run: |
           pacman -Syu --noconfirm
           pacman -S --noconfirm lua lua-lgi
+
+      - name: Select machine configuration
+        env:
+          CONFIG_FILE: ${{ matrix.config }}
+        run: |
+          if [ "$CONFIG_FILE" != config.lua ]; then
+            cp "$AWESOME_CONFIG_DIR/configuration/$CONFIG_FILE" "$AWESOME_CONFIG_DIR/configuration/config.lua"
+          fi
 
       - name: Test module imports
         run: |
@@ -801,13 +871,19 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: module-imports-logs
+          name: module-imports-logs-${{ matrix.config }}
           path: test-logs/
-          retention-days: 30
+          retention-days: 14
           if-no-files-found: ignore
 
   integration-tests:
-    name: Integration Tests
+    name: Integration Tests (${{ matrix.config }})
+    strategy:
+      fail-fast: false
+      matrix:
+        config: [config.lua, config_imac.lua]
+    env:
+      AWESOME_TEST_PROFILE: ${{ matrix.config == 'config_imac.lua' && 'imac' || 'laptop' }}
     runs-on: ubuntu-latest
     needs: [bash-scripts-validation, display-config-test]
     container:
@@ -827,6 +903,14 @@ jobs:
         run: |
           pacman -Syu --noconfirm
           pacman -S --noconfirm lua luajit lua51-lgi python zsh
+
+      - name: Select machine configuration
+        env:
+          CONFIG_FILE: ${{ matrix.config }}
+        run: |
+          if [ "$CONFIG_FILE" != config.lua ]; then
+            cp "$AWESOME_CONFIG_DIR/configuration/$CONFIG_FILE" "$AWESOME_CONFIG_DIR/configuration/config.lua"
+          fi
 
       - name: Test lid brightness recovery
         run: |
@@ -968,9 +1052,9 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: integration-logs
+          name: integration-logs-${{ matrix.config }}
           path: test-logs/
-          retention-days: 30
+          retention-days: 14
           if-no-files-found: ignore
 
   security-scan:
@@ -1036,7 +1120,7 @@ jobs:
         with:
           name: security-scan-logs
           path: test-logs/
-          retention-days: 30
+          retention-days: 14
           if-no-files-found: ignore
 
   test-summary:
