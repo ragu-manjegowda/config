@@ -73,6 +73,55 @@ graphical login, or preserve the existing cookie under the new local hostname
 before switching names. Never print or regenerate the cookie just to rename a
 running session. A new graphical login generates credentials for the new name.
 
+## Desktop/iMac configuration pulls
+
+Git has no native `pre-pull` hook. The `cpulla` shell function uses
+`~/.config/awesome/utilities/desktop/config-pull`, preserving
+`config pull --rebase --autostash` while managing desktop variants:
+
+* Laptop profiles pull normally.
+* `machine = 'imac'` uses tracked `configuration/config_imac.lua`;
+  `machine = 'desktop'` requires a tracked `configuration/config_desktop.lua`.
+* Before a desktop pull, the helper saves a private recovery copy, clears only
+  `config.lua`'s local index flags, and restores its tracked `HEAD` contents.
+* After a successful pull it copies the updated variant over `config.lua` and
+  marks it assume-unchanged. Other changes follow Git's normal autostash behavior.
+* Failed pulls restore the previous local configuration and flags. Conflicts in
+  either managed configuration are left intact for Git resolution, with the
+  original local configuration retained privately under XDG_STATE_HOME.
+
+Edit the variant rather than the generated `config.lua`. Staged `config.lua`
+changes are rejected instead of being discarded. If branch tracking is absent,
+a no-argument pull explicitly uses `origin` and the current branch. Use `cpulla
+origin master` when a different upstream is intended. Ordinary `config pull`
+bypasses this wrapper.
+
+When installing the wrapper before its upstream commit exists, put its temporary
+copy in `.config.git/local-tools/config-pull`. `cpulla` falls back to that copy
+until the tracked utility arrives, avoiding an untracked-file collision on the
+first upstream pull.
+If neither copy is executable, `cpulla` falls back to the original
+`config pull --rebase --autostash` command with all arguments preserved. Desktop
+variant cleanup/reapplication is available only when a helper is present; a
+helper failure is returned directly instead of retrying an unprotected pull.
+
+Desktop bootstrap step 6 applies this configuration only when the active profile
+is `imac` or `desktop`, or `AWESOME_MACHINE_PROFILE` explicitly selects it. After
+resolving a managed-config conflict, reapply with `config-pull --apply-profile imac`.
+This profile selection does not replace the hardware/package exclusions needed
+when adapting the full laptop bootstrap to a desktop.
+
+## On-demand VNC
+
+After logging into the X11 desktop, run `~/.local/bin/vnc-server start` to share
+the current session, and `~/.local/bin/vnc-server stop` when finished. `status`
+reports whether it is running. The helper uses transient user units, so nothing
+is enabled at login or boot. Connect to `<hostname>.local:5900` using TLSPlain
+with your normal system username and password; no separate VNC password file is
+used. `<hostname>:5900` also works when the client can resolve the bare hostname.
+The firewall permits SSH and VNC only from the IPv4 LAN `192.168.1.0/24`
+(plus local loopback), before the broader VPN-interface allowance.
+
 ## Steps
 
 | Step | Name |

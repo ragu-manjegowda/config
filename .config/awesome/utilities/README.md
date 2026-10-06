@@ -7,7 +7,7 @@ configuration directory; these are not global commands on `PATH`.
 | Folder | Helpers | Purpose |
 | --- | --- | --- |
 | `camera/` | `capture`, `intruder-capture` | Bounded webcam capture and external-first intruder photos |
-| `desktop/` | `audio-control`, `ensure-darkman`, `profile-image`, `time`, `volctl` | Targeted audio endpoints, theme recovery, profile image, clock menu and volume applet launcher |
+| `desktop/` | `audio-control`, `config-pull`, `ensure-darkman`, `profile-image`, `time`, `volctl` | Targeted audio endpoints, desktop-safe dotfile pulls, theme recovery, profile image, clock menu and volume applet launcher |
 | `display/` | `blue-light`, `connect-external`, `disconnect-external`, `display-control`, `monitor-color`, `read-display-config`, `reset-primary-display`, `setup-monitors`, `snap` | Display topology, focused brightness, reversible monitor warmth and screenshots |
 | `input/` | `kbd-bkl`, `read-kbd-battery`, `touchpad-toggle` | Keyboard backlight/battery and touchpad controls |
 | `network/` | `calendar-holidays`, `outlook-calendar`, `prisma-vpn-diagnostics`, `prisma-vpn-health`, `prisma-vpn-status` | Cached holidays, calendar API and VPN status/health helpers |

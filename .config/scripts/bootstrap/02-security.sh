@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# 02-security.sh - Firewall, SSH hardening, fail2ban, sysctl, AppArmor, Firejail, Prisma Access Browser sandboxing
+# 02-security.sh - Firewall, SSH/VNC hardening, fail2ban, sysctl, AppArmor and Firejail
 
 log_step "Security Hardening"
 
 log_info "Firewall (nftables)..."
 require_package nftables
+require_package tigervnc
 _validate_nftables() {
     sudo nft -c -f "$1" &>/dev/null
 }

@@ -3,6 +3,19 @@
 
 log_step "Desktop Environment"
 
+log_info "Desktop-only Awesome configuration variant..."
+_config_pull="${HOME}/.config/awesome/utilities/desktop/config-pull"
+_machine_profile="${AWESOME_MACHINE_PROFILE:-}"
+if [[ -z "$_machine_profile" ]]; then
+    _machine_profile="$(/usr/bin/python3 "$_config_pull" --profile)"
+fi
+case "$_machine_profile" in
+    imac|desktop)
+        /usr/bin/python3 "$_config_pull" --apply-profile "$_machine_profile"
+        log_ok "Applied desktop profile; cpulla restores its variant after upstream pulls"
+        ;;
+esac
+
 log_info "Greetd config..."
 _validate_greetd() {
     python -c '
@@ -44,3 +57,4 @@ fc-cache &>/dev/null || true
 log_ok "Font cache updated"
 
 unset -f _validate_greetd
+unset _config_pull _machine_profile

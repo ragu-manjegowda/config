@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+# On-demand access to the current X11 desktop, using TLS and system credentials.
+set -euo pipefail
+umask 077
+
+unit=vnc-server.service
+discovery_unit=vnc-server-discovery.service
+
+usage() {
+    printf 'Usage: %s start|stop|status\n' "${0##*/}"
+}
+
+connection_info() {
+    local hostname
+    hostname="$(hostnamectl --static)"
+    printf 'Connect to %s.local:5900 using TLSPlain and your system username/password.\n' "$hostname"
+}
+
+case "${1:-}" in
+    start)
+        user="$(id -un)"
+        [[ "$user" != root ]] || { printf 'Run this as your desktop user, without sudo.\n' >&2; exit 1; }
+        if systemctl --user is-active --quiet "$unit"; then
+            connection_info
+            exit 0
+        fi
+        for program in x0vncserver systemd-run systemctl xset timeout; do
+            command -v "$program" >/dev/null || { printf 'Missing required program: %s\n' "$program" >&2; exit 1; }
+        done
+        export DISPLAY="${DISPLAY:-:0}"
+        export XAUTHORITY="${XAUTHORITY:-$HOME/.Xauthority}"
+        export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+        export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS:-unix:path=$XDG_RUNTIME_DIR/bus}"
+        [[ -r "$XAUTHORITY" ]] || { printf 'Cannot read the current desktop Xauthority file.\n' >&2; exit 1; }
+        timeout --kill-after=1 3 xset -display "$DISPLAY" q >/dev/null 2>&1 || {
+            printf 'Cannot access the current X11 desktop. Log into Awesome first.\n' >&2
+            exit 1
+        }
+        systemd-run --user --unit=vnc-server --collect --property=Type=exec \
+            --setenv="DISPLAY=$DISPLAY" --setenv="XAUTHORITY=$XAUTHORITY" \
+            "$(command -v x0vncserver)" \
+            "-display=$DISPLAY" -interface=0.0.0.0 -rfbport=5900 -UseIPv6=0 \
+            -SecurityTypes=TLSPlain "-PlainUsers=$user" -PAMService=system-auth \
+            -AlwaysShared=1 -AcceptKeyEvents=1 -AcceptPointerEvents=1 \
+            -AcceptSetDesktopSize=0 -FrameRate=30
+        sleep 0.2
+        if ! systemctl --user is-active --quiet "$unit"; then
+            journalctl --user -u "$unit" --no-pager -n 12 >&2
+            exit 1
+        fi
+        if command -v avahi-publish-service >/dev/null; then
+            hostname="$(hostnamectl --static)"
+            systemd-run --user --unit=vnc-server-discovery --collect --property=Type=exec \
+                --property="BindsTo=$unit" --property="After=$unit" \
+                "$(command -v avahi-publish-service)" -f -s "$hostname VNC" _rfb._tcp 5900 || \
+                printf 'VNC is running; automatic service discovery could not start.\n' >&2
+        fi
+        connection_info
+        ;;
+    stop)
+        systemctl --user stop "$discovery_unit" "$unit" 2>/dev/null || {
+            if systemctl --user is-active --quiet "$unit"; then
+                printf 'Could not stop the VNC server.\n' >&2
+                exit 1
+            fi
+        }
+        printf 'VNC server stopped.\n'
+        ;;
+    status)
+        if systemctl --user is-active --quiet "$unit"; then
+            printf 'VNC server is running.\n'
+            connection_info
+        else
+            printf 'VNC server is stopped.\n'
+        fi
+        ;;
+    -h|--help)
+        usage
+        ;;
+    *)
+        usage >&2
+        exit 2
+        ;;
+esac

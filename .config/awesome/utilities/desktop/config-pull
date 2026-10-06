@@ -1,0 +1,252 @@
+#!/usr/bin/python3
+"""Pull home dotfiles while preserving the selected desktop Awesome variant."""
+
+import fcntl
+import os
+import re
+import shutil
+import signal
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+CONFIG = ".config/awesome/configuration/config.lua"
+PROFILES = {"imac", "desktop"}
+
+
+def profile(text):
+    matches = re.findall(r"^[ \t]*machine\s*=\s*['\"]([a-z]+)['\"]", text, re.MULTILINE)
+    if len(matches) > 1:
+        raise RuntimeError("Multiple machine profiles in Awesome configuration")
+    return matches[0] if matches else "laptop"
+
+
+class Dotfiles:
+    def __init__(self, home):
+        self.home = home
+        self.gitdir = home / ".config.git"
+        self.config = home / CONFIG
+        self.command = [
+            "git",
+            "-c",
+            "core.bare=false",
+            "-c",
+            f"core.worktree={home}",
+            f"--git-dir={self.gitdir}",
+            f"--work-tree={home}",
+        ]
+
+    def git(self, *args, check=True):
+        return subprocess.run(
+            self.command + list(args),
+            cwd=self.home,
+            capture_output=True,
+            text=True,
+            check=check,
+        )
+
+    def flags(self):
+        tag = self.git("ls-files", "-v", "--", CONFIG).stdout[:1]
+        if not tag:
+            raise RuntimeError("Awesome config.lua is not tracked")
+        return tag.islower(), tag.upper() == "S"
+
+    def set_flags(self, assumed, skipped):
+        self.git(
+            "update-index",
+            "--assume-unchanged" if assumed else "--no-assume-unchanged",
+            "--",
+            CONFIG,
+        )
+        self.git(
+            "update-index",
+            "--skip-worktree" if skipped else "--no-skip-worktree",
+            "--",
+            CONFIG,
+        )
+
+    def variant(self, machine):
+        path = self.config.with_name(f"config_{machine}.lua")
+        text = path.read_text()
+        if (
+            re.search(r"^(<<<<<<<|=======|>>>>>>>)", text, re.MULTILINE)
+            or profile(text) != machine
+        ):
+            raise RuntimeError(
+                f"Invalid or conflicted {path.name}; configuration was not replaced"
+            )
+        return path
+
+    def unmerged(self):
+        return bool(
+            self.git(
+                "ls-files",
+                "--unmerged",
+                "--",
+                CONFIG,
+                str(self.config.with_name("config_imac.lua").relative_to(self.home)),
+                str(self.config.with_name("config_desktop.lua").relative_to(self.home)),
+            ).stdout
+        )
+
+    def copy_config(self, source):
+        fd, temporary = tempfile.mkstemp(prefix=".config-pull-", dir=self.config.parent)
+        os.close(fd)
+        try:
+            os.unlink(temporary)
+            shutil.copy2(source, temporary, follow_symlinks=False)
+            os.replace(temporary, self.config)
+        finally:
+            if os.path.lexists(temporary):
+                os.unlink(temporary)
+
+    def check_index(self):
+        if (
+            self.unmerged()
+            or self.git(
+                "diff", "--cached", "--quiet", "--", CONFIG, check=False
+            ).returncode
+        ):
+            raise RuntimeError(
+                "Resolve or unstage config.lua changes before using config-pull"
+            )
+
+    def apply(self, machine):
+        if machine not in PROFILES:
+            raise RuntimeError("Profile application is limited to desktop and imac")
+        self.check_index()
+        variant = self.variant(machine)
+        _, skipped = self.flags()
+        self.copy_config(variant)
+        self.set_flags(True, skipped)
+        print(
+            f"config-pull: applied {variant.name}; config.lua marked assume-unchanged",
+            flush=True,
+        )
+
+    def pull_command(self, args):
+        command = self.command + ["pull", "--rebase", "--autostash"] + args
+        if (
+            not args
+            and self.git("rev-parse", "--verify", "@{upstream}", check=False).returncode
+        ):
+            branch = self.git(
+                "symbolic-ref", "--quiet", "--short", "HEAD"
+            ).stdout.strip()
+            command += ["origin", branch]
+        return command
+
+    def pull(self, args):
+        machine = profile(self.config.read_text())
+        command = self.pull_command(args)
+        if machine not in PROFILES:
+            return subprocess.call(command, cwd=self.home)
+        self.check_index()
+        variant = self.variant(machine)
+        original_flags = self.flags()
+        original_mode = self.config.stat().st_mode & 0o777
+        original_symlink = self.config.is_symlink()
+        state = (
+            Path(os.getenv("XDG_STATE_HOME", self.home / ".local/state"))
+            / "awesome/config-pull"
+        )
+        state.mkdir(mode=0o700, parents=True, exist_ok=True)
+        backup_dir = Path(tempfile.mkdtemp(prefix="pull-", dir=state))
+        backup = backup_dir / "config.lua"
+        shutil.copy2(self.config, backup, follow_symlinks=False)
+        if not backup.is_symlink():
+            backup.chmod(0o600)
+        keep_backup = self.config.read_bytes() != variant.read_bytes()
+        succeeded = False
+        status = 1
+        try:
+            self.set_flags(False, False)
+            self.git("restore", "--source=HEAD", "--worktree", "--", CONFIG)
+            print(
+                f"config-pull: cleaned config.lua before pulling ({machine})",
+                flush=True,
+            )
+            status = subprocess.call(command, cwd=self.home)
+            if status == 0:
+                if self.unmerged():
+                    raise RuntimeError("Pull left the managed configuration unmerged")
+                self.copy_config(self.variant(machine))
+                self.set_flags(True, original_flags[1])
+                succeeded = True
+                print(
+                    f"config-pull: reapplied config_{machine}.lua after pull",
+                    flush=True,
+                )
+        except KeyboardInterrupt:
+            status = 130
+        finally:
+            if not succeeded:
+                keep_backup = True
+                if self.unmerged():
+                    print(
+                        "config-pull: managed configuration has conflicts; Git conflict files remain intact."
+                        " Resolve or abort before applying the desktop profile.",
+                        file=sys.stderr,
+                    )
+                else:
+                    self.copy_config(backup)
+                    if not original_symlink:
+                        self.config.chmod(original_mode)
+                    self.set_flags(*original_flags)
+                    print(
+                        "config-pull: restored the previous configuration after the unsuccessful pull",
+                        file=sys.stderr,
+                    )
+            if keep_backup:
+                print(
+                    f"config-pull: previous local configuration saved privately at {backup}",
+                    file=sys.stderr,
+                )
+            else:
+                shutil.rmtree(backup_dir)
+        return status
+
+
+def main():
+    args = sys.argv[1:]
+    repo = Dotfiles(Path.home())
+    if args == ["--profile"]:
+        print(profile(repo.config.read_text()))
+        return 0
+    if args in (["--help"], ["-h"]):
+        print(
+            "Usage: config-pull [git pull arguments]\n"
+            "       config-pull --apply-profile imac|desktop\n"
+            "Desktop variants are copied around pull --rebase --autostash; laptops pull normally."
+        )
+        return 0
+    fd = os.open(
+        repo.gitdir / "config-pull.lock",
+        os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW,
+        0o600,
+    )
+    try:
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            raise RuntimeError("Another config-pull is already running") from None
+        if len(args) == 2 and args[0] == "--apply-profile":
+            repo.apply(args[1])
+            return 0
+        return repo.pull(args)
+    finally:
+        os.close(fd)
+
+
+if __name__ == "__main__":
+
+    def terminated(signum, _frame):
+        raise SystemExit(128 + signum)
+
+    signal.signal(signal.SIGTERM, terminated)
+    try:
+        sys.exit(main())
+    except (OSError, RuntimeError, subprocess.CalledProcessError) as error:
+        print(f"config-pull: {error}", file=sys.stderr)
+        sys.exit(1)

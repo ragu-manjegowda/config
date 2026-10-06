@@ -17,6 +17,9 @@ on:
     branches: ["**"]
     paths:
       - ".config/awesome/**"
+      - ".local/bin/vnc-server"
+      - ".config/misc/etc/nftables.conf"
+      - ".config/scripts/bootstrap/02-security.sh"
       - ".config/imapnotify/**"
       - ".config/scripts/lid-brightness-monitor"
       - ".config/scripts/start_xidlehook.sh"
@@ -48,6 +51,9 @@ on:
     branches: ["**"]
     paths:
       - ".config/awesome/**"
+      - ".local/bin/vnc-server"
+      - ".config/misc/etc/nftables.conf"
+      - ".config/scripts/bootstrap/02-security.sh"
       - ".config/imapnotify/**"
       - ".config/scripts/lid-brightness-monitor"
       - ".config/scripts/start_xidlehook.sh"
@@ -956,6 +962,8 @@ jobs:
           HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_lockscreen_auth.lua
           HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_lockscreen_lifecycle.lua
           HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_lockscreen_keygrabber.lua
+          HOME="$GITHUB_WORKSPACE" python -B .config/awesome/tests/test_vnc_server.py
+          HOME="$GITHUB_WORKSPACE" python -B .config/awesome/tests/test_config_pull.py
           python -B .config/awesome/tests/test_intruder_capture.py
           HOME="$GITHUB_WORKSPACE" python .config/awesome/tests/test_suspend_hook.py
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_lock_before_sleep.sh

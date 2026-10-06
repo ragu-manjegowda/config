@@ -80,7 +80,17 @@ alias ccda='config diff HEAD'
 alias ccm='config commit -s'
 alias cco='config checkout'
 alias cfa='config fetch --all --prune'
-alias cpulla='config pull --rebase --autostash'
+unalias cpulla 2>/dev/null || true
+function cpulla() {
+    local helper="$HOME/.config/awesome/utilities/desktop/config-pull"
+    [[ -x "$helper" ]] || helper="$HOME/.config.git/local-tools/config-pull"
+    if [[ -x "$helper" ]]; then
+        "$helper" "$@"
+    else
+        command git --git-dir="$HOME/.config.git/" --work-tree="$HOME" \
+            pull --rebase --autostash "$@"
+    fi
+}
 alias cpush='config push'
 alias cst='config status'
 alias cstv='cvim +Git +only'
