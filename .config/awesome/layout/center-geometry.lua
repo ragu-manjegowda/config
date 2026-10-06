@@ -24,7 +24,7 @@ function center_geometry.width(s)
     return math.min(beautiful.xresources.apply_dpi(s.geometry.width / 6, s), center_geometry.bounds(s).width)
 end
 
-function center_geometry.bind(panel, s, alignment)
+function center_geometry.bind(panel, s, alignment, content_width)
     local function place(p)
         local bounds = center_geometry.bounds(s)
         p.x = alignment == 'top' and bounds.x + math.floor((bounds.width - p.width) / 2)
@@ -34,11 +34,18 @@ function center_geometry.bind(panel, s, alignment)
     local function refresh()
         if s.valid == false then return end
         local bounds = center_geometry.bounds(s)
-        local width = center_geometry.width(s)
-        panel.minimum_width = width
-        panel.maximum_width = width
+        if content_width then
+            -- Let awful.popup use the widget's natural width, capped to this screen.
+            panel.minimum_width = 1
+            panel.maximum_width = bounds.width
+            panel.width = math.min(panel.width, bounds.width)
+        else
+            local width = center_geometry.width(s)
+            panel.minimum_width = width
+            panel.maximum_width = width
+            panel.width = width
+        end
         panel.maximum_height = bounds.height
-        panel.width = width
         panel.height = math.min(panel.height, bounds.height)
         place(panel)
     end

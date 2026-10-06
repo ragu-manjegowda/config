@@ -10,7 +10,7 @@ configuration directory; these are not global commands on `PATH`.
 | `desktop/` | `audio-control`, `ensure-darkman`, `profile-image`, `time`, `volctl` | Targeted audio endpoints, theme recovery, profile image, clock menu and volume applet launcher |
 | `display/` | `blue-light`, `connect-external`, `disconnect-external`, `display-control`, `monitor-color`, `read-display-config`, `reset-primary-display`, `setup-monitors`, `snap` | Display topology, focused brightness, reversible monitor warmth and screenshots |
 | `input/` | `kbd-bkl`, `read-kbd-battery`, `touchpad-toggle` | Keyboard backlight/battery and touchpad controls |
-| `network/` | `outlook-calendar`, `prisma-vpn-diagnostics`, `prisma-vpn-health`, `prisma-vpn-status` | Calendar API and VPN status/health helpers |
+| `network/` | `calendar-holidays`, `outlook-calendar`, `prisma-vpn-diagnostics`, `prisma-vpn-health`, `prisma-vpn-status` | Cached holidays, calendar API and VPN status/health helpers |
 | `power/` | `battery-power-consumers`, `power-profile`, `power-profile-monitor`, `suspend-hook.py` | Power policy, battery tooltip and resume events |
 
 Helpers that work together stay together: `monitor-color` loads the adjacent

@@ -210,8 +210,9 @@ the host rather than a particular screen.
 
 ### Info Center
 
-All four centers retain their screen-relative width and align their top edge
-with tiled clients and notification popups using the theme's outer gap. Height
+Control, Info and Playerctl centers retain their screen-relative width; Calendar
+Center fits its content. All four align their top edge with tiled clients and
+notification popups using the theme's outer gap. Height
 limits use the owning screen's usable pixels without applying DPI twice. Info Center's
 existing list viewports share the available height; headers remain visible and
 wheel scrolling stays inside the original notification, mail, stock, calendar
@@ -239,6 +240,42 @@ off its subject, timestamp or notification actions.
 - Full date display
 - Interactive month calendar with left/right navigation arrows
 - Highlights current day and weekends
+
+Its native popup width follows the clock, date and month grid rather than a
+screen fraction, with navigation padding included and a screen-width cap. Arrow
+buttons use the same accent/hover styling as Info Center controls. Weekend cells
+use the theme's icon color with contrasting text; today keeps its accent highlight.
+
+Click the month heading to choose a month, or the year to browse twelve-year
+pages. Selecting a year opens its month chooser. The arrows change months,
+years or year pages according to the current view. **Today** returns to the
+current date; **Go to date** accepts `YYYY`, `YYYY-MM` or `YYYY-MM-DD` (Enter to
+apply, Escape to dismiss without changing the date, Ctrl+U to clear). Hover the
+entry for a hand cursor and format/keyboard help; clicking focuses its blinking
+caret. Clicking outside the entry (including elsewhere inside Calendar Center),
+focusing another client/widget, leaving the center or locking releases
+the calendar's keyboard grab and stops blinking.
+The empty input shows `YYYY-MM-DD`; invalid dates show an inline message
+and keep the prompt open for correction. Ordinary digits and numeric keypad
+digits are accepted. The month/year heading is centered above the day grid.
+The entry uses the clickable-button theme colors;
+invalid input highlights its border in red.
+
+Holiday markers cover the previous, current and next calendar year. US nationwide
+holidays are synchronized from Nager.Date, with federal actual/observed dates as
+an offline fallback. Work-calendar holidays automatically reuse Info Center's
+existing Graph OAuth script and token when available: only non-cancelled all-day
+entries matching holiday/closure titles are included, with pagination. Regular
+meetings are not stored. `widget.calendar_holidays.company_pattern` can refine
+the title filter; no second login or opt-in is required.
+
+US markers use cyan borders; work markers use magenta. Hovering a marked day
+shows its holiday titles as plain text, including both sources on shared dates.
+The private cache is `${XDG_CACHE_HOME:-~/.cache}/awesome/calendar-holidays.json`.
+Opening Calendar Center checks the cache; successful syncs are reused for a day,
+failed sources retry after an hour while cached/offline data remains available.
+The small refresh button forces a sync and its tooltip reports the cached range
+and source errors. Sync is bounded and asynchronous, without a new polling timer.
 
 ### Playerctl Center
 

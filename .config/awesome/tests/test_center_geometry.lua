@@ -46,6 +46,23 @@ local small = make_screen(-1920, 200, 1920, 1080, 96)
 assert(geometry.width(primary) == 720 and geometry.width(external) == 860,
     'The original screen-relative width fraction must remain intact')
 assert(geometry.width(small) == 320)
+local compact_screen = make_screen(0, 0, 3440, 1440, 144)
+local compact_panel = object { width = 420, height = 100, visible = false }
+geometry.bind(compact_panel, compact_screen, 'top', true)
+assert(compact_panel.minimum_width == 1 and compact_panel.maximum_width == 3408)
+assert(compact_panel.width == 420,
+    'Content-fit centers must not replace their natural width with a screen fraction')
+compact_panel.width = 530
+compact_panel.visible = true
+compact_panel:emit_signal('property::visible')
+assert(compact_panel.width == 530 and compact_panel.x == 1455,
+    'Content changes must retain native popup sizing and centered placement')
+compact_screen.geometry.width = 2880
+compact_screen.workarea.width = 2880
+compact_screen:emit_signal('property::geometry')
+assert(compact_panel.width == 530 and compact_panel.maximum_width == 2848
+    and compact_panel.x == 1175,
+    'Resize must update content-fit bounds without forcing a different width')
 for _, s in ipairs { primary, external, small } do
     local bounds = geometry.bounds(s)
     assert(bounds.y >= s.workarea.y and bounds.y + bounds.height <= s.workarea.y + s.workarea.height,

@@ -13,6 +13,7 @@ end
 local function widget(args)
     local value = args or {}
     if value.visible == nil then value.visible = false end
+    if value.width == nil then value.width = 1 end
     if value.height == nil then value.height = 1 end
     function value:buttons(buttons) self.clicks = buttons end
 

@@ -124,6 +124,7 @@ assert_test(
 
 assert_test(
     source:match("local function ensure_password_grab%(%)") ~= nil and
+    source:match("lockscreen_lifecycle%.ensure_keygrab%(awful%.keygrabber, password_grabber%)") ~= nil and
     source:match("awful%.keygrabber%.current_instance == password_grabber") ~= nil and
     source:match("if not ensure_password_grab%(%) then") ~= nil and
     source:match("awesome%.emit_signal%('module::locked'%)") ~= nil,

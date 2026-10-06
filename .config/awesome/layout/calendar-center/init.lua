@@ -57,11 +57,8 @@ local time            = {
 }
 
 local calendar_center = function(s)
-    -- Set the calendar center geometry
-    local panel_width = center_geometry.width(s)
-
-    local panel       = awful.popup {
-        widget        = {
+    local panel = awful.popup {
+        widget  = {
             {
                 {
                     {
@@ -115,20 +112,18 @@ local calendar_center = function(s)
             end,
             widget = wibox.container.background
         },
-        screen        = s,
-        type          = 'dock',
-        visible       = false,
-        ontop         = true,
-        width         = panel_width,
-        maximum_width = panel_width,
-        bg            = beautiful.transparent,
-        fg            = beautiful.fg_normal,
-        shape         = function(cr, w, h)
+        screen  = s,
+        type    = 'dock',
+        visible = false,
+        ontop   = true,
+        bg      = beautiful.transparent,
+        fg      = beautiful.fg_normal,
+        shape   = function(cr, w, h)
             gears.shape.rounded_rect(cr, w, h, beautiful.groups_radius)
         end,
     }
 
-    center_geometry.bind(panel, s, 'top')
+    center_geometry.bind(panel, s, 'top', true)
 
     panel.opened = false
 
@@ -145,6 +140,8 @@ local calendar_center = function(s)
 
     local open_panel = function()
         center_manager.open(panel)
+        local calendar = require('widget.calendar')
+        if calendar.set_input_owner then calendar:set_input_owner(panel) end
         panel.opened = true
         center_backdrop.show(s.backdrop_calendar_center, s)
         panel.visible = true
@@ -153,6 +150,8 @@ local calendar_center = function(s)
     end
 
     local close_panel = function()
+        local calendar = require('widget.calendar')
+        if calendar.stop_prompt then calendar:stop_prompt() end
         panel.opened = false
         panel.visible = false
         s.backdrop_calendar_center.visible = false

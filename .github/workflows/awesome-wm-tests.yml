@@ -14,67 +14,67 @@ name: AwesomeWM Configuration Tests
 
 on:
   push:
-    branches: ['**']
+    branches: ["**"]
     paths:
-      - '.config/awesome/**'
-      - '.config/imapnotify/**'
-      - '.config/scripts/lid-brightness-monitor'
-      - '.config/scripts/start_xidlehook.sh'
-      - '.config/systemd/user/lid-brightness-manager.service'
-      - '.config/systemd/user/darkman.service.d/**'
-      - '.config/systemd/user/xsettingsd.service.d/**'
-      - '.config/darkman/**'
-      - '.config/systemd/user/power-profile-monitor.service'
-      - '.config/systemd/user/xidlehook.service'
-      - '.config/misc/etc/sudoers.d/**'
-      - '.config/misc/etc/polkit-1/rules.d/**'
-      - '.config/misc/etc/systemd/system/awesome-power-profile-policy@.service'
-      - '.config/misc/etc/systemd/system/login-media-keys.service'
-      - '.config/misc/usr/local/libexec/awesome-power-profile-policy'
-      - '.config/misc/usr/local/libexec/login-media-keys'
-      - '.config/misc/etc/modprobe.d/xe.conf'
-      - '.config/misc/etc/gai.conf'
-      - '.config/misc/etc/NetworkManager/dispatcher.d/10-ntpd'
-      - '.config/misc/etc/systemd/logind.conf.d/90-local.conf'
-      - '.config/misc/etc/systemd/system/v4l2-relayd-ipu7.service.d/override.conf'
-      - '.config/archiso-backup/**'
-      - '.config/zsh/**'
-      - '.config/scripts/bootstrap/03-system.sh'
-      - '.config/scripts/bootstrap/04-hardware.sh'
-      - '.config/scripts/bootstrap/05-services.sh'
-      - '.config/scripts/bootstrap/06-desktop.sh'
-      - '.github/workflows/awesome-wm-tests.yml'
+      - ".config/awesome/**"
+      - ".config/imapnotify/**"
+      - ".config/scripts/lid-brightness-monitor"
+      - ".config/scripts/start_xidlehook.sh"
+      - ".config/systemd/user/lid-brightness-manager.service"
+      - ".config/systemd/user/darkman.service.d/**"
+      - ".config/systemd/user/xsettingsd.service.d/**"
+      - ".config/darkman/**"
+      - ".config/systemd/user/power-profile-monitor.service"
+      - ".config/systemd/user/xidlehook.service"
+      - ".config/misc/etc/sudoers.d/**"
+      - ".config/misc/etc/polkit-1/rules.d/**"
+      - ".config/misc/etc/systemd/system/awesome-power-profile-policy@.service"
+      - ".config/misc/etc/systemd/system/login-media-keys.service"
+      - ".config/misc/usr/local/libexec/awesome-power-profile-policy"
+      - ".config/misc/usr/local/libexec/login-media-keys"
+      - ".config/misc/etc/modprobe.d/xe.conf"
+      - ".config/misc/etc/gai.conf"
+      - ".config/misc/etc/NetworkManager/dispatcher.d/10-ntpd"
+      - ".config/misc/etc/systemd/logind.conf.d/90-local.conf"
+      - ".config/misc/etc/systemd/system/v4l2-relayd-ipu7.service.d/override.conf"
+      - ".config/archiso-backup/**"
+      - ".config/zsh/**"
+      - ".config/scripts/bootstrap/03-system.sh"
+      - ".config/scripts/bootstrap/04-hardware.sh"
+      - ".config/scripts/bootstrap/05-services.sh"
+      - ".config/scripts/bootstrap/06-desktop.sh"
+      - ".github/workflows/awesome-wm-tests.yml"
   pull_request:
-    branches: ['**']
+    branches: ["**"]
     paths:
-      - '.config/awesome/**'
-      - '.config/imapnotify/**'
-      - '.config/scripts/lid-brightness-monitor'
-      - '.config/scripts/start_xidlehook.sh'
-      - '.config/systemd/user/lid-brightness-manager.service'
-      - '.config/systemd/user/darkman.service.d/**'
-      - '.config/systemd/user/xsettingsd.service.d/**'
-      - '.config/darkman/**'
-      - '.config/systemd/user/power-profile-monitor.service'
-      - '.config/systemd/user/xidlehook.service'
-      - '.config/misc/etc/sudoers.d/**'
-      - '.config/misc/etc/polkit-1/rules.d/**'
-      - '.config/misc/etc/systemd/system/awesome-power-profile-policy@.service'
-      - '.config/misc/etc/systemd/system/login-media-keys.service'
-      - '.config/misc/usr/local/libexec/awesome-power-profile-policy'
-      - '.config/misc/usr/local/libexec/login-media-keys'
-      - '.config/misc/etc/modprobe.d/xe.conf'
-      - '.config/misc/etc/gai.conf'
-      - '.config/misc/etc/NetworkManager/dispatcher.d/10-ntpd'
-      - '.config/misc/etc/systemd/logind.conf.d/90-local.conf'
-      - '.config/misc/etc/systemd/system/v4l2-relayd-ipu7.service.d/override.conf'
-      - '.config/archiso-backup/**'
-      - '.config/zsh/**'
-      - '.config/scripts/bootstrap/03-system.sh'
-      - '.config/scripts/bootstrap/04-hardware.sh'
-      - '.config/scripts/bootstrap/05-services.sh'
-      - '.config/scripts/bootstrap/06-desktop.sh'
-      - '.github/workflows/awesome-wm-tests.yml'
+      - ".config/awesome/**"
+      - ".config/imapnotify/**"
+      - ".config/scripts/lid-brightness-monitor"
+      - ".config/scripts/start_xidlehook.sh"
+      - ".config/systemd/user/lid-brightness-manager.service"
+      - ".config/systemd/user/darkman.service.d/**"
+      - ".config/systemd/user/xsettingsd.service.d/**"
+      - ".config/darkman/**"
+      - ".config/systemd/user/power-profile-monitor.service"
+      - ".config/systemd/user/xidlehook.service"
+      - ".config/misc/etc/sudoers.d/**"
+      - ".config/misc/etc/polkit-1/rules.d/**"
+      - ".config/misc/etc/systemd/system/awesome-power-profile-policy@.service"
+      - ".config/misc/etc/systemd/system/login-media-keys.service"
+      - ".config/misc/usr/local/libexec/awesome-power-profile-policy"
+      - ".config/misc/usr/local/libexec/login-media-keys"
+      - ".config/misc/etc/modprobe.d/xe.conf"
+      - ".config/misc/etc/gai.conf"
+      - ".config/misc/etc/NetworkManager/dispatcher.d/10-ntpd"
+      - ".config/misc/etc/systemd/logind.conf.d/90-local.conf"
+      - ".config/misc/etc/systemd/system/v4l2-relayd-ipu7.service.d/override.conf"
+      - ".config/archiso-backup/**"
+      - ".config/zsh/**"
+      - ".config/scripts/bootstrap/03-system.sh"
+      - ".config/scripts/bootstrap/04-hardware.sh"
+      - ".config/scripts/bootstrap/05-services.sh"
+      - ".config/scripts/bootstrap/06-desktop.sh"
+      - ".github/workflows/awesome-wm-tests.yml"
   workflow_dispatch:
 
 env:
@@ -209,7 +209,8 @@ jobs:
     env:
       AWESOME_TEST_PROFILE: ${{ matrix.config == 'config_imac.lua' && 'imac' || 'laptop' }}
     runs-on: ubuntu-latest
-    needs: [lua-unit-tests, module-imports-test, integration-tests, security-scan]
+    needs:
+      [lua-unit-tests, module-imports-test, integration-tests, security-scan]
     container:
       image: archlinux:latest
     steps:
@@ -336,7 +337,8 @@ jobs:
     env:
       AWESOME_TEST_PROFILE: ${{ matrix.config == 'config_imac.lua' && 'imac' || 'laptop' }}
     runs-on: ubuntu-latest
-    needs: [lua-unit-tests, module-imports-test, integration-tests, security-scan]
+    needs:
+      [lua-unit-tests, module-imports-test, integration-tests, security-scan]
     outputs:
       awesome_luajit_workaround_used: ${{ steps.awesome_luajit_workaround_status.outputs.used }}
     container:
@@ -953,11 +955,18 @@ jobs:
           HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_lockscreen_fingerprint.lua
           HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_lockscreen_auth.lua
           HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_lockscreen_lifecycle.lua
+          HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_lockscreen_keygrabber.lua
           python -B .config/awesome/tests/test_intruder_capture.py
           HOME="$GITHUB_WORKSPACE" python .config/awesome/tests/test_suspend_hook.py
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_lock_before_sleep.sh
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_suspend_only_policy.sh
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_top_panel_lifecycle.sh
+
+      - name: Test calendar navigation and holiday cache (no network or credentials)
+        run: |
+          python -B .config/awesome/tests/test_calendar_holidays.py
+          HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_calendar_navigation.lua
+          HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_calendar_widget.lua
 
       - name: Test system lifecycle configuration
         run: |
@@ -1126,7 +1135,19 @@ jobs:
   test-summary:
     name: Test Summary
     runs-on: ubuntu-latest
-    needs: [lua-syntax-check, lua-unit-tests, awesome-config-load, awesome-luajit-config-load, workaround, bash-scripts-validation, display-config-test, module-imports-test, integration-tests, security-scan]
+    needs:
+      [
+        lua-syntax-check,
+        lua-unit-tests,
+        awesome-config-load,
+        awesome-luajit-config-load,
+        workaround,
+        bash-scripts-validation,
+        display-config-test,
+        module-imports-test,
+        integration-tests,
+        security-scan,
+      ]
     if: always()
     steps:
       - name: Check test results

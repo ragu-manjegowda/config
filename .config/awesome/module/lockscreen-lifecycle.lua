@@ -19,6 +19,19 @@ function lifecycle.owns_keygrab(current, expected)
     return current == expected
 end
 
+function lifecycle.ensure_keygrab(keygrabber, expected)
+    if keygrabber.current_instance == expected then return true end
+
+    local current = keygrabber.current_instance
+    if current then current:stop() end
+
+    -- A foreign stop(nil) removes the active callback, but leaves the owning
+    -- object's grabber field set. start() refuses that stale transaction.
+    if expected.grabber then expected:stop() end
+    expected:start()
+    return keygrabber.current_instance == expected
+end
+
 function lifecycle.can_show_intruder(exit_code, stdout, auth_succeeded, locked)
     return exit_code == 0 and stdout ~= nil and stdout ~= '' and not auth_succeeded and locked
 end

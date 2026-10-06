@@ -709,17 +709,7 @@ local locker = function(s)
     }
 
     local function ensure_password_grab()
-        if awful.keygrabber.current_instance == password_grabber then
-            return true
-        end
-
-        local current = awful.keygrabber.current_instance
-        if current then
-            current:stop()
-        end
-
-        password_grabber:start()
-        return awful.keygrabber.current_instance == password_grabber
+        return lockscreen_lifecycle.ensure_keygrab(awful.keygrabber, password_grabber)
     end
 
     lockscreen:setup {

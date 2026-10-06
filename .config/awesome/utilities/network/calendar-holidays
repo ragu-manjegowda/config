@@ -1,0 +1,339 @@
+#!/usr/bin/python3
+"""Cache a rolling three-year US/work holiday window without GUI dependencies."""
+
+import argparse
+import calendar
+import datetime as dt
+import fcntl
+import hashlib
+import json
+import os
+import re
+import subprocess
+import sys
+import tempfile
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+from pathlib import Path
+
+COMPANY_PATTERN = (
+    r"\b(holiday|shutdown|office[s]? closed|thanksgiving|christmas|new year|"
+    r"independence day|memorial day|labor day|juneteenth|martin luther king|"
+    r"presidents'? day)\b"
+)
+CACHE_SECONDS = 86400
+
+
+def window(year):
+    return dt.date(year - 1, 1, 1), dt.date(year + 2, 1, 1)
+
+
+def federal_holidays(start, end):
+    """Offline fallback, including actual and observed dates at year boundaries."""
+    events = []
+
+    def add(date, title):
+        if start <= date < end:
+            events.append({"date": date.isoformat(), "title": title, "source": "us"})
+
+    def nth(year, month, weekday, occurrence):
+        first = dt.date(year, month, 1)
+        return first + dt.timedelta(
+            days=(weekday - first.weekday()) % 7 + 7 * (occurrence - 1)
+        )
+
+    for year in range(start.year - 1, end.year + 1):
+        fixed = [
+            (1, 1, "New Year's Day"),
+            (7, 4, "Independence Day"),
+            (11, 11, "Veterans Day"),
+            (12, 25, "Christmas Day"),
+        ]
+        if year >= 2021:
+            fixed.append((6, 19, "Juneteenth National Independence Day"))
+        for month, day, title in fixed:
+            date = dt.date(year, month, day)
+            add(date, title)
+            if date.weekday() == 5:
+                add(date - dt.timedelta(days=1), title + " (observed)")
+            elif date.weekday() == 6:
+                add(date + dt.timedelta(days=1), title + " (observed)")
+        for date, title in [
+            (nth(year, 1, 0, 3), "Martin Luther King, Jr. Day"),
+            (nth(year, 2, 0, 3), "Washington's Birthday"),
+            (
+                dt.date(year, 5, calendar.monthrange(year, 5)[1])
+                - dt.timedelta(days=dt.date(year, 5, 31).weekday()),
+                "Memorial Day",
+            ),
+            (nth(year, 9, 0, 1), "Labor Day"),
+            (nth(year, 10, 0, 2), "Columbus Day"),
+            (nth(year, 11, 3, 4), "Thanksgiving Day"),
+        ]:
+            add(date, title)
+    return events
+
+
+def request_json(url, deadline, headers=None):
+    remaining = deadline - time.monotonic()
+    if remaining <= 0:
+        raise RuntimeError("Sync time budget exhausted")
+    request = urllib.request.Request(
+        url, headers=headers or {"Accept": "application/json"}
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=min(8, remaining)) as response:
+            body = response.read(2_000_001)
+        if len(body) > 2_000_000:
+            raise RuntimeError("Calendar response too large")
+        return json.loads(body)
+    except urllib.error.HTTPError as error:
+        raise RuntimeError(f"Calendar request failed (HTTP {error.code})") from None
+    except (urllib.error.URLError, TimeoutError):
+        raise RuntimeError("Calendar request timed out or is unreachable") from None
+
+
+def us_holidays(start, end, deadline):
+    events = federal_holidays(start, end)
+    dates = {event["date"] for event in events}
+    for year in range(start.year, end.year):
+        payload = request_json(
+            f"https://date.nager.at/api/v3/PublicHolidays/{year}/US", deadline
+        )
+        if not isinstance(payload, list):
+            raise RuntimeError("Invalid US holiday response")
+        for item in payload:
+            if not item.get("global"):
+                continue
+            date = dt.date.fromisoformat(item["date"])
+            if start <= date < end and date.isoformat() not in dates:
+                title = item.get("localName") or item.get("name")
+                if isinstance(title, str) and title:
+                    events.append(
+                        {
+                            "date": date.isoformat(),
+                            "title": title,
+                            "source": "us",
+                        }
+                    )
+                    dates.add(date.isoformat())
+    return events
+
+
+def access_token(oauth_script, token_file, deadline):
+    remaining = min(12, deadline - time.monotonic())
+    if remaining <= 0:
+        raise RuntimeError("Sync time budget exhausted")
+    try:
+        result = subprocess.run(
+            [sys.executable, str(oauth_script), str(token_file)],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=remaining,
+        )
+    except subprocess.TimeoutExpired:
+        raise RuntimeError("Work-calendar authentication timed out") from None
+    if result.returncode or not result.stdout.strip():
+        raise RuntimeError("Work-calendar authentication failed")
+    return result.stdout.strip().splitlines()[-1]
+
+
+def work_holidays(start, end, oauth_script, token_file, pattern, deadline):
+    match = re.compile(pattern, re.IGNORECASE)
+    token = access_token(oauth_script, token_file, deadline)
+    params = {
+        "startDateTime": start.isoformat() + "T00:00:00Z",
+        "endDateTime": end.isoformat() + "T00:00:00Z",
+        "$select": "subject,start,end,isAllDay,isCancelled",
+        "$filter": "isAllDay eq true and isCancelled eq false",
+        "$top": "1000",
+    }
+    url = "https://graph.microsoft.com/v1.0/me/calendarView?" + urllib.parse.urlencode(
+        params
+    )
+    events = []
+    seen = set()
+    for _ in range(20):
+        parsed = urllib.parse.urlparse(url)
+        if (
+            parsed.scheme != "https"
+            or parsed.netloc != "graph.microsoft.com"
+            or url in seen
+        ):
+            raise RuntimeError("Invalid calendar pagination URL")
+        seen.add(url)
+        payload = request_json(
+            url,
+            deadline,
+            {"Authorization": f"Bearer {token}", "Accept": "application/json"},
+        )
+        for item in payload.get("value", []):
+            title = item.get("subject", "")
+            if (
+                not item.get("isAllDay")
+                or item.get("isCancelled")
+                or not match.search(title)
+            ):
+                continue
+            try:
+                first = dt.date.fromisoformat(item["start"]["dateTime"][:10])
+                last = dt.date.fromisoformat(item["end"]["dateTime"][:10])
+            except (KeyError, ValueError, TypeError):
+                continue
+            for offset in range(max(0, min((last - first).days, 366))):
+                date = first + dt.timedelta(days=offset)
+                if start <= date < end:
+                    events.append(
+                        {
+                            "date": date.isoformat(),
+                            "title": title[:400],
+                            "source": "work",
+                        }
+                    )
+        url = payload.get("@odata.nextLink")
+        if not url:
+            return events
+    raise RuntimeError("Calendar pagination limit exceeded")
+
+
+def read_cache(path):
+    try:
+        payload = json.loads(path.read_text())
+        return payload if isinstance(payload, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def write_cache(path, payload):
+    path.parent.mkdir(parents=True, mode=0o700, exist_ok=True)
+    fd, temporary = tempfile.mkstemp(prefix=".calendar-holidays-", dir=path.parent)
+    try:
+        with os.fdopen(fd, "w") as output:
+            json.dump(payload, output, ensure_ascii=False)
+        os.replace(temporary, path)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+
+
+def sync(args):
+    start, end = window(args.year)
+    authenticated = (
+        args.include_outlook
+        and args.oauth_script.is_file()
+        and args.token_file.is_file()
+    )
+    signature = hashlib.sha256(
+        f"{args.year}|{authenticated}|{args.company_pattern}".encode()
+    ).hexdigest()
+    previous = read_cache(args.cache)
+    same_source = previous.get("signature") == signature
+    if (
+        same_source
+        and "work_calendar_available" in previous
+        and not args.force
+        and time.time() - previous.get("generated_at", 0) < CACHE_SECONDS
+    ):
+        return previous
+    errors = []
+    deadline = time.monotonic() + 40
+    try:
+        events = us_holidays(start, end, deadline)
+    except Exception as error:
+        errors.append(f"US: {error}")
+        events = federal_holidays(start, end)
+    if authenticated:
+        try:
+            events += work_holidays(
+                start,
+                end,
+                args.oauth_script,
+                args.token_file,
+                args.company_pattern,
+                deadline,
+            )
+        except Exception as error:
+            errors.append(f"Work: {error}")
+            if same_source:
+                events += [
+                    event
+                    for event in previous.get("events", [])
+                    if event.get("source") == "work"
+                ]
+    unique = {
+        (event["date"], event["source"], event["title"]): event
+        for event in events
+        if start.isoformat() <= event["date"] < end.isoformat()
+    }
+    payload = {
+        "ok": True,
+        "signature": signature,
+        "generated_at": time.time(),
+        "work_calendar_available": authenticated,
+        "window": {"start": start.isoformat(), "end": end.isoformat()},
+        "events": [unique[key] for key in sorted(unique)],
+        "errors": errors,
+    }
+    # Failed sources retry after an hour, while valid cached holidays remain usable.
+    if errors:
+        payload["generated_at"] -= CACHE_SECONDS - 3600
+    write_cache(args.cache, payload)
+    return payload
+
+
+def main():
+    home = Path.home()
+    cache_home = Path(os.environ.get("XDG_CACHE_HOME", home / ".cache"))
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--year", type=int, default=dt.date.today().year)
+    parser.add_argument(
+        "--cache",
+        type=Path,
+        default=cache_home / "awesome/calendar-holidays.json",
+    )
+    parser.add_argument(
+        "--no-outlook",
+        dest="include_outlook",
+        action="store_false",
+        help="Skip the existing work-calendar authentication (US holidays only)",
+    )
+    parser.set_defaults(include_outlook=True)
+    parser.add_argument("--company-pattern", default=COMPANY_PATTERN)
+    parser.add_argument(
+        "--oauth-script",
+        type=Path,
+        default=home / ".config/neomutt/accounts/work/oauth2.py",
+    )
+    parser.add_argument(
+        "--token-file",
+        type=Path,
+        default=home / ".config/neomutt/credentials/token_outlook_graph",
+    )
+    parser.add_argument("--force", action="store_true")
+    args = parser.parse_args()
+    if not 3 <= args.year <= 9997:
+        parser.error("year must be between 3 and 9997")
+    args.cache.parent.mkdir(parents=True, mode=0o700, exist_ok=True)
+    fd = os.open(
+        str(args.cache) + ".lock", os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600
+    )
+    try:
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            print(json.dumps(read_cache(args.cache), ensure_ascii=False))
+            return 0
+        print(json.dumps(sync(args), ensure_ascii=False))
+    except Exception as error:
+        print(json.dumps({"ok": False, "error": str(error)}))
+        return 1
+    finally:
+        os.close(fd)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

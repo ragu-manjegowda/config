@@ -39,12 +39,12 @@ return {
     },
 
     widget = {
-        audio           = {
+        audio             = {
             -- Stable ALSA card names; numeric PipeWire IDs change after hotplug.
             primary_device_pattern = 'alsa_card.pci-0000_00_1f.3-platform-sof_sdw',
             external_device_pattern = 'alsa_card.usb-Dell_DELL_P3424WEB_USB_*-00'
         },
-        email           = {
+        email             = {
             -- Email address
             address = '',
             -- App password
@@ -55,7 +55,7 @@ return {
             port = '993'
         },
 
-        weather         = {
+        weather           = {
             providers = { 'open-meteo', 'wttr', 'open-weather' },
             locations = {
                 {
@@ -91,26 +91,31 @@ return {
             update_interval = 1200
         },
 
-        clock           = {
+        clock             = {
             -- Clock widget format
             military_mode = false
         },
 
-        stocks          = {
+        stocks            = {
             -- List of stock symbols to display
             symbols = { "NVDA", "TQQQ", "TECL" },
             -- Update interval in seconds
             update_interval = 300 -- 5 minutes
         },
 
-        calendar_events = {
+        calendar_events   = {
             script = config_dir .. 'utilities/network/outlook-calendar',
             window_days = 2,
             max_items = 0,
             show_cancelled = false,
         },
 
-        screen_recorder = {
+        calendar_holidays = {
+            -- Work holidays automatically reuse the existing Graph login, when present.
+            script = config_dir .. 'utilities/network/calendar-holidays',
+        },
+
+        screen_recorder   = {
             -- Initial display choice: "primary", "external", or "both".
             -- The recorder UI persists later choices under XDG_STATE_HOME.
             -- Unavailable external targets remain disabled instead of falling back.
@@ -127,7 +132,7 @@ return {
             fps = '60'
         },
 
-        screenshot      = {
+        screenshot        = {
             -- Which display to capture for full screenshots: "primary", "external", or "both"
             -- If "external"/"both" is selected and the external display is not
             -- connected, screenshots fall back to the primary display.
