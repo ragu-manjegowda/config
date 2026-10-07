@@ -962,6 +962,7 @@ jobs:
           HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_lockscreen_auth.lua
           HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_lockscreen_lifecycle.lua
           HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_lockscreen_keygrabber.lua
+          HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_lockscreen_intruder.lua
           HOME="$GITHUB_WORKSPACE" python -B .config/awesome/tests/test_vnc_server.py
           HOME="$GITHUB_WORKSPACE" python -B .config/awesome/tests/test_config_pull.py
           HOME="$GITHUB_WORKSPACE" python -B .config/awesome/tests/test_mail_sync.py

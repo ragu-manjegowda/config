@@ -66,6 +66,28 @@ Avahi advertises the current system hostname. NetworkManager and resolved use
 client-only mDNS so they do not compete to publish the same name. SSH aliases
 can target `<hostname>.local` rather than a changing DHCP address.
 
+Step 3 deploys the resolved and NetworkManager mDNS-client drop-ins. Step 5
+enables `systemd-resolved.service` for future boots and restarts it after the
+DNS-privacy and mDNS configuration has been deployed. This applies to both
+laptop and iMac profiles. The stock `resolve` NSS entry uses this service;
+`nss-mdns` and an additional `mdns` entry in `/etc/nsswitch.conf` are not required
+for this lookup path. A failed resolved restart stops bootstrap rather than
+silently leaving hostname lookup unavailable.
+
+An already-running NetworkManager needs its configuration changes applied using
+the network-restart reminder from step 2. For partial bootstrap runs, deploy
+step 3 before running step 5 to activate the mDNS configuration. Verify with:
+
+```bash
+systemctl is-enabled systemd-resolved.service
+systemctl is-active systemd-resolved.service
+resolvectl status
+getent -s resolve ahostsv4 arch-imac.local
+```
+
+Use `arch-dell14.local` for the lookup check from the iMac. The active LAN link
+should show `mDNS=resolve`, and the lookup should return the peer's LAN address.
+
 Changing a hostname during an existing X11 session also changes the name used
 to look up local Xauthority cookies. Those cookies are generated session data,
 not hardcoded application configuration. Prefer changing the hostname before

@@ -206,7 +206,7 @@ assert_test(
     source:match("local capture_in_progress = false") ~= nil and
     source:match("if capture_in_progress then return end") ~= nil and
     source:match("lockscreen_lifecycle%.can_show_intruder%(") ~= nil and
-    source:match("auth_succeeded = true%s+wanted_poster%.visible = false") ~= nil and
+    source:match("auth_succeeded = true%s+intruder_alert%.hide%(%s*%)") ~= nil and
     source:match("reset_failed_auth%(%)") ~= nil and
     source:match("utilities/camera/intruder%-capture") ~= nil and
     source:match("external_camera_device") ~= nil and

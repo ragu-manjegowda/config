@@ -12,6 +12,9 @@ else
 fi
 enable_system_service sshd
 enable_system_service NetworkManager
+enable_system_service systemd-resolved
+# Load the final DNS-privacy and mDNS drop-ins deployed by steps 2 and 3.
+sudo systemctl restart systemd-resolved.service
 enable_system_service avahi-daemon
 enable_system_service bluetooth
 enable_system_service cups

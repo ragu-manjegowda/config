@@ -309,9 +309,13 @@ If the external camera is absent, busy, or fails to capture, the helper tries
 `module.lockscreen.camera_device` instead. With no active external display, it
 uses that built-in camera directly. Attempts are bounded and asynchronous,
 partial images are removed, and successful photos are saved with private
-permissions in `face_capture_dir`. Capture completion cannot reopen the wanted
-poster after successful authentication. The camera-selection tests use fake
-devices and capture scripts and require no camera or X server in CI.
+permissions in `face_capture_dir`. After a failed authentication and successful
+capture, a separate intruder poster appears at the top of every screen, including
+external displays when the laptop lid is closed. Posters follow screen geometry
+changes and new displays, and all hide as soon as authentication succeeds. A
+normal successful unlock does not show an alert; captures that finish after
+unlock or belong to an earlier lock cannot reopen it. The camera-selection tests
+use fake devices and capture scripts and require no camera or X server in CI.
 
 ## Outlook Calendar via Microsoft Graph API
 

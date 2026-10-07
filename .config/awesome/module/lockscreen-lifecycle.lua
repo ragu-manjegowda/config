@@ -32,8 +32,9 @@ function lifecycle.ensure_keygrab(keygrabber, expected)
     return keygrabber.current_instance == expected
 end
 
-function lifecycle.can_show_intruder(exit_code, stdout, auth_succeeded, locked)
-    return exit_code == 0 and stdout ~= nil and stdout ~= '' and not auth_succeeded and locked
+function lifecycle.can_show_intruder(exit_code, stdout, auth_succeeded, locked, capture_session, current_session)
+    return exit_code == 0 and stdout ~= nil and stdout:match('%S') ~= nil and
+        not auth_succeeded and locked and capture_session == current_session
 end
 
 function lifecycle.can_restart_fingerprint(locked, controller)

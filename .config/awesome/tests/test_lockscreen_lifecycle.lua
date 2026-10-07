@@ -30,6 +30,10 @@ assert(not lifecycle.can_show_intruder(1, '/tmp/intruder.jpg\n', false, true))
 assert(not lifecycle.can_show_intruder(0, '', false, true))
 assert(not lifecycle.can_show_intruder(0, '/tmp/intruder.jpg\n', true, true))
 assert(not lifecycle.can_show_intruder(0, '/tmp/intruder.jpg\n', false, false))
+assert(not lifecycle.can_show_intruder(0, ' \n', false, true))
+assert(lifecycle.can_show_intruder(0, '/tmp/intruder.jpg\n', false, true, 3, 3))
+assert(not lifecycle.can_show_intruder(0, '/tmp/intruder.jpg\n', false, true, 2, 3),
+    'A capture from a prior lock must not appear after unlocking and relocking')
 
 local fingerprint = {}
 assert(lifecycle.can_restart_fingerprint(true, fingerprint))
@@ -63,6 +67,7 @@ for _, key in ipairs({ 'lockscreen', 'lockscreen_extended' }) do
         self.x, self.y = value.x, value.y
         self.width, self.height = value.width, value.height
     end
+
     local s = {
         valid = true,
         geometry = { x = 2880, y = 0, width = 2880, height = 1800 },

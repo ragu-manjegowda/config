@@ -11,6 +11,7 @@ local config = require('configuration.config')
 local suspension = require('library.notification-suspension')
 local fingerprint = require('module.lockscreen-fingerprint')
 local lockscreen_lifecycle = require('module.lockscreen-lifecycle')
+local intruder_alert = require('module.lockscreen-intruder')
 
 require('module.dynamic-wallpaper')
 require('module.auto-start')
@@ -74,6 +75,7 @@ local lock_again = nil
 local type_again = true
 local capture_now = locker_config.capture_intruder
 local capture_in_progress = false
+local lock_session = 0
 local locked_tag = nil
 local client_focused = nil
 local pam_module_loaded = false
@@ -231,14 +233,6 @@ end
 -- Create clock widget
 local time = wibox.widget.textclock(clock_format, 60)
 
-local wanted_text = wibox.widget {
-    markup = 'INTRUDER ALERT!',
-    font   = beautiful.font_bold(14),
-    align  = 'center',
-    valign = 'center',
-    widget = wibox.widget.textbox
-}
-
 local msg_table = {
     'This incident will be reported.',
     'We are watching you.',
@@ -253,22 +247,6 @@ local msg_table = {
     'I know where you live.',
     'RUN!',
     'Your parents must be proud of you.'
-}
-
-local wanted_msg = wibox.widget {
-    markup = 'This incident will be reported!',
-    font   = beautiful.font_regular(12),
-    align  = 'center',
-    valign = 'center',
-    widget = wibox.widget.textbox
-}
-
-local wanted_image = wibox.widget {
-    image         = widget_icon_dir .. 'default.svg',
-    resize        = true,
-    forced_height = dpi(120),
-    clip_shape    = gears.shape.rounded_rect,
-    widget        = wibox.widget.imagebox
 }
 
 local circle_container = wibox.widget {
@@ -369,50 +347,6 @@ local locker = function(s)
         end
     )
 
-    local wanted_poster = awful.popup {
-        widget = {
-            {
-                {
-                    wanted_text,
-                    {
-                        nil,
-                        wanted_image,
-                        nil,
-                        expand = 'none',
-                        layout = wibox.layout.align.horizontal
-                    },
-                    wanted_msg,
-                    spacing = dpi(5),
-                    layout = wibox.layout.fixed.vertical
-                },
-                margins = dpi(20),
-                widget = wibox.container.margin
-            },
-            bg = beautiful.background,
-            shape = gears.shape.rounded_rect,
-            widget = wibox.container.background
-        },
-        bg = beautiful.transparent,
-        type = 'utility',
-        ontop = true,
-        shape = gears.shape.rectangle,
-        maximum_width = dpi(250),
-        maximum_height = dpi(250),
-        hide_on_right_click = false,
-        preferred_anchors = { 'middle' },
-        visible = false
-    }
-
-    -- Place wanted poster at the bottom of primary screen
-    awful.placement.top(
-        wanted_poster,
-        {
-            margins = {
-                top = dpi(10)
-            }
-        }
-    )
-
     -- Check Capslock state
     local check_caps = function()
         awful.spawn.easy_async_with_shell(
@@ -452,6 +386,7 @@ local locker = function(s)
     local intruder_capture = function()
         if capture_in_progress then return end
         capture_in_progress = true
+        local capture_session = lock_session
         -- Select cameras on every attempt so hotplug does not need a WM restart.
         -- Pass paths as argv rather than interpolating them into a shell command.
         local camera_config = config.module.lockscreen
@@ -467,27 +402,14 @@ local locker = function(s)
             function(stdout, _, _, exit_code)
                 capture_in_progress = false
                 if not lockscreen_lifecycle.can_show_intruder(
-                        exit_code, stdout, auth_succeeded, is_lock_state_set()
+                        exit_code, stdout, auth_succeeded, is_lock_state_set(),
+                        capture_session, lock_session
                     ) then
                     return
                 end
 
                 awful.spawn({ 'canberra-gtk-play', '-i', 'camera-shutter' }, false)
-                -- Humiliate the intruder by showing his/her hideous face
-                wanted_image:set_image(stdout:gsub('%s+$', ''))
-                wanted_msg:set_markup(msg_table[math.random(#msg_table)])
-                wanted_poster.visible = true
-
-                awful.placement.top(
-                    wanted_poster,
-                    {
-                        margins = {
-                            top = dpi(10)
-                        }
-                    }
-                )
-
-                wanted_image:emit_signal('widget::redraw_needed')
+                intruder_alert.show(stdout:gsub('%s+$', ''), msg_table[math.random(#msg_table)])
             end
         )
     end
@@ -521,7 +443,7 @@ local locker = function(s)
     local generalkenobi_ohhellothere = function()
         if auth_succeeded then return end
         auth_succeeded = true
-        wanted_poster.visible = false
+        intruder_alert.hide()
         if fingerprint_auth then fingerprint_auth:stop() end
         circle_container.bg = beautiful.accent
         awesome.emit_signal('module::lockscreen_auth_feedback', beautiful.accent)
@@ -530,11 +452,6 @@ local locker = function(s)
         gears.timer.start_new(
             1,
             function()
-                if capture_now then
-                    -- Hide wanted poster
-                    wanted_poster.visible = false
-                end
-
                 -- Hide all the lockscreen on all screen
                 for target_screen in screen do
                     local target = lockscreen_for_screen(target_screen)
@@ -781,6 +698,8 @@ local locker = function(s)
         -- Prevents a potential bug/problem
         if lock_again == true or lock_again == nil then
             awesome.emit_signal('module::exit_screen:hide')
+            lock_session = lock_session + 1
+            intruder_alert.hide()
 
             -- Recompute the time before showing a lockscreen after idle or sleep.
             time:force_update()
@@ -1143,6 +1062,7 @@ local create_lock_screens = function(s)
     else
         s.lockscreen_extended = locker_ext(s)
     end
+    intruder_alert.attach(s)
 end
 
 -- Filter background image
