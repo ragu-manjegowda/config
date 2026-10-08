@@ -101,6 +101,8 @@ def describe(node, kind, scope):
 
 
 def control(kind, scope, pattern, external_pattern, action, value=None):
+    if action == "resync" and kind != "source":
+        raise ValueError("Only microphones support mute resynchronization")
     nodes = json.loads(run("--format=json", "list", kind + "s"))
     default = run("get-default-" + kind).strip()
     node = select(nodes, kind, scope, pattern, external_pattern, default)
@@ -109,6 +111,17 @@ def control(kind, scope, pattern, external_pattern, action, value=None):
     name = node["name"]
     if action == "mute":
         run("set-" + kind + "-mute", name, "toggle")
+    elif action == "resync":
+        muted = bool(node.get("mute"))
+        # Some USB monitors reset their physical mute on resume while PipeWire
+        # and ALSA retain an unmuted cache. An unchanged unmute is ignored;
+        # a mute/unmute transition pushes the state back to the device.
+        # A software-muted microphone is never unmuted by this recovery.
+        try:
+            if not muted:
+                run("set-source-mute", name, "1")
+        finally:
+            run("set-source-mute", name, "1" if muted else "0")
     else:
         if value is None or not math.isfinite(value):
             raise ValueError("Volume must be finite")
@@ -131,7 +144,7 @@ def main():
     parser.add_argument("--external-pattern", default="")
     parser.add_argument(
         "--action",
-        choices=["status", "set", "adjust", "mute"],
+        choices=["status", "set", "adjust", "mute", "resync"],
         default="status",
     )
     parser.add_argument("--value", type=float)

@@ -178,6 +178,7 @@ awesome.connect_signal(
 audio_monitor:connect_signal('sink', function()
     update_slider(false)
 end)
+awesome.connect_signal('module::sleep_resumed', function() update_slider(false) end)
 
 awesome.connect_signal('widget::audio:changed', function(output, kind, state)
     if kind == 'sink' and output == display_audio.output() and not display_audio.pending(output, kind) then

@@ -90,7 +90,9 @@ class AudioControlTests(unittest.TestCase):
             n for values in self.nodes.values() for n in values if n["name"] == name
         )
         if args[0].endswith("-mute"):
-            target["mute"] = not target["mute"]
+            target["mute"] = (
+                not target["mute"] if args[2] == "toggle" else args[2] == "1"
+            )
         elif args[0].endswith("-volume"):
             percent = float(args[2][:-1])
             for channel in target["volume"].values():
@@ -128,6 +130,50 @@ class AudioControlTests(unittest.TestCase):
         self.nodes["source"] = [self.mic]
         self.assertFalse(self.control(kind="source", action="mute")["available"])
         self.assertFalse(any(c[0].startswith("set-") for c in self.calls))
+
+    def test_resume_resync_sends_edges_for_unmuted_monitor(self):
+        self.monitor_mic["mute"] = False
+        before = copy.deepcopy(self.mic)
+        state = self.control(kind="source", action="resync")
+        writes = [call for call in self.calls if call[0].startswith("set-")]
+        self.assertEqual(
+            writes,
+            [
+                ("set-source-mute", "monitor-mic", "1"),
+                ("set-source-mute", "monitor-mic", "0"),
+            ],
+        )
+        self.assertFalse(state["muted"])
+        self.assertEqual(self.mic, before)
+
+    def test_resume_resync_never_unmutes_a_muted_monitor(self):
+        self.assertTrue(self.control(kind="source", action="resync")["muted"])
+        writes = [call for call in self.calls if call[0].startswith("set-")]
+        self.assertEqual(writes, [("set-source-mute", "monitor-mic", "1")])
+
+    def test_resume_resync_attempts_restore_even_if_first_write_errors(self):
+        self.monitor_mic["mute"] = False
+        original = self.fake_run
+
+        def failed_ack(*args):
+            result = original(*args)
+            if args == ("set-source-mute", "monitor-mic", "1"):
+                raise RuntimeError("Write acknowledgement failed")
+            return result
+
+        with patch.dict(GLOBALS, {"run": failed_ack}), self.assertRaises(RuntimeError):
+            self.control(kind="source", action="resync")
+        self.assertFalse(self.monitor_mic["mute"])
+        self.assertIn(("set-source-mute", "monitor-mic", "0"), self.calls)
+
+    def test_resume_missing_monitor_never_targets_laptop_and_rejects_sinks(
+        self,
+    ):
+        self.nodes["source"] = [self.mic]
+        self.assertFalse(self.control(kind="source", action="resync")["available"])
+        self.assertFalse(any(call[0].startswith("set-") for call in self.calls))
+        with self.assertRaises(ValueError):
+            self.control(action="resync")
 
     def test_monitor_sources_and_unavailable_ports_are_excluded(self):
         playback = node("playback.monitor", "usb-Monitor-123", kind="source")

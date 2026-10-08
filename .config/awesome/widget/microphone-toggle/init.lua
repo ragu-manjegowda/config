@@ -137,6 +137,8 @@ local action_widget = wibox.widget {
 }
 
 audio_monitor:connect_signal('source', check_mic_status)
+awesome.connect_signal('module::sleep_resumed', check_mic_status)
+awesome.connect_signal('module::unlocked', check_mic_status)
 awesome.connect_signal('control_center::visibility', function(visible)
     if visible then check_mic_status() end
 end)

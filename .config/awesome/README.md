@@ -204,6 +204,13 @@ session manager/user's control. Blue light and blur remain global controls;
 system-wide controls such as Bluetooth, airplane mode and power profiles manage
 the host rather than a particular screen.
 
+After resume, audio controls refresh and the monitor microphone is reconciled
+through the same serialized, device-targeted queue. Recovery retries for at most
+ten seconds while the USB source returns. An unmuted source gets a brief
+mute/unmute transition to clear monitor firmware mute that is invisible to the
+PipeWire/ALSA cache; a software-muted source remains muted. This does not change
+the default source, redirect to the laptop microphone, or display an OSD.
+
 <p align="center">
   <img src="../../man/figures/awesome-control-center.jpg" alt="Control Center in light and dark modes" width="960">
 </p>

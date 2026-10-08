@@ -57,19 +57,25 @@ package.loaded.wibox = {
     container = { background = function() end }
 }
 
+local function make_timer(spec)
+    function spec:again() self.started = true end
+
+    spec.start = spec.again
+    function spec:stop() self.started = false end
+
+    timers[#timers + 1] = spec
+    return spec
+end
 package.loaded.gears = {
     filesystem = { get_configuration_dir = function() return root end },
     shape = {},
     debug = { print_warning = function() end },
     table = { join = function(...) return { ... } end },
-    timer = function(spec)
-        function spec:again() self.started = true end
-
-        spec.start = spec.again
-        function spec:stop() self.started = false end
-
-        timers[#timers + 1] = spec; return spec
-    end,
+    timer = setmetatable({
+        start_new = function(timeout, callback)
+            return make_timer { timeout = timeout, callback = callback, started = true }
+        end
+    }, { __call = function(_, spec) return make_timer(spec) end }),
 }
 
 package.loaded.awful = {
@@ -106,7 +112,7 @@ package.loaded['library.display-brightness'] = {
 }
 
 package.loaded['configuration.config'] = {
-    display = { primary = { name = 'eDP-1' } },
+    display = { primary = { name = 'eDP-1' }, external = { name = 'DP-1-1' } },
     widget = { audio = { primary_device_pattern = 'internal-card', external_device_pattern = 'usb-Monitor-*' } }
 }
 
@@ -167,4 +173,33 @@ osd:set_value(45); flush()
 assert(calls[#calls].argv[6] == 'external', 'OSD drag lost its original device')
 reply(#calls, { available = false }, 1)
 assert(slider.value == 0, 'unavailable monitor was represented as a working volume control')
+
+focused = primary
+awesome.emit_signal('module::sleep_resumed')
+local recovery = timers[#timers]
+local refresh_calls = #calls
+assert(recovery.timeout == 1 and recovery.started)
+assert(recovery.callback())
+flush()
+assert(#calls == refresh_calls + 1 and calls[#calls].argv[6] == 'external'
+    and calls[#calls].argv[12] == 'resync', 'Resume must reconcile the monitor, not the focused laptop mic')
+reply(#calls, { available = false }, 1)
+assert(recovery.started, 'Missing USB source must be retried')
+recovery.callback(); flush()
+local osd_events = #events
+reply(#calls, state(100, false))
+assert(not recovery.started, 'Successful recovery must stop its retry timer')
+for index = osd_events + 1, #events do
+    assert(events[index][1] ~= 'module::mic_osd:show', 'Resume recovery must not display an OSD')
+end
+
+awesome.emit_signal('module::sleep_resumed')
+local abandoned = timers[#timers]
+awesome.emit_signal('module::sleep_resumed')
+assert(not abandoned.started and not abandoned.callback(), 'A newer resume must retire the old retry')
+recovery = timers[#timers]
+for attempt = 1, 10 do
+    assert(recovery.callback() == (attempt < 10), 'Missing-device retries must be bounded')
+    flush(); reply(#calls, { available = false }, 1)
+end
 print('focused audio queue, widget, unavailable-state and OSD tests passed')
