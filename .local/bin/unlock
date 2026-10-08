@@ -1,0 +1,57 @@
+#!/bin/bash
+set -euo pipefail
+
+for tool in xdotool awesome-client timeout; do
+    command -v "$tool" >/dev/null || {
+        printf 'unlock: required command is missing: %s\n' "$tool" >&2
+        exit 1
+    }
+done
+
+export DISPLAY=:0
+export XAUTHORITY="${XAUTHORITY:-$HOME/.Xauthority}"
+export DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/bus"
+
+lock_state() {
+    local response
+    response=$(timeout 3 awesome-client \
+        'return require("module.lockscreen-lifecycle").is_visible(screen)') || return 1
+    if [[ "$response" =~ ^[[:space:]]*boolean[[:space:]]+(true|false)[[:space:]]*$ ]]; then
+        if [[ "${BASH_REMATCH[1]}" == true ]]; then
+            printf 'locked\n'
+        else
+            printf 'unlocked\n'
+        fi
+    else
+        printf 'unlock: could not determine Awesome lock state\n' >&2
+        return 1
+    fi
+}
+
+state=$(lock_state)
+if [[ "$state" == unlocked ]]; then
+    printf 'Screen is already unlocked.\n'
+    exit 0
+fi
+
+response=$(timeout 3 awesome-client \
+    'return require("library.lockscreen-recovery-key").xdotool_chord()')
+if [[ "$response" =~ ^[[:space:]]*string[[:space:]]+\"([a-zA-Z0-9_+]+)\"[[:space:]]*$ ]]; then
+    chord="${BASH_REMATCH[1]}"
+else
+    printf 'unlock: could not determine the configured recovery shortcut\n' >&2
+    exit 1
+fi
+
+xdotool key --clearmodifiers "$chord"
+for _ in {1..20}; do
+    sleep 0.1
+    state=$(lock_state)
+    if [[ "$state" == unlocked ]]; then
+        printf 'Screen unlocked.\n'
+        exit 0
+    fi
+done
+
+printf 'unlock: screen remained locked after the recovery shortcut\n' >&2
+exit 1

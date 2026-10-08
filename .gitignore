@@ -30,6 +30,7 @@
 !/.local/bin/sync-wiki
 !/.local/bin/topgrade
 !/.local/bin/tsh
+!/.local/bin/unlock
 !/.local/bin/vnc-server
 !/.local/bin/ytfzf.sh
 !/.local/bin/zsh-to-bash-history.rb

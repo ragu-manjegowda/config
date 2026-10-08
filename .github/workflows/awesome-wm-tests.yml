@@ -18,6 +18,7 @@ on:
     paths:
       - ".config/awesome/**"
       - ".local/bin/vnc-server"
+      - ".local/bin/unlock"
       - ".config/misc/etc/nftables.conf"
       - ".config/scripts/bootstrap/02-security.sh"
       - ".config/imapnotify/**"
@@ -52,6 +53,7 @@ on:
     paths:
       - ".config/awesome/**"
       - ".local/bin/vnc-server"
+      - ".local/bin/unlock"
       - ".config/misc/etc/nftables.conf"
       - ".config/scripts/bootstrap/02-security.sh"
       - ".config/imapnotify/**"
@@ -962,6 +964,8 @@ jobs:
           HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_lockscreen_auth.lua
           HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_lockscreen_lifecycle.lua
           HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_lockscreen_keygrabber.lua
+          HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_lockscreen_recovery_key.lua
+          HOME="$GITHUB_WORKSPACE" python -B .config/awesome/tests/test_unlock.py
           HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_lockscreen_intruder.lua
           HOME="$GITHUB_WORKSPACE" python -B .config/awesome/tests/test_vnc_server.py
           HOME="$GITHUB_WORKSPACE" python -B .config/awesome/tests/test_config_pull.py

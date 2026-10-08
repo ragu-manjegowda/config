@@ -11,6 +11,7 @@ local config = require('configuration.config')
 local suspension = require('library.notification-suspension')
 local fingerprint = require('module.lockscreen-fingerprint')
 local lockscreen_lifecycle = require('module.lockscreen-lifecycle')
+local recovery_key = require('library.lockscreen-recovery-key')
 local intruder_alert = require('module.lockscreen-intruder')
 
 require('module.dynamic-wallpaper')
@@ -539,8 +540,8 @@ local locker = function(s)
                 end
             },
             awful.key {
-                modifiers = { 'Mod1', 'Mod4', 'Shift', 'Control' },
-                key       = 'Return',
+                modifiers = recovery_key.modifiers,
+                key       = recovery_key.key,
                 on_press  = function(self)
                     if not type_again then
                         return

@@ -63,8 +63,9 @@ assert_test(
 )
 
 assert_test(
-    source:match("modifiers = { 'Mod1', 'Mod4', 'Shift', 'Control' }") ~= nil and
-    source:match("key%s*=%s*'Return'") ~= nil and
+    source:match("require%('library%.lockscreen%-recovery%-key'%)") ~= nil and
+    source:match("modifiers = recovery_key%.modifiers") ~= nil and
+    source:match("key%s*=%s*recovery_key%.key") ~= nil and
     source:match("back_door%(%)") ~= nil,
     "Configured emergency backdoor chord is preserved"
 )
