@@ -43,25 +43,30 @@ end
 local primary = make_screen(0, 0, 2880, 1800, 144)
 local external = make_screen(2880, 0, 3440, 1440, 144)
 local small = make_screen(-1920, 200, 1920, 1080, 96)
-assert(geometry.width(primary) == 720 and geometry.width(external) == 860,
-    'The original screen-relative width fraction must remain intact')
-assert(geometry.width(small) == 320)
+assert(geometry.width(primary) == 720 and geometry.width(external) == 720,
+    'DPI must scale the readable design width, not the screen-pixel fraction')
+assert(geometry.width(small) == 480, 'Full HD at 96 DPI must not squeeze panels to 320 pixels')
+assert(geometry.width(make_screen(0, 0, 6000, 1800, 96)) == 1000)
+assert(geometry.width(make_screen(0, 0, 6000, 1800, 144)) == 1000,
+    'A screen-relative width above the design floor must not receive DPI scaling again')
+assert(geometry.width(make_screen(0, 0, 320, 600, 192)) == 288,
+    'The readable width floor must still fit inside a narrow workarea')
 local compact_screen = make_screen(0, 0, 3440, 1440, 144)
 local compact_panel = object { width = 420, height = 100, visible = false }
 geometry.bind(compact_panel, compact_screen, 'top', true)
-assert(compact_panel.minimum_width == 1 and compact_panel.maximum_width == 3408)
-assert(compact_panel.width == 420,
-    'Content-fit centers must not replace their natural width with a screen fraction')
-compact_panel.width = 530
+assert(compact_panel.minimum_width == 720 and compact_panel.maximum_width == 3408)
+assert(compact_panel.width == 720,
+    'Content-fit centers must retain a readable DPI-scaled minimum')
+compact_panel.width = 950
 compact_panel.visible = true
 compact_panel:emit_signal('property::visible')
-assert(compact_panel.width == 530 and compact_panel.x == 1455,
+assert(compact_panel.width == 950 and compact_panel.x == 1245,
     'Content changes must retain native popup sizing and centered placement')
 compact_screen.geometry.width = 2880
 compact_screen.workarea.width = 2880
 compact_screen:emit_signal('property::geometry')
-assert(compact_panel.width == 530 and compact_panel.maximum_width == 2848
-    and compact_panel.x == 1175,
+assert(compact_panel.width == 950 and compact_panel.maximum_width == 2848
+    and compact_panel.x == 965,
     'Resize must update content-fit bounds without forcing a different width')
 for _, s in ipairs { primary, external, small } do
     local bounds = geometry.bounds(s)
@@ -73,7 +78,7 @@ local contents = {}
 local panel = object { widget = contents, height = 2000, visible = false }
 geometry.bind(panel, external, 'top_right')
 assert(panel.height == 1339 and panel.maximum_height == 1339)
-assert(panel.x == 5444 and panel.y == 85 and panel.width == 860)
+assert(panel.x == 5584 and panel.y == 85 and panel.width == 720)
 assert(geometry.bounds(primary).y == panel.y,
     'Different screen heights must not change client/notification top-edge alignment')
 assert(panel.y == external.workarea.y + 2 * package.loaded.beautiful.useless_gap,
@@ -112,11 +117,11 @@ for _, section in ipairs(sections) do assert(section.limit == 232, 'Larger scree
 external.geometry = { x = -3440, y = 300, width = 3440, height = 1080 }
 external.workarea = { x = -3440, y = 369, width = 3440, height = 1011 }
 external:emit_signal('property::geometry')
-assert(panel.maximum_height == 979 and panel.y == 385 and panel.x == -876,
+assert(panel.maximum_height == 979 and panel.y == 385 and panel.x == -736,
     'Resize/reposition must use the owning screen geometry')
 local centered = object { widget = contents, height = 100 }
 geometry.bind(centered, small, 'top')
-assert(centered.x == -1120 and centered.y == 262)
+assert(centered.x == -1200 and centered.y == 262)
 small.workarea = small.geometry
 small:emit_signal('property::workarea')
 assert(centered.y == small.geometry.y + 16,

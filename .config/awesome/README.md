@@ -284,6 +284,10 @@ failed sources retry after an hour while cached/offline data remains available.
 The small refresh button forces a sync and its tooltip reports the cached range
 and source errors. Sync is bounded and asynchronous, without a new polling timer.
 
+<p align="center">
+  <img src="../../man/figures/awesome-calendar-center.jpg" alt="Calendar Center diagonally split between dark and light themes, with the October 12 Columbus Day holiday tooltip" width="640">
+</p>
+
 ### Playerctl Center
 
 - Media player controls via bling/playerctl integration

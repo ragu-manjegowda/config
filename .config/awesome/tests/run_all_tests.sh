@@ -27,13 +27,13 @@ run_test() {
     local test_file="$1"
     local test_name="$(basename "$test_file" .lua | sed 's/_/ /g' | sed 's/test //')"
     local interpreter="lua"
-    if [[ "$test_file" == *test_screen_recorder_storage.lua ]]; then
+    if [[ "$test_file" == *test_screen_recorder_storage.lua || "$test_file" == *test_luajit_weak_signals.lua ]]; then
         interpreter="luajit"
     fi
-    
+
     echo -e "\n${YELLOW}▶ Running: $test_name${NC}"
     echo "$(printf '─%.0s' {1..60})"
-    
+
     if "$interpreter" "$test_file"; then
         echo -e "${GREEN}✓ $test_name passed${NC}"
         ((TESTS_PASSED++))
@@ -159,7 +159,7 @@ while IFS= read -r script; do
     if [ ! -r "$script" ]; then
         continue
     fi
-    
+
     FIRST_LINE=$(head -n1 "$script")
     if [[ ! "$FIRST_LINE" =~ ^#! ]]; then
         echo -e "  ${YELLOW}⚠${NC} Missing shebang: $script"

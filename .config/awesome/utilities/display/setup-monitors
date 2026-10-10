@@ -13,13 +13,16 @@ unset display_config
 : "${XDG_RUNTIME_DIR:?XDG_RUNTIME_DIR is required}"
 lock_file="${XDG_RUNTIME_DIR}/awesome-display-transition-${UID}.lock"
 inherited_lock=false
+
 if [[ "${DISPLAY_TRANSITION_LOCK_FD:-}" == 9 &&
       "$(readlink /proc/$$/fd/9 2>/dev/null || true)" == "$lock_file" ]]; then
     inherited_lock=true
 fi
+
 if [[ "$inherited_lock" != true ]]; then
     exec 9>"$lock_file"
 fi
+
 if ! flock -n 9; then
     printf '%s\n' 'Another display transition is already running' >&2
     exit 1
@@ -30,6 +33,10 @@ xrandr_args=(
     --output "$PRIMARY_NAME" --primary --mode "$PRIMARY_MODE" --pos "$PRIMARY_POS"
     --scale 1x1
 )
+
+if [[ -n "${PRIMARY_SCALING_MODE:-}" ]]; then
+    xrandr_args+=(--set 'scaling mode' "$PRIMARY_SCALING_MODE")
+fi
 
 framebuffer_width=0
 framebuffer_height=0
@@ -51,6 +58,7 @@ include_output_extent "$PRIMARY_MODE" "$PRIMARY_POS"
 # Check if external monitor is connected
 external_connected=false
 display_state="$(xrandr --current)"
+
 while IFS= read -r line; do
     read -r output connection _ <<<"$line"
     if [[ "$output" == "$EXTERNAL_NAME" && "$connection" == connected ]]; then
@@ -58,6 +66,7 @@ while IFS= read -r line; do
         break
     fi
 done <<<"$display_state"
+
 if [[ "$external_connected" == true ]]; then
     external_args=(
         xrandr

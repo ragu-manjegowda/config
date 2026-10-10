@@ -8,12 +8,16 @@ return {
     machine = 'imac',
     display = {
         -- DPI setting for all displays
-        dpi = 144,
+        dpi = 96,
 
         -- Primary display (iMac)
         primary = {
             name = 'DP-1',
-            mode = '2560x1440',
+            mode = '1920x1080',
+            -- Scale the Full HD desktop to the iMac panel instead of blanking it.
+            scaling_mode = 'Full aspect',
+            -- Handle brightness directly while locked; this panel has no laptop backlight.
+            brightness_keys_when_locked = true,
             position = '0x0',
             -- Additional settings
             rate = nil, -- Optional: refresh rate (e.g., '60')

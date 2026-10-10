@@ -25,6 +25,7 @@ export EXTERNAL_MODE="3840x2160"
 export EXTERNAL_POS="2880x0"
 export EXTERNAL_SCALE_FROM="2880x1620"
 CONFIG
+printf 'export PRIMARY_SCALING_MODE="%s"\n' "${TEST_PRIMARY_SCALING_MODE:-}"
 EOF
 
 cat > "$tmp_dir/home/.config/awesome/utilities/display/setup-monitors" <<'EOF'
@@ -293,5 +294,10 @@ printf '%s\n' \
 [[ "$(grep -c '^xrandr --dpi' "$DISPLAY_TEST_LOG")" == 1 ]]
 grep -Fq -- '--output eDP-1 --primary --mode 2880x1800 --pos 0x0 --scale 1x1 --output DP-4 --mode 3840x2160 --pos 2880x0 --scale-from 2880x1620 --fb 5760x1800' \
     "$DISPLAY_TEST_LOG"
+
+: > "$DISPLAY_TEST_LOG"
+TEST_PRIMARY_SCALING_MODE='Full aspect' "$SETUP" >"$tmp_dir/output" 2>&1
+grep -Fq -- '--set scaling mode Full aspect' "$DISPLAY_TEST_LOG"
+grep -Fq -- '--fb 5760x1800' "$DISPLAY_TEST_LOG"
 
 printf '%s\n' 'external display script tests passed'

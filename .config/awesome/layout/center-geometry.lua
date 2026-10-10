@@ -20,8 +20,15 @@ function center_geometry.bounds(s)
     }
 end
 
+function center_geometry.minimum_width(s)
+    -- A readable design width scales with DPI; screen fractions are already pixels.
+    return math.floor(math.min(beautiful.xresources.apply_dpi(480, s), center_geometry.bounds(s).width))
+end
+
 function center_geometry.width(s)
-    return math.min(beautiful.xresources.apply_dpi(s.geometry.width / 6, s), center_geometry.bounds(s).width)
+    return math.floor(math.min(
+        math.max(s.geometry.width / 6, center_geometry.minimum_width(s)),
+        center_geometry.bounds(s).width))
 end
 
 function center_geometry.bind(panel, s, alignment, content_width)
@@ -35,10 +42,10 @@ function center_geometry.bind(panel, s, alignment, content_width)
         if s.valid == false then return end
         local bounds = center_geometry.bounds(s)
         if content_width then
-            -- Let awful.popup use the widget's natural width, capped to this screen.
-            panel.minimum_width = 1
+            -- Keep natural content sizing above a readable floor, capped to this screen.
+            panel.minimum_width = center_geometry.minimum_width(s)
             panel.maximum_width = bounds.width
-            panel.width = math.min(panel.width, bounds.width)
+            panel.width = math.max(panel.minimum_width, math.min(panel.width, bounds.width))
         else
             local width = center_geometry.width(s)
             panel.minimum_width = width

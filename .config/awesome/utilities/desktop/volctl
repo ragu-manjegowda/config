@@ -32,14 +32,13 @@ uv pip install --quiet pulsectl --python "$VOLCTL_PATH/venv/bin/python"
 # shared libraries aligned rather than rebuilding them against Homebrew.
 uv pip install --quiet --no-deps --editable "$VOLCTL_PATH" --python "$VOLCTL_PATH/venv/bin/python"
 
-if [ ! -d "$VOLCTL_PATH/venv/share/glib-2.0/schemas" ]; then
-    mkdir "$VOLCTL_PATH/venv/share/glib-2.0/schemas"
-fi
+# Editable installs may not create the venv's share/ directory hierarchy.
+mkdir -p "$GSETTINGS_SCHEMA_DIR"
 
-cp "$VOLCTL_PATH/data/apps.volctl.gschema.xml" "$VOLCTL_PATH/venv/share/glib-2.0/schemas"
-glib-compile-schemas "$VOLCTL_PATH/venv/share/glib-2.0/schemas/" 2>/dev/null
+cp "$VOLCTL_PATH/data/apps.volctl.gschema.xml" "$GSETTINGS_SCHEMA_DIR"
+glib-compile-schemas --strict "$GSETTINGS_SCHEMA_DIR"
 
 # Wait for systray to be ready
 sleep 2
 
-exec "$VOLCTL_PATH/venv/bin/volctl" 2>/dev/null
+exec "$VOLCTL_PATH/venv/bin/volctl"

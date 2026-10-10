@@ -47,6 +47,7 @@ local required_vars = {
     "PRIMARY_NAME",
     "PRIMARY_MODE",
     "PRIMARY_POS",
+    "PRIMARY_SCALING_MODE",
     "EXTERNAL_NAME",
     "EXTERNAL_MODE",
     "EXTERNAL_POS",

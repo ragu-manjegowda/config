@@ -18,7 +18,6 @@ neomutt-git
 newsboat-git
 numix-cursor-theme
 openconnect-gp-git
-openssl-1.1
 pacman-cleanup-hook
 pam-fprint-grosshack
 paru

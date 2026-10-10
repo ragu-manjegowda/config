@@ -2,9 +2,9 @@ local filesystem = require('gears.filesystem')
 local config_dir = filesystem.get_configuration_dir()
 local utils_dir = config_dir .. 'utilities/'
 
--- Get DPI safely (use config fallback when screen is not available)
+-- Use the machine configuration as the single DPI source for application commands.
 local config = require('configuration.config')
-local dpi = (screen and screen.primary and dpi) or config.display.dpi
+local dpi = config.display.dpi
 
 return {
     -- The default applications that we will use in keybindings and widgets
@@ -92,8 +92,8 @@ return {
         -- ' eval $(gnome-keyring-daemon -s --components=gpg)',
         -- Set monitors dpi
         config_dir .. 'utilities/display/setup-monitors',
-        -- Set the dpi for GDK applications
-        'xrdb -merge ~/.Xresources',
+        -- Machine DPI comes from config.lua, overriding the shared resource defaults.
+        string.format('xrdb -merge ~/.Xresources && printf "Xft.dpi: %d\\n" | xrdb -merge', dpi),
         -- Set keyboard repeat rate (delay in ms, rate per second)
         'xset r rate 180 45',
         -- Audio equalizer

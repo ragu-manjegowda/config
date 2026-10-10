@@ -195,7 +195,7 @@ jobs:
           for test in "${{ env.AWESOME_CONFIG_DIR }}"/tests/test_*.lua; do
             case "$(basename "$test")" in
               test_notification_*.lua) continue ;;
-              test_screen_recorder_storage.lua) continue ;;
+              test_screen_recorder_storage.lua|test_luajit_weak_signals.lua) continue ;;
             esac
             HOME="$GITHUB_WORKSPACE" lua "$test"
           done
@@ -469,6 +469,11 @@ jobs:
         run: |
           cd "$GITHUB_WORKSPACE"
           HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_screen_recorder_storage.lua
+
+      - name: Test LuaJIT weak-signal proxy bookkeeping
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_luajit_weak_signals.lua
 
       - name: Test configuration with awesome --check
         run: |
@@ -912,7 +917,7 @@ jobs:
       - name: Install test dependencies
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm lua luajit lua51-lgi python zsh
+          pacman -S --noconfirm lua luajit lua51-lgi python zsh glib2
 
       - name: Select machine configuration
         env:
@@ -945,6 +950,7 @@ jobs:
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_kbd_battery_lifecycle.sh
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_login_media_keys.sh
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_presentation_mode.sh
+          HOME="$GITHUB_WORKSPACE" python -B .config/awesome/tests/test_volctl_launcher.py
           HOME="$GITHUB_WORKSPACE" python -B .config/awesome/tests/test_volctl_slider_cursor.py
 
       - name: Test mocked blue-light lifecycle (no display hardware)

@@ -97,6 +97,12 @@ local function refresh_locked_media_osd(key)
     local signal = locked_media_signals[key]
     if not signal then return false end
 
+    -- Profiles without the login listener's backlight can opt into the DDC queue.
+    if config.display.primary.brightness_keys_when_locked and signal == 'widget::brightness' then
+        require('library.display-brightness').adjust(key == 'XF86MonBrightnessUp' and 10 or -10)
+        return true
+    end
+
     gears.timer.start_new(0.15, function()
         awesome.emit_signal(signal, true)
         if signal == 'widget::microphone' then

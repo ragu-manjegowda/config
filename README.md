@@ -50,6 +50,10 @@
 |:--:|
 | ***AwesomeWM Control Center in light and dark modes*** |
 
+| <img src="man/figures/awesome-calendar-center.jpg" alt="AwesomeWM Calendar Center diagonally split between dark and light themes, with the October 12 Columbus Day holiday tooltip" width="640"> |
+|:--:|
+| ***AwesomeWM Calendar Center in dark and light modes with a holiday tooltip*** |
+
 | <img src="man/figures/awesome-battery-tooltip.jpg" alt="AwesomeWM battery tooltip in light and dark modes" width="960"> |
 |:--:|
 | ***AwesomeWM battery and power-consumer tooltip*** |

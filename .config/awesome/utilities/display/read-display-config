@@ -54,6 +54,11 @@ end
 local primary_name = require_value('primary display name', d.primary.name, '^[%w_.:-]+$')
 local primary_mode = require_value('primary display mode', d.primary.mode, '^%d+x%d+$')
 local primary_pos = require_value('primary display position', d.primary.position, '^%d+x%d+$')
+local primary_scaling_mode = d.primary.scaling_mode or ''
+local scaling_modes = { ['None'] = true, ['Full'] = true, ['Center'] = true, ['Full aspect'] = true }
+if primary_scaling_mode ~= '' and not scaling_modes[primary_scaling_mode] then
+    error('invalid primary display scaling mode')
+end
 local external_name = require_value('external display name', d.external.name, '^[%w_.:-]+$')
 if primary_name == external_name then
     error('primary and external display names must differ')
@@ -74,6 +79,7 @@ print(string.format('export DISPLAY_DPI=%d', d.dpi))
 print(string.format('export PRIMARY_NAME="%s"', primary_name))
 print(string.format('export PRIMARY_MODE="%s"', primary_mode))
 print(string.format('export PRIMARY_POS="%s"', primary_pos))
+print(string.format('export PRIMARY_SCALING_MODE="%s"', primary_scaling_mode))
 print(string.format('export EXTERNAL_NAME="%s"', external_name))
 print(string.format('export EXTERNAL_MODE="%s"', external_mode))
 print(string.format('export EXTERNAL_POS="%s"', external_pos))

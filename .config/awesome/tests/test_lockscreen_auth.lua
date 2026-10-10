@@ -62,6 +62,46 @@ assert_test(
     "Locked media keys refresh brightness and volume feedback"
 )
 
+-- Execute the real dispatch helper without constructing a desktop or changing hardware.
+local media_helper = assert(source:match('(local function refresh_locked_media_osd%(key%).-\nend)'))
+local adjustments, refreshes = {}, {}
+local media_config = { display = { primary = { brightness_keys_when_locked = true } } }
+local media_env = {
+    config = media_config,
+    locked_media_signals = {
+        XF86MonBrightnessUp = 'widget::brightness',
+        XF86MonBrightnessDown = 'widget::brightness',
+        XF86AudioMute = 'widget::volume',
+    },
+    require = function(name)
+        assert(name == 'library.display-brightness')
+        return { adjust = function(delta) adjustments[#adjustments + 1] = delta end }
+    end,
+    gears = { timer = { start_new = function(_, callback) callback() end } },
+    awesome = { emit_signal = function(signal) refreshes[#refreshes + 1] = signal end },
+}
+local media_chunk = media_helper .. '\nreturn refresh_locked_media_osd'
+local media_loader
+if _VERSION == 'Lua 5.1' then
+    media_loader = assert(loadstring(media_chunk))
+    setfenv(media_loader, media_env)
+else
+    media_loader = assert(load(media_chunk, 'locked-media-helper', 't', media_env))
+end
+local dispatch_media = media_loader()
+assert_test(
+    dispatch_media('XF86MonBrightnessUp') and dispatch_media('XF86MonBrightnessDown') and
+    adjustments[1] == 10 and adjustments[2] == -10 and #adjustments == 2,
+    'iMac locked brightness keys dispatch one DDC adjustment per press'
+)
+media_config.display.primary.brightness_keys_when_locked = nil
+dispatch_media('XF86MonBrightnessUp')
+assert_test(#adjustments == 2 and refreshes[1] == 'widget::brightness',
+    'Laptop locked brightness retains its existing listener without a double adjustment')
+dispatch_media('XF86AudioMute')
+assert_test(refreshes[2] == 'widget::volume' and not dispatch_media('F1'),
+    'Audio refresh and non-media password input retain their existing dispatch')
+
 assert_test(
     source:match("require%('library%.lockscreen%-recovery%-key'%)") ~= nil and
     source:match("modifiers = recovery_key%.modifiers") ~= nil and

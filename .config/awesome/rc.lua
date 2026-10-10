@@ -1,3 +1,5 @@
+-- Bound LuaJIT weak-signal bookkeeping before constructing widgets.
+require('library.luajit-weak-signals')
 local gears = require('gears')
 local beautiful = require('beautiful')
 local awful = require('awful')
@@ -41,6 +43,8 @@ awful.util.shell = 'sh'
 -- ░░█░░█▀█░█▀▀░█░█░█▀▀
 -- ░░▀░░▀░▀░▀▀▀░▀░▀░▀▀▀
 
+-- Apply the machine's DPI before theme and widget sizes are calculated.
+require('beautiful.xresources').set_dpi(require('configuration.config').display.dpi)
 local active_theme = require('theme')
 beautiful.init(active_theme)
 gears.table.crush(beautiful, active_theme, true)
