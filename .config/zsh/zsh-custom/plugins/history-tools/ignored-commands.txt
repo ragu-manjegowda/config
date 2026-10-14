@@ -1,0 +1,39 @@
+# One command-name phrase per line. Blank lines and comments are ignored.
+# Common prefixes (sudo, env, command, builtin, time) are recognized.
+apt-get
+apt-mark
+aptitude
+brew info
+brew install
+brew search
+brew uninstall
+cco
+cd
+chmod
+config checkout
+config config
+cp
+diff
+ga
+gco
+gd
+gedit
+git checkout
+git diff
+kill -9
+l
+ll
+ls
+merge-images-diagonally
+mkdir
+mpc
+mv
+nvim
+ps -aux
+rm
+rmdir
+take
+vim
+whereis
+which
+xdg-open

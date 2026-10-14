@@ -8,6 +8,8 @@ import stat
 import sys
 import tempfile
 import time
+import unicodedata
+from email.header import decode_header, make_header
 from email.utils import getaddresses, parseaddr
 from pathlib import Path
 
@@ -40,31 +42,51 @@ def message_contacts(message: str) -> list[tuple[str, str]]:
     return contacts
 
 
+def automated_identity(value: str) -> bool:
+    """Recognize explicit no-reply phrases in an email local part."""
+    value = unicodedata.normalize("NFKC", value)
+    value = re.sub(r"(?<=[a-z])(?=[A-Z])", " ", value)
+    words = re.findall(r"[a-z0-9]+", value.casefold())
+    signals = {
+        "noreply", "donotreply", "dontreply", "autoreply", "mailerdaemon",
+        "noresponse", "donotrespond", "dontrespond",
+    }
+    return any("".join(words[start:end]) in signals
+               for start in range(len(words))
+               for end in range(start + 1, min(len(words), start + 3) + 1))
+
+
 def contact(name: str, address: str) -> tuple[str, str] | None:
+    try:
+        name = str(make_header(decode_header(name)))
+    except (LookupError, UnicodeError, ValueError):
+        pass
+    name = unicodedata.normalize("NFKC", name)
     name = re.sub(r"[\x00-\x1f\x7f\"',]", "", name).strip()
-    address = address.strip().casefold()
+    address = address.strip()
     if not re.fullmatch(r"[^<>\s@]+@[^<>\s@]+", address):
         return None
 
-    localpart, domain = address.rsplit("@", 1)
-    compact_localpart = re.sub(r"[^a-z0-9]", "", localpart)
-    compact_name = re.sub(r"[^a-z0-9]", "", name.casefold())
-    automated = ("noreply", "donotreply", "dontreply", "autoreply", "mailerdaemon")
-    blocked_domains = (
-        "facebook.com", "facebookmail.com", "twitter.com", "twittermail.com",
-        "amazon.com", "amazonses.com", "amazonaws.com", "paypal.com", "slack.com",
-    )
-    if (
-        compact_localpart.startswith(automated)
-        or any(token in compact_name for token in automated)
-        or any(domain == blocked or domain.endswith("." + blocked)
-               for blocked in blocked_domains)
-        or "gerrit" in localpart or "gerrit" in domain
-        or "slack" in localpart
-        or address in {"ops@exoscale.ch", "gitlab@gitlab-master"}
-    ):
+    identity_localpart = address.rsplit("@", 1)[0]
+    address = address.casefold()
+    if automated_identity(identity_localpart):
         return None
     return name, address
+
+
+def blacklisted_substrings(path: Path) -> tuple[str, ...] | None:
+    """Read email substrings each run; None means the blacklist is locked."""
+    try:
+        contents = (path.parent / "alias-blacklist").read_bytes()
+    except FileNotFoundError:
+        return ()
+    if contents.startswith(b"\0GITCRYPT\0"):
+        return None
+    return tuple(
+        line.strip().casefold()
+        for line in contents.decode("utf-8").splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
+    )
 
 
 def own_addresses(path: Path) -> set[str]:
@@ -171,6 +193,15 @@ def locked_directory(path: Path) -> int | None:
 
 def add_alias(message: str, path: Path) -> None:
     contacts = message_contacts(message)
+    if not contacts:
+        return
+    blacklist = blacklisted_substrings(path)
+    if blacklist is None:
+        return
+    contacts = [
+        (name, address) for name, address in contacts
+        if not any(substring in address for substring in blacklist)
+    ]
     if not contacts:
         return
     own = own_addresses(path)

@@ -12,14 +12,12 @@
 
 !/.local/bin
 /.local/bin/*
-!/.local/bin/bash-to-zsh-history.rb
 !/.local/bin/better-git-branch.sh
 !/.local/bin/codex
 !/.local/bin/codex-url-handler
 !/.local/bin/findip
 !/.local/bin/git-bare-clone.sh
 !/.local/bin/merge-images-diagonally.sh
-!/.local/bin/merge-zsh-histories.rb
 !/.local/bin/nvim-mergetool
 !/.local/bin/oc
 !/.local/bin/omni
@@ -33,7 +31,6 @@
 !/.local/bin/unlock
 !/.local/bin/vnc-server
 !/.local/bin/ytfzf.sh
-!/.local/bin/zsh-to-bash-history.rb
 
 
 !/.local/share
@@ -268,6 +265,7 @@
 /.config/zsh/.zsh_history
 /.config/zsh/.zsh_history.backup
 /.config/zsh/.zsh_history_*.bak
+/.config/zsh/zsh-custom/plugins/history-tools/__pycache__
 /.config/zsh/.zsh_sessions
 /.cups
 /.cursor

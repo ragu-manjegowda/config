@@ -39,7 +39,9 @@ echo -n "Testing sender aliases are extracted once without blank entries... "
 alias_test_dir="$(mktemp -d)"
 mkdir -p "$alias_test_dir/.config/neomutt/accounts"
 alias_test_file="$alias_test_dir/.config/neomutt/accounts/aliases"
+alias_blacklist="$alias_test_dir/.config/neomutt/accounts/alias-blacklist"
 touch "$alias_test_file"
+printf '# Synthetic exclusions\n\npaypal.com\n' > "$alias_blacklist"
 alias_script=~/.config/neomutt/scripts/create-alias.py
 if printf 'From: Ada Lovelace <ADA@example.org>\nSubject: Example\n\nBody\n' |
        HOME="$alias_test_dir" XDG_CONFIG_HOME="$alias_test_dir/.config" "$alias_script" >/dev/null &&
@@ -92,14 +94,21 @@ if add_test_sender 'Ada Lovelace <alex@example.org>' &&
    add_test_sender 'Ada Lovelace <ada@third.example.org>' &&
    add_test_sender 'Saved Person <SAVED@EXAMPLE.ORG>' &&
    add_test_sender 'Notifier <DO_NOT_REPLY+alerts@example.org>' &&
+   add_test_sender 'Person One (Google Slides) <comments-noreply@docs.google.com>' &&
+   add_test_sender 'Person Two (Google Slides) <comments-noreply@docs.google.com>' &&
+   add_test_sender 'Service <alerts-do.not.reply@example.org>' &&
+   add_test_sender 'Service <alertsNoReply@example.org>' &&
+   add_test_sender 'Service <alerts-dont-reply@example.org>' &&
+   add_test_sender 'Service <mailer-daemon@example.org>' &&
    add_test_sender 'Do Not Reply <newsletter@example.org>' &&
    add_test_sender 'Service <sender@paypal.com>' &&
    add_test_sender 'Joy Reply <joy@example.org>' &&
-   [[ $(wc -l < "$alias_test_file") -eq 6 ]] &&
+   [[ $(wc -l < "$alias_test_file") -eq 7 ]] &&
    grep -Fxq 'alias alex-example.org Ada Lovelace <alex@example.org>' "$alias_test_file" &&
    grep -Fxq 'alias ada Ada Lovelace <ada@other.example.org>' "$alias_test_file" &&
    grep -Fxq 'alias ada-third.example.org Ada Lovelace <ada@third.example.org>' "$alias_test_file" &&
-   grep -Fxq 'alias joy Joy Reply <joy@example.org>' "$alias_test_file"; then
+   grep -Fxq 'alias joy Joy Reply <joy@example.org>' "$alias_test_file" &&
+   grep -Fxq 'alias newsletter Do Not Reply <newsletter@example.org>' "$alias_test_file"; then
     echo -e "${GREEN}✓ PASSED${NC}"
     ((passed++))
 else
@@ -113,7 +122,7 @@ printf 'fRoM: Joy Reply <joy@example.org>\r\nSubject: Example\r\n\r\nBody withou
 HOME="$alias_test_dir" XDG_CONFIG_HOME="$alias_test_dir/.config" "$alias_script" \
     < "$alias_test_dir/message" > "$alias_test_dir/rendered"
 if cmp -s "$alias_test_dir/message" "$alias_test_dir/rendered" &&
-   [[ $(wc -l < "$alias_test_file") -eq 6 ]]; then
+   [[ $(wc -l < "$alias_test_file") -eq 7 ]]; then
     echo -e "${GREEN}✓ PASSED${NC}"
     ((passed++))
 else
@@ -127,13 +136,83 @@ for attempt in {1..8}; do
     add_test_sender 'Parallel Person <parallel@example.org>' &
 done
 wait
-if [[ $(wc -l < "$alias_test_file") -eq 7 ]] &&
+if [[ $(wc -l < "$alias_test_file") -eq 8 ]] &&
    [[ $(grep -Fxc 'alias parallel Parallel Person <parallel@example.org>' "$alias_test_file") -eq 1 ]]; then
     echo -e "${GREEN}✓ PASSED${NC}"
     ((passed++))
 else
     echo -e "${RED}✗ FAILED${NC}"
     echo "  Concurrent alias generation created duplicate or missing entries"
+    ((failed++))
+fi
+
+echo -n "Testing blacklist matches email substrings only for From and To... "
+printf 'alias curated Curated Person <saved@exchange.nvidia.com>\n' > "$alias_test_file"
+printf '  # Comment, not a rule\n\n  ExChange.Nvidia.Com  \nrobot+\n' > "$alias_blacklist"
+printf 'From: Employee <person@EXCHANGE.NVIDIA.COM>\nTo: Other <other@sub.exchange.nvidia.com>, Robot <prefix-robot+alerts@example.org>, Kept <kept@nvidia.com>,\n "exchange.nvidia.com" <human@example.org>\n\nBody\n' > "$alias_test_dir/blacklist-message"
+if HOME="$alias_test_dir" XDG_CONFIG_HOME="$alias_test_dir/.config" "$alias_script" \
+       < "$alias_test_dir/blacklist-message" > "$alias_test_dir/blacklist-rendered" &&
+   cmp -s "$alias_test_dir/blacklist-message" "$alias_test_dir/blacklist-rendered" &&
+   [[ $(wc -l < "$alias_test_file") -eq 3 ]] &&
+   grep -Fxq 'alias curated Curated Person <saved@exchange.nvidia.com>' "$alias_test_file" &&
+   grep -Fxq 'alias kept Kept <kept@nvidia.com>' "$alias_test_file" &&
+   grep -Fxq 'alias human exchange.nvidia.com <human@example.org>' "$alias_test_file"; then
+    echo -e "${GREEN}✓ PASSED${NC}"
+    ((passed++))
+else
+    echo -e "${RED}✗ FAILED${NC}"
+    echo "  Substring exclusions, email-only matching, or message passthrough failed"
+    ((failed++))
+fi
+
+echo -n "Testing blacklist edits take effect on the next message... "
+printf '\nsecond@\n' >> "$alias_blacklist"
+if add_test_sender 'New Rule <second@example.org>' &&
+   [[ $(wc -l < "$alias_test_file") -eq 3 ]] &&
+   printf '# No active rules\n\n' > "$alias_blacklist" &&
+   add_test_sender 'New Rule <second@example.org>' &&
+   [[ $(wc -l < "$alias_test_file") -eq 4 ]] &&
+   grep -Fxq 'alias second New Rule <second@example.org>' "$alias_test_file"; then
+    echo -e "${GREEN}✓ PASSED${NC}"
+    ((passed++))
+else
+    echo -e "${RED}✗ FAILED${NC}"
+    echo "  Blacklist changes required a reload or blank lines blocked contacts"
+    ((failed++))
+fi
+
+echo -n "Testing a locked blacklist skips alias creation but displays mail... "
+printf '\0GITCRYPT\0encrypted-placeholder\n' > "$alias_blacklist"
+locked_alias_before=$(sha256sum "$alias_test_file")
+locked_blacklist_before=$(sha256sum "$alias_blacklist")
+printf 'From: Locked Test <locked@example.org>\r\n\r\nBody without newline' > "$alias_test_dir/blacklist-message"
+if HOME="$alias_test_dir" XDG_CONFIG_HOME="$alias_test_dir/.config" "$alias_script" \
+       < "$alias_test_dir/blacklist-message" > "$alias_test_dir/blacklist-rendered" &&
+   cmp -s "$alias_test_dir/blacklist-message" "$alias_test_dir/blacklist-rendered" &&
+   [[ $(sha256sum "$alias_test_file") == "$locked_alias_before" ]] &&
+   [[ $(sha256sum "$alias_blacklist") == "$locked_blacklist_before" ]]; then
+    echo -e "${GREEN}✓ PASSED${NC}"
+    ((passed++))
+else
+    echo -e "${RED}✗ FAILED${NC}"
+    echo "  Locked blacklist was modified or ignored, or message display changed"
+    ((failed++))
+fi
+
+echo -n "Testing missing blacklist and literal matching... "
+rm "$alias_blacklist"
+if add_test_sender 'Missing Rule <missing@example.org>' &&
+   printf 'literal.*\n' > "$alias_blacklist" &&
+   add_test_sender 'Not Regex <literal-person@example.org>' &&
+   add_test_sender 'Literal Match <literal.*@example.org>' &&
+   [[ $(wc -l < "$alias_test_file") -eq 6 ]] &&
+   grep -Fxq 'alias missing Missing Rule <missing@example.org>' "$alias_test_file" &&
+   grep -Fxq 'alias literal-person Not Regex <literal-person@example.org>' "$alias_test_file"; then
+    echo -e "${GREEN}✓ PASSED${NC}"
+    ((passed++))
+else
+    echo -e "${RED}✗ FAILED${NC}"
+    echo "  Missing blacklist prevented saving or rules were interpreted as regexes"
     ((failed++))
 fi
 

@@ -57,6 +57,7 @@
 │
 ├── accounts/                    # Encrypted account data and configuration
 │   ├── aliases                  # Shared From/To aliases (git-crypt)
+│   ├── alias-blacklist          # Email substring exclusions (git-crypt)
 │   ├── work/
 │   │   ├── config               # Online mode (IMAP direct)
 │   │   ├── config-offline       # Offline mode (Maildir)
@@ -89,6 +90,20 @@ to use newly saved entries in recipient completion.
 During recipient entry, Ctrl+T opens NeoMutt's native alias menu, including
 when the field is empty. After typing part of a name, key, or email, Tab uses
 fzf to rank matches and NeoMutt's native query menu to select multiple matches.
+
+Edit `accounts/alias-blacklist` to exclude contacts from automatic alias creation.
+Put one substring per line: matching is case-insensitive against the email
+address only, not the display name. Entries are literal text, not regexes or
+wildcards; blank lines and lines starting with `#` are ignored. The file starts
+with the existing service exclusions and `exchange.nvidia.com`. It is reread
+each time the display filter runs, so edits need no NeoMutt restart.
+Common no-reply variants in email local parts are also skipped automatically.
+This affects new aliases; it does not remove existing entries.
+
+The `.gitattributes` rule for `.config/neomutt/accounts/**` encrypts the blacklist
+with Git-crypt, just like `accounts/aliases`. A locked blacklist suspends alias
+creation while message display continues unchanged. A missing blacklist adds
+no custom exclusions.
 
 ## Account Overview
 

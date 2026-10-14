@@ -27,7 +27,7 @@ ZSH_CUSTOM=$ZDOTDIR/zsh-custom
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 plugins=(tmux fzf-tab fzf-tab-source fzf-tab-preview prisma-ssh
          zsh-autosuggestions alias-finder custom-alias zsh-hist
-         history-sync gitfast
+         history-tools gitfast
          per-directory-history)
 
 # Enable alias finder by default for every command

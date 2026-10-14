@@ -224,8 +224,23 @@ HISTORY_BASE="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/dir_history"
 # Set completion color to yellow
 zstyle ':fzf-tab:*' default-color "$fg[yellow]"
 
-# Set hl color
-zstyle ':fzf-tab:*' fzf-flags '--color=hl:green'
+# Set hl color and accept a single filtered match without opening the picker.
+zstyle ':fzf-tab:*' fzf-flags '--color=hl:green' '--select-1'
+
+# fzf-tab-source registers more-specific flags that override the global style.
+# Preserve those preview options and add single-match selection to every style.
+() {
+    local definition
+    local -a fields flags
+    for definition in "${(@f)$(zstyle -L ':fzf-tab:*' fzf-flags)}"; do
+        fields=("${(@Q)${(z)definition}}")
+        flags=("${fields[@]:3}")
+        if (( ! ${flags[(Ie)--select-1]} )); then
+            flags+=('--select-1')
+        fi
+        zstyle "${fields[2]}" fzf-flags "${flags[@]}"
+    done
+}
 
 # Custom binding
 zstyle ':fzf-tab:complete:*' fzf-bindings 'alt-/:jump,tab:toggle+down,ctrl-x:deselect-all'
@@ -654,81 +669,6 @@ function compresspdf() {
 function listAlias() {
     noglob alias -m c*
 }
-
-function start-http-web-server () {
-    if ! type http-file-server > /dev/null; then
-        echo "Download binary: "
-        echo "For Linux: "
-        echo "curl -L https://github.com/sgreben/http-file-server/releases/\
-                download/1.6.1/http-file-server_1.6.1_linux_x86_64.tar.gz | \
-                tar xz"
-        echo "For Mac: "
-        echo "curl -L https://github.com/sgreben/http-file-server/releases/\
-                download/1.6.1/http-file-server_1.6.1_osx_x86_64.tar.gz | \
-                tar xz"
-        return
-    fi
-
-    echo "Welcome to file http-file-server"
-    echo "0: Download Server only"
-    echo "1: Upload/Download Server"
-    echo -n "Enter your choice: "
-    read serverChoice
-
-    case $serverChoice in
-        0)
-            echo "Requested to start download server"
-            serverType=downloadOnly
-            ;;
-        1)
-            echo "Requested upload server"
-            serverType=allowUpload
-            ;;
-        *)
-            echo "No kidding please!!"
-            return
-            ;;
-    esac
-
-    echo -n "Enter server address: "
-    read serverAddress
-
-    echo -n "Enter server port: "
-    read port
-
-    vared -p "Enter path to be served: " -c serverPath
-
-    echo -e "\033[0;31mTo download from command line use: "
-    echo -e "curl -O ${serverAddress}:${port}/path_from_below/filename\033[0m\n"
-
-    case $serverType in
-        downloadOnly)
-            http-file-server -a $serverAddress:$port $serverPath
-            ;;
-
-        allowUpload)
-            echo -e "\033[0;31mTo upload from command line use: "
-            echo -e "curl -LF 'file=@example.txt' \
-                ${serverAddress}:${port}/path_from_below\033[0m\n"
-            http-file-server -u -a $serverAddress:$port $serverPath
-            ;;
-    esac
-}
-
-###############################################################################
-########################### ZSH History merge #################################
-###############################################################################
-
-function merge-curr-zsh-history () {
-    eval "merge_zsh_histories.rb ${ZDOTDIR}/.zsh_history_*.bak \
-          ${ZDOTDIR}/.zsh_history > ${HOME}/zsh_history_merged"
-}
-
-function merge-zsh-history () {
-    eval "merge_zsh_histories.rb $@ \
-          ${ZDOTDIR}/.zsh_history > ${HOME}/zsh_history_merged"
-}
-
 
 ###############################################################################
 ################################  ytfzf #######################################

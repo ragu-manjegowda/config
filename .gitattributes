@@ -1,6 +1,7 @@
 .config/bash/bash_extras filter=git-crypt diff=git-crypt
 .config/imapnotify/** filter=git-crypt diff=git-crypt
 .config/neomutt/accounts/** filter=git-crypt diff=git-crypt
+.config/neomutt/accounts/alias-blacklist filter=git-crypt diff=git-crypt
 .config/neomutt/accounts/notmuch-identities filter=git-crypt diff=git-crypt
 .config/neomutt/credentials/** filter=git-crypt diff=git-crypt
 .config/opencode/dcp.jsonc filter=git-crypt diff=git-crypt
