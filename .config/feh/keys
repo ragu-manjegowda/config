@@ -9,19 +9,24 @@ jump_first 0
 jump_last dollar
 jump_fwd C-d
 jump_back C-u
-scroll_left h
+# Vim-style image navigation, alongside the standard keys.
+# feh supports at most three keys per action.
+prev_img h Left BackSpace
+next_img l Right space
+scroll_left KP_Left C-Left
 scroll_left_page C-h
-scroll_right l
+scroll_right KP_Right C-Right
 scroll_right_page C-l
-scroll_up k
+scroll_up k KP_Up C-Up
 scroll_up_page C-k
-scroll_down j
+scroll_down j KP_Down C-Down
 scroll_down_page C-j
-zoom_in plus
-zoom_out minus
+toggle_keep_vp K
+zoom_in plus Up
+zoom_out minus Down
 zoom_fit equal
 menu_close q
-menu_up k
-menu_down j
-menu_parent h
-menu_child l
+menu_up k Up
+menu_down j Down
+menu_parent h Left
+menu_child l Right

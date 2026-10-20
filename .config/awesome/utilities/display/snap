@@ -52,9 +52,9 @@ function geometry_for_display() {
 }
 
 function geometry_for_both() {
-    local external_mode="$EXTERNAL_MODE"
+    local capture_mode="$EXTERNAL_MODE"
     if [ -n "$EXTERNAL_SCALE_FROM" ]; then
-        external_mode="$EXTERNAL_SCALE_FROM"
+        capture_mode="$EXTERNAL_SCALE_FROM"
     fi
 
     parse_size "$PRIMARY_MODE"
@@ -64,7 +64,7 @@ function geometry_for_both() {
     local primary_x="$DISPLAY_X"
     local primary_y="$DISPLAY_Y"
 
-    parse_size "$external_mode"
+    parse_size "$capture_mode"
     local external_width="$DISPLAY_WIDTH"
     local external_height="$DISPLAY_HEIGHT"
     parse_position "$EXTERNAL_POS"
@@ -81,15 +81,15 @@ function geometry_for_both() {
 
 function target_geometry() {
     local target="${2:-${SCREENSHOT_TARGET:-both}}"
-    local external_mode="$EXTERNAL_MODE"
+    local capture_mode="$EXTERNAL_MODE"
     if [ -n "$EXTERNAL_SCALE_FROM" ]; then
-        external_mode="$EXTERNAL_SCALE_FROM"
+        capture_mode="$EXTERNAL_SCALE_FROM"
     fi
 
     case "$target" in
         external)
             if is_connected "$EXTERNAL_NAME"; then
-                geometry_for_display "$external_mode" "$EXTERNAL_POS"
+            geometry_for_display "$capture_mode" "$EXTERNAL_POS"
             else
                 geometry_for_display "$PRIMARY_MODE" "$PRIMARY_POS"
             fi

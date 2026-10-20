@@ -15,6 +15,8 @@ enable_system_service NetworkManager
 enable_system_service systemd-resolved
 # Load the final DNS-privacy and mDNS drop-ins deployed by steps 2 and 3.
 sudo systemctl restart systemd-resolved.service
+# Enable the daemon at boot; tailnet enrollment remains a one-time manual step.
+enable_system_service tailscaled
 enable_system_service avahi-daemon
 enable_system_service bluetooth
 enable_system_service cups

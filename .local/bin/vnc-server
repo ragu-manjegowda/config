@@ -11,9 +11,13 @@ usage() {
 }
 
 connection_info() {
-    local hostname
+    local hostname tailscale_ip
     hostname="$(hostnamectl --static)"
     printf 'Connect to %s.local:5900 using TLSPlain and your system username/password.\n' "$hostname"
+    if command -v tailscale >/dev/null &&
+        tailscale_ip="$(timeout 2 tailscale ip -4 2>/dev/null)" && [[ -n "$tailscale_ip" ]]; then
+        printf 'Outside the LAN: connect to %s:5900 with Tailscale connected on both devices.\n' "$tailscale_ip"
+    fi
 }
 
 case "${1:-}" in

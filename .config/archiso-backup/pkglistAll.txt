@@ -29,6 +29,7 @@ docker-buildx
 docker-compose
 exfatprogs
 fail2ban
+feh
 find-cursor
 firefox
 firejail
@@ -131,6 +132,7 @@ sudo
 swig
 sync-pacman-hook-git
 system-config-printer
+tailscale
 teleport-bin
 termshark
 thermald

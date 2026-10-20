@@ -1,0 +1,73 @@
+#!/usr/bin/python3
+"""Open images in feh, prompting for files when launched from the app menu."""
+
+import os
+import sys
+from pathlib import Path
+from urllib.parse import urlsplit
+from urllib.request import url2pathname
+
+
+def main():
+    images = []
+    for argument in sys.argv[1:]:
+        uri = urlsplit(argument)
+        if uri.scheme == "file" and uri.netloc in ("", "localhost"):
+            images.append(url2pathname(uri.path))
+        else:
+            images.append(argument)
+
+    if not images:
+        import gi
+
+        gi.require_version("Gtk", "3.0")
+        from gi.repository import Gtk
+
+        chooser = Gtk.FileChooserDialog(
+            title="Open images in feh", action=Gtk.FileChooserAction.OPEN
+        )
+        chooser.add_buttons(
+            "_Cancel", Gtk.ResponseType.CANCEL, "_Open", Gtk.ResponseType.ACCEPT
+        )
+        chooser.set_select_multiple(True)
+        pictures = Path.home() / "Pictures"
+        chooser.set_current_folder(str(pictures if pictures.is_dir() else Path.home()))
+
+        image_filter = Gtk.FileFilter()
+        image_filter.set_name("Images")
+        image_filter.add_mime_type("image/*")
+        chooser.add_filter(image_filter)
+        all_files = Gtk.FileFilter()
+        all_files.set_name("All files")
+        all_files.add_pattern("*")
+        chooser.add_filter(all_files)
+
+        if chooser.run() == Gtk.ResponseType.ACCEPT:
+            images = chooser.get_filenames()
+        chooser.destroy()
+        if not images:
+            return 0
+
+    arguments = [
+        "feh",
+        "--fullscreen",
+        "--auto-zoom",
+        "--sort",
+        "filename",
+        "--version-sort",
+    ]
+    if len(images) == 1 and Path(images[0]).is_file():
+        image = Path(images[0]).absolute()
+        arguments += [
+            "--start-at",
+            str(image),
+            "--",
+            str(image.parent),
+        ]
+    else:
+        arguments += ["--", *images]
+    os.execv("/usr/bin/feh", arguments)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

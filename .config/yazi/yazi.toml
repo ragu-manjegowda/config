@@ -70,7 +70,7 @@ play = [
 
 # Image viewers
 image = [
-	{ run = "feh %s", orphan = true, desc = "feh", for = "linux" },
+	{ run = "feh --fullscreen --auto-zoom --sort filename --version-sort --start-at %s1", orphan = true, desc = "feh", for = "linux" },
 ]
 
 # PDF viewers

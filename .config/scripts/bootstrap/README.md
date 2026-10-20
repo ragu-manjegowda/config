@@ -141,8 +141,79 @@ reports whether it is running. The helper uses transient user units, so nothing
 is enabled at login or boot. Connect to `<hostname>.local:5900` using TLSPlain
 with your normal system username and password; no separate VNC password file is
 used. `<hostname>:5900` also works when the client can resolve the bare hostname.
-The firewall permits SSH and VNC only from the IPv4 LAN `192.168.1.0/24`
-(plus local loopback), before the broader VPN-interface allowance.
+The firewall permits SSH and VNC from the IPv4 LAN `192.168.1.0/24`
+(plus local loopback). On `tailscale0`, only the explicitly enrolled phone
+addresses may initiate SSH/VNC connections; all other inbound tailnet
+services and peers are blocked before the LAN/VPN allowances.
+
+### Outside the LAN with Tailscale
+
+Tailscale connects the Android phone to the existing OpenSSH and TLSPlain
+VNC services. OpenSSH still authenticates the normal `ragu` account;
+Tailscale SSH is disabled. VNC stays on demand, shares the logged-in X11
+desktop, and uses the same system credentials as LAN VNC.
+
+The Arch package lists install `tailscale`, and bootstrap step 5 enables
+`tailscaled.service` for subsequent boots. On a fresh machine, start the
+daemon and enroll it once from an interactive terminal:
+
+```bash
+sudo systemctl enable --now tailscaled.service
+sudo tailscale up \
+    --hostname="$(hostnamectl --static)" \
+    --accept-dns=false \
+    --accept-routes=false \
+    --ssh=false \
+    --shields-up=true
+```
+
+Open the authentication URL printed by the command and sign into the same
+tailnet as the Android phone. Incoming connections remain blocked during
+enrollment. Before allowing them, verify that the `tailscale_phone4` and
+`tailscale_phone6` sets in both the installed/live firewall and the maintained
+configuration contain only the intended phone's current Tailscale addresses.
+Then enable incoming access and check the connection:
+
+```bash
+sudo tailscale set --shields-up=false
+tailscale status
+tailscale ip -4
+systemctl is-enabled tailscaled.service
+```
+
+The daemon retains enrollment and connection preferences across boots.
+Use `sudo tailscale down` to disconnect and `sudo tailscale up` without
+flags to reconnect using the saved settings. Bootstrap does not perform
+interactive authentication or import another machine's enrollment state.
+
+Connect Tailscale on the phone and use the laptop's address from
+`tailscale ip -4` as the SSH host (port 22) or VNC host (port 5900).
+`vnc-server start` and `status` also print this remote address. From the
+phone's SSH session, run `~/.local/bin/vnc-server start` before opening
+the VNC client; stop it with `~/.local/bin/vnc-server stop` when finished.
+Use a VNC client supporting TLSPlain/VeNCrypt, such as AVNC, with its SSH
+tunnel option disabled. The server's SSH configuration disables TCP
+forwarding; Tailscale supplies the private network path directly.
+
+On the home LAN, continue using `<hostname>.local` or the LAN address.
+Tailscale does not replace the normal internet/default route or accept
+subnet routes, and laptop DNS integration is disabled to preserve existing
+NetworkManager/Prisma DNS behavior. No subnet router, exit node, Funnel,
+or public SSH/VNC port forwarding is configured. Android permits only one
+active VPN per profile, so another phone VPN may need to be disconnected.
+
+The persistent `tailscale_phone4` and `tailscale_phone6` sets in
+`.config/misc/etc/nftables.conf` contain the enrolled phone's exact addresses.
+If replacing/re-enrolling the phone changes those addresses, update both
+the maintained and installed firewall configuration and the live sets.
+Clearing both sets blocks new remote management connections. These rules
+remain effective even if the tailnet's cloud policy permits other peers.
+
+Keep `/var/lib/tailscale` private and outside dotfiles; it contains machine
+credentials. Authentication is per machine. Monitor device key expiry in
+the Tailscale app/admin console and revoke a lost phone there. Normal
+sleep, lid-close, and power-off behavior is retained: remote access works
+only while the laptop is awake, booted, and connected to the network.
 
 ## Steps
 

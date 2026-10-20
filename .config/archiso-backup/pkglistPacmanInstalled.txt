@@ -20,6 +20,7 @@ docker-buildx
 docker-compose
 exfatprogs
 fail2ban
+feh
 firefox
 firejail
 fprintd
@@ -96,6 +97,7 @@ sof-firmware
 sudo
 swig
 system-config-printer
+tailscale
 termshark
 thermald
 thunar

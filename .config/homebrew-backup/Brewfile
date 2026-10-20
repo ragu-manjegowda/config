@@ -16,7 +16,6 @@ brew "diffnav"                      # diff navigator
 brew "exiftool"                     # image metadata tool
 brew "fastfetch"                    # system info tool
 brew "fd"                           # find alternative
-brew "feh"                          # image viewer
 brew "fzf"                          # fuzzy finder
 brew "htop"                         # interactive process viewer
 brew "hyperfine"                    # command benchmarking
@@ -74,6 +73,7 @@ if OS.mac?
   brew "bash"                       # Bash shell
   brew "bash-completion"            # Bash completions
   brew "cliclick"                   # click app
+  brew "feh"                        # image viewer
   brew "ffmpeg"                     # media transcoder (legacy)
   brew "git"                        # version control
   brew "gnupg"                      # GPG encryption
