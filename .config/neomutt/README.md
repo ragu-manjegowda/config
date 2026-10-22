@@ -298,17 +298,42 @@ These scripts:
 
 ### Sync Emails (mbsync)
 
-Manually sync emails using mbsync:
+Manually sync through the same locked worker used by background notifications.
+This prevents overlapping `mbsync` processes and shared-log corruption, then
+updates the selected account's Notmuch index on success:
 
 **Work:**
 ```bash
-mbsync -c ~/.config/neomutt/accounts/work/mbsyncrc outlook
+FULL_SYNC=1 MAIL_SYNC_ACCOUNT=outlook ~/.config/imapnotify/notify.sh
 ```
 
 **Personal:**
 ```bash
-mbsync -c ~/.config/neomutt/accounts/personal/mbsyncrc gmail-personal
+FULL_SYNC=1 MAIL_SYNC_ACCOUNT=gmail-personal ~/.config/imapnotify/notify.sh
 ```
+
+Omit `MAIL_SYNC_ACCOUNT` to sync both accounts. Manual requests wait for an
+existing worker; background callbacks coalesce instead of competing. The
+personal offline `o` binding saves mailbox flags before launching a Gmail-only
+full sync and reports failures as well as successes. After changing the macro,
+reload the account configuration in an already running NeoMutt session.
+
+Each manual run retains private per-account logs and a `status` file under
+`${XDG_STATE_HOME:-$HOME/.local/state}/neomutt/manual-sync-*/`. The status records
+the account scope, exit code, and failing stage (mbsync, indexing, summary
+fetch, or lock timeout). `manual-sync-last` points to the latest started
+attempt immediately, with log files ready even while it waits for the sync
+lock. Its `status` file appears when that attempt finishes; background sync
+cannot overwrite these diagnostics. Follow the personal sync live with:
+
+```bash
+tail -F "${XDG_STATE_HOME:-$HOME/.local/state}/neomutt/manual-sync-last/mbsync-gmail-personal.log"
+```
+
+For work sync, follow `mbsync-outlook.log` or `fetch-outlook.log` instead.
+`tail -F` also follows the new log when another manual run updates the symlink.
+Only the latest three completed manual runs are retained; in-progress runs
+and unrelated diagnostic directories are left alone.
 
 ### List Available Mailboxes
 
