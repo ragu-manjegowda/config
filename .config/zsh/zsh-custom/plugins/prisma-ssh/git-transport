@@ -1,0 +1,5 @@
+#!/usr/bin/zsh -f
+
+# Git invokes an executable SSH transport directly, without interactive aliases.
+source "${0:A:h}/prisma-ssh.plugin.zsh"
+PRISMA_SSH_CALLER=git ssh "$@"

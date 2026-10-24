@@ -35,10 +35,11 @@
 [core]
     editor = "$EDITOR -c 'set spell spelllang=en_us'"
     pager = delta | less --tabs=4 -RFX
+    sshCommand = ~/.config/zsh/zsh-custom/plugins/prisma-ssh/git-transport
 
 [delta]
     features = solarized
-    syntax-theme = "Solarized (dark)"
+    syntax-theme = "Solarized (light)"
 
 [diff]
     algorithm = patience

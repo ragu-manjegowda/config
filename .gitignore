@@ -121,6 +121,7 @@
 /.config/awesome/library/volctl/venv
 /.config/awesome/library/volctl/volctl.egg-info
 /.config/awesome/library/volctl/volctl/__pycache__
+/.config/awesome/tests/__pycache__
 /.config/awesome/theme/icons/sedpHNNtT
 /.config/awesome/theme/icons/titlebar/win10/sedDwqIEQ
 /.config/awesome/utilities/**/__pycache__/
@@ -267,8 +268,8 @@
 /.config/zsh/.zsh_history
 /.config/zsh/.zsh_history.backup
 /.config/zsh/.zsh_history_*.bak
-/.config/zsh/zsh-custom/plugins/history-tools/__pycache__
 /.config/zsh/.zsh_sessions
+/.config/zsh/zsh-custom/plugins/history-tools/__pycache__
 /.cups
 /.cursor
 /.dbus

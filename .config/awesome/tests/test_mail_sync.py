@@ -115,6 +115,43 @@ class SyncTests(unittest.TestCase):
         channels = [args[-1] for name, _, args in self.calls() if name == "mbsync"]
         self.assertEqual(channels, ["outlook-pull", "gmail-personal-pull"])
 
+    def test_only_manual_sync_records_metadata_only_driver_traces(self):
+        self.assertEqual(self.sync(full=True).returncode, 0)
+        for name, _, args in self.calls():
+            if name == "mbsync":
+                self.assertIn("--debug-driver", args)
+                self.assertNotIn("--debug-driver-all", args)
+                self.assertNotIn("--debug-net", args)
+        (self.home / "calls.jsonl").unlink()
+        self.assertEqual(self.sync().returncode, 0)
+        for name, _, args in self.calls():
+            if name == "mbsync":
+                self.assertNotIn("--debug-driver", args)
+
+    def test_manual_diagnostics_preserve_the_actual_mbsync_exit_codes(self):
+        result = self.sync(full=True, FAIL_OUTLOOK="17", FAIL_GMAIL="23")
+        self.assertEqual(result.returncode, 1)
+        latest = self.home / "state/neomutt/manual-sync-last"
+        self.assertIn(
+            "failed_exit_codes=outlook-mbsync:17,gmail-mbsync:23\n",
+            (latest / "status").read_text(),
+        )
+        self.assertIn("outlook-mbsync failed (exit status 17)",
+                      (latest / "mbsync-outlook.log").read_text())
+        self.assertIn("gmail-mbsync failed (exit status 23)",
+                      (latest / "mbsync-gmail-personal.log").read_text())
+
+    def test_manual_diagnostics_preserve_index_and_summary_exit_codes(self):
+        result = self.sync(full=True, FAIL_NOTMUCH="5", FAIL_FETCH="124")
+        self.assertEqual(result.returncode, 1)
+        latest = self.home / "state/neomutt/manual-sync-last"
+        self.assertIn(
+            "failed_exit_codes=outlook-index:5,outlook-summary:124,gmail-index:5\n",
+            (latest / "status").read_text(),
+        )
+        self.assertIn("outlook-summary failed (exit status 124)",
+                      (latest / "fetch-outlook.log").read_text())
+
     def test_personal_manual_sync_only_syncs_and_indexes_gmail(self):
         result = self.sync(full=True, MAIL_SYNC_ACCOUNT="gmail-personal")
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -196,6 +233,7 @@ class SyncTests(unittest.TestCase):
         status = (self.home / "state/neomutt/manual-sync-last/status").read_text()
         self.assertIn("exit_status=75\n", status)
         self.assertIn("failed_steps=lock-timeout\n", status)
+        self.assertIn("failed_exit_codes=lock-timeout:75\n", status)
 
     def test_latest_logs_are_available_while_manual_sync_waits_for_the_lock(self):
         self.assertEqual(self.sync(full=True).returncode, 0)

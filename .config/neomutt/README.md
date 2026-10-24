@@ -320,8 +320,13 @@ reload the account configuration in an already running NeoMutt session.
 
 Each manual run retains private per-account logs and a `status` file under
 `${XDG_STATE_HOME:-$HOME/.local/state}/neomutt/manual-sync-*/`. The status records
-the account scope, exit code, and failing stage (mbsync, indexing, summary
-fetch, or lock timeout). `manual-sync-last` points to the latest started
+the account scope, overall exit code, and failing stage (mbsync, indexing,
+summary fetch, or lock timeout). `failed_exit_codes` preserves the underlying
+command exit codes, and each failed stage logs its actual code. Manual mbsync
+runs include metadata-only driver tracing to identify failed operations without
+logging message bodies or authentication exchanges.
+
+`manual-sync-last` points to the latest started
 attempt immediately, with log files ready even while it waits for the sync
 lock. Its `status` file appears when that attempt finishes; background sync
 cannot overwrite these diagnostics. Follow the personal sync live with:

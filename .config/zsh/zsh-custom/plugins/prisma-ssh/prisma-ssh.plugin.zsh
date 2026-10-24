@@ -1,6 +1,6 @@
-# Route only explicitly tagged machine hosts through Prisma Access. A tag is
-# needed because a non-LAN address alone cannot distinguish machines from
-# public SSH services such as Git hosts.
+# Route only explicitly tagged hosts through Prisma Access. A tag is needed
+# because a non-LAN address alone cannot distinguish VPN-only machines and
+# Git services from public SSH services.
 ssh() {
     emulate -L zsh
 
@@ -34,6 +34,26 @@ ssh() {
           ( -z "$proxy" || "$proxy" == none ) &&
           ( -z "$jump" || "$jump" == none ) ]]; then
         print -u2 -r -- "${PRISMA_SSH_CALLER:-ssh}: running via prisma-access ssh for $host"
+        if [[ "${PRISMA_SSH_CALLER:-ssh}" == git ]]; then
+            # Git reserves stdout for its protocol. Connect before starting SSH
+            # so Prisma's gateway/authentication/status output goes to stderr.
+            local service='' candidate
+            local -a connect_options=()
+            for candidate in prisma-access-agent-host.service prisma-access-agent.service; do
+                if command systemctl is-active --quiet "$candidate"; then
+                    service="$candidate"
+                    break
+                fi
+            done
+            if [[ "$service" == prisma-access-agent-host.service ]]; then
+                connect_options=(--global)
+            fi
+            if [[ -z "$service" ]] ||
+               ! command prisma-access status --relative 2>/dev/null |
+                   command grep -qE '^Tunnel:[[:space:]]+Connected'; then
+                command prisma-access connect "${connect_options[@]}" >&2 || return $?
+            fi
+        fi
         command prisma-access ssh "$@"
     else
         command ssh "$@"
