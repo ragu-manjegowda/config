@@ -4,6 +4,29 @@
 -------------------------------------------------------------------------------
 
 local M = {}
+local saved_leading_spaces = {}
+
+-- listchars is window-local: change only the leading-space marker, preserving
+-- tabs/trailing-space markers and the window's original setting for raw text.
+local function leading_spaces(window, preview)
+    if not vim.api.nvim_win_is_valid(window) then return end
+    vim.api.nvim_win_call(window, function()
+        if preview then
+            if not saved_leading_spaces[window] then
+                saved_leading_spaces[window] = {
+                    lead = vim.opt_local.listchars:get().lead or vim.opt_global.listchars:get().lead
+                }
+            end
+            vim.opt_local.listchars:remove "lead"
+        elseif saved_leading_spaces[window] then
+            local lead = saved_leading_spaces[window].lead
+            saved_leading_spaces[window] = nil
+            if lead and vim.g.u_list_chars_set ~= false then
+                vim.opt_local.listchars:append({ lead = lead })
+            end
+        end
+    end)
+end
 
 function M.config()
     local res, markview = pcall(require, "markview")
@@ -12,9 +35,32 @@ function M.config()
         return
     end
 
+    local preview_modes = { "c", "n", "no" }
+    local default_callbacks = require("markview.spec").default.preview.callbacks
+    local callbacks = {}
+    for _, event in ipairs({ "on_enable", "on_disable", "on_detach", "on_mode_change" }) do
+        local default = default_callbacks[event]
+        local can_preview = event == "on_enable" or event == "on_mode_change"
+        callbacks[event] = function(buffer, windows, mode)
+            if default then default(buffer, windows, mode) end
+            local preview = can_preview and vim.tbl_contains(preview_modes, mode or vim.fn.mode())
+            for _, window in ipairs(windows) do
+                leading_spaces(window, preview)
+            end
+        end
+    end
+    callbacks.on_splitview_open = function(source, buffer, window)
+        default_callbacks.on_splitview_open(source, buffer, window)
+        leading_spaces(window, true)
+    end
+    callbacks.on_splitview_close = function(_, _, window)
+        leading_spaces(window, false)
+    end
+
     markview.setup({
         preview = {
-            modes = { "c", "n", "no", "v" }
+            modes = preview_modes,
+            callbacks = callbacks
         },
         --- Configuration for custom block quotes
         block_quotes = {
@@ -56,6 +102,37 @@ function M.config()
             }
         }
     })
+
+    -- Restore raw-buffer options when a window is reused, and synchronize new
+    -- splits of an already attached buffer (which do not trigger on_enable).
+    local group = vim.api.nvim_create_augroup("markview_leading_spaces", { clear = true })
+    local function sync_window()
+        local window = vim.api.nvim_get_current_win()
+        local buffer = vim.api.nvim_win_get_buf(window)
+        local state = require("markview.state")
+        local buffer_state = state.get_buffer_state(buffer, false)
+        local preview = state.enabled() and state.buf_attached(buffer)
+            and buffer_state and buffer_state.enable
+            and buffer ~= state.get_splitview_source()
+            and vim.tbl_contains(preview_modes, vim.fn.mode())
+        if window == state.get_splitview_window({}, false) then preview = true end
+        leading_spaces(window, preview)
+    end
+    vim.api.nvim_create_autocmd({ "BufWinEnter", "WinEnter" }, {
+        group = group,
+        callback = sync_window
+    })
+    vim.api.nvim_create_autocmd("BufWinLeave", {
+        group = group,
+        callback = function() leading_spaces(vim.api.nvim_get_current_win(), false) end
+    })
+    vim.api.nvim_create_autocmd("WinClosed", {
+        group = group,
+        callback = function(args) saved_leading_spaces[tonumber(args.match)] = nil end
+    })
+    for _, window in ipairs(vim.api.nvim_list_wins()) do
+        vim.api.nvim_win_call(window, sync_window)
+    end
 
     ---@type integer Current buffer.
     local buffer = vim.api.nvim_get_current_buf();

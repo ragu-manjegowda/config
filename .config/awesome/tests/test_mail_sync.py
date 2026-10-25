@@ -5,6 +5,8 @@ import fcntl
 import json
 import os
 import re
+import selectors
+import shutil
 import subprocess
 import tempfile
 import time
@@ -28,6 +30,7 @@ if name == 'mbsync':
         print('simulated mbsync failure', file=sys.stderr)
     sys.exit(status)
 elif name == 'notmuch':
+    print('simulated Notmuch indexing')
     sys.exit(int(os.environ.get('FAIL_NOTMUCH', '0')))
 elif name == 'systemctl':
     print('DISPLAY=:99\nXAUTHORITY=/fixture/Xauthority\nDBUS_SESSION_BUS_ADDRESS=unix:path=/fixture/bus')
@@ -115,18 +118,111 @@ class SyncTests(unittest.TestCase):
         channels = [args[-1] for name, _, args in self.calls() if name == "mbsync"]
         self.assertEqual(channels, ["outlook-pull", "gmail-personal-pull"])
 
-    def test_only_manual_sync_records_metadata_only_driver_traces(self):
+    def test_manual_driver_tracing_is_opt_in_and_background_stays_quiet(self):
         self.assertEqual(self.sync(full=True).returncode, 0)
+        for name, _, args in self.calls():
+            if name == "mbsync":
+                self.assertNotIn("--debug-driver", args)
+        (self.home / "calls.jsonl").unlink()
+        self.assertEqual(self.sync(full=True, MAIL_SYNC_DEBUG="1").returncode, 0)
         for name, _, args in self.calls():
             if name == "mbsync":
                 self.assertIn("--debug-driver", args)
                 self.assertNotIn("--debug-driver-all", args)
                 self.assertNotIn("--debug-net", args)
         (self.home / "calls.jsonl").unlink()
-        self.assertEqual(self.sync().returncode, 0)
+        self.assertEqual(self.sync(MAIL_SYNC_DEBUG="1").returncode, 0)
         for name, _, args in self.calls():
             if name == "mbsync":
                 self.assertNotIn("--debug-driver", args)
+
+    def test_manual_notmuch_output_has_separate_per_run_logs(self):
+        self.assertEqual(self.sync(full=True).returncode, 0)
+        latest = self.home / "state/neomutt/manual-sync-last"
+        for account in ("outlook", "gmail-personal"):
+            self.assertIn("simulated Notmuch indexing",
+                          (latest / f"notmuch-{account}.log").read_text())
+            self.assertNotIn("simulated Notmuch indexing",
+                             (latest / f"mbsync-{account}.log").read_text())
+        self.assertIn("Notmuch indexing completed", (latest / "sync.log").read_text())
+        self.assertEqual(self.sync(full=True, MAIL_SYNC_ACCOUNT="gmail-personal").returncode, 0)
+        self.assertFalse((latest / "mbsync-outlook.log").exists())
+        self.assertFalse((latest / "notmuch-outlook.log").exists())
+
+    @unittest.skipUnless(shutil.which("cc"), "Native stdio buffering check needs cc")
+    def test_mbsync_output_is_visible_before_the_command_finishes(self):
+        source = r'''
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+int main(void) {
+    puts("live sync marker");
+    while (access(getenv("MAIL_SYNC_TEST_RELEASE"), F_OK) != 0) usleep(10000);
+    return 0;
+}
+'''
+        subprocess.run(["cc", "-x", "c", "-o", str(self.bin / "mbsync"), "-"],
+                       input=source, text=True, capture_output=True, check=True, timeout=10)
+        release = self.home / "release"
+        argv, env = self.command(full=True, MAIL_SYNC_ACCOUNT="gmail-personal",
+                                 MAIL_SYNC_TEST_RELEASE=str(release))
+        with subprocess.Popen(argv, env=env, stdout=subprocess.PIPE,
+                              stderr=subprocess.PIPE, text=True) as process:
+            try:
+                log = self.home / "state/neomutt/manual-sync-last/mbsync-gmail-personal.log"
+                deadline = time.monotonic() + 3
+                while time.monotonic() < deadline:
+                    if log.exists() and "live sync marker" in log.read_text():
+                        break
+                    time.sleep(0.01)
+                self.assertIn("live sync marker", log.read_text())
+                self.assertIsNone(process.poll())
+            finally:
+                release.touch()
+                _, stderr = process.communicate(timeout=5)
+            self.assertEqual(process.returncode, 0, stderr)
+
+    def test_real_tail_follows_the_progress_link_across_manual_runs(self):
+        self.assertEqual(self.sync(full=True).returncode, 0)
+        progress = self.home / "state/neomutt/manual-sync.log"
+        self.assertTrue(progress.is_symlink())
+        previous = progress.resolve()
+        with subprocess.Popen(
+            ["tail", "-n", "0", "-F", "-s", "0.1", "--max-unchanged-stats=1", str(progress)],
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+        ) as tail:
+            try:
+                with selectors.DefaultSelector() as reader:
+                    reader.register(tail.stdout, selectors.EVENT_READ)
+
+                    def expect(marker):
+                        output = b""
+                        deadline = time.monotonic() + 3
+                        while marker not in output and time.monotonic() < deadline:
+                            if reader.select(0.05):
+                                output += os.read(tail.stdout.fileno(), 65536)
+                        self.assertIn(marker, output)
+
+                    time.sleep(0.15)
+                    with progress.open("a") as output:
+                        output.write("tail-ready\n")
+                    expect(b"tail-ready")
+                    handle = self.hold_lock()
+                    argv, env = self.command(full=True, MANUAL_SYNC_LOCK_TIMEOUT_SECONDS="5")
+                    with subprocess.Popen(argv, env=env, stdout=subprocess.PIPE,
+                                          stderr=subprocess.PIPE, text=True) as process:
+                        try:
+                            expect(b"waiting for synchronization lock")
+                            self.assertNotEqual(progress.resolve(), previous)
+                            self.assertIsNone(process.poll())
+                        finally:
+                            handle.close()
+                            _, stderr = process.communicate(timeout=5)
+                        self.assertEqual(process.returncode, 0, stderr)
+                    expect(b"Synchronization completed successfully")
+            finally:
+                tail.terminate()
+                tail.communicate(timeout=5)
 
     def test_manual_diagnostics_preserve_the_actual_mbsync_exit_codes(self):
         result = self.sync(full=True, FAIL_OUTLOOK="17", FAIL_GMAIL="23")
@@ -151,6 +247,10 @@ class SyncTests(unittest.TestCase):
         )
         self.assertIn("outlook-summary failed (exit status 124)",
                       (latest / "fetch-outlook.log").read_text())
+        self.assertIn("outlook-index failed (exit status 5)",
+                      (latest / "notmuch-outlook.log").read_text())
+        self.assertIn("gmail-index failed (exit status 5)",
+                      (latest / "notmuch-gmail-personal.log").read_text())
 
     def test_personal_manual_sync_only_syncs_and_indexes_gmail(self):
         result = self.sync(full=True, MAIL_SYNC_ACCOUNT="gmail-personal")

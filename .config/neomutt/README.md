@@ -322,23 +322,42 @@ Each manual run retains private per-account logs and a `status` file under
 `${XDG_STATE_HOME:-$HOME/.local/state}/neomutt/manual-sync-*/`. The status records
 the account scope, overall exit code, and failing stage (mbsync, indexing,
 summary fetch, or lock timeout). `failed_exit_codes` preserves the underlying
-command exit codes, and each failed stage logs its actual code. Manual mbsync
-runs include metadata-only driver tracing to identify failed operations without
-logging message bodies or authentication exchanges.
+command exit codes, and each failed stage logs its actual code. Mbsync output
+is line-buffered so new output appears while the command is still running.
+Driver tracing is off by default; enable metadata-only tracing for a diagnostic
+manual run with `MAIL_SYNC_DEBUG=1 FULL_SYNC=1 ~/.config/imapnotify/notify.sh`.
 
 `manual-sync-last` points to the latest started
 attempt immediately, with log files ready even while it waits for the sync
 lock. Its `status` file appears when that attempt finishes; background sync
-cannot overwrite these diagnostics. Follow the personal sync live with:
+cannot overwrite these diagnostics. Follow concise progress for both accounts,
+including lock waits, synchronization, indexing, and the final result, with:
 
 ```bash
-tail -F "${XDG_STATE_HOME:-$HOME/.local/state}/neomutt/manual-sync-last/mbsync-gmail-personal.log"
+tail -F "${XDG_STATE_HOME:-$HOME/.local/state}/neomutt/manual-sync.log"
 ```
 
-For work sync, follow `mbsync-outlook.log` or `fetch-outlook.log` instead.
-`tail -F` also follows the new log when another manual run updates the symlink.
+`manual-sync.log` is a direct file symlink, so `tail -F` notices replacements
+when a new run starts. Following files through the changing directory symlink
+`manual-sync-last` is unreliable with Linux inotify and can keep showing an
+older run.
+
+Inside each run, `mbsync-outlook.log` and `mbsync-gmail-personal.log` contain
+account synchronization output. `notmuch-outlook.log` and
+`notmuch-gmail-personal.log` contain the corresponding indexing output.
+`fetch-outlook.log` contains the work unread-mail summary. Only logs for the
+selected accounts are created. A stage's output file may be empty until that
+stage starts; `sync.log` always shows current progress.
+
+Root-level `mbsync-*.log` and `fetch-outlook.log` are separate rolling logs from
+background notifications. Root-level `msmtp-*.log` records outgoing mail and
+is independent of synchronization. The old root-level `notmuch-*.log` files
+were produced by earlier macros; current manual indexing logs live inside
+their run directory.
+
 Only the latest three completed manual runs are retained; in-progress runs
-and unrelated diagnostic directories are left alone.
+and unrelated diagnostic directories are left alone. `manual-sync-last` and
+`manual-sync.log` are shortcuts to the latest run, not extra retained runs.
 
 ### List Available Mailboxes
 
