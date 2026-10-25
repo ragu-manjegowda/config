@@ -251,9 +251,25 @@ assert_test(
     source:match("reset_failed_auth%(%)") ~= nil and
     source:match("utilities/camera/intruder%-capture") ~= nil and
     source:match("external_camera_device") ~= nil and
-    source:match("ls %-l /dev/video") == nil and
-    capture_source:match("timeout %-%-signal=TERM %-%-kill%-after=1 5") ~= nil,
+    source:match("ls %-l /dev/video") == nil,
     "Intruder capture cannot block recovery or reappear after unlock"
+)
+
+local capture_timeout_count = 0
+local capture_timeouts_bounded = true
+for line in capture_source:gmatch("[^\n]+") do
+    if line:match("^%s*timeout%s") or line:match("^%s*if%s+timeout%s") then
+        capture_timeout_count = capture_timeout_count + 1
+        local arguments = {}
+        for argument in line:gmatch("%S+") do arguments[argument] = true end
+        capture_timeouts_bounded = capture_timeouts_bounded
+            and arguments["--foreground"] and arguments["--signal=TERM"]
+            and arguments["--kill-after=1"] and arguments["5"]
+    end
+end
+assert_test(
+    capture_timeout_count > 0 and capture_timeouts_bounded,
+    "Every camera capture command has bounded foreground timeout and kill escalation"
 )
 
 assert_test(

@@ -91,6 +91,7 @@ playerctl
 power-profiles-daemon
 prisma-access-browser-bin
 python
+python-gobject
 qt-solarized
 ranger
 rdrview-git

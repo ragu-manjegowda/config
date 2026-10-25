@@ -917,7 +917,7 @@ jobs:
       - name: Install test dependencies
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm lua luajit lua51-lgi python zsh glib2 diffutils
+          pacman -S --noconfirm lua luajit lua51-lgi python python-pillow ffmpeg zsh glib2 diffutils
 
       - name: Select machine configuration
         env:

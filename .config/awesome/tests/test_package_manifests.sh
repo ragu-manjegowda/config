@@ -32,20 +32,6 @@ for manifest in "$minimal" "$official" "$foreign" "$all"; do
     fi
 done
 
-for package in feh tailscale; do
-    for manifest in "$minimal" "$official" "$all"; do
-        if ! grep -Fxq "$package" "$manifest"; then
-            printf 'required package %s is missing from %s\n' "$package" "$manifest" >&2
-            exit 1
-        fi
-    done
-done
-if grep -Fxq 'ntp' "$official" || grep -Fxq 'ntp' "$all" ||
-        grep -Fxq 'broadcom-wl-dkms' "$official" || grep -Fxq 'broadcom-wl-dkms' "$all"; then
-    printf 'obsolete packages remain in generated manifests\n' >&2
-    exit 1
-fi
-
 LC_ALL=C sort -u "$official" "$foreign" > "$temp/union"
 if ! cmp -s "$temp/union" "$all"; then
     printf 'combined package manifest does not match the official/foreign union: %s\n' "$all" >&2

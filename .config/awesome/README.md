@@ -316,6 +316,15 @@ pattern selects its color camera's `video-index0`, not a metadata or IR node.
 The device is resolved on every attempt, so USB reconnects and changed
 `/dev/videoN` numbering do not require restarting Awesome.
 
+For the laptop's IPU7 compatibility camera, intruder photos use a native
+3840×2160 sensor stream before scaling to 848×480. Requesting 1080p directly
+from the CPU software ISP center-crops the sensor instead of scaling it.
+The native helper waits two seconds for exposure/white balance, then lifts
+shadows with highlight protection. It uses system Python's `python-gobject`
+bindings and GStreamer's libcamera plugin. If native capture is unavailable
+or the camera is busy, capture falls back to the compatibility V4L2 device.
+Other V4L2 cameras also receive a two-second exposure warm-up.
+
 If the external camera is absent, busy, or fails to capture, the helper tries
 `module.lockscreen.camera_device` instead. With no active external display, it
 uses that built-in camera directly. Attempts are bounded and asynchronous,

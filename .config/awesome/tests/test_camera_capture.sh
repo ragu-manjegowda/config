@@ -15,12 +15,14 @@ if grep -Fq 'videotestsrc is-live=true' "$override"; then
     printf 'camera relay keeps rendering live splash frames while idle\n' >&2
     exit 1
 fi
-grep -Fq "select=gte(n\\,15)" "$capture"
+grep -Fq "select=gte(t\\,2)" "$capture"
 grep -Fq 'scale=in_range=tv:out_range=pc,format=yuvj420p' "$capture"
 if grep -Fq 'scale=1280:720' "$capture"; then
     printf 'camera capture still distorts its native aspect ratio\n' >&2
     exit 1
 fi
 grep -Fq 'v4l2-relayd-ipu7.service.d/override.conf' "$bootstrap"
+
+python -B "$repo_home/.config/awesome/tests/test_camera_capture.py"
 
 printf 'camera capture tests passed\n'

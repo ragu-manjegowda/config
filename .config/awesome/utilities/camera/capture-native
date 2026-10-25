@@ -1,0 +1,105 @@
+#!/usr/bin/python3
+"""Capture the IPU7 sensor's full field before scaling a private intruder photo."""
+
+import argparse
+import os
+import subprocess
+import sys
+import time
+
+PIPELINE = (
+    "libcamerasrc name=camera ! "
+    "video/x-raw,format=RGB,width=3840,height=2160 ! "
+    "videoscale add-borders=true ! "
+    "video/x-raw,format=RGB,width=848,height=480,pixel-aspect-ratio=1/1 ! "
+    "appsink name=snapshot max-buffers=1 drop=true sync=false"
+)
+# Lift shadows without pushing already-bright pixels into clipped highlights.
+SHADOW_LIFT = "val+(pow(val/maxval,1/1.6)*maxval-val)*(1-val/maxval)"
+
+
+def capture_rgb(timeout=4, warmup=2):
+    # Keep GI optional for other cameras and allow the V4L2 fallback when busy.
+    import gi
+
+    gi.require_version("Gst", "1.0")
+    gi.require_version("GstVideo", "1.0")
+    from gi.repository import Gst, GstVideo
+
+    os.environ.setdefault("LIBCAMERA_SOFTISP_MODE", "cpu")
+    Gst.init(None)
+    pipeline = Gst.parse_launch(PIPELINE)
+    try:
+        pipeline.get_by_name("camera").set_property("camera-name", r"\_SB_.LNK1")
+        pipeline.set_state(Gst.State.PLAYING)
+        sink = pipeline.get_by_name("snapshot")
+        bus = pipeline.get_bus()
+        deadline = time.monotonic() + timeout
+        first_frame = None
+        while time.monotonic() < deadline:
+            error = bus.pop_filtered(Gst.MessageType.ERROR)
+            if error:
+                raise RuntimeError(str(error.parse_error()[0]))
+            sample = sink.emit("try-pull-sample", Gst.SECOND // 4)
+            if sample is None:
+                continue
+            now = time.monotonic()
+            if first_frame is None:
+                first_frame = now
+            if now - first_frame < warmup:
+                continue
+            info = GstVideo.VideoInfo.new_from_caps(sample.get_caps())
+            buffer = sample.get_buffer()
+            success, mapping = buffer.map(Gst.MapFlags.READ)
+            if not success:
+                raise RuntimeError("Cannot map camera frame")
+            try:
+                # Raw RGB buffers can include row padding; FFmpeg expects packed RGB.
+                frame = b"".join(
+                    mapping.data[row * info.stride[0]:row * info.stride[0] + info.width * 3]
+                    for row in range(info.height)
+                )
+            finally:
+                buffer.unmap(mapping)
+            return frame, info.width, info.height
+        raise RuntimeError("Full-frame camera capture timed out")
+    finally:
+        pipeline.set_state(Gst.State.NULL)
+
+
+def encode_frame(frame, width, height, destination):
+    if len(frame) != width * height * 3:
+        raise ValueError("Incomplete RGB frame")
+    result = subprocess.run(
+        [
+            "/usr/bin/ffmpeg", "-hide_banner", "-loglevel", "error",
+            "-f", "rawvideo", "-pixel_format", "rgb24",
+            "-video_size", f"{width}x{height}", "-i", "pipe:0",
+            "-vf", f"lutrgb=r='{SHADOW_LIFT}':g='{SHADOW_LIFT}':b='{SHADOW_LIFT}'",
+            "-frames:v", "1", "-y", str(destination),
+        ],
+        input=frame,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.PIPE,
+        timeout=2,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(result.stderr.decode(errors="replace").strip())
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("destination")
+    args = parser.parse_args()
+    os.umask(0o077)
+    frame, width, height = capture_rgb()
+    encode_frame(frame, width, height, args.destination)
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except (ImportError, OSError, RuntimeError, ValueError, subprocess.TimeoutExpired) as error:
+        print(f"capture-native: {error}", file=sys.stderr)
+        sys.exit(1)

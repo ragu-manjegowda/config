@@ -2,7 +2,20 @@
 
 set -euo pipefail
 
-timeout --signal=TERM --kill-after=1 5 \
+device=$(readlink -f -- "$1")
+if [[ "$device" == /dev/video90 &&
+      -r /sys/class/video4linux/video90/name &&
+      $(</sys/class/video4linux/video90/name) == 'Prisma Compatibility Camera' ]]; then
+    # CPU SoftISP crops a requested 1080p stream instead of scaling the sensor.
+    # Capture almost the full sensor first; never change the shared video relay.
+    if timeout --foreground --signal=TERM --kill-after=1 5 \
+        /usr/bin/python3 "${BASH_SOURCE[0]%/*}/capture-native" "$2"; then
+        exit 0
+    fi
+    # Another application may own libcamera. Retain a bounded relay fallback.
+fi
+
+timeout --foreground --signal=TERM --kill-after=1 5 \
     ffmpeg -hide_banner -loglevel error -f v4l2 -i "$1" -vf \
-    'select=gte(n\,15),scale=in_range=tv:out_range=pc,format=yuvj420p' \
+    'select=gte(t\,2),scale=in_range=tv:out_range=pc,format=yuvj420p' \
     -frames:v 1 -q:v 2 -y "$2"
