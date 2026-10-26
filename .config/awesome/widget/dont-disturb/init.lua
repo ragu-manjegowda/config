@@ -7,6 +7,7 @@ local dpi = beautiful.xresources.apply_dpi
 local clickable_container = require('widget.clickable-container')
 local suspension = require('library.notification-suspension')
 local lifecycle = require('library.notification-lifecycle')
+local notification_sound = require('library.notification-sound')
 local config_dir = gears.filesystem.get_configuration_dir()
 local widget_dir = config_dir .. 'widget/dont-disturb/'
 local widget_icon_dir = widget_dir .. 'icons/'
@@ -145,7 +146,7 @@ naughty.connect_signal(
     function()
         local n = naughty.active[#naughty.active]
         if lifecycle.should_play_sound(n, sound_handled, _G.dont_disturb_state) then
-            awful.spawn.with_shell('canberra-gtk-play -i message 2>/dev/null')
+            notification_sound.play('message', n)
         end
     end
 )

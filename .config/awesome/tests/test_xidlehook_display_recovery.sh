@@ -43,7 +43,10 @@ trap 'rm -rf "$tmp_dir"' EXIT
 cat > "$tmp_dir/pactl" <<'EOF'
 #!/usr/bin/env bash
 if [[ "$*" == 'list sink-inputs' && "${AUDIO_RUNNING:-false}" == true ]]; then
-    printf 'Corked: no\n'
+    printf 'Sink Input #1\n    Corked: no\n    %s\n' "${AUDIO_CLIENT:-application.name = \"Firefox\"}"
+    if [[ "${SECOND_AUDIO_CLIENT:-}" != '' ]]; then
+        printf 'Sink Input #2\n    Corked: %s\n    %s\n' "${SECOND_AUDIO_CORKED:-no}" "$SECOND_AUDIO_CLIENT"
+    fi
 elif [[ "$*" == 'list source-outputs' && "${CAPTURE_RUNNING:-false}" == true ]]; then
     cat <<EOF_OUTPUT
 Source Output #1
@@ -85,6 +88,27 @@ fi
 : > "$XIDLEHOOK_TEST_LOG"
 AUDIO_RUNNING=false "$LOCK_ACTION" "$tmp_dir/xidle.sock"
 grep -Fq 'module::lockscreen_show' "$XIDLEHOOK_TEST_LOG"
+
+for event_client in 'media.role = "event"' \
+    'application.process.binary = "canberra-gtk-play"' \
+    'application.name = "PipeWire ALSA [canberra-gtk-play]"' \
+    'application.name = "Awesome notification sound"'; do
+    : > "$XIDLEHOOK_TEST_LOG"
+    AUDIO_RUNNING=true AUDIO_CLIENT="$event_client" \
+        SECOND_AUDIO_CLIENT='application.name = "Firefox"' SECOND_AUDIO_CORKED=yes \
+        "$LOCK_ACTION" "$tmp_dir/xidle.sock"
+    grep -Fq 'module::lockscreen_show' "$XIDLEHOOK_TEST_LOG"
+    if grep -Fq 'reset-idle' "$XIDLEHOOK_TEST_LOG"; then
+        printf '%s\n' 'event sound plus paused media must not defer locking' >&2
+        exit 1
+    fi
+
+    : > "$XIDLEHOOK_TEST_LOG"
+    AUDIO_RUNNING=true AUDIO_CLIENT="$event_client" \
+        SECOND_AUDIO_CLIENT='application.name = "Firefox"' SECOND_AUDIO_CORKED=no \
+        "$LOCK_ACTION" "$tmp_dir/xidle.sock"
+    grep -Fq 'reset-idle' "$XIDLEHOOK_TEST_LOG"
+done
 
 : > "$XIDLEHOOK_TEST_LOG"
 CAPTURE_RUNNING=true "$LOCK_ACTION" "$tmp_dir/xidle.sock"

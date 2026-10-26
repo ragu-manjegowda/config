@@ -13,6 +13,7 @@ local fingerprint = require('module.lockscreen-fingerprint')
 local lockscreen_lifecycle = require('module.lockscreen-lifecycle')
 local recovery_key = require('library.lockscreen-recovery-key')
 local intruder_alert = require('module.lockscreen-intruder')
+local notification_sound = require('library.notification-sound')
 
 require('module.dynamic-wallpaper')
 require('module.auto-start')
@@ -415,7 +416,7 @@ local locker = function(s)
                     return
                 end
 
-                awful.spawn({ 'canberra-gtk-play', '-i', 'camera-shutter' }, false)
+                notification_sound.play('camera-shutter', { app_name = 'lockscreen' })
                 intruder_alert.show(stdout:gsub('%s+$', ''), msg_table[math.random(#msg_table)])
             end
         )
