@@ -50,6 +50,35 @@ class HistoryToolsTests(unittest.TestCase):
         ])
         self.assertEqual(zsh.read_bytes(), b": 1700000000:3;echo duplicate\n: 1700000002:7;  echo space  \n")
 
+    def test_live_check_uses_the_same_exclusions_without_printing_commands(self):
+        for command, expected in (
+            (b"ls -la\n", 1),
+            (b"sudo -u root /bin/ls /tmp\n", 1),
+            (b"env FOO=1 command ls\n", 1),
+            (b"ls; printf useful\n", 0),
+            (b"ls\nprintf multiline\n", 0),
+            (b"printf literal\n", 0),
+            (b"echo $(not_executed)\n", 0),
+        ):
+            with self.subTest(command=command):
+                result = subprocess.run(
+                    [sys.executable, str(ROOT / "history-tool.py"), "check",
+                     "--exclude-file", str(self.exclusions)],
+                    input=command, capture_output=True, timeout=5, check=False,
+                )
+                self.assertEqual(result.returncode, expected, result.stderr)
+                self.assertEqual(result.stdout, b"")
+
+    def test_live_check_reports_invalid_exclusion_files_without_echoing_input(self):
+        exclusions = self.history("invalid-exclusions", b"'unterminated\n")
+        result = subprocess.run(
+            [sys.executable, str(ROOT / "history-tool.py"), "check",
+             "--exclude-file", str(exclusions)],
+            input=b"do-not-echo-this-fixture\n", capture_output=True, timeout=5, check=False,
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertNotIn(b"do-not-echo-this-fixture", result.stdout + result.stderr)
+
     def test_timestamped_bash_multiline_and_unicode_roundtrip(self):
         command = "printf café 日本\n  next line".encode()
         bash = self.history("bash", b"#1700000000\n" + command + b"\n")

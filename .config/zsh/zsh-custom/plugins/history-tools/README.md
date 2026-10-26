@@ -1,6 +1,7 @@
 # Shell history tools
 
-One standard-library Python helper powers the Zsh merge and conversion commands.
+One standard-library Python helper powers live exclusions and the Zsh merge
+and conversion commands.
 The plugin replaces `history-sync`; Git-crypt handles checked-in files rather
 than this plugin pulling, encrypting, committing, or pushing history.
 
@@ -32,11 +33,12 @@ Bash has no field for Zsh execution durations.
 
 ## Routine-command exclusions
 
-Edit `ignored-commands.txt` in this plugin folder to expand the default list:
-`l`, `ls`, `cd`, `mkdir`, `take`, `rm`, `rmdir`, and the example phrase `apt get`.
+Edit `ignored-commands.txt` in this plugin folder to expand the default list,
+including routine commands such as `ls`, `cd`, `mkdir`, and `rm`, and phrases
+such as `git diff` and `brew install`.
 Use one command-name phrase per line; blank lines and `#` comments are ignored.
-Changes apply on the next
-merge or conversion without reloading the shell.
+Changes apply to the next recorded command, merge, or conversion without
+reloading the shell.
 
 Matching is case-sensitive and uses complete tokens, including an explicit
 executable path, variable assignments, and common prefixes such as `sudo`, `env`,
@@ -72,10 +74,34 @@ The existing `.config/zsh/zsh_history` Git-crypt rule remains applicable.
 Encrypted Git-crypt bytes and legacy GPG-encrypted archives must be decrypted
 before use as inputs; the tool does not decrypt them or modify existing archives.
 
+## Live global and per-directory history
+
+The `history-tools` plugin defines one `zshaddhistory` acceptance function.
+It respects `HIST_IGNORE_SPACE`, rejects unknown command names, and applies
+the same `ignored-commands.txt` matcher used by merge/conversion. Aliases,
+functions, builtins, explicit executable paths, and leading assignments are
+recognized without evaluating command text.
+
+This is not an exit-status filter: valid commands such as `false`, or a Git
+command that reports an error, can still be recorded unless excluded.
+
+The custom `per-directory-history` plugin loads OMZ's navigation and toggle
+functions, then consults the same global acceptance function before saving.
+The directory hook reuses that event's verdict, so filtering runs only once.
+Zsh writes the active history normally; the accepted entry is appended to the
+other history using a scoped native history context, preserving Zsh's file
+format, locking, and configured history limits. Both global and directory
+search modes use the same policy. The upstream OMZ files are not patched.
+
+Open a new Zsh session to load these hooks. Subsequent exclusion-list edits
+apply to newly recorded commands immediately. The shared directory navigation
+stack (`d`) is separate from per-directory command history.
+
 Run the synthetic-fixture tests with:
 
 ```sh
 python3 -B ~/.config/zsh/zsh-custom/plugins/history-tools/test_history_tools.py
+python3 -B ~/.config/zsh/zsh-custom/plugins/history-tools/test_live_history.py
 ```
 
 To enable timestamps for future Bash history entries, add to `~/.bashrc`:

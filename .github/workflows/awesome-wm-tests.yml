@@ -995,6 +995,8 @@ jobs:
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_service_migration.sh
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_package_manifests.sh
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_zsh_dirstack.sh
+          python -B .config/zsh/zsh-custom/plugins/history-tools/test_history_tools.py
+          python -B .config/zsh/zsh-custom/plugins/history-tools/test_live_history.py
 
       - name: Test goimapnotify and VPN route handling
         run: |

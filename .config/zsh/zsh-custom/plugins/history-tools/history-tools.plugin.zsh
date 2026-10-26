@@ -1,5 +1,30 @@
-# Shared history commands. This plugin does not read history until invoked.
+# Shared live-history filtering and explicit merge/conversion commands.
 typeset -g _HISTORY_TOOLS_SCRIPT="${0:A:h}/history-tool.py"
+
+# Apply the same policy before either global or per-directory history is saved.
+# This checks command existence, not its eventual execution status.
+function _history_tools_accept_line() {
+    [[ -o hist_ignore_space && "$1" == \ * ]] && return 1
+    local -a words
+    words=("${(z)1}")
+    (( ${#words} )) || return 1
+    while (( ${#words} )) && [[ "$words[1]" =~ '^[A-Za-z_][A-Za-z0-9_]*=' ]]; do
+        words=("${words[@]:1}")
+    done
+    if (( ${#words} )) && [[ "$words[1]" != ';' ]]; then
+        whence -- "${(Q)words[1]}" >/dev/null || return 1
+    fi
+    # Pass the command on stdin so it never appears in a helper's argv.
+    builtin print -rn -- "$1" | command python3 "$_HISTORY_TOOLS_SCRIPT" check
+}
+
+function zshaddhistory() {
+    local decision=0
+    _history_tools_accept_line "$@" || decision=$?
+    typeset -g _history_tools_decision_entry="$1"
+    typeset -g _history_tools_decision_status="$decision"
+    return "$decision"
+}
 
 function history-tools() {
     command python3 "$_HISTORY_TOOLS_SCRIPT" "$@"

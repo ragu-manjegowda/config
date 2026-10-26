@@ -233,6 +233,11 @@ def main(argv=None):
                "  history-tools convert --from zsh --to bash zsh_history",
     )
     subparsers = parser.add_subparsers(dest="operation", required=True)
+    check = subparsers.add_parser(
+        "check", help="Check one live command on stdin: exit 0 to keep, 1 to exclude"
+    )
+    check.add_argument("--exclude-file", type=Path, default=DEFAULT_EXCLUDE_FILE,
+                       help="Command-phrase exclusions shared with merge and convert")
     for operation in ("merge", "convert"):
         command = subparsers.add_parser(
             operation,
@@ -265,6 +270,13 @@ def main(argv=None):
         command.add_argument("files", type=Path, nargs="+", metavar="HISTORY",
                              help="History files to read; inputs may mix Bash and Zsh in auto mode")
     args = parser.parse_args(argv)
+    if args.operation == "check":
+        try:
+            # zshaddhistory supplies a terminating newline, not part of the command.
+            command = sys.stdin.buffer.read().removesuffix(b"\n")
+            return int(is_excluded(command, read_exclusions(args.exclude_file)))
+        except (OSError, ValueError) as error:
+            parser.error(str(error))
     if args.timestamp < 0:
         parser.error("--timestamp must be nonnegative")
     if args.plain and args.output_format != "bash":

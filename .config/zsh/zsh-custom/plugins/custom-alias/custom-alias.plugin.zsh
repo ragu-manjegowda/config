@@ -208,8 +208,7 @@ setopt HIST_VERIFY               # Don't execute immediately upon history expans
 # Remove annoying % at the end of partial line
 export PROMPT_EOL_MARK=""
 
-# Save command to history only if it is successful
-zshaddhistory() { whence ${${(z)1}[1]} >| /dev/null || return 1 }
+# Shared live-history acceptance is provided by the history-tools plugin.
 zstyle ":completion:*:commands" rehash 1
 
 
