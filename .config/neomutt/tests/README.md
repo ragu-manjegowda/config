@@ -20,9 +20,15 @@ Checks that all helper scripts exist, are executable, and have valid syntax:
 - `create-alias.py` - Auto-creates email aliases
 - `get-mailboxes.sh` - Retrieves mailbox list
 - `mu-search.sh` - Mail search functionality
-- `viewmailattachments.py` - View HTML attachments in browser
+- `view-message.py` - View full MIME messages with headers and inline images
 - `render-calendar-attachment.py` - Render calendar invites
 - `mutt-ical.py` - iCalendar handling
+
+The helper suite also runs `test_view_message.py`: synthetic MIME fixtures cover
+header escaping, inline images, attachment paths, and private output files.
+Real NeoMutt sessions exercise `,of` from index, pager, and attachment menus,
+checking that the original `pipe_decode` setting is restored. Firefox is mocked;
+no personal mail or network access is used.
 
 ### 3. Settings Validation Tests (`test_settings.sh`)
 Verifies that critical Neomutt settings are configured correctly:

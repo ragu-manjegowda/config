@@ -105,6 +105,24 @@ with Git-crypt, just like `accounts/aliases`. A locked blacklist suspends alias
 creation while message display continues unchanged. A missing blacklist adds
 no custom exclusions.
 
+## Browser message view
+
+`,of` opens the complete current message in Firefox from the index, pager, or
+attachment menu. It shows the original Subject, From, To, Cc, Reply-To, and Date
+headers, resolves MIME `cid:`/Content-Location images, and offers attachment
+downloads. HTTPS images remain normal browser image requests.
+
+The viewer creates a separate private temporary directory per message instead
+of overwriting `/tmp/mutt-attach`. HTML and attachment files are private, and
+the message body is sandboxed with scripts and forms disabled. MIME parts are
+kept intact while piping, and the previous `pipe_decode` setting is restored.
+
+To load updated bindings in an already running session:
+
+```text
+:source ~/.config/neomutt/config/bindings.mutt
+```
+
 ## Account Overview
 
 | Account | Key | Receiving | Sending | Searching | Auth |

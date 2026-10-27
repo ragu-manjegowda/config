@@ -22,7 +22,7 @@ is_git_crypt_locked() {
 }
 
 # --- Executable shell scripts ---
-for script in create-alias.py query-aliases.py get-mailboxes.sh mu-search.sh \
+for script in create-alias.py query-aliases.py view-message.py get-mailboxes.sh mu-search.sh \
               fzf-notmuch-search.sh setup-paths.sh sync-notmuch-flags.sh; do
     echo -n "Testing scripts/$script exists and executable... "
     if [ -x ~/.config/neomutt/scripts/$script ]; then
@@ -280,6 +280,22 @@ else
     echo "  Fuzzy query produced incorrect matches or accessed encrypted data"
     ((failed++))
 fi
+echo -n "Testing shared Jira identities cannot become personal aliases... "
+: > "$alias_test_file"
+printf 'jira@notifications.example\n' > "$alias_blacklist"
+if add_test_sender 'First Actor (Jira) <jira@notifications.example>' &&
+   add_test_sender 'Second Actor (Jira) <jira@notifications.example>' &&
+   add_test_sender 'First Actor <person@example.org>' &&
+   [[ $(wc -l < "$alias_test_file") -eq 1 ]] &&
+   grep -Fq '<person@example.org>' "$alias_test_file" &&
+   ! grep -Fq '<jira@notifications.example>' "$alias_test_file"; then
+    echo -e "${GREEN}✓ PASSED${NC}"
+    ((passed++))
+else
+    echo -e "${RED}✗ FAILED${NC}"
+    echo "  Shared Jira sender was saved as a personal contact"
+    ((failed++))
+fi
 rm -rf "$alias_test_dir"
 
 setup_paths=~/.config/neomutt/scripts/setup-paths.sh
@@ -470,6 +486,15 @@ else
     ((failed++))
 fi
 rm -rf "$flag_test_dir"
+
+echo -n "Testing full-message browser rendering and actual NeoMutt macros... "
+if python -B ~/.config/neomutt/tests/test_view_message.py; then
+    echo -e "${GREEN}✓ PASSED${NC}"
+    ((passed++))
+else
+    echo -e "${RED}✗ FAILED${NC}"
+    ((failed++))
+fi
 
 echo ""
 echo "========================================="

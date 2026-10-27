@@ -195,15 +195,6 @@ def add_alias(message: str, path: Path) -> None:
     contacts = message_contacts(message)
     if not contacts:
         return
-    blacklist = blacklisted_substrings(path)
-    if blacklist is None:
-        return
-    contacts = [
-        (name, address) for name, address in contacts
-        if not any(substring in address for substring in blacklist)
-    ]
-    if not contacts:
-        return
     own = own_addresses(path)
 
     # A directory lock survives replacing the file, so concurrent readers
@@ -212,6 +203,16 @@ def add_alias(message: str, path: Path) -> None:
     if directory_fd is None:
         return
     try:
+        # A queued display filter must see rules changed while it waited.
+        blacklist = blacklisted_substrings(path)
+        if blacklist is None:
+            return
+        contacts = [
+            (name, address) for name, address in contacts
+            if not any(substring in address for substring in blacklist)
+        ]
+        if not contacts:
+            return
         contents = path.read_bytes() if path.exists() else b""
         if contents.startswith(b"\0GITCRYPT\0"):
             return

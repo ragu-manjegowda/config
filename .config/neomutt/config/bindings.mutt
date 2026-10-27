@@ -134,14 +134,16 @@ macro attach ,ow \
 <shell-escape> /tmp/mutt-attach &^A\
 " "Open attachment with prompt to choose application"
 
-# Open attachment with firefox
-macro attach ,of \
-"\
+# Open the complete message, not an isolated HTML part without its MIME images.
+macro index,pager ,of \
+'\
 <enter-command>unset wait_key<enter>\
-<shell-escape>rm -f /tmp/mutt-attach<enter>\
-<save-entry><kill-line>/tmp/mutt-attach<enter>\
-<shell-escape> firefox -new-window 2> /dev/null /tmp/mutt-attach &<enter>\
-" "Open attachment with firefox"
+<enter-command>set my_browser_pipe_decode=$pipe_decode<enter>\
+<enter-command>unset pipe_decode<enter>\
+<pipe-message>"$XDG_CONFIG_HOME/neomutt/scripts/view-message.py"<enter>\
+<enter-command>set pipe_decode=$my_browser_pipe_decode<enter>\
+' "Open complete message with headers and images in Firefox"
+macro attach ,of '<exit>,of' "Open complete message in Firefox"
 
 # Accept invitation to calendar
 macro attach ,ai \
