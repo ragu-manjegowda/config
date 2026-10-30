@@ -137,8 +137,12 @@ _validate_exports() {
         fi
     done < "$1"
 }
-install_validated_admin_config "${MISC_DIR}/etc/exports" /etc/exports _validate_exports
-sudo exportfs -ra
+if command -v exportfs &>/dev/null; then
+    install_validated_admin_config "${MISC_DIR}/etc/exports" /etc/exports _validate_exports
+    sudo exportfs -ra
+else
+    log_ok "NFS server not installed; export configuration not required"
+fi
 
 log_info "Deploying profile.d scripts..."
 _libreoffice_override=/etc/profile.d/99-libreoffice-vcl.sh
@@ -153,6 +157,9 @@ check_copy "${MISC_DIR}/etc/profile.d/99-libreoffice-vcl.sh" "$_libreoffice_over
 log_info "Deploying X11 input configs..."
 check_copy "${MISC_DIR}/etc/X11/xorg.conf.d/30-touchpad.conf" /etc/X11/xorg.conf.d/30-touchpad.conf
 check_copy "${MISC_DIR}/etc/X11/xorg.conf.d/31-touchscreen.conf" /etc/X11/xorg.conf.d/31-touchscreen.conf
+if [[ "$(</sys/class/dmi/id/sys_vendor)" == LENOVO ]]; then
+    check_copy "${MISC_DIR}/etc/X11/xorg.conf.d/32-lenovo-touchscreen.conf" /etc/X11/xorg.conf.d/32-lenovo-touchscreen.conf
+fi
 
 log_info "Deploying pacman hooks..."
 check_copy_dir "${MISC_DIR}/etc/pacman.d/hooks" /etc/pacman.d/hooks

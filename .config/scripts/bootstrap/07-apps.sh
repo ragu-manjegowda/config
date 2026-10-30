@@ -66,6 +66,17 @@ fi
 log_info "Sioyek dictionary extension..."
 _sioyek_ext="${HOME}/.config/sioyek/extensions/sioyek-dict"
 if [[ -d "$_sioyek_ext" ]] && [[ -f "${_sioyek_ext}/Makefile" ]]; then
+    _rustup_bin=/home/linuxbrew/.linuxbrew/opt/rustup/bin
+    if [[ -d "$_rustup_bin" ]]; then
+        case ":$PATH:" in
+            *":$_rustup_bin:"*) ;;
+            *) export PATH="$_rustup_bin:$PATH" ;;
+        esac
+    fi
+    if check_command rustup && ! rustup show active-toolchain &>/dev/null; then
+        rustup toolchain install stable --profile minimal
+        rustup default stable
+    fi
     (cd "$_sioyek_ext" && PATH="${_venv_dir}/bin:${PATH}" make install)
     log_ok "Sioyek dict extension installed"
 else

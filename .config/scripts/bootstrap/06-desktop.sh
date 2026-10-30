@@ -2,6 +2,9 @@
 # 06-desktop.sh - AwesomeWM, greetd, darkman, polkit, symlinks
 
 log_step "Desktop Environment"
+require_package xorg-xinit
+mkdir -p "${HOME}/.local/state/awesome"
+sudo install -Dm755 "${MISC_DIR}/usr/local/libexec/awesome-session" /usr/local/libexec/awesome-session
 
 log_info "Desktop-only Awesome configuration variant..."
 _config_pull="${HOME}/.config/awesome/utilities/desktop/config-pull"
@@ -10,7 +13,7 @@ if [[ -z "$_machine_profile" ]]; then
     _machine_profile="$(/usr/bin/python3 "$_config_pull" --profile)"
 fi
 case "$_machine_profile" in
-    imac|desktop)
+    imac|desktop|lenovo)
         /usr/bin/python3 "$_config_pull" --apply-profile "$_machine_profile"
         log_ok "Applied desktop profile; cpulla restores its variant after upstream pulls"
         ;;
@@ -29,8 +32,11 @@ if not command.startswith("tuigreet "):
     raise SystemExit("default_session.command must launch tuigreet")
 ' "$1"
 }
+_rendered_greetd="$(mktemp)"
+render_user_config "${MISC_DIR}/etc/greetd/config.toml" "$_rendered_greetd"
 install_validated_admin_config \
-    "${MISC_DIR}/etc/greetd/config.toml" /etc/greetd/config.toml _validate_greetd
+    "$_rendered_greetd" /etc/greetd/config.toml _validate_greetd
+rm -f "$_rendered_greetd"
 
 log_info "Login and lockscreen media keys..."
 check_copy "${MISC_DIR}/usr/local/libexec/login-media-keys" \

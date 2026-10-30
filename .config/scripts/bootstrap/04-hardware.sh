@@ -34,7 +34,7 @@ for _kernel in linux linux-lts; do
         -e "s/%PKGBASE%/${_kernel}/g" \
         -e "s/^PRESETS=('default')$/PRESETS=('default' 'fallback')/" \
         -e 's/^#fallback_image=/fallback_image=/' \
-        -e 's/^#fallback_options=/fallback_options=/' \
+        -e 's/^#fallback_options=.*/fallback_options="-S autodetect,kms"/' \
         /usr/share/mkinitcpio/hook.preset > "$_rendered_preset"
     if [[ ! -f "$_preset_destination" ]] || \
        ! cmp -s "$_rendered_preset" "$_preset_destination"; then
@@ -97,20 +97,26 @@ sudo systemctl mask \
     systemd-hybrid-sleep.service >/dev/null
 log_ok "Masked hibernation services"
 
-check_copy "${MISC_DIR}/etc/systemd/system/awesome-lock-before-sleep.service" \
+_rendered_sleep="$(mktemp)"
+render_user_config "${MISC_DIR}/etc/systemd/system/awesome-lock-before-sleep.service" "$_rendered_sleep"
+check_copy "$_rendered_sleep" \
     /etc/systemd/system/awesome-lock-before-sleep.service
+rm -f "$_rendered_sleep"
 enable_system_service awesome-lock-before-sleep.service
 
+if [[ "$(</sys/class/dmi/id/sys_vendor)" == Dell* ]]; then
 log_info "USB wakeup disable service..."
 check_copy "${MISC_DIR}/etc/systemd/system/disable-USB-wakeup.service" \
     /etc/systemd/system/disable-USB-wakeup.service
 enable_system_service disable-USB-wakeup.service
+fi
 
 log_info "Backlight udev rules..."
 check_copy "${MISC_DIR}/etc/udev/rules.d/90-backlight.rules" \
     /etc/udev/rules.d/90-backlight.rules
 
 log_info "On-demand IPU7 compatibility camera..."
+if pacman -Q v4l2-relayd-ipu7-ov08x40 &>/dev/null; then
 if [[ -e /etc/modprobe.d/v4l2loopback.conf ]]; then
     sudo rm -f /etc/modprobe.d/v4l2loopback.conf
     log_ok "Removed legacy v4l2loopback configuration"
@@ -119,6 +125,9 @@ check_copy \
     "${MISC_DIR}/etc/systemd/system/v4l2-relayd-ipu7.service.d/override.conf" \
     /etc/systemd/system/v4l2-relayd-ipu7.service.d/override.conf
 enable_system_service v4l2-relayd-ipu7.service
+else
+    log_ok "IPU7 relay not installed; using native camera devices"
+fi
 
 log_info "Reloading udev rules..."
 sudo udevadm control --reload || log_warn "Failed to reload udev rules"

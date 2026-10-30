@@ -56,6 +56,8 @@ _path_append() {
 }
 
 _path_append "$CARGO_HOME/bin"
+# Homebrew's Rustup proxies are keg-only on Linux.
+_path_append "/home/linuxbrew/.linuxbrew/opt/rustup/bin"
 
 # if running bash
 if [ -n "$BASH_VERSION" ]; then

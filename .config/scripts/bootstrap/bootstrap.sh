@@ -14,7 +14,9 @@ Options:
   --from N    Start from step N (0-7), skipping earlier steps
   --only N    Run only step N
   --prune-packages
-              Remove packages outside the committed package manifests
+               Remove packages outside the committed package manifests
+  --package-profile PROFILE
+              Restore full (default) or minimal committed package manifests
   --help      Show this help
 
 Steps:
@@ -37,12 +39,19 @@ fi
 FROM_STEP=0
 ONLY_STEP=""
 PRUNE_PACKAGES=false
+PACKAGE_PROFILE=full
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --from)  FROM_STEP="$2"; shift 2 ;;
         --only)  ONLY_STEP="$2"; shift 2 ;;
         --prune-packages) PRUNE_PACKAGES=true; shift ;;
+        --package-profile)
+            if [[ $# -lt 2 || ! "$2" =~ ^(full|minimal)$ ]]; then
+                log_fail "--package-profile requires full or minimal"
+                exit 1
+            fi
+            PACKAGE_PROFILE="$2"; shift 2 ;;
         --help)  usage; exit 0 ;;
         *)       log_fail "Unknown option: $1"; usage; exit 1 ;;
     esac

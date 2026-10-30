@@ -5,6 +5,10 @@ local utils_dir = config_dir .. 'utilities/'
 -- Use the machine configuration as the single DPI source for application commands.
 local config = require('configuration.config')
 local dpi = config.display.dpi
+local resources = string.format('Xft.dpi: %d\\n', dpi)
+if config.display.cursor_size then
+    resources = resources .. string.format('Xcursor.size: %d\\n', config.display.cursor_size)
+end
 
 return {
     -- The default applications that we will use in keybindings and widgets
@@ -93,7 +97,7 @@ return {
         -- Set monitors dpi
         config_dir .. 'utilities/display/setup-monitors',
         -- Machine DPI comes from config.lua, overriding the shared resource defaults.
-        string.format('xrdb -merge ~/.Xresources && printf "Xft.dpi: %d\\n" | xrdb -merge', dpi),
+        'xrdb -merge ~/.Xresources && printf "' .. resources .. '" | xrdb -merge',
         -- Set keyboard repeat rate (delay in ms, rate per second)
         'xset r rate 180 45',
         -- Audio equalizer

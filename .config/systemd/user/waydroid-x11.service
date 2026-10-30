@@ -1,0 +1,10 @@
+[Unit]
+Description=Waydroid in a nested Weston X11 window
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/waydroid-x11
+TimeoutStopSec=20
+KillMode=control-group

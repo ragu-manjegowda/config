@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+: "${DISPLAY:?Waydroid X11 requires an active X11 desktop}"
+: "${XDG_RUNTIME_DIR:?No user runtime directory is available}"
+exec 9>"$XDG_RUNTIME_DIR/waydroid-x11-launcher.lock"
+flock -n 9 || exit 1
+if ! systemctl is-active --quiet waydroid-container.service; then
+    printf 'Start waydroid-container.service before launching Waydroid.\n' >&2
+    exit 1
+fi
+if waydroid status | grep -q 'Session:.*RUNNING'; then
+    printf 'A Waydroid session is already running.\n' >&2
+    exit 1
+fi
+socket=waydroid-x11
+if [[ -e "$XDG_RUNTIME_DIR/$socket" ]]; then
+    printf 'The Waydroid compositor socket is already in use.\n' >&2
+    exit 1
+fi
+weston_pid=
+session_pid=
+cleanup() {
+    trap - EXIT TERM INT
+    if [[ -n "$session_pid" ]]; then
+        waydroid session stop || true
+        kill "$session_pid" 2>/dev/null || true
+        wait "$session_pid" 2>/dev/null || true
+    fi
+    if [[ -n "$weston_pid" ]]; then
+        kill "$weston_pid" 2>/dev/null || true
+        wait "$weston_pid" 2>/dev/null || true
+    fi
+}
+trap cleanup EXIT
+trap 'exit 0' TERM INT
+weston --backend=x11 --renderer=gl --shell=kiosk-shell.so --no-config \
+    --socket="$socket" --width=1280 --height=800 --idle-time=0 &
+weston_pid=$!
+for ((attempt = 0; attempt < 150; attempt++)); do
+    [[ ! -S "$XDG_RUNTIME_DIR/$socket" ]] || break
+    kill -0 "$weston_pid" 2>/dev/null || exit 1
+    sleep 0.2
+done
+[[ -S "$XDG_RUNTIME_DIR/$socket" ]] || exit 1
+export WAYLAND_DISPLAY="$socket"
+waydroid session start &
+session_pid=$!
+for ((attempt = 0; attempt < 150; attempt++)); do
+    if waydroid status | grep -q 'Session:.*RUNNING'; then break; fi
+    kill -0 "$session_pid" 2>/dev/null || exit 1
+    sleep 0.2
+done
+waydroid show-full-ui
+wait "$weston_pid"

@@ -42,6 +42,9 @@ class PullTests(unittest.TestCase):
         (self.source / CONFIG).parent.mkdir(parents=True)
         (self.source / CONFIG).write_text(config("laptop", "base"))
         (self.source / VARIANT).write_text(config("imac", "base"))
+        (self.source / ".config/awesome/configuration/config_lenovo.lua").write_text(
+            config("laptop", "base").replace("    machine", "    profile = 'lenovo',\n    machine")
+        )
         (self.source / ".gitignore").write_text("/.config.git/\n/.local/state/\n")
         (self.source / "notes.txt").write_text("base notes\n")
         self.commit(self.source)
@@ -147,6 +150,52 @@ class PullTests(unittest.TestCase):
         self.assertTrue(
             self.local("ls-files", "-v", "--", CONFIG).stdout.startswith("H ")
         )
+
+    def test_lenovo_pull_reapplies_variant_and_preserves_laptop_controls(self):
+        variant = ".config/awesome/configuration/config_lenovo.lua"
+        result = self.run_helper("--apply-profile", "lenovo")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("machine = 'laptop'", (self.home / CONFIG).read_text())
+        self.assertEqual(self.run_helper("--profile").stdout.strip(), "lenovo")
+        (self.source / CONFIG).write_text(config("laptop", "updated"))
+        (self.source / variant).write_text(
+            config("laptop", "updated").replace("    machine", "    profile = 'lenovo',\n    machine")
+        )
+        self.commit(self.source)
+        result = self.run_helper()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual((self.home / CONFIG).read_bytes(), (self.home / variant).read_bytes())
+        self.assertIn("updated", (self.home / CONFIG).read_text())
+        self.assertTrue(self.local("ls-files", "-v", "--", CONFIG).stdout.startswith("h "))
+
+    def test_first_lenovo_pull_adopts_upstream_variant_without_untracked_collision(self):
+        variant = ".config/awesome/configuration/config_lenovo.lua"
+        text = (self.home / variant).read_text()
+        (self.source / variant).unlink()
+        self.commit(self.source)
+        self.local("update-index", "--no-assume-unchanged", "--", CONFIG)
+        self.local("restore", "--source=HEAD", "--worktree", "--", CONFIG)
+        self.local("pull", "--ff-only", "origin", "master")
+        (self.home / variant).write_text(text)
+        self.assertEqual(self.run_helper("--apply-profile", "lenovo").returncode, 0)
+        (self.source / variant).write_text(text.replace("base", "updated"))
+        self.commit(self.source)
+        result = self.run_helper()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("updated", (self.home / CONFIG).read_text())
+
+    def test_failed_pull_restores_untracked_lenovo_variant(self):
+        variant = ".config/awesome/configuration/config_lenovo.lua"
+        text = (self.home / variant).read_text()
+        self.local("rm", "--", variant)
+        self.commit(self.home, local=True)
+        (self.home / variant).write_text(text)
+        self.assertEqual(self.run_helper("--apply-profile", "lenovo").returncode, 0)
+        self.local("remote", "set-url", "origin", str(self.base / "missing-upstream"))
+        result = self.run_helper()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual((self.home / variant).read_text(), text)
+        self.assertEqual((self.home / CONFIG).read_text(), text)
 
     def test_failed_fetch_restores_exact_config_flags_and_permissions(self):
         original = (self.home / CONFIG).read_bytes()
@@ -254,7 +303,7 @@ class PullTests(unittest.TestCase):
             ROOT.parent / "zsh/zsh-custom/plugins/custom-alias/custom-alias.plugin.zsh"
         )
         function = re.search(
-            r"function cpulla\(\) \{.*?\n\}", plugin.read_text(), re.S
+            r"function cpulla\(\) \{.*?\n\}", plugin.read_text(), re.DOTALL
         ).group()
         fallback = self.home / ".config.git/local-tools/config-pull"
         fallback.parent.mkdir()
@@ -308,7 +357,7 @@ class PullTests(unittest.TestCase):
             ROOT.parent / "zsh/zsh-custom/plugins/custom-alias/custom-alias.plugin.zsh"
         )
         function = re.search(
-            r"function cpulla\(\) \{.*?\n\}", plugin.read_text(), re.S
+            r"function cpulla\(\) \{.*?\n\}", plugin.read_text(), re.DOTALL
         ).group()
         commands = self.base / "commands"
         commands.mkdir()
@@ -362,7 +411,7 @@ class PullTests(unittest.TestCase):
             ROOT.parent / "zsh/zsh-custom/plugins/custom-alias/custom-alias.plugin.zsh"
         )
         function = re.search(
-            r"function cpulla\(\) \{.*?\n\}", plugin.read_text(), re.S
+            r"function cpulla\(\) \{.*?\n\}", plugin.read_text(), re.DOTALL
         ).group()
         helper = self.home / ".config/awesome/utilities/desktop/config-pull"
         helper.parent.mkdir(parents=True)

@@ -2,5 +2,5 @@
 Name=awesome
 Comment=Highly configurable framework window manager
 TryExec=awesome
-Exec=awesome >> ~/.local/state/awesome/stdout 2>> ~/.local/state/awesome/stderr
+Exec=/usr/local/libexec/awesome-session
 Type=Application

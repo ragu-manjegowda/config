@@ -1,6 +1,3 @@
 #!/bin/zsh
 
-chromium_config_path="$HOME/.config/chrome-flags.conf"
-chromium_light_config_path="$HOME/.config/chrome-flags-light.conf"
-
-cp $chromium_light_config_path $chromium_config_path
+exec /usr/bin/python3 "${XDG_CONFIG_HOME:-$HOME/.config}/scripts/chromium-theme.py" light

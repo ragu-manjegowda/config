@@ -21,7 +21,7 @@ https://addons.mozilla.org/firefox/downloads/file/3578470/online_convert-4.2.xpi
 https://addons.mozilla.org/firefox/downloads/file/4515369/consent_o_matic-1.1.5.xpi gdpr@cavi.au.dk # Consent-O-Matic
 https://addons.mozilla.org/firefox/downloads/file/4570192/raindropio-6.6.91.xpi jid0-adyhmvsP91nUO8pRv0Mn2VKeB84@jetpack # Raindrop.io
 https://addons.mozilla.org/firefox/downloads/file/4573120/surfingkeys_ff-1.17.11.xpi {a8332c60-5b6d-41ee-bfc8-e9bb331d34ad} # Surfingkeys
-https://addons.mozilla.org/firefox/downloads/file/4297951/buster_captcha_solver-3.1.0.xpi {e58d3966-3d76-4cd9-8552-1582fbc800c1} # Buster: Captcha Solver for Humans
+https://addons.mozilla.org/firefox/downloads/file/4859908/buster_captcha_solver-3.4.0.xpi {e58d3966-3d76-4cd9-8552-1582fbc800c1} # Buster: Captcha Solver for Humans
 https://addons.mozilla.org/firefox/downloads/file/4624727/cookies_txt-1.0.xpi {12cf650b-1822-40aa-bff0-996df6948878} # cookies.txt
 https://addons.mozilla.org/firefox/downloads/file/4733069/multi_account_containers-8.3.7.xpi @testpilot-containers # Firefox Multi-Account Containers
 https://addons.mozilla.org/firefox/downloads/file/4773733/user_agent_string_switcher-0.6.7.xpi {a6c4a591-f1b2-4f03-b3ff-767e5bedf4e7} # User-Agent Switcher and Manager

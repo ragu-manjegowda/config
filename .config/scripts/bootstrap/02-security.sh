@@ -20,8 +20,11 @@ fi
 enable_system_service nftables
 
 log_info "SSH hardening..."
-check_copy "${MISC_DIR}/etc/ssh/sshd_config.d/50-hardening.conf" \
+_rendered_ssh="$(mktemp)"
+render_user_config "${MISC_DIR}/etc/ssh/sshd_config.d/50-hardening.conf" "$_rendered_ssh"
+check_copy "$_rendered_ssh" \
     /etc/ssh/sshd_config.d/50-hardening.conf
+rm -f "$_rendered_ssh"
 if sudo sshd -t &>/dev/null; then
     sudo systemctl restart sshd
     log_ok "sshd config validated and service restarted"

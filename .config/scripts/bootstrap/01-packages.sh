@@ -2,6 +2,7 @@
 # 01-packages.sh - Install paru, restore pacman/AUR packages, homebrew, zsh
 
 log_step "Package Management"
+source "${SCRIPTS_DIR}/packages.sh"
 
 require_package base-devel git curl gnupg
 
@@ -55,17 +56,8 @@ _package_cleanup() {
 sudo touch "$_restore_sentinel"
 trap _package_cleanup EXIT
 
-log_info "Loading package manifests from Git HEAD..."
-if ! git --git-dir="$_manifest_repo" show \
-    HEAD:.config/archiso-backup/pkglistPacmanInstalled.txt \
-    > "${_manifest_dir}/pkglistPacmanInstalled.txt" ||
-   ! git --git-dir="$_manifest_repo" show \
-    HEAD:.config/archiso-backup/foreignpkglist.txt \
-    > "${_manifest_dir}/foreignpkglist.txt" ||
-   ! git --git-dir="$_manifest_repo" show \
-    HEAD:.config/archiso-backup/pkglistAll.txt \
-    > "${_manifest_dir}/pkglistAll.txt"; then
-    log_fail "Unable to read committed package manifests"
+log_info "Loading ${PACKAGE_PROFILE:-full} package profile from Git HEAD..."
+if ! load_package_manifests "$_manifest_repo" "$_manifest_dir" "${PACKAGE_PROFILE:-full}"; then
     return 1
 fi
 
@@ -94,10 +86,12 @@ if ! command -v git-crypt &>/dev/null; then
     return 1
 fi
 log_info "Unlocking encrypted dotfiles..."
-GIT_DIR="${HOME}/.config.git" GIT_WORK_TREE="${HOME}" git-crypt unlock || {
+if dotfiles_are_unlocked "$_manifest_repo"; then
+    log_ok "Dotfiles key and smudge filter already active; retaining local edits"
+elif ! GIT_DIR="${HOME}/.config.git" GIT_WORK_TREE="${HOME}" git-crypt unlock; then
     log_fail "Encrypted dotfiles could not be unlocked; refusing to continue"
     return 1
-}
+fi
 log_ok "Encrypted dotfiles unlocked"
 
 log_info "OpenCode configuration..."
@@ -123,7 +117,7 @@ else
     log_info "Installing paru..."
     _paru_dir="$(mktemp -d)"
     git clone https://aur.archlinux.org/paru.git "$_paru_dir"
-    (cd "$_paru_dir" && makepkg -si --noconfirm)
+    (cd "$_paru_dir" && arch_package_command makepkg -si --noconfirm)
     rm -rf "$_paru_dir"
     log_ok "paru installed"
 fi
@@ -132,7 +126,7 @@ _pacman_packages="${_manifest_dir}/pkglistPacmanInstalled.txt"
 _aur_packages="${_manifest_dir}/foreignpkglist.txt"
 
 log_info "Refreshing configured GitHub PKGBUILD repositories..."
-if paru -Sy --noconfirm --pkgbuilds; then
+if arch_package_command paru -Sy --noconfirm --pkgbuilds; then
     log_ok "GitHub PKGBUILD repositories refreshed"
 else
     log_warn "Some GitHub PKGBUILD repositories failed to refresh"
@@ -140,12 +134,13 @@ fi
 
 if [[ -f "$_pacman_packages" ]]; then
     log_info "Restoring official packages (this may take a while)..."
-    if sudo pacman -S --needed --noconfirm - < "$_pacman_packages"; then
+    if sudo pacman -Syu --needed --noconfirm - < "$_pacman_packages"; then
         mapfile -t _explicit_packages < "$_pacman_packages"
         sudo pacman -D --asexplicit "${_explicit_packages[@]}"
         log_ok "Official package restore complete"
     else
-        log_warn "Some official packages failed to install -- review output above"
+        log_fail "Official package restore failed; refusing to prune or report completion"
+        return 1
     fi
 else
     log_warn "No official package list found at $_pacman_packages"
@@ -156,19 +151,23 @@ if [[ -f "$_aur_packages" ]]; then
     _failed_aur_packages=()
     while IFS= read -r _aur_package <&3 || [[ -n "$_aur_package" ]]; do
         [[ -z "$_aur_package" || "$_aur_package" == \#* ]] && continue
+        if pacman -Q "$_aur_package" &>/dev/null; then
+            log_ok "Already installed: $_aur_package"
+            continue
+        fi
         if [[ "$_aur_package" == "intel-vision-drivers-dkms-ipu7-ov08x40" ||
               "$_aur_package" == "libcamera-ipu7-ov08x40" ||
               "$_aur_package" == "libcamera-ipu7-ov08x40-ipa" ]]; then
             if paru -Qi "$_aur_package" &>/dev/null; then
                 continue
             fi
-            if ! paru -S --needed --pkgbuilds \
+            if ! arch_package_command paru -S --needed --pkgbuilds \
                 intel-vision-drivers-dkms-ipu7-ov08x40 \
                 libcamera-ipu7-ov08x40 \
                 libcamera-ipu7-ov08x40-ipa; then
                 _failed_aur_packages+=("$_aur_package")
             fi
-        elif ! paru -S --needed "$_aur_package"; then
+        elif ! arch_package_command paru -S --needed "$_aur_package"; then
             _failed_aur_packages+=("$_aur_package")
         fi
     done 3< "$_aur_packages"
@@ -176,12 +175,15 @@ if [[ -f "$_aur_packages" ]]; then
     if [[ ${#_failed_aur_packages[@]} -eq 0 ]]; then
         log_ok "AUR package restore complete"
     else
-        log_warn "Unavailable AUR packages: ${_failed_aur_packages[*]}"
-        REMINDERS+=("Review unavailable AUR packages: ${_failed_aur_packages[*]}")
+        log_fail "AUR package restore failed: ${_failed_aur_packages[*]}"
+        log_fail "Refusing to prune packages or report bootstrap completion"
+        return 1
     fi
 else
     log_warn "No AUR package list found at $_aur_packages"
 fi
+
+verify_package_restore "${_manifest_dir}/pkglistAll.txt" "$_manifest_dir" || return 1
 
 if [[ "${PRUNE_PACKAGES:-false}" == true ]]; then
     log_info "Comparing installed packages with committed manifests..."
@@ -222,8 +224,24 @@ fi
 
 if [[ -x "${HOME}/.local/bin/topgrade" ]]; then
     log_info "Restoring profile-managed packages..."
-    "${HOME}/.local/bin/topgrade"
+    # Scope the npm lookup path to the installer, retaining an existing entry.
+    _npm_bin="${XDG_DATA_HOME:-${HOME}/.local/share}/npm/bin"
+    _profile_path="$PATH"
+    case ":${_profile_path}:" in
+        *":${_npm_bin}:"*) ;;
+        *) _profile_path="${_npm_bin}:${_profile_path}" ;;
+    esac
+    PATH="$_profile_path" "${HOME}/.local/bin/topgrade"
+    unset _npm_bin _profile_path
     log_ok "Profile-managed packages restored"
+fi
+
+verify_package_restore "${_manifest_dir}/pkglistAll.txt" "$_manifest_dir" || return 1
+if command -v brew &>/dev/null && [[ -f "${_brew_backup}/Brewfile" ]]; then
+    brew bundle check --no-upgrade --file="${_brew_backup}/Brewfile" || {
+        log_fail "Homebrew bundle verification failed"
+        return 1
+    }
 fi
 
 unset _pacman_packages _aur_packages _aur_package _failed_aur_packages

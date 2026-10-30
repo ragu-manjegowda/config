@@ -22,11 +22,50 @@ curl -fsSL https://raw.githubusercontent.com/ragu-manjegowda/config/refs/heads/m
 
 # Restore committed package manifests and remove packages outside them
 ~/.config/scripts/bootstrap/bootstrap.sh --only 1 --prune-packages
+
+# Restore the committed minimal laptop package list, including explicit runtimes
+~/.config/scripts/bootstrap/bootstrap.sh --only 1 --package-profile minimal --prune-packages
 ```
 
 Package restoration always reads the manifests committed at Git `HEAD`. The
 working copies under `~/.config/archiso-backup/` may be refreshed by pacman
 hooks, but bootstrap never uses those generated changes as restore input.
+
+The default `full` package profile uses the official and foreign manifests and
+validates their union against `pkglistAll.txt`. `--package-profile minimal`
+instead selects exactly `pkglistMinimal.txt`. Entries in the committed foreign
+manifest go to paru; the remaining minimal entries go to pacman, including
+runtime dependencies explicitly named only in the minimal list. Pruning uses
+the selected profile; packages required as dependencies are retained normally.
+Neither profile automatically excludes hardware-specific packages.
+
+Arch package builds use system tools and system pkg-config directories even
+after Homebrew has updated PATH. Awesome's supported `_BUILD_DOCS=0` switch
+disables docs and manpages by default for AUR builds (set `_BUILD_DOCS=1` to
+override). Already-installed AUR packages are retained rather than updated as
+part of restoration. This does not pin package versions or repair upstream
+PKGBUILDs; an unavailable or broken recipe is a restoration failure.
+
+Official or AUR installation failures stop the package step before pruning.
+The selected package set is checked against pacman's installed database before
+pruning and again at completion, and the Brewfile is checked without requiring
+upgrades. A failed restoration never reports bootstrap completion. An active
+git-crypt key/filter is reused, so rerunning an unlocked setup preserves local
+configuration edits instead of attempting another unlock on a dirty worktree.
+
+The package step includes the configured npm prefix's `bin` directory only if
+it is missing, and scopes the PATH change to the shared profile installer.
+The installer's tool-command function also uses a local PATH and preserves
+existing entries without duplication. Its commands run without another login
+shell, so a newly installed
+`@playwright/mcp` exposes `playwright-mcp` immediately. The browser installer
+comes from npm and does not require a Python Playwright package.
+
+Run package restoration regression checks with:
+
+```bash
+python3 ~/.config/scripts/bootstrap/tests/test_packages.py
+```
 
 Before installing the Homebrew bundle or restoring system packages, bootstrap
 checks the configured `GNUPGHOME` for a secret key. You can import a key file,
@@ -101,9 +140,20 @@ Git has no native `pre-pull` hook. The `cpulla` shell function uses
 `~/.config/awesome/utilities/desktop/config-pull`, preserving
 `config pull --rebase --autostash` while managing desktop variants:
 
-* Laptop profiles pull normally.
+* Generic laptop profiles pull normally. Lenovo uses `machine = 'laptop'` with
+  `profile = 'lenovo'` to retain laptop widgets while managing `config_lenovo.lua`.
 * `machine = 'imac'` uses tracked `configuration/config_imac.lua`;
   `machine = 'desktop'` requires a tracked `configuration/config_desktop.lua`.
+
+On the Lenovo, apply the variant once with:
+
+```bash
+~/.config/awesome/utilities/desktop/config-pull --apply-profile lenovo
+```
+
+Use `cpulla` for subsequent upstream pulls. It cleans the generated `config.lua`
+before pulling, reapplies the Lenovo variant afterward, and restores the previous
+configuration on a failed pull. Direct Git pulls bypass this wrapper.
 * Before a desktop pull, the helper saves a private recovery copy, clears only
   `config.lua`'s local index flags, and restores its tracked `HEAD` contents.
 * After a successful pull it copies the updated variant over `config.lua` and

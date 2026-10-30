@@ -156,9 +156,15 @@ upgrade_homebrew_packages() {
 }
 
 run_npm_tool_commands() {
-    local command_line
+    local command_line npm_bin="$data_home/npm/bin" PATH="$PATH"
 
     [ -f "$npm_tool_commands" ] || return 0
+    # Keep this function's lookup path local and do not duplicate a profile entry.
+    case ":$PATH:" in
+        *":$npm_bin:"*) ;;
+        *) PATH="$npm_bin:$PATH" ;;
+    esac
+    export PATH
     prefer_homebrew_node
 
     log "Running npm package tool commands from $npm_tool_commands"
@@ -167,7 +173,7 @@ run_npm_tool_commands() {
             ''|'#'*) continue ;;
         esac
         printf '>> %s\n' "$command_line"
-        bash -lc "$command_line"
+        bash -c "$command_line"
     done <"$npm_tool_commands"
 }
 

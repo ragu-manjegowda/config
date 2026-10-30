@@ -12,14 +12,15 @@ import tempfile
 from pathlib import Path
 
 CONFIG = ".config/awesome/configuration/config.lua"
-PROFILES = {"imac", "desktop"}
+PROFILES = {"imac", "desktop", "lenovo"}
 
 
 def profile(text):
+    variants = re.findall(r"^[ \t]*profile\s*=\s*['\"]([a-z]+)['\"]", text, re.MULTILINE)
     matches = re.findall(r"^[ \t]*machine\s*=\s*['\"]([a-z]+)['\"]", text, re.MULTILINE)
-    if len(matches) > 1:
+    if len(matches) > 1 or len(variants) > 1:
         raise RuntimeError("Multiple machine profiles in Awesome configuration")
-    return matches[0] if matches else "laptop"
+    return variants[0] if variants else (matches[0] if matches else "laptop")
 
 
 class Dotfiles:
@@ -87,6 +88,7 @@ class Dotfiles:
                 CONFIG,
                 str(self.config.with_name("config_imac.lua").relative_to(self.home)),
                 str(self.config.with_name("config_desktop.lua").relative_to(self.home)),
+                str(self.config.with_name("config_lenovo.lua").relative_to(self.home)),
             ).stdout
         )
 
@@ -114,7 +116,7 @@ class Dotfiles:
 
     def apply(self, machine):
         if machine not in PROFILES:
-            raise RuntimeError("Profile application is limited to desktop and imac")
+            raise RuntimeError("Profile application is limited to desktop, imac and lenovo")
         self.check_index()
         variant = self.variant(machine)
         _, skipped = self.flags()
@@ -157,12 +159,21 @@ class Dotfiles:
         shutil.copy2(self.config, backup, follow_symlinks=False)
         if not backup.is_symlink():
             backup.chmod(0o600)
-        keep_backup = self.config.read_bytes() != variant.read_bytes()
+        untracked_variant = bool(self.git(
+            "ls-files", "--error-unmatch", "--", str(variant.relative_to(self.home)), check=False
+        ).returncode)
+        variant_backup = backup_dir / variant.name
+        if untracked_variant:
+            shutil.copy2(variant, variant_backup)
+            variant_backup.chmod(0o600)
+        keep_backup = self.config.read_bytes() != variant.read_bytes() or untracked_variant
         succeeded = False
         status = 1
         try:
             self.set_flags(False, False)
             self.git("restore", "--source=HEAD", "--worktree", "--", CONFIG)
+            if untracked_variant:
+                variant.unlink()
             print(
                 f"config-pull: cleaned config.lua before pulling ({machine})",
                 flush=True,
@@ -181,6 +192,8 @@ class Dotfiles:
         except KeyboardInterrupt:
             status = 130
         finally:
+            if untracked_variant and not variant.exists():
+                shutil.copy2(variant_backup, variant)
             if not succeeded:
                 keep_backup = True
                 if self.unmerged():
@@ -217,8 +230,8 @@ def main():
     if args in (["--help"], ["-h"]):
         print(
             "Usage: config-pull [git pull arguments]\n"
-            "       config-pull --apply-profile imac|desktop\n"
-            "Desktop variants are copied around pull --rebase --autostash; laptops pull normally."
+            "       config-pull --apply-profile imac|desktop|lenovo\n"
+            "Managed variants are copied around pull --rebase --autostash; other laptops pull normally."
         )
         return 0
     fd = os.open(

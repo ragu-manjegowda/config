@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Initialize the user's desktop environment before starting the window manager.
+if [[ -f "$HOME/.profile" ]]; then
+    source "$HOME/.profile"
+fi
+export XDG_CURRENT_DESKTOP=awesome
+export XDG_SESSION_DESKTOP=awesome
+export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+mkdir -p "$XDG_STATE_HOME/awesome"
+dbus-update-activation-environment --systemd DISPLAY XAUTHORITY XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP PATH
+exec /usr/bin/awesome >> "$XDG_STATE_HOME/awesome/stdout" 2>> "$XDG_STATE_HOME/awesome/stderr"

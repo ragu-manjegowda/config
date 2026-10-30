@@ -31,6 +31,7 @@
 !/.local/bin/tsh
 !/.local/bin/unlock
 !/.local/bin/vnc-server
+!/.local/bin/waydroid-x11
 !/.local/bin/ytfzf.sh
 
 
@@ -39,6 +40,7 @@
 !/.local/share/applications
 /.local/share/applications/*
 !/.local/share/applications/Alacritty.desktop
+!/.local/share/applications/Waydroid.desktop
 !/.local/share/applications/codex-app-linux.desktop
 !/.local/share/applications/feh.desktop
 !/.local/share/applications/masterpdfeditor4.desktop

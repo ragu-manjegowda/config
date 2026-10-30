@@ -120,7 +120,6 @@ ttf-hack-nerd
 ueberzugpp
 upower
 v4l-utils
-v4l2-relayd-ipu7-ov08x40
 v4l2loopback-dkms
 v4l2loopback-utils
 w3m

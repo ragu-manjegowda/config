@@ -33,6 +33,24 @@ ARCHISO_BACKUP_DIR="${HOME}/.config/archiso-backup"
 # Helpers
 # ---------------------------------------------------------------------------
 
+# Render account-bound administrator templates for the installing user.
+render_user_config() {
+    /usr/bin/python3 - "$1" "$2" "$HOME" "$(id -un)" <<'PY'
+import re
+import sys
+from pathlib import Path
+source, destination, home, user = sys.argv[1:]
+text = Path(source).read_text().replace('/home/ragu', home).replace('--user ragu', '--user ' + user)
+for pattern, replacement in (
+    (r'^User=ragu$', 'User=' + user),
+    (r'^AllowUsers ragu$', 'AllowUsers ' + user),
+    (r'^user = "ragu"$', 'user = "' + user + '"'),
+):
+    text = re.sub(pattern, replacement, text, flags=re.MULTILINE)
+Path(destination).write_text(text)
+PY
+}
+
 # Compare two files; copy source → dest (with sudo) only if different.
 # Usage: check_copy <source> <dest>
 # Returns 0 if copied/already matching, 1 on failure.

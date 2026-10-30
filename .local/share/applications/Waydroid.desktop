@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Waydroid
+Comment=Run Android in a nested Weston window on the X11 desktop
+Exec=systemctl --user start waydroid-x11.service
+TryExec=waydroid
+Icon=waydroid
+Terminal=false
+Type=Application
+Categories=System;Emulator;
+Actions=stop;
+
+[Desktop Action stop]
+Name=Stop Waydroid
+Exec=systemctl --user stop waydroid-x11.service
+Icon=waydroid
