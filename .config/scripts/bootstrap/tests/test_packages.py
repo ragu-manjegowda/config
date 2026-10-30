@@ -111,14 +111,43 @@ class PackageRestoreTests(unittest.TestCase):
                          'ExecStart=/home/bangari/lock\nPermitRootLogin no\n')
 
     def test_arch_build_environment_overrides_homebrew(self):
+        self.env.pop("_BUILD_DOCS", None)
         self.env.update(PATH="/home/linuxbrew/.linuxbrew/bin:" + os.environ["PATH"],
                         PKG_CONFIG="brew-pkg-config", PKG_CONFIG_LIBDIR="/brew/lib/pkgconfig")
         result = self.shell('arch_package_command /bin/bash -c '\
-                            "'printf \"%s\\n\" \"$PATH\" \"$PKG_CONFIG\" \"$PKG_CONFIG_LIBDIR\" \"$_BUILD_DOCS\"'")
+                            "'printf \"%s\\n\" \"$PATH\" \"$PKG_CONFIG\" \"$PKG_CONFIG_LIBDIR\" \"${_BUILD_DOCS-unset}\"'")
         self.assertEqual(result.returncode, 0, result.stderr)
         lines = result.stdout.splitlines()
         self.assertTrue(lines[0].startswith("/usr/bin:/bin:"))
-        self.assertEqual(lines[1:], ["/usr/bin/pkg-config", "/usr/lib/pkgconfig:/usr/share/pkgconfig", "0"])
+        self.assertEqual(lines[1:], ["/usr/bin/pkg-config", "/usr/lib/pkgconfig:/usr/share/pkgconfig", "unset"])
+
+    def test_documentation_workaround_is_scoped_to_awesome_invocations(self):
+        self.env.pop("_BUILD_DOCS", None)
+        for package, expected in (("awesome-luajit-git", "0"), ("other-package", "unset")):
+            with self.subTest(package=package):
+                result = self.shell('arch_package_command /bin/bash -c '\
+                                    "'printf \"%s\\n\" \"${_BUILD_DOCS-unset}\"' -- \"$1\"", package)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(result.stdout.strip(), expected)
+
+    def test_user_makepkg_config_uses_native_tools_without_duplicate_paths(self):
+        config = BOOTSTRAP.parents[1] / "pacman/makepkg.conf"
+        env = dict(self.env, PATH="/brew/bin:/usr/bin:/bin:/brew/bin")
+        env.pop("_BUILD_DOCS", None)
+        result = subprocess.run(
+            ["/bin/bash", "-c", 'source "$1"; source "$1"; printf "%s\\n" "$PATH" "$PKG_CONFIG" "${_BUILD_DOCS-unset}"',
+             "test", str(config)], env=env, text=True, capture_output=True, check=False)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.splitlines(), ["/usr/bin:/bin:/brew/bin", "/usr/bin/pkg-config", "unset"])
+        self.assertEqual(env["PATH"], "/brew/bin:/usr/bin:/bin:/brew/bin")
+
+    def test_user_makepkg_config_preserves_explicit_documentation_override(self):
+        config = BOOTSTRAP.parents[1] / "pacman/makepkg.conf"
+        result = subprocess.run(
+            ["/bin/bash", "-c", 'source "$1"; printf "%s\\n" "$_BUILD_DOCS"', "test", str(config)],
+            env=dict(self.env, _BUILD_DOCS="1"), text=True, capture_output=True, check=False)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), "1")
 
     def test_missing_packages_fail_verification(self):
         self.assertEqual(self.select("minimal").returncode, 0)

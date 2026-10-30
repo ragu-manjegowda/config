@@ -47,11 +47,19 @@ Custom packages still need an available PKGBUILD source or a preinstalled packag
 listing a package does not publish its build recipe.
 
 Arch package builds use system tools and system pkg-config directories even
-after Homebrew has updated PATH. Awesome's supported `_BUILD_DOCS=0` switch
-disables docs and manpages by default for AUR builds (set `_BUILD_DOCS=1` to
-override). Already-installed AUR packages are retained rather than updated as
-part of restoration. This does not pin package versions or repair upstream
-PKGBUILDs; an unavailable or broken recipe is a restoration failure.
+after Homebrew has updated PATH. Bootstrap sets Awesome's supported
+`_BUILD_DOCS=0` switch only on the `awesome-luajit-git` restore invocation
+(set `_BUILD_DOCS=1` to override). Already-installed AUR packages are retained
+rather than updated as part of restoration. This does not pin package versions
+or repair upstream PKGBUILDs; an unavailable or broken recipe is a restoration
+failure.
+The shared user `makepkg.conf` applies the same native-tool defaults to manual
+makepkg/paru builds, with a deduplicated build-process PATH. It does not export
+the recipe-specific documentation flag globally. For a manual Awesome build use:
+
+```bash
+_BUILD_DOCS=0 paru -S awesome-luajit-git
+```
 
 Official or AUR installation failures stop the package step before pruning.
 The selected package set is checked against pacman's installed database before

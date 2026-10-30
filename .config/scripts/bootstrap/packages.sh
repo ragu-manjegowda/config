@@ -54,11 +54,22 @@ load_package_manifests() {
 arch_package_command() {
     # Homebrew shellenv must not decide which headers/libraries an Arch package
     # links against. Keep Brew-only tools available after the system tools.
-    env PATH="/usr/bin:/bin:${PATH}" \
-        PKG_CONFIG=/usr/bin/pkg-config \
-        PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/share/pkgconfig \
-        PKG_CONFIG_LIBDIR=/usr/lib/pkgconfig:/usr/share/pkgconfig \
-        _BUILD_DOCS="${_BUILD_DOCS:-0}" "$@"
+    local argument
+    local -a build_env=(
+        "PATH=/usr/bin:/bin:${PATH}"
+        'PKG_CONFIG=/usr/bin/pkg-config'
+        'PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/share/pkgconfig'
+        'PKG_CONFIG_LIBDIR=/usr/lib/pkgconfig:/usr/share/pkgconfig'
+    )
+    # Restore installs AUR packages one at a time. Scope this recipe-specific
+    # switch to the Awesome invocation, not every makepkg/paru process.
+    for argument in "$@"; do
+        if [[ "$argument" == awesome-luajit-git ]]; then
+            build_env+=("_BUILD_DOCS=${_BUILD_DOCS:-0}")
+            break
+        fi
+    done
+    env "${build_env[@]}" "$@"
 }
 
 verify_package_restore() {
