@@ -46,7 +46,8 @@ class PackageRestoreTests(unittest.TestCase):
                               check=False, env=self.env, text=True, capture_output=True)
 
     def select(self, profile):
-        return self.shell('load_package_manifests "$1" "$2" "$3"', self.repo / ".git",
+        return self.shell('pacman() { [[ "$1" == -Si && "$2" == explicit-runtime ]]; }; '
+                          'load_package_manifests "$1" "$2" "$3"', self.repo / ".git",
                           self.destination, profile)
 
     def selected(self, name):
@@ -68,6 +69,14 @@ class PackageRestoreTests(unittest.TestCase):
         (self.manifests / "pkglistMinimal.txt").write_text("wrong-working-copy\n")
         self.assertEqual(self.select("minimal").returncode, 0)
         self.assertNotIn("wrong-working-copy", self.selected("pkglistAll.txt"))
+
+    def test_minimal_only_custom_package_is_not_assumed_to_be_official(self):
+        (self.manifests / "pkglistMinimal.txt").write_text("base\ncustom-driver\nexplicit-runtime\n")
+        self.commit()
+        result = self.select("minimal")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.selected("pkglistPacmanInstalled.txt"), ["base", "explicit-runtime"])
+        self.assertEqual(self.selected("foreignpkglist.txt"), ["custom-driver"])
 
     def test_disagreeing_full_manifests_fail(self):
         (self.manifests / "pkglistAll.txt").write_text("base\n")
@@ -113,16 +122,33 @@ class PackageRestoreTests(unittest.TestCase):
 
     def test_missing_packages_fail_verification(self):
         self.assertEqual(self.select("minimal").returncode, 0)
-        result = self.shell('pacman() { printf "base\\n"; }; verify_package_restore "$1" "$2"',
+        result = self.shell('pacman() { printf "awesome-luajit-git\\nexplicit-runtime\\n"; return 127; }; '
+                            'verify_package_restore "$1" "$2"',
                             self.destination / "pkglistAll.txt", self.destination)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("explicit-runtime", result.stderr)
 
     def test_dependency_packages_do_not_count_as_profile_mismatches(self):
         self.assertEqual(self.select("minimal").returncode, 0)
-        result = self.shell('pacman() { printf "base\\nawesome-luajit-git\\nexplicit-runtime\\nlibdependency\\n"; }; '
+        result = self.shell('pacman() { [[ "$1" == -T ]]; }; '
                             'verify_package_restore "$1" "$2"', self.destination / "pkglistAll.txt", self.destination)
         self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_provider_is_verified_as_a_dependency_not_an_installed_name(self):
+        desired = self.destination / "virtual.txt"
+        desired.write_text("virtual-audio\n")
+        result = self.shell('pacman() { [[ "$1" == -T && "$2" == virtual-audio ]]; }; '
+                            'verify_package_restore "$1" "$2"', desired, self.destination)
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_pruning_retains_the_actual_package_providing_a_selected_dependency(self):
+        desired = self.destination / "virtual.txt"
+        desired.write_text("virtual-audio\n")
+        output = self.destination / "resolved.txt"
+        result = self.shell('pacman() { [[ "$1" == -Qq && "$2" == virtual-audio ]] || return 1; '
+                            'printf "driver-bundle\\n"; }; resolve_package_selection "$1" "$2"', desired, output)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(output.read_text(), "driver-bundle\n")
 
     def test_failed_installed_database_query_fails_verification(self):
         self.assertEqual(self.select("full").returncode, 0)
@@ -175,6 +201,11 @@ pacman() {
         -Syu) [[ "$SCENARIO" != official-failure ]] ;;
         -Q)
             [[ "$2" == awesome-luajit-git || "$SCENARIO" == installed ]]
+            ;;
+        -T)
+            [[ "$SCENARIO" != installed ]] || return 0
+            printf 'foreign-extra\n'
+            return 127
             ;;
         -Qq|-Qqe)
             printf 'base\nextra-app\nawesome-luajit-git\n'

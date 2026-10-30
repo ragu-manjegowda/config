@@ -39,6 +39,13 @@ runtime dependencies explicitly named only in the minimal list. Pruning uses
 the selected profile; packages required as dependencies are retained normally.
 Neither profile automatically excludes hardware-specific packages.
 
+Minimal-only additions are checked against pacman's configured sync repositories
+before choosing the official or foreign installer. Dependency verification uses
+`pacman -T`, so an installed provider can satisfy a selected name. Pruning retains
+the actual provider package rather than demoting it because its name differs.
+Custom packages still need an available PKGBUILD source or a preinstalled package;
+listing a package does not publish its build recipe.
+
 Arch package builds use system tools and system pkg-config directories even
 after Homebrew has updated PATH. Awesome's supported `_BUILD_DOCS=0` switch
 disables docs and manpages by default for AUR builds (set `_BUILD_DOCS=1` to

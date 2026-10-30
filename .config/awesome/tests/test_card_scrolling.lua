@@ -94,6 +94,7 @@ package.loaded.beautiful = {
     bg_focus = '#333333',
 }
 package.loaded.naughty = { notification = function() end }
+package.loaded['library.text-metrics'] = { line_height = function() return 12 end }
 package.loaded['library.email-refresh'] = { new = function() return function() end end }
 awesome = { connect_signal = function(name, callback) signals[name] = callback end }
 screen = { connect_signal = function() end }

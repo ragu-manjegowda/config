@@ -13,6 +13,7 @@ bun
 ccid
 check-broken-packages-pacman-hook-git
 colord
+cs35l56-ot25-dkms
 cups
 curl
 cyrus-sasl-xoauth2-git
@@ -137,6 +138,7 @@ xorg-server-xephyr
 xorg-server-xvfb
 xorg-xauth
 xorg-xdpyinfo
+xorg-xinit
 xorg-xinput
 xorg-xprop
 xorg-xrandr

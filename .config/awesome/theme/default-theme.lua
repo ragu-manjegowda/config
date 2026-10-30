@@ -12,14 +12,13 @@ local tip = titlebar_icon_path
 -- Create theme table
 local base_theme = {}
 
--- Font size function - NO scaling (fonts stay at specified size)
--- The xrandr DPI setting affects layout/spacing via dpi() function, not fonts
--- This keeps fonts readable at any resolution
+-- Keep sizes in points. Pango applies the rendering DPI; applying dpi() here
+-- would scale fonts twice. Text containers must accommodate measured pixels.
 local function font_size(size)
     return size
 end
 
--- Helper functions to create font strings with DPI scaling
+-- Pango descriptions list fallback families before the final point size.
 local function font_regular(size)
     return 'Hack Nerd Font Mono ' .. font_size(size)
 end
@@ -37,7 +36,7 @@ local function font_mono(size)
 end
 
 local function font_emoji(size)
-    return 'Hack Nerd Font Mono ' .. font_size(size) .. ', Noto Color Emoji'
+    return 'Hack Nerd Font Mono, Noto Color Emoji ' .. font_size(size)
 end
 
 -- Export font functions for use in widgets (MUST be before any widget loading)

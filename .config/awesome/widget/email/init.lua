@@ -6,6 +6,7 @@ local beautiful = require('beautiful')
 local email_subject = require('library.email-subject')
 local email_refresh = require('library.email-refresh')
 local card_snap = require('library.calendar-snap')
+local text_metrics = require('library.text-metrics')
 local dpi = beautiful.xresources.apply_dpi
 local config_dir = gears.filesystem.get_configuration_dir()
 local widget_icon_dir = config_dir .. 'widget/email/icons/'
@@ -19,7 +20,11 @@ local unread_recent_email_subject = ""
 local startup_show = true
 
 -- Constants for scrollable email list
-local EMAIL_HEIGHT = dpi(88)
+local BODY_FONT = beautiful.font_regular(9)
+local DATE_FONT = beautiful.font_regular(8)
+local BODY_HEIGHT = math.max(text_metrics.line_height(BODY_FONT), text_metrics.line_height(beautiful.font_bold(9)))
+local DATE_HEIGHT = math.max(dpi(12), text_metrics.line_height(DATE_FONT))
+local EMAIL_HEIGHT = math.max(dpi(88), BODY_HEIGHT * 3 + DATE_HEIGHT + dpi(24))
 local EMAIL_SPACING = dpi(5)
 local MAX_HEIGHT = dpi(155)
 local viewport_height = MAX_HEIGHT
@@ -70,18 +75,24 @@ local function create_email_item(from, subject, date)
         spacing = dpi(2),
         {
             markup = '<b>From:</b> ' .. gears.string.xml_escape(from),
-            font = beautiful.font_regular(9),
+            font = BODY_FONT,
+            forced_height = BODY_HEIGHT,
+            ellipsize = 'end',
             widget = wibox.widget.textbox,
         },
         {
             {
                 markup = '<b>Subject:</b> ' .. gears.string.xml_escape(subject_line_one),
-                font = beautiful.font_regular(9),
+                font = BODY_FONT,
+                forced_height = BODY_HEIGHT,
+                ellipsize = 'end',
                 widget = wibox.widget.textbox,
             },
             {
                 text = subject_line_two,
-                font = beautiful.font_regular(9),
+                font = BODY_FONT,
+                forced_height = BODY_HEIGHT,
+                ellipsize = 'end',
                 visible = subject_line_two ~= '',
                 widget = wibox.widget.textbox,
             },
@@ -89,8 +100,8 @@ local function create_email_item(from, subject, date)
         },
         {
             markup = '<span foreground="#888888">' .. gears.string.xml_escape(date) .. '</span>',
-            font = beautiful.font_regular(8),
-            forced_height = dpi(12),
+            font = DATE_FONT,
+            forced_height = DATE_HEIGHT,
             widget = wibox.widget.textbox,
         },
     }
@@ -343,7 +354,9 @@ function email_report:get_minimum_viewport_height() return minimum_viewport_heig
 
 function email_report:set_viewport_context(width, context)
     local next_width = math.max(1, width - dpi(20))
-    if next_width == content_width and context.screen == fit_context.screen and context.dpi == fit_context.dpi then return end
+    if next_width == content_width and context.screen == fit_context.screen and context.dpi == fit_context.dpi then
+        return
+    end
     content_width, fit_context = next_width, context
     update_scrollbar()
 end

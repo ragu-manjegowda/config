@@ -187,19 +187,15 @@ verify_package_restore "${_manifest_dir}/pkglistAll.txt" "$_manifest_dir" || ret
 
 if [[ "${PRUNE_PACKAGES:-false}" == true ]]; then
     log_info "Comparing installed packages with committed manifests..."
-    sort -u "${_manifest_dir}/pkglistAll.txt" > "${_manifest_dir}/desired.txt"
-    pacman -Qq | sort -u > "${_manifest_dir}/installed-all.txt"
-    comm -12 \
-        "${_manifest_dir}/desired.txt" \
-        "${_manifest_dir}/installed-all.txt" \
-        > "${_manifest_dir}/installed-desired.txt"
+    LC_ALL=C sort -u "${_manifest_dir}/pkglistAll.txt" > "${_manifest_dir}/desired.txt"
+    resolve_package_selection "${_manifest_dir}/desired.txt" "${_manifest_dir}/installed-desired.txt" || return 1
     mapfile -t _desired_packages < "${_manifest_dir}/installed-desired.txt"
     sudo pacman -D --asexplicit "${_desired_packages[@]}"
 
-    pacman -Qqe | sort -u > "${_manifest_dir}/installed-explicit.txt"
-    comm -23 \
+    pacman -Qqe | LC_ALL=C sort -u > "${_manifest_dir}/installed-explicit.txt"
+    LC_ALL=C comm -23 \
         "${_manifest_dir}/installed-explicit.txt" \
-        "${_manifest_dir}/desired.txt" \
+        "${_manifest_dir}/installed-desired.txt" \
         > "${_manifest_dir}/extras.txt"
 
     mapfile -t _extra_packages < "${_manifest_dir}/extras.txt"

@@ -4,6 +4,7 @@ local wibox = require('wibox')
 local beautiful = require('beautiful')
 local json = require('library.json')
 local calendar_snap = require('library.calendar-snap')
+local text_metrics = require('library.text-metrics')
 local clickable_container = require('widget.clickable-container')
 
 local dpi = beautiful.xresources.apply_dpi
@@ -17,14 +18,17 @@ local max_items = tonumber(calendar_cfg.max_items) or 0
 local show_cancelled = calendar_cfg.show_cancelled or false
 local window_days = calendar_cfg.window_days or 2
 
-local EVENT_HEIGHT = dpi(68)
-local SUB_EVENT_HEIGHT = dpi(54)
+local TITLE_FONT = beautiful.font_bold(10)
+local DETAILS_FONT = beautiful.font_regular(9)
+local TITLE_LINE_HEIGHT = text_metrics.line_height(TITLE_FONT)
+local EVENT_TITLE_HEIGHT = math.max(dpi(28), TITLE_LINE_HEIGHT * 2)
+local EVENT_DETAILS_HEIGHT = math.max(dpi(12), text_metrics.line_height(DETAILS_FONT))
+local EVENT_HEIGHT = math.max(dpi(68), EVENT_TITLE_HEIGHT + EVENT_DETAILS_HEIGHT + dpi(22))
+local SUB_EVENT_HEIGHT = math.max(dpi(54), TITLE_LINE_HEIGHT + EVENT_DETAILS_HEIGHT + dpi(22))
 local EVENT_SPACING = dpi(5)
 local MAX_HEIGHT = EVENT_HEIGHT * 2 + EVENT_SPACING * 2
 local viewport_height = MAX_HEIGHT
 local EVENT_STRIDE = EVENT_HEIGHT + EVENT_SPACING
-local EVENT_TITLE_HEIGHT = dpi(28)
-local EVENT_DETAILS_HEIGHT = dpi(12)
 local refresh_in_progress = false
 local refresh_pid
 
@@ -264,16 +268,16 @@ local function build_event_row(title_text, details_text, options)
 
     local title_widget = wibox.widget {
         markup = '<b>' .. gears.string.xml_escape(title_text or '(No title)') .. '</b>',
-        font = beautiful.font_regular(10),
+        font = TITLE_FONT,
         wrap = 'word_char',
         ellipsize = 'end',
-        forced_height = EVENT_TITLE_HEIGHT,
+        forced_height = options.title_height or EVENT_TITLE_HEIGHT,
         widget = wibox.widget.textbox,
     }
 
     local details_widget = wibox.widget {
         markup = '<span foreground="#AAAAAA">' .. gears.string.xml_escape(details_text or '') .. '</span>',
-        font = beautiful.font_regular(9),
+        font = DETAILS_FONT,
         forced_height = EVENT_DETAILS_HEIGHT,
         widget = wibox.widget.textbox,
     }
@@ -367,6 +371,7 @@ local function concurrent_detail_row(event, idx)
 
     return build_event_row(title, details, {
         height = SUB_EVENT_HEIGHT,
+        title_height = TITLE_LINE_HEIGHT,
         border_color = beautiful.fg_normal .. '88',
     })
 end
@@ -445,11 +450,14 @@ local scroll_content = wibox.widget {
 }
 
 local scroll_clip
+local minimum_viewport_height = 0
 
 local function update_scrollbar()
     local row_heights = {}
+    minimum_viewport_height = 0
     for i, child in ipairs(event_list_layout.children) do
         row_heights[i] = child.forced_height or EVENT_HEIGHT
+        minimum_viewport_height = math.max(minimum_viewport_height, row_heights[i])
     end
 
     snap_offsets, max_scroll, content_height = calendar_snap.build(row_heights, EVENT_SPACING, viewport_height)
@@ -809,6 +817,8 @@ local calendar_report = wibox.widget {
 }
 
 function calendar_report:get_viewport_height() return visible_height end
+
+function calendar_report:get_minimum_viewport_height() return minimum_viewport_height end
 
 function calendar_report:set_viewport_height(height)
     local value = math.min(MAX_HEIGHT, math.max(0, height))

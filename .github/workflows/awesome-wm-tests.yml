@@ -196,6 +196,8 @@ jobs:
             case "$(basename "$test")" in
               test_notification_*.lua) continue ;;
               test_screen_recorder_storage.lua|test_luajit_weak_signals.lua) continue ;;
+              # Real Pango/LGI coverage runs explicitly in the integration job.
+              test_text_sizing.lua) continue ;;
             esac
             HOME="$GITHUB_WORKSPACE" lua "$test"
           done
@@ -917,7 +919,7 @@ jobs:
       - name: Install test dependencies
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm lua luajit lua51-lgi python python-pillow ffmpeg zsh glib2 diffutils
+          pacman -S --noconfirm lua luajit lua51-lgi python python-pillow ffmpeg zsh glib2 diffutils rofi xorg-server-xvfb xorg-xwininfo ttf-hack-nerd
 
       - name: Select machine configuration
         env:
@@ -998,6 +1000,9 @@ jobs:
           python -B .config/awesome/tests/test_topgrade.py
           python -B .config/awesome/tests/test_chromium_theme.py
           HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_lenovo_profile.lua
+          HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_text_sizing.lua
+          python -B .config/awesome/tests/test_rofi_sizing.py
+          python -B .config/awesome/tests/test_toolkit_cursor.py
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_zsh_dirstack.sh
           python -B .config/zsh/zsh-custom/plugins/history-tools/test_history_tools.py
           python -B .config/zsh/zsh-custom/plugins/history-tools/test_live_history.py

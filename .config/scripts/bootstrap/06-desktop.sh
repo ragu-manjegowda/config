@@ -59,6 +59,10 @@ check_symlink \
     "${HOME}/.config/awesome/library/battery/init.lua"
 
 log_info "Font cache..."
+/usr/bin/python3 "${HOME}/.config/scripts/toolkit-cursor.py"
+if systemctl --user is-active --quiet xsettingsd.service; then
+    systemctl --user reload xsettingsd.service
+fi
 fc-cache &>/dev/null || true
 log_ok "Font cache updated"
 

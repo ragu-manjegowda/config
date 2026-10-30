@@ -360,15 +360,16 @@ local email_file = assert(io.open(
 local email_source = email_file:read('*a')
 email_file:close()
 assert_test(
-    email_source:match('local EMAIL_HEIGHT%s*=%s*dpi%(88%)') ~= nil and
+    email_source:match("require%('library%.text%-metrics'%)") ~= nil and
+    email_source:match('text_metrics%.line_height%(DATE_FONT%)') ~= nil and
     email_source:match('local MAX_HEIGHT%s*=%s*dpi%(155%)') ~= nil and
     email_source:match('local MAX_SUBJECT_LINE_LENGTH%s*=%s*42') ~= nil and
     email_source:match("require%('library%.email%-subject'%)") ~= nil and
     email_source:match('email_subject%.split%(subject, MAX_SUBJECT_LINE_LENGTH%)') ~= nil and
     email_source:match("visible%s*=%s*subject_line_two ~= ''") ~= nil and
-    email_source:match("ellipsize%s*=%s*'end'") == nil and
-    email_source:match('forced_height%s*=%s*dpi%(12%)') ~= nil,
-    "email cards cap subjects at two lines without overlapping timestamps"
+    email_source:match("ellipsize%s*=%s*'end'") ~= nil and
+    email_source:match('forced_height%s*=%s*DATE_HEIGHT') ~= nil,
+    "email cards cap subjects at two lines and measure timestamp font height"
 )
 
 local calendar_file = assert(io.open(
@@ -394,13 +395,14 @@ assert_test(
     "calendar header and events share the grouped Info Center background"
 )
 assert_test(
-    calendar_source:match('local EVENT_TITLE_HEIGHT%s*=%s*dpi%(28%)') ~= nil and
-    calendar_source:match('local EVENT_DETAILS_HEIGHT%s*=%s*dpi%(12%)') ~= nil and
+    calendar_source:match("require%('library%.text%-metrics'%)") ~= nil and
+    calendar_source:match('text_metrics%.line_height%(TITLE_FONT%)') ~= nil and
+    calendar_source:match('text_metrics%.line_height%(DETAILS_FONT%)') ~= nil and
     calendar_source:match("wrap%s*=%s*'word_char'") ~= nil and
     calendar_source:match("ellipsize%s*=%s*'end'") ~= nil and
-    calendar_source:match('forced_height%s*=%s*EVENT_TITLE_HEIGHT') ~= nil and
+    calendar_source:match('forced_height%s*=[^\n]*EVENT_TITLE_HEIGHT') ~= nil and
     calendar_source:match('forced_height%s*=%s*EVENT_DETAILS_HEIGHT') ~= nil,
-    "calendar cards cap subjects at two lines and preserve event time"
+    "calendar cards measure title/detail fonts and preserve wrapping and event time"
 )
 assert_test(
     calendar_source:match("awesome%.connect_signal%('info_center::visibility', function%(visible%)") ~= nil and

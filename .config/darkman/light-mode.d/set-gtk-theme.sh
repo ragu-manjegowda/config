@@ -43,6 +43,8 @@ then
     gsettings set org.gnome.desktop.interface color-scheme "prefer-light"
 fi
 
+/usr/bin/python3 "${XDG_CONFIG_HOME:-$HOME/.config}/scripts/toolkit-cursor.py"
+
 if systemctl --user is-active --quiet xsettingsd.service
 then
     systemctl --user reload xsettingsd.service
