@@ -197,6 +197,9 @@ ruled.client.connect_signal(
                     'Sxiv'
                 },
             },
+            except_any = {
+                instance = { 'media-browser-gallery', 'media-browser-viewer' }
+            },
             properties = {
                 titlebars_enabled = true,
                 skip_decoration = true,
@@ -204,6 +207,16 @@ ruled.client.connect_signal(
                 ontop = true,
                 placement = awful.placement.centered
             }
+        }
+
+        -- Keep gallery and viewer in the normal focus/stacking order. Forcing
+        -- ontop also cancels fullscreen in Awesome.
+        ruled.client.append_rule {
+            id = 'media_browser',
+            rule_any = {
+                instance = { 'media-browser-gallery', 'media-browser-viewer' }
+            },
+            properties = { floating = false, ontop = false }
         }
 
         -- Floating

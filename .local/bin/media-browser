@@ -3,19 +3,33 @@
 set -euo pipefail
 
 config="${XDG_CONFIG_HOME:-$HOME/.config}/media-browser"
+export PQIVRC_PATH="$config/pqivrc"
+if [[ "${1:-}" == --trash ]]; then
+    shift
+    (( $# == 1 )) || exit 64
+    exec /usr/bin/python3 "$config/trash.py" "$1"
+fi
 if [[ "${1:-}" == --play || "${1:-}" == --open ]]; then
     action=$1
     shift
     (( $# > 0 )) || exit 64
     if [[ "$action" == --open ]]; then
         mime=$(/usr/bin/file --brief --mime-type -- "$1")
-        [[ "$mime" != image/* ]] || exit 0
         case "$mime" in
+            image/*)
+                exec /usr/bin/pqiv --name=media-browser-viewer --sort --browse \
+                    --action='toggle_scale_mode(5)' \
+                    --actions-from-stdin \
+                    --end-of-files-action=wrap \
+                    --bind-key='<Escape> { quit(); }' \
+                    --bind-key='<Tab> { quit(); }' -- "$@" \
+                    < <(/usr/bin/python3 "$config/fit-on-map.py" "$$")
+                ;;
             video/*|audio/*) ;;
             *) exit 0 ;;
         esac
     fi
-    exec /usr/bin/mpv --input-conf="$config/mpv-input.conf" --fullscreen -- "$@"
+    exec /usr/bin/mpv --input-conf="$config/mpv-input.conf" -- "$@"
 fi
 if [[ ! -x /usr/bin/pqiv ]]; then
     printf 'media-browser requires pqiv and mpv.\n' >&2
@@ -28,6 +42,8 @@ if (( $# == 0 )); then
         set -- "$HOME"
     fi
 fi
-export PQIVRC_PATH="$config/pqivrc"
-exec /usr/bin/pqiv --fullscreen --sort --browse \
+exec /usr/bin/pqiv --name=media-browser-gallery --sort --browse \
+    --thumbnail-size=256x256 \
+    --allow-empty-window \
+    --end-of-files-action=wrap \
     --action='goto_file_byindex(0); montage_mode_enter()' -- "$@"

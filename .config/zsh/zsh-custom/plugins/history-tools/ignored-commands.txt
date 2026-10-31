@@ -24,9 +24,11 @@ kill -9
 l
 ll
 ls
+media-browser
 merge-images-diagonally
 mkdir
 mpc
+mpv
 mv
 nvim
 ps -aux

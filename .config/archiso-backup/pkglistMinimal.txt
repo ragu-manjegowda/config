@@ -90,6 +90,7 @@ pipewire-libcamera
 pipewire-pulse
 playerctl
 power-profiles-daemon
+pqiv
 prisma-access-browser-bin
 python
 python-gobject

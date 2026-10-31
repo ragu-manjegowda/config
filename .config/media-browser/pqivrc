@@ -11,7 +11,7 @@ n { goto_file_relative(1); }
 p { goto_file_relative(-1); }
 <Escape> { montage_mode_enter(); }
 <Tab> { montage_mode_enter(); }
-<Return> { command("$HOME/.local/bin/media-browser" --open $1); }
+<Return> { nop(); }
 <Mouse-1> { nop(); }
 q { quit(); }
 
@@ -20,12 +20,26 @@ q { quit(); }
     j { montage_mode_shift_y(1); }
     k { montage_mode_shift_y(-1); }
     l { montage_mode_shift_x(1); }
+    f { montage_mode_follow(asdfghjkl); }
+    gg { goto_file_byindex(0); }
+    G { goto_file_byindex(-1); }
+    0 { montage_mode_set_wrap_mode(0); montage_mode_shift_x(-1000000); montage_mode_set_wrap_mode(1); }
+    <dollar> { montage_mode_set_wrap_mode(0); montage_mode_shift_x(1000000); montage_mode_set_wrap_mode(1); }
     <Control>d { montage_mode_shift_y_pg(1); }
     <Control>u { montage_mode_shift_y_pg(-1); }
-    <Return> { montage_mode_return_proceed(); command("$HOME/.local/bin/media-browser" --open $1); }
-    <Mouse-1> { montage_mode_return_proceed(); command("$HOME/.local/bin/media-browser" --open $1); }
-    zi { montage_mode_return_proceed(); set_scale_level_relative(1.2); }
-    zo { montage_mode_return_proceed(); set_scale_level_relative(0.8333333333); }
+    d { montage_mode_return_proceed(); montage_mode_enter(); command("$HOME/.local/bin/media-browser" --trash $1); }
+    <Return> { montage_mode_return_proceed(); montage_mode_enter(); command("$HOME/.local/bin/media-browser" --open $1); }
+    <Mouse-1> { montage_mode_return_proceed(); montage_mode_enter(); command("$HOME/.local/bin/media-browser" --open $1); }
+    # Thumbnail sizes: 64, 96, 128, 192, 256 (initial), 384 pixels.
+    # Internal sequences keep both zoom directions in sync at each size.
+    zi { send_keys(#t384); }
+    zo { send_keys(#t192); }
+    <numbersign>t064 { set_thumbnail_size(64,64); bind_key(@MONTAGE { zi { send_keys(#t096\); } zo { send_keys(#t064\); } }); }
+    <numbersign>t096 { set_thumbnail_size(96,96); bind_key(@MONTAGE { zi { send_keys(#t128\); } zo { send_keys(#t064\); } }); }
+    <numbersign>t128 { set_thumbnail_size(128,128); bind_key(@MONTAGE { zi { send_keys(#t192\); } zo { send_keys(#t096\); } }); }
+    <numbersign>t192 { set_thumbnail_size(192,192); bind_key(@MONTAGE { zi { send_keys(#t256\); } zo { send_keys(#t128\); } }); }
+    <numbersign>t256 { set_thumbnail_size(256,256); bind_key(@MONTAGE { zi { send_keys(#t384\); } zo { send_keys(#t192\); } }); }
+    <numbersign>t384 { set_thumbnail_size(384,384); bind_key(@MONTAGE { zi { send_keys(#t384\); } zo { send_keys(#t256\); } }); }
     <Escape> { quit(); }
     q { quit(); }
 }
