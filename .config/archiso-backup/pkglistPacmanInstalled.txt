@@ -32,9 +32,11 @@ github-cli
 go
 greetd
 greetd-tuigreet
+gst-libav
 gst-plugin-libcamera
 gst-plugin-pipewire
 gst-plugins-good
+gthumb
 imagemagick
 intel-ucode
 iwd
@@ -81,6 +83,7 @@ pipewire-libcamera
 pipewire-pulse
 playerctl
 power-profiles-daemon
+pqiv
 python-typing_extensions
 ranger
 redshift

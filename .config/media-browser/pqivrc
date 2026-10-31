@@ -1,0 +1,31 @@
+[keybindings]
+h { shift_x(40); }
+j { shift_y(-40); }
+k { shift_y(40); }
+l { shift_x(-40); }
+<Control>d { goto_file_relative(1); }
+<Control>u { goto_file_relative(-1); }
+zi { set_scale_level_relative(1.2); }
+zo { set_scale_level_relative(0.8333333333); }
+n { goto_file_relative(1); }
+p { goto_file_relative(-1); }
+<Escape> { montage_mode_enter(); }
+<Tab> { montage_mode_enter(); }
+<Return> { command("$HOME/.local/bin/media-browser" --open $1); }
+<Mouse-1> { nop(); }
+q { quit(); }
+
+@MONTAGE {
+    h { montage_mode_shift_x(-1); }
+    j { montage_mode_shift_y(1); }
+    k { montage_mode_shift_y(-1); }
+    l { montage_mode_shift_x(1); }
+    <Control>d { montage_mode_shift_y_pg(1); }
+    <Control>u { montage_mode_shift_y_pg(-1); }
+    <Return> { montage_mode_return_proceed(); command("$HOME/.local/bin/media-browser" --open $1); }
+    <Mouse-1> { montage_mode_return_proceed(); command("$HOME/.local/bin/media-browser" --open $1); }
+    zi { montage_mode_return_proceed(); set_scale_level_relative(1.2); }
+    zo { montage_mode_return_proceed(); set_scale_level_relative(0.8333333333); }
+    <Escape> { quit(); }
+    q { quit(); }
+}

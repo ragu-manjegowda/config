@@ -18,6 +18,7 @@
 !/.local/bin/feh-open
 !/.local/bin/findip
 !/.local/bin/git-bare-clone.sh
+!/.local/bin/media-browser
 !/.local/bin/merge-images-diagonally.sh
 !/.local/bin/nvim-mergetool
 !/.local/bin/oc
