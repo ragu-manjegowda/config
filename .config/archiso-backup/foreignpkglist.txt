@@ -13,6 +13,7 @@ gtk-theme-numix-solarized
 light
 lua-pam-git
 mbsync-git
+media-browser
 mu
 neomutt-git
 newsboat-git

@@ -74,6 +74,7 @@ luacheck
 lxqt-policykit
 maim
 mbsync-git
+media-browser
 mpv
 msmtp
 mu
