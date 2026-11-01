@@ -34,8 +34,9 @@ cleanup() {
 }
 trap cleanup EXIT
 trap 'exit 0' TERM INT
-weston --backend=x11 --renderer=gl --shell=kiosk-shell.so --no-config \
-    --socket="$socket" --width=1280 --height=800 --idle-time=0 &
+weston --backend=x11 --renderer=gl --shell=kiosk-shell.so \
+    --config="${XDG_CONFIG_HOME:-$HOME/.config}/waydroid-weston.ini" \
+    --socket="$socket" --fullscreen --idle-time=0 &
 weston_pid=$!
 for ((attempt = 0; attempt < 150; attempt++)); do
     [[ ! -S "$XDG_RUNTIME_DIR/$socket" ]] || break
