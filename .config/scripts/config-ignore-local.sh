@@ -167,6 +167,7 @@ git --git-dir="$HOME/.config.git" --work-tree="$HOME" update-index --assume-unch
     .config/awesome/widget/xdg-folders/icons/user-trash-full.svg \
     .config/awesome/widget/xdg-folders/icons/yes.svg \
     .config/chrome-flags.conf \
+    .config/codex/config.toml \
     .config/git/config \
     .config/gtk-3.0/settings.ini \
     .config/gtk-4.0/gtk.css \

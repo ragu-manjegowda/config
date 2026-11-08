@@ -1,4 +1,5 @@
 .config/bash/bash_extras filter=git-crypt diff=git-crypt
+.config/codex/config.toml filter=git-crypt diff=git-crypt
 .config/imapnotify/** filter=git-crypt diff=git-crypt
 .config/neomutt/accounts/** filter=git-crypt diff=git-crypt
 .config/neomutt/accounts/alias-blacklist filter=git-crypt diff=git-crypt

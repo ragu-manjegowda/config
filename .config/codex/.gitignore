@@ -1,0 +1,9 @@
+*
+!.gitignore
+!config.toml
+!tools.py
+!README.md
+!themes/
+!themes/*.tmTheme
+!tests/
+!tests/*.py

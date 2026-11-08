@@ -39,6 +39,7 @@ python tests/test_prisma_scp.py
 python tests/test_prisma_git.py
 ```
 
-The Git checks run real clone, fetch, pull, push, and submodule operations
+The Git checks run real clone (including the Bash bare-clone helper), fetch,
+pull, push, and submodule operations
 against temporary local repositories through mock SSH/Prisma executables.
 No network or VPN connection is required.

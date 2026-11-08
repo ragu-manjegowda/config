@@ -15,6 +15,7 @@
 !/.local/bin/better-git-branch.sh
 !/.local/bin/codex
 !/.local/bin/codex-url-handler
+!/.local/bin/cx
 !/.local/bin/feh-open
 !/.local/bin/findip
 !/.local/bin/git-bare-clone.sh
@@ -140,7 +141,6 @@
 /.config/cargo
 /.config/catt
 /.config/coc
-/.config/codex
 /.config/compiz-1
 /.config/configstore
 /.config/conky

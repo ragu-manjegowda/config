@@ -186,6 +186,23 @@ Host jump-git
         reset()
         git("clone", "-q", f"vpn-git:{server}", client)
         assert [name for name, _ in calls()] == ["prisma-access"], calls()
+
+        # The Bash bare-clone helper must honor Git's SSH transport without
+        # importing an interactive Zsh alias/function environment.
+        bare_client = root / "bare clone client"
+        bare_client.mkdir()
+        reset()
+        subprocess.run(
+            ["bash", str(PLUGIN.parents[4] / ".local/bin/git-bare-clone.sh"),
+             f"vpn-git:{server}"],
+            cwd=bare_client, env=env, capture_output=True, text=True,
+            timeout=20, check=True,
+        )
+        assert [name for name, _ in calls()] == ["prisma-access"], calls()
+        assert (bare_client / ".git").read_text().strip() == "gitdir: ./.bare"
+        assert git("config", "--get", "remote.origin.fetch", cwd=bare_client / ".bare").stdout.strip() == (
+            "+refs/heads/*:refs/remotes/origin/*"
+        )
         (seed / "fixture.txt").write_text("first\nsecond\n")
         git("commit", "-qam", "Fixture upstream update", cwd=seed)
         git("push", "-q", server, "HEAD", cwd=seed)

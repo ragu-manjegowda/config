@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>name</key><string>Solarized OpenCode Light</string>
+  <key>settings</key><array>
+    <dict><key>settings</key><dict>
+      <key>foreground</key><string>#657b83</string>
+      <key>background</key><string>#fdf6e3</string>
+      <key>caret</key><string>#657b83</string>
+      <key>selection</key><string>#eee8d5</string>
+      <key>selectionForeground</key><string>#002b36</string>
+      <key>lineHighlight</key><string>#eee8d5</string>
+      <key>gutter</key><string>#fdf6e3</string>
+      <key>gutterForeground</key><string>#93a1a1</string>
+    </dict></dict>
+    <dict><key>scope</key><string>codex.accent</string><key>settings</key><dict><key>foreground</key><string>#268bd2</string></dict></dict>
+    <dict><key>scope</key><string>codex.info</string><key>settings</key><dict><key>foreground</key><string>#268bd2</string></dict></dict>
+    <dict><key>scope</key><string>codex.success</string><key>settings</key><dict><key>foreground</key><string>#859900</string></dict></dict>
+    <dict><key>scope</key><string>codex.warning</string><key>settings</key><dict><key>foreground</key><string>#cb4b16</string></dict></dict>
+    <dict><key>scope</key><string>codex.error, invalid</string><key>settings</key><dict><key>foreground</key><string>#dc322f</string></dict></dict>
+    <dict><key>scope</key><string>comment, punctuation.definition.comment, markup.quote</string><key>settings</key><dict><key>foreground</key><string>#93a1a1</string></dict></dict>
+    <dict><key>scope</key><string>keyword, storage, keyword.operator</string><key>settings</key><dict><key>foreground</key><string>#859900</string></dict></dict>
+    <dict><key>scope</key><string>entity.name.function, support.function</string><key>settings</key><dict><key>foreground</key><string>#268bd2</string></dict></dict>
+    <dict><key>scope</key><string>variable, punctuation</string><key>settings</key><dict><key>foreground</key><string>#657b83</string></dict></dict>
+    <dict><key>scope</key><string>string, punctuation.definition.string</string><key>settings</key><dict><key>foreground</key><string>#2aa198</string></dict></dict>
+    <dict><key>scope</key><string>constant, constant.numeric</string><key>settings</key><dict><key>foreground</key><string>#d33682</string></dict></dict>
+    <dict><key>scope</key><string>entity.name.type, entity.name.class, support.type, support.class, storage.type</string><key>settings</key><dict><key>foreground</key><string>#b58900</string></dict></dict>
+    <dict><key>scope</key><string>markup.heading, entity.name.section, markup.bold</string><key>settings</key><dict><key>foreground</key><string>#cb4b16</string><key>fontStyle</key><string>bold</string></dict></dict>
+    <dict><key>scope</key><string>markup.italic</string><key>settings</key><dict><key>foreground</key><string>#b58900</string></dict></dict>
+    <dict><key>scope</key><string>markup.raw, markup.inline.raw</string><key>settings</key><dict><key>foreground</key><string>#859900</string></dict></dict>
+    <dict><key>scope</key><string>markup.underline.link</string><key>settings</key><dict><key>foreground</key><string>#268bd2</string></dict></dict>
+    <dict><key>scope</key><string>string.other.link, markup.list</string><key>settings</key><dict><key>foreground</key><string>#2aa198</string></dict></dict>
+    <dict><key>scope</key><string>meta.diff, meta.diff.header</string><key>settings</key><dict><key>foreground</key><string>#6c71c4</string></dict></dict>
+    <dict><key>scope</key><string>markup.inserted, diff.inserted</string><key>settings</key><dict><key>foreground</key><string>#859900</string><key>background</key><string>#eee8d5</string></dict></dict>
+    <dict><key>scope</key><string>markup.deleted, diff.deleted</string><key>settings</key><dict><key>foreground</key><string>#dc322f</string><key>background</key><string>#fde8e5</string></dict></dict>
+  </array>
+</dict></plist>

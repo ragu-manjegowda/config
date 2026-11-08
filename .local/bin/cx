@@ -1,0 +1,299 @@
+#!/usr/bin/env bash
+
+set -uo pipefail
+export VISUAL="${VISUAL:-nvim}"
+
+config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
+data_home="${XDG_DATA_HOME:-$HOME/.local/share}"
+state_home="${XDG_STATE_HOME:-$HOME/.local/state}"
+cache_home="${XDG_CACHE_HOME:-$HOME/.cache}"
+export CODEX_HOME="${CODEX_HOME:-$config_home/codex}"
+python="${CX_PYTHON:-$HOME/.local/share/venv/bin/python}"
+tools="$config_home/codex/tools.py"
+sandbox=0
+picker=0
+session=
+git_root=
+sandbox_home="$state_home/codex/sandbox-home"
+users="$state_home/codex/sandbox-home-users"
+marker=
+child=
+theme_pane=
+pane_style=
+pane_active_style=
+
+usage() {
+    cat <<'EOF'
+Usage: cx [--sandbox] [--session [ID]] [Codex args...]
+
+Launch Codex with the shared Solarized theme and normal Codex state/auth.
+
+  --sandbox   Require a Git checkout root and use oc-style Firejail isolation.
+              Auto-allow Codex inside it, disable shared-daemon execution, and
+              keep normal Codex config/sessions and developer tool state visible.
+  --session   Pick a saved interactive session using fzf. Enter resumes it;
+              Ctrl-D twice deletes the selected session and refreshes the list.
+  --session ID
+              Resume a specific Codex session (also accepts --session=ID).
+  -h, --help  Show launcher help.
+
+Other Codex options are forwarded, including --search, -m and -p. Use -s MODE
+or --sandbox=MODE for Codex's native sandbox option, without the wrapper flag.
+Use -- to stop interpreting launcher options.
+EOF
+}
+
+header() {
+    printf 'Enter: resume selected session  Ctrl-D twice: delete selected session'
+}
+
+header_text() {
+    local text
+    text=$(printf '%s' "$1" | tr '+[]\n\r\t' ' ')
+    printf '\033[%sm%s\033[0m' "${2:-36}" "$text"
+}
+
+session_list() {
+    "$python" "$tools" sessions
+}
+
+session_ctrl_d() {
+    local confirmation=$1 script=$2 identifier=${3:-} title=${4:-} pending
+    if [[ -z "$identifier" ]]; then
+        printf 'change-header[%s]\n' "$(header_text 'cx: no session selected' 31)"
+        return
+    fi
+    pending=$(cat "$confirmation" 2>/dev/null || true)
+    if [[ "$pending" == "$identifier" ]]; then
+        : >"$confirmation"
+        printf 'change-header[%s]+bg-transform[%q --session-delete-for-fzf %q %q %q %q]\n' \
+            "$(header_text "cx: deleting session $title..." 33)" \
+            "$script" "$confirmation" "$script" "$identifier" "$title"
+    else
+        printf '%s' "$identifier" >"$confirmation"
+        printf 'change-header[%s]\n' "$(header_text "Ctrl-D: press again to confirm deletion of $title")"
+    fi
+}
+
+session_focus() {
+    local confirmation=$1 identifier=${2:-} pending
+    pending=$(cat "$confirmation" 2>/dev/null || true)
+    if [[ -n "$pending" && "$pending" != "$identifier" ]]; then
+        : >"$confirmation"
+        printf 'change-header[%s]\n' "$(header_text "$(header)")"
+    fi
+}
+
+session_delete() {
+    local confirmation=$1 script=$2 identifier=$3 title=${4:-$3} message color
+    : >"$confirmation"
+    if ! "$python" -c 'import sys,uuid; uuid.UUID(sys.argv[1])' "$identifier" 2>/dev/null; then
+        printf 'change-header[%s]\n' "$(header_text 'cx: invalid session UUID' 31)"
+        return
+    fi
+    if codex delete --force "$identifier" >/dev/null 2>&1; then
+        message="cx: deleted session $title. $(header)"
+        color=32
+    else
+        message="cx: failed to delete session $title. Ctrl-D: try again"
+        color=31
+    fi
+    printf 'reload[%q --session-list-for-fzf]+change-header[%s]\n' "$script" "$(header_text "$message" "$color")"
+}
+
+select_session() {
+    command -v fzf >/dev/null 2>&1 || { printf 'cx: fzf not found\n' >&2; return 1; }
+    local confirmation selected rc script_q confirmation_q
+    confirmation=$(mktemp "${TMPDIR:-/tmp}/cx-session-confirm.XXXXXX") || return 1
+    printf -v script_q '%q' "$0"
+    printf -v confirmation_q '%q' "$confirmation"
+    selected=$(session_list | fzf --delimiter=$'\t' --with-nth=2 --ansi \
+        --prompt='Codex session> ' --header="$(header)" \
+        --bind "ctrl-d:transform:$script_q --session-ctrl-d-action-for-fzf $confirmation_q $script_q {1} {3}" \
+        --bind "focus:transform:$script_q --session-focus-action-for-fzf $confirmation_q {1}")
+    rc=$?
+    rm -f "$confirmation"
+    [[ "$rc" -eq 0 ]] || return "$rc"
+    [[ -n "$selected" ]] || return 1
+    printf '%s\n' "${selected%%$'\t'*}"
+}
+
+cleanup() (
+    local path pid
+    if [[ -n "$theme_pane" ]]; then
+        if [[ -n "$pane_style" ]]; then
+            tmux set-option -p -t "$theme_pane" window-style "$pane_style"
+        else
+            tmux set-option -pu -t "$theme_pane" window-style
+        fi
+        if [[ -n "$pane_active_style" ]]; then
+            tmux set-option -p -t "$theme_pane" window-active-style "$pane_active_style"
+        else
+            tmux set-option -pu -t "$theme_pane" window-active-style
+        fi
+    fi
+    [[ -n "$marker" ]] || return 0
+    exec 9>"$state_home/codex/sandbox-home.lock" || return 1
+    flock -x 9 || return 1
+    rm -f "$marker"
+    for path in "$users"/*; do
+        [[ -e "$path" ]] || continue
+        pid=${path##*/}
+        if [[ "$pid" =~ ^[0-9]+$ ]] && kill -0 "$pid" 2>/dev/null; then
+            return 0
+        fi
+        rm -f "$path"
+    done
+    if [[ "$sandbox_home" == "$state_home/codex/sandbox-home" && -d "$sandbox_home" ]]; then
+        (shopt -s dotglob nullglob; rm -rf -- "$sandbox_home"/*)
+    fi
+)
+
+set_terminal_theme() {
+    # Codex uses terminal defaults, not tmTheme colors, for editable text and
+    # popup surfaces. tmux can retain a stale light palette after darkman flips.
+    [[ -t 0 && -t 1 && "${TMUX_PANE:-}" =~ ^%[0-9]+$ ]] || return 0
+    command -v tmux >/dev/null 2>&1 || return 0
+    local palette
+    palette=$("$python" "$tools" palette) || return 1
+    [[ -n "$palette" ]] || return 0
+    pane_style=$(tmux show-options -pv -t "$TMUX_PANE" window-style) || return 1
+    pane_active_style=$(tmux show-options -pv -t "$TMUX_PANE" window-active-style) || return 1
+    theme_pane=$TMUX_PANE
+    tmux set-option -p -t "$theme_pane" window-style "$palette" || return 1
+    tmux set-option -p -t "$theme_pane" window-active-style "$palette"
+}
+
+terminate() {
+    local signal=$1 status=$2
+    trap - INT TERM HUP
+    if [[ -n "$child" ]]; then
+        kill -"$signal" "$child" 2>/dev/null || true
+        wait "$child" 2>/dev/null || true
+    fi
+    exit "$status"
+}
+
+launch_sandbox() {
+    command -v firejail >/dev/null 2>&1 || { printf 'cx: firejail not found\n' >&2; return 1; }
+    command -v flock >/dev/null 2>&1 || { printf 'cx: flock not found\n' >&2; return 1; }
+    local binary path rc
+    binary=$(command -v codex) || return 1
+    local -a writable firejail_args
+    writable=("$CODEX_HOME" "$cache_home" "$data_home" "$state_home"
+        "$HOME/.local/bin" "$HOME/.local/lib" "$HOME/.npm" "$HOME/.config/npm"
+        "$config_home/nvim" "$data_home/nvim" "$cache_home/nvim" "$state_home/nvim"
+        "$config_home/bundler" "$config_home/pnpm" "$config_home/yarn"
+        "$config_home/uv" "$config_home/pip" "$config_home/pypoetry"
+        "$config_home/bun" "$config_home/cargo" "$config_home/rustup" "$config_home/go"
+        "$HOME/.cargo" "$HOME/.rustup" "$HOME/.bun" "$HOME/.bundle"
+        "$HOME/.pnpm-store" "$HOME/.yarn" "$HOME/.m2" "$HOME/.gradle"
+        "$HOME/.java" "$HOME/.nuget" "$HOME/.dotnet" "$HOME/go"
+        "$data_home/bundler" "$cache_home/bundler")
+    for path in "${writable[@]}"; do mkdir -p "$path" || return 1; done
+    mkdir -p "$state_home/codex" || return 1
+    marker="$users/$$"
+    trap cleanup EXIT
+    trap 'terminate INT 130' INT
+    trap 'terminate TERM 143' TERM
+    trap 'terminate HUP 129' HUP
+    # Serialize setup with final cleanup so another launch cannot lose its HOME
+    # links while the previous sandbox is exiting. The lock stays on the host.
+    (
+        exec 9>"$state_home/codex/sandbox-home.lock" || exit 1
+        flock -x 9 || exit 1
+        mkdir -p "$sandbox_home" "$users" || exit 1
+        # Keep installed HOME-based launchers and user config resolvable.
+        if [[ ! -e "$sandbox_home/.local" ]]; then
+            ln -s "$HOME/.local" "$sandbox_home/.local" || exit 1
+        fi
+        if [[ ! -e "$sandbox_home/.config" ]]; then
+            ln -s "$config_home" "$sandbox_home/.config" || exit 1
+        fi
+        printf '%s\n' "$$" >"$marker"
+    ) || return 1
+    firejail_args=(--quiet --allusers --read-only="$HOME" --read-write="$git_root"
+        --private-cwd="$git_root" --env="HOME=$sandbox_home" --env="CODEX_HOME=$CODEX_HOME"
+        --env="XDG_CONFIG_HOME=$config_home" --env="XDG_DATA_HOME=$data_home"
+        --env="XDG_STATE_HOME=$state_home" --env="XDG_CACHE_HOME=$cache_home"
+        --env="BUNDLE_USER_HOME=$data_home/bundler" --env="BUNDLE_USER_CACHE=$cache_home/bundler"
+        --env="BUNDLE_USER_CONFIG=$config_home/bundler/config"
+        '--ignore=read-only ${HOME}/.rustup' '--ignore=read-only ${HOME}/.local/lib'
+        '--ignore=read-only ${HOME}/.config/nvim' '--ignore=read-only ${HOME}/.local/share/nvim'
+        '--ignore=read-only ${HOME}/.local/state/nvim'
+        --noblacklist="$HOME/.rustup" --noblacklist="$config_home/git"
+        --noblacklist="$config_home/nvim" --noblacklist="$data_home/nvim"
+        --noblacklist="$state_home/nvim" --noblacklist="$cache_home/nvim"
+        --noblacklist="$cache_home/ms-playwright" --noblacklist="$cache_home/ms-playwright-mcp")
+    for path in "${writable[@]}"; do firejail_args+=(--read-write="$path"); done
+    for path in "$HOME/.npmrc" "$HOME/.yarnrc" "$HOME/.yarnrc.yml" "$HOME/.pypirc"; do
+        [[ ! -e "$path" ]] || firejail_args+=(--read-write="$path")
+    done
+    [[ ! -e "$config_home/git" ]] || firejail_args+=(--read-only="$config_home/git")
+    if [[ "${CX_SANDBOX_DOCKER:-auto}" != 0 ]] && command -v docker >/dev/null 2>&1 && timeout 2 docker info >/dev/null 2>&1; then
+        for path in /var/run/docker.sock /run/docker.sock; do
+            [[ ! -S "$path" ]] || firejail_args+=(--noblacklist="$path" --read-write="$path")
+        done
+    fi
+    firejail "${firejail_args[@]}" "$binary" --no-daemon \
+        --dangerously-bypass-approvals-and-sandbox --cd "$git_root" \
+        -c 'tui.resume_cwd="current"' "$@" <&0 &
+    child=$!
+    wait "$child"
+    rc=$?
+    child=
+    return "$rc"
+}
+
+case "${1:-}" in
+    --session-list-for-fzf) session_list; exit $? ;;
+    --session-ctrl-d-action-for-fzf) shift; session_ctrl_d "$@"; exit $? ;;
+    --session-focus-action-for-fzf) shift; session_focus "$@"; exit $? ;;
+    --session-delete-for-fzf) shift; session_delete "$@"; exit $? ;;
+esac
+
+arguments=()
+while [[ "$#" -gt 0 ]]; do
+    case "$1" in
+        -h|--help) usage; exit 0 ;;
+        --sandbox) sandbox=1 ;;
+        --session)
+            if [[ -n "${2:-}" && "$2" != -* ]]; then session=$2; shift; else picker=1; fi ;;
+        --session=*) session=${1#*=}; [[ -n "$session" ]] || { printf 'cx: missing session ID\n' >&2; exit 1; } ;;
+        --) shift; arguments+=("$@"); break ;;
+        *) arguments+=("$1") ;;
+    esac
+    shift
+done
+if [[ "$sandbox" -eq 1 ]]; then
+    root=$(git rev-parse --show-toplevel 2>/dev/null) || { printf 'cx: this is not a root of a git repository\n' >&2; exit 1; }
+    git_root=$(realpath "$root")
+    [[ "$git_root" == "$(pwd -P)" ]] || { printf 'cx: this is not a root of a git repository\n' >&2; exit 1; }
+    for argument in "${arguments[@]}"; do
+        case "$argument" in --remote|--remote=*) printf 'cx: --remote cannot run inside the local sandbox\n' >&2; exit 1 ;; esac
+    done
+fi
+if [[ "$picker" -eq 1 ]]; then session=$(select_session) || exit $?; fi
+if [[ -n "$session" ]]; then arguments=(resume "$session" "${arguments[@]}"); fi
+if command -v darkman >/dev/null 2>&1; then
+    mode=$(timeout 1 darkman get 2>/dev/null || true)
+    case "$mode" in light|dark) "$python" "$tools" theme "$mode" || exit $? ;; esac
+fi
+trap cleanup EXIT
+trap 'terminate INT 130' INT
+trap 'terminate TERM 143' TERM
+trap 'terminate HUP 129' HUP
+set_terminal_theme || exit $?
+if [[ "$sandbox" -eq 1 ]]; then
+    launch_sandbox "${arguments[@]}"
+    exit $?
+fi
+if [[ -n "$theme_pane" ]]; then
+    codex "${arguments[@]}" <&0 &
+    child=$!
+    wait "$child"
+    rc=$?
+    child=
+    exit "$rc"
+fi
+exec codex "${arguments[@]}"
