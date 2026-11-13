@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=awesome
 Comment=Highly configurable framework window manager
-TryExec=awesome
-Exec=/usr/local/libexec/awesome-session
+TryExec=/home/ragu/.local/bin/awesome-session
+Exec=/home/ragu/.local/bin/awesome-session
 Type=Application

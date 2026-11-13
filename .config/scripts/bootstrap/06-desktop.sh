@@ -4,7 +4,13 @@
 log_step "Desktop Environment"
 require_package xorg-xinit
 mkdir -p "${HOME}/.local/state/awesome"
-sudo install -Dm755 "${MISC_DIR}/usr/local/libexec/awesome-session" /usr/local/libexec/awesome-session
+chmod u+x "${MISC_DIR}/usr/local/libexec/awesome-session"
+check_symlink ../../.config/misc/usr/local/libexec/awesome-session "${HOME}/.local/bin/awesome-session"
+_rendered_session="$(mktemp)"
+render_user_config "${HOME}/.local/share/xsessions/awesome.desktop" "$_rendered_session"
+install -m644 "$_rendered_session" "${HOME}/.local/share/xsessions/awesome.desktop"
+rm -f "$_rendered_session"
+unset _rendered_session
 
 log_info "Desktop-only Awesome configuration variant..."
 _config_pull="${HOME}/.config/awesome/utilities/desktop/config-pull"
@@ -18,6 +24,8 @@ case "$_machine_profile" in
         log_ok "Applied desktop profile; cpulla restores its variant after upstream pulls"
         ;;
 esac
+
+bash "${HOME}/.config/scripts/check-awesome-session.sh"
 
 log_info "Greetd config..."
 _validate_greetd() {

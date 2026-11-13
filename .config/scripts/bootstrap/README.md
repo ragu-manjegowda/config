@@ -82,6 +82,32 @@ Run package restoration regression checks with:
 python3 ~/.config/scripts/bootstrap/tests/test_packages.py
 ```
 
+### Awesome session safety
+
+The Awesome session launches `~/.local/bin/awesome-session`, a relative symlink
+to the maintained `~/.config/misc/usr/local/libexec/awesome-session`. Keep both
+the symlink and the executable source in the dotfiles; no separate root-owned
+launcher installation is required. Both `Exec` and `TryExec` in the session
+entry point to this launcher. The desktop bootstrap step restores the link,
+renders the session paths for the installing user, and validates the session.
+
+After updating dotfiles or upgrading the system, run this before logging out
+or rebooting:
+
+```bash
+bash ~/.config/scripts/check-awesome-session.sh
+```
+
+It checks the launcher, its maintained source, session entry, shell syntax,
+and Awesome configuration. It does not start or restart the desktop and is
+not a replacement for testing a login or checking graphics drivers.
+
+Run its regression checks with:
+
+```bash
+python3 ~/.config/scripts/bootstrap/tests/test_desktop_session.py
+```
+
 Before installing the Homebrew bundle or restoring system packages, bootstrap
 checks the configured `GNUPGHOME` for a secret key. You can import a key file,
 or re-check after importing through another terminal or hardware token.

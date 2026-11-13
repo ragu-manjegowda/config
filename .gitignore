@@ -12,6 +12,7 @@
 
 !/.local/bin
 /.local/bin/*
+!/.local/bin/awesome-session
 !/.local/bin/better-git-branch.sh
 !/.local/bin/codex
 !/.local/bin/codex-url-handler
