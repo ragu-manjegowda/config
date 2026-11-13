@@ -1,0 +1,45 @@
+name: mpv Configuration Tests
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - ".config/mpv/**"
+      - ".github/workflows/mpv-tests.yml"
+  pull_request:
+    branches: ["**"]
+    paths:
+      - ".config/mpv/**"
+      - ".github/workflows/mpv-tests.yml"
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  test:
+    name: uosc Installer Tests
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+    steps:
+      - name: Install dependencies
+        run: pacman -Syu --noconfirm --needed git bash python
+
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Check installer syntax
+        run: bash -n .config/mpv/install-uosc.sh
+
+      - name: Run offline unit tests
+        run: python3 -m unittest discover -s .config/mpv/tests -p 'test_*.py' -v
