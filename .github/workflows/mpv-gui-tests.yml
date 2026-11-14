@@ -1,0 +1,41 @@
+name: mpv Interactive GUI Tests
+
+on:
+  push:
+    paths:
+      - ".config/mpv/**"
+      - ".github/workflows/mpv-gui-tests.yml"
+  pull_request:
+    paths:
+      - ".config/mpv/**"
+      - ".github/workflows/mpv-gui-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gui:
+    name: Real mpv and uosc interactions
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Build Arch GUI environment
+        run: docker build -f .config/mpv/tests/gui.Dockerfile -t mpv-gui .config/mpv/tests
+      - name: Run isolated GUI tests without network access
+        run: |
+          mkdir -p "$RUNNER_TEMP/mpv-gui"
+          docker run --rm --network none \
+            -v "$GITHUB_WORKSPACE:/workspace:ro" \
+            -v "$RUNNER_TEMP/mpv-gui:/artifacts" mpv-gui
+      - name: Upload GUI evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: mpv-gui-evidence
+          path: ${{ runner.temp }}/mpv-gui
+          if-no-files-found: ignore
+          retention-days: 7

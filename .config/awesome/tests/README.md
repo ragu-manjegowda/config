@@ -2,6 +2,49 @@
 
 Comprehensive test suite for AwesomeWM dotfiles configuration.
 
+## Interactive center tests
+
+`gui_centers.py` is a dedicated GUI suite, separate from `test_*.lua` and
+`test_*.py` discovery. The `AwesomeWM Interactive GUI Tests` workflow runs on
+changes to `.config/awesome/` or its own workflow, and supports manual dispatch.
+It builds Awesome and LGI from the same AUR packages as the existing runtime
+workflow, inside Arch Linux rather than installing packages on the host.
+
+```bash
+docker build -f ~/.config/awesome/tests/gui.Dockerfile -t dotfiles-awesome-gui ~/.config/awesome/tests
+mkdir -p /tmp/awesome-gui-artifacts
+docker run --rm --network none \
+  -v "$HOME/.config/awesome:/workspace/.config/awesome:ro" \
+  -v /tmp/awesome-gui-artifacts:/artifacts \
+  -e GUI_PROFILE=config_lenovo.lua -e GUI_SCREEN=1920x1200@96 dotfiles-awesome-gui
+```
+
+CI exercises the iMac (1920x1080/96 DPI), Lenovo (1920x1200/96 DPI), and laptop
+(2880x1800/144 DPI and 3440x1440/144 DPI) profiles. Each test has its own Xvfb,
+session D-Bus, temporary home, and copied configuration. Both the configured
+and screen DPI are set before constructing widgets. No host device, system
+D-Bus, audio socket, credentials, or external network is used.
+
+The fixture loads the real theme, Control Center, Info Center, their widgets,
+and the real global keybindings. It reserves the normal top-bar height without
+loading unrelated desktop modules; the existing full-config awmtt startup
+check remains separate. Asynchronous fixture responses replace only external
+spawn boundaries and capability probes, not widget/layout implementations.
+Unrecognized commands and Lua runtime errors fail the suite.
+
+Checks cover popup/workarea bounds, readable DPI-scaled widths, section headers
+and slider allocations, mutually exclusive centers, real slider drags and mode
+switches, outside clicks, scrolling to the final stock/email, absent hardware,
+offline weather/stocks/email, provider fallback, recovery, and closing during
+a pending refresh. Geometry expectations are computed independently of the
+production geometry helper. Screenshots, widget allocations, state, external
+requests, and logs are uploaded as CI artifacts even on failures.
+
+This is not a whole-desktop screenshot baseline, physical-device test, or
+mixed-DPI/hotplug certification. Missing GUI dependencies fail rather than
+skip. Dependency downloads occur at image build time; test containers run
+with `--network none`.
+
 ## Overview
 
 This test suite validates:

@@ -1,0 +1,50 @@
+name: AwesomeWM Interactive GUI Tests
+
+on:
+  push:
+    paths:
+      - ".config/awesome/**"
+      - ".github/workflows/awesome-gui-tests.yml"
+  pull_request:
+    paths:
+      - ".config/awesome/**"
+      - ".github/workflows/awesome-gui-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gui:
+    name: Real center widgets across profiles and DPI
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+          submodules: recursive
+      - name: Build Arch GUI environment
+        run: docker build -f .config/awesome/tests/gui.Dockerfile -t awesome-gui .config/awesome/tests
+      - name: Run isolated GUI tests without network access
+        run: |
+          status=0
+          for scenario in config_imac.lua:1920x1080@96 config_lenovo.lua:1920x1200@96 config.lua:2880x1800@144 config.lua:3440x1440@144; do
+            profile="${scenario%%:*}"
+            screen="${scenario#*:}"
+            artifacts="$RUNNER_TEMP/awesome-gui/$profile-$screen"
+            mkdir -p "$artifacts"
+            docker run --rm --network none \
+              -e GUI_PROFILE="$profile" -e GUI_SCREEN="$screen" \
+              -v "$GITHUB_WORKSPACE:/workspace:ro" \
+              -v "$artifacts:/artifacts" awesome-gui || status=1
+          done
+          exit "$status"
+      - name: Upload GUI evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: awesome-gui-evidence
+          path: ${{ runner.temp }}/awesome-gui
+          if-no-files-found: ignore
+          retention-days: 7
