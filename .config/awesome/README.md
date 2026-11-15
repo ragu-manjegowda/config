@@ -421,9 +421,110 @@ its aspect ratio (cropping excess edges rather than distorting the image).
 the combined desktop. Wallpaper fitting and center sizing use the geometry
 reported by X11; RandR `scale_from` is not an additional wallpaper/UI scale.
 
-Time-scheduled wallpaper rotation with 25+ time slots across 24 hours.
-Wallpapers stored in `theme/wallpapers/`. The `suspend-hook.py` utility
-updates wallpaper when resuming from sleep.
+Wallpapers remain local files in `theme/wallpapers/`; the scheduler never
+downloads images at runtime. The installed set includes 63 additional Unsplash
+photographs: 55 weather scenes and eight images filling schedule gaps. All new
+files are 2560x1600 JPEGs, matching existing landscape wallpapers rather than
+introducing 4K/8K backgrounds. Existing images and fitting are unchanged.
+`theme/wallpapers/catalog.json` records each photographer, source, license,
+bounded download URL, dimensions, and checksum.
+
+The shipped profiles enable offline solar scheduling and weather variants:
+
+```lua
+dynamic_wallpaper = {
+    solar = true,
+    weather_enabled = true,
+    weather_interval = 1200,
+    weather_max_age = 7200,
+}
+```
+
+Location comes from `lat` and `lng` in
+`${XDG_CONFIG_HOME:-~/.config}/darkman/config.yaml`, not the weather widget's
+list of cities. Set `darkman_config` to override that path. Coordinates are
+read again every 15 seconds and immediately after resume; no GeoClue or network
+access is needed for daylight calculations. A location change cannot reuse the
+previous location's weather cache.
+
+Darkman only supplies the saved coordinates: the wallpaper scheduler does not
+ask darkman or a weather API for sunrise/sunset times. Solar timing works on a
+fresh offline boot, without cached sunrise/sunset data or a running darkman
+service. If the coordinate file is missing or invalid, the original local-clock
+schedule remains available instead.
+
+NOAA's approximate solar-position equations adapt the existing handpicked
+schedule to the season: schedule time 07:00 corresponds to local sunrise,
+13:00 to solar noon, and 19:00 to sunset. Day and night slots stretch separately.
+The phase names are `night`, `predawn`, `dawn`, `sunrise`, `morning`,
+`late_morning`, `noon`, `afternoon`, `golden_hour`, `sunset`, and `twilight`.
+Missing/invalid coordinates or polar days/nights use the original clock
+schedule. Set both `solar` and `weather_enabled` to `false` for legacy behavior.
+
+Weather uses Open-Meteo by default, independently of whether the info center is
+open. The widget and wallpaper scheduler share a weather service and an atomic
+disk cache under Awesome's cache directory, keyed by coordinates and units.
+Identical concurrent requests are coalesced. The widget retains its configured
+provider fallback order and explicit-refresh behavior. `weather_providers`
+can override the wallpaper provider order.
+
+On startup/resume, a local wallpaper is selected **before** starting a background
+request. Cached weather remains usable for two hours by default, including
+across Awesome restarts. Failed requests do not replace good cache entries or
+extend their expiry. Retries back off by 15, 30, 60, then 120 seconds after each
+failure. Each provider request has a 12-second curl limit, with a service
+watchdog as an additional safeguard. Expired/malformed cache data simply means
+time-only selection. An unavailable network never blocks Awesome or clears the
+wallpaper. Unchanged selections do not repaint the desktop.
+
+Weather image selection tries these local candidates in order:
+
+1. An explicit `weather_wallpapers[phase][condition]` mapping.
+2. `weather/<condition>/<scheduled-filename>`.
+3. `weather/<condition>/<phase>.jpg` (also `.png` and `.jpeg`).
+4. Only if the phase image is missing, a shared weather phase: `late_morning`
+   uses `morning`; `predawn`, `dawn`, `sunrise`, `golden_hour`, and `sunset`
+   use `twilight`. The complete installed set does not need this fallback.
+5. `phases/<phase>.jpg` (also `.png` and `.jpeg`).
+6. The existing scheduled image, then `fallback_wallpaper` (default `am_08.jpg`).
+
+Conditions are `clear`, `cloudy`, `rain`, `storm`, `snow`, and `fog`. With no
+usable weather, weather-specific candidates are skipped. Missing files are
+skipped; if no candidate can be applied, the previous wallpaper is retained.
+Cloudy, rain, storm, snow, and fog each ship 11 distinct photographs: night,
+predawn, dawn, sunrise, morning, late morning, noon, afternoon, golden hour,
+sunset, and twilight. Sunrise and sunset no longer reuse the twilight image,
+and late morning has its own scene. Changes follow the solar phase, not random
+rotation or fixed clock intervals. Clear weather retains the handpicked schedule,
+so there is intentionally no `weather/clear/` directory: the top-level JPEGs
+serve both clear weather and the offline time-only rotation. The schedule
+now also has images at 01:00, 02:00, 03:00, 04:00, 15:30, 16:00, 16:30,
+and 23:00. These are solar-adjusted schedule times, not fixed local clock times
+when `solar = true`. Weather images take priority over those scheduled images;
+without usable weather the expanded time-only schedule still runs offline.
+More schedule entries or phase/weather images can be added without changing
+scheduler code. To see the currently selected relative image path, run:
+
+```sh
+awesome-client 'return get_wallpaper_name()'
+```
+
+The offline fallback schedule covers all 37 top-level JPEGs. Its nominal slots
+are 30 or 60 minutes apart; with solar scheduling enabled, daylight and night
+intervals stretch separately to follow sunrise and sunset. The 15-second timer
+checks which image is due; it is not a 15-second slideshow. With both solar and
+weather disabled, the timer instead waits for the next exact clock slot,
+including across midnight. After wake, selection jumps to the current slot
+rather than replaying images missed during sleep.
+
+Offline with fresh cached weather still uses the matching local weather scene.
+Once that cache expires, the full time-only fallback rotation continues without
+internet. Only the selected wallpaper is applied; the full collection is not
+preloaded into memory.
+
+The `suspend-hook.py` utility triggers immediate recomputation after wake.
+Monitor hotplug, per-screen fitting, panorama mode, and the lockscreen's selected
+wallpaper name remain supported.
 
 ### Lockscreen
 

@@ -4,7 +4,7 @@ local json = require('library.json')
 local M = {}
 
 local function format_hour(timestamp)
-    if not timestamp then
+    if type(timestamp) ~= 'number' then
         return '--:--'
     end
 
@@ -51,8 +51,8 @@ fi
             return
         end
 
-        local data = json.parse(stdout)
-        if not data then
+        local parsed, data = pcall(json.parse, stdout)
+        if not parsed or type(data) ~= 'table' then
             callback(false, nil, 'parse_error')
             return
         end
@@ -63,16 +63,17 @@ fi
             return
         end
 
-        if not data.main or not data.weather or not data.weather[1] then
+        if type(data.main) ~= 'table' or type(data.weather) ~= 'table' or type(data.weather[1]) ~= 'table' then
             callback(false, nil, 'invalid_payload')
             return
         end
 
+        local system = type(data.sys) == 'table' and data.sys or {}
         callback(true, {
             location = data.name or location.name,
-            country = data.sys and data.sys.country or location.country,
-            sunrise = format_hour(data.sys and data.sys.sunrise),
-            sunset = format_hour(data.sys and data.sys.sunset),
+            country = system.country or location.country,
+            sunrise = format_hour(system.sunrise),
+            sunset = format_hour(system.sunset),
             temperature = data.main.temp,
             description = data.weather[1].description,
             icon_code = data.weather[1].icon,

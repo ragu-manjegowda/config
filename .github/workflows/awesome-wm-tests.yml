@@ -174,7 +174,7 @@ jobs:
       image: archlinux:latest
     steps:
       - name: Install dependencies
-        run: pacman -Syu --noconfirm && pacman -S --noconfirm git lua
+        run: pacman -Syu --noconfirm && pacman -S --noconfirm git lua findutils
 
       - name: Checkout dotfiles
         uses: actions/checkout@v5
@@ -919,7 +919,7 @@ jobs:
       - name: Install test dependencies
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm lua luajit lua51-lgi python python-pillow ffmpeg zsh glib2 diffutils rofi xorg-server-xvfb xorg-xwininfo ttf-hack-nerd
+          pacman -S --noconfirm lua luajit lua51-lgi python python-pillow ffmpeg zsh glib2 diffutils findutils rofi xorg-server-xvfb xorg-xwininfo ttf-hack-nerd
 
       - name: Select machine configuration
         env:
@@ -928,6 +928,17 @@ jobs:
           if [ "$CONFIG_FILE" != config.lua ]; then
             cp "$AWESOME_CONFIG_DIR/configuration/$CONFIG_FILE" "$AWESOME_CONFIG_DIR/configuration/config.lua"
           fi
+
+      - name: Test offline wallpaper assets and LuaJIT scheduling
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          python -B .config/awesome/tests/test_wallpaper_catalog.py
+          for timezone in UTC America/Los_Angeles Asia/Kolkata; do
+            for suite in wallpaper_context weather_service weather_providers dynamic_wallpaper wallpaper_assets; do
+              echo "Testing $suite with LuaJIT in $timezone"
+              HOME="$GITHUB_WORKSPACE" TZ="$timezone" luajit ".config/awesome/tests/test_${suite}.lua" || exit 1
+            done
+          done
 
       - name: Test lid brightness recovery
         run: |

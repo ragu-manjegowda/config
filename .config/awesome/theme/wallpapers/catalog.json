@@ -1,0 +1,634 @@
+{
+  "images": [
+    {
+      "file": "am_01.jpg",
+      "author": "Sebastian Knoll",
+      "source": "https://unsplash.com/photos/mountain-range-under-starry-night-fLnYTkdMtQc",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1598091860445-8e0a9ee48f71?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "faf4da107ef93bb3b53bc4f838d470923edd5deb7d2a47ac32b7679378ccb9e4"
+    },
+    {
+      "file": "am_02.jpg",
+      "author": "Troy Olson",
+      "source": "https://unsplash.com/photos/starry-night-sky-over-lake-ZKs3B0OwyQs",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1791131712088-d43dd987e30d?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "87feb9a0788b386527cd230928af71ded33ee81c805f22ca4d589a3db9faa2b1"
+    },
+    {
+      "file": "am_03.jpg",
+      "author": "Felix Rottmann",
+      "source": "https://unsplash.com/photos/a-lake-surrounded-by-trees-under-a-night-sky-ADGPyb9jJKE",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1683353133260-076708218ff5?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "8b334f9fbcfe91f6fb732c2a2c435b6458c3ecaea89bd3b4875422c9d4f3f4bb"
+    },
+    {
+      "file": "am_04.jpg",
+      "author": "Troy Olson",
+      "source": "https://unsplash.com/photos/a-boat-sitting-on-top-of-a-lake-under-a-night-sky-filled-with-stars-5aa3pvZFcQA",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1720293862240-f2086d59cddc?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "78482afd2b07f3eccd2835c11e240c1ac0087527cb9126dde75c51fde51b1cd0"
+    },
+    {
+      "file": "pm_03_30.jpg",
+      "author": "Mariana Cassini",
+      "source": "https://unsplash.com/photos/a-body-of-water-with-boats-and-mountains-in-the-background-DSKJvbbgyLQ",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1660601634773-ec3018945bc3?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "bb0b505045911e10cb967fe3f7e979a46dde320bffef87f4f825c0788dfb2732"
+    },
+    {
+      "file": "pm_04.jpg",
+      "author": "Payson Wick",
+      "source": "https://unsplash.com/photos/body-of-water-near-mountain-under-blue-sky-during-daytime-wfJAr7jaHfM",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1592490930818-66107b0d1f5a?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "c80a7cee3208e03a3519178f66de77fb4cc33802ef2d61eb5615cfc97b5b41be"
+    },
+    {
+      "file": "pm_04_30.jpg",
+      "author": "Lisha Riabinina",
+      "source": "https://unsplash.com/photos/a-view-of-a-mountain-range-with-a-lake-in-the-foreground-ok1KivJHzB4",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1719888471663-5fb90793af11?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "9231a99725517954a5366fe4868b6b11725875203ac6aacdad02f744526f7416"
+    },
+    {
+      "file": "pm_11.jpg",
+      "author": "Sebastiano Corti",
+      "source": "https://unsplash.com/photos/a-grassy-field-with-a-lake-and-mountains-in-the-background-RuzG6DrsD4c",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1688813627489-1fd373f31337?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "d4c3406336fa8c11b7f5d835c50ebe84718c9b17b0fbed82f56801c31b1f3fe7"
+    },
+    {
+      "file": "weather/cloudy/afternoon.jpg",
+      "author": "Lawrence Makoona",
+      "source": "https://unsplash.com/photos/lake-beside-hills-yTmvgqhT2m0",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1570106178002-deb401f6e4fc?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "53456445038073fcf1550f50e674bbdf61a25f38874d139e4b3b50c18f7443e9"
+    },
+    {
+      "file": "weather/cloudy/dawn.jpg",
+      "author": "Dylan Crawford",
+      "source": "https://unsplash.com/photos/a-body-of-water-surrounded-by-trees-and-clouds-BiBM6WVuKUw",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1724019576112-08e9e0024a64?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "0ccd3be3f01d16e2d5e8a0c93e608b5904c0cab5c7615aa603aa3de292aec3b2"
+    },
+    {
+      "file": "weather/cloudy/golden_hour.jpg",
+      "author": "ran liwen",
+      "source": "https://unsplash.com/photos/a-corn-field-with-a-sunset-in-the-background-lhfAqVY2t7w",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1723693062700-a5d375e639a8?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "5bf67f00c410dd49c59349a57e122af027d54b4fb7c8dbf454e53b959b9d115d"
+    },
+    {
+      "file": "weather/cloudy/late_morning.jpg",
+      "author": "Nadine E",
+      "source": "https://unsplash.com/photos/body-of-water-by-mountains-during-daytime-shetVz3YJ70",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1498051097915-0f8feaaba917?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "0bd19d6beb4332c058758a4d564628d69b3842e9376baa985db4464452ec246a"
+    },
+    {
+      "file": "weather/cloudy/morning.jpg",
+      "author": "Alexey Ivanov",
+      "source": "https://unsplash.com/photos/a-body-of-water-with-mountains-in-the-background-I0icvr4aol0",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1729959884778-da26e3896ed7?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "2c8d39fa3694f55efd5824e5cca63bc59772f1ebed1d1bec7f03b375a5ee4edf"
+    },
+    {
+      "file": "weather/cloudy/night.jpg",
+      "author": "Andriyko Podilnyk",
+      "source": "https://unsplash.com/photos/silhouette-photography-of-mountain-E6ne6IUNxZw",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1533983272060-edb6f56af634?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "860d631a13a3a816f6ae8cdeacae9235677d67bb44521f7c9060770179f312a8"
+    },
+    {
+      "file": "weather/cloudy/noon.jpg",
+      "author": "Joel Vodell",
+      "source": "https://unsplash.com/photos/2-person-on-boat-at-lake-during-daytime-TApAkERW5pQ",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1542856391-010fb87dcfed?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "bb492e29a3f727772a38fbe0ec60697249b425b2fbcabad7959062e562fa73a5"
+    },
+    {
+      "file": "weather/cloudy/predawn.jpg",
+      "author": "Alexandre Croussette",
+      "source": "https://unsplash.com/photos/green-trees-and-mountains-under-white-clouds-gNoKBfnc6XA",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1602172525219-35383c054399?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "99e974245fdbc3991c26fa18c8259ef5f2c57dfbf667c0a0ebe38cac53da6b76"
+    },
+    {
+      "file": "weather/cloudy/sunrise.jpg",
+      "author": "Daniel Seßler",
+      "source": "https://unsplash.com/photos/sunbeams-breaking-through-clouds-over-mountain-peaks-Z5TV7ylXLrI",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1757269267274-085b02b0ce8a?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "d8aa44738c70d07a51ef94840238dde2383f02649714da83e0be8c0d47cdae92"
+    },
+    {
+      "file": "weather/cloudy/sunset.jpg",
+      "author": "Big Bear Cabins",
+      "source": "https://unsplash.com/photos/body-of-water-during-sunset-ylGF4ns8BGE",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1595368246398-ad3593bd8996?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "f0d53ff0274cb71273e03a3f522e096704ac76622c021b9a43a2aca50887976d"
+    },
+    {
+      "file": "weather/cloudy/twilight.jpg",
+      "author": "Andreas Kind",
+      "source": "https://unsplash.com/photos/mountain-covered-with-clouds-bUhzlj3gGso",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1502747812021-0ae746b6c23f?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "f3a1615a800fc159bb1f4a530aa4bfc50bd18e4992877d462fdb5e41157af61c"
+    },
+    {
+      "file": "weather/fog/afternoon.jpg",
+      "author": "Kateryna Melnyk",
+      "source": "https://unsplash.com/photos/a-foggy-forest-with-a-lake-Ql8ChAfdhHU",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1669895814142-9acc7f55a11a?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "03916c7333f90d28399460614231b0d6e45d91273a6c9b785c3db8835deacbc1"
+    },
+    {
+      "file": "weather/fog/dawn.jpg",
+      "author": "Thomas Griesbeck",
+      "source": "https://unsplash.com/photos/evergreen-trees-in-dense-mountain-fog-BS-Uxe8wU5Y",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1476362555312-ab9e108a0b7e?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "9f1207ca00648ad9a0e3ca4e31170a31a7000b204ce0652dbe2136696fb954d4"
+    },
+    {
+      "file": "weather/fog/golden_hour.jpg",
+      "author": "Matthew",
+      "source": "https://unsplash.com/photos/the-sun-is-setting-over-a-foggy-valley-AUPyDQ0qPZA",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1653203201902-c103cd99531e?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "d8462989134d57bb1d085afb1f75d29a573f8200c6b7b353d7d28da8c4020f85"
+    },
+    {
+      "file": "weather/fog/late_morning.jpg",
+      "author": "DJ",
+      "source": "https://unsplash.com/photos/a-stream-running-through-a-forest-filled-with-trees-T2OcUNbN92Y",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1735169202605-7ba7e2d80b68?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "b48d8cfc873ffb5c35b5096067063e862cd911615dd89d27acf9aeae5a895a11"
+    },
+    {
+      "file": "weather/fog/morning.jpg",
+      "author": "Philipp",
+      "source": "https://unsplash.com/photos/a-foggy-forest-filled-with-lots-of-trees-upR8raSXvwg",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1732130318657-c8740c0f5215?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "db3f018fe54fc366fd6ced588d7f34a14901031a60ae0f2eed57096d5fd7d255"
+    },
+    {
+      "file": "weather/fog/night.jpg",
+      "author": "Kate Shashina",
+      "source": "https://unsplash.com/photos/a-foggy-night-with-a-full-moon-in-the-distance-7KkGZH2CVu8",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1639162147469-a02dee15e1d9?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "548b21c14ab6cf8335e415361399a7c35d190bb6d73d99b6ef0832492c571c4b"
+    },
+    {
+      "file": "weather/fog/noon.jpg",
+      "author": "Inggrid Koe",
+      "source": "https://unsplash.com/photos/gray-forest-with-fog-kbKEuU-YEIw",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1486707471592-8e7eb7e36f78?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "93e5bc36dd31029f487bd80df9c75f713488cbf4ffb2d6f1c67e81aa39c51ff3"
+    },
+    {
+      "file": "weather/fog/predawn.jpg",
+      "author": "Timur Repin",
+      "source": "https://unsplash.com/photos/body-of-water-surrounding-trees-during-daytime-AarqJKlwhyI",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1560884615-9b38c5d6a5ed?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "f59739f7afe1cde100886ee75d50e6648e83a9c47d826c41520ca99b74a60896"
+    },
+    {
+      "file": "weather/fog/sunrise.jpg",
+      "author": "Simon Wilkes",
+      "source": "https://unsplash.com/photos/green-field-during-golden-hour-uH5OXBhnSNg",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1567853042143-8d8480f022ad?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "da98de08b0e69020afc9133c84f04771b31a837159a8791783aae04ba179e8f7"
+    },
+    {
+      "file": "weather/fog/sunset.jpg",
+      "author": "Yevhenii Deshko",
+      "source": "https://unsplash.com/photos/green-grass-field-near-mountain-under-cloudy-sky-during-daytime-ic_ED5M5evg",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1598100931785-34ea74d5ee4a?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "efede134ee39358acc35f1faf81989700b60b5fbe6a5c93896b3011d18eb1b59"
+    },
+    {
+      "file": "weather/fog/twilight.jpg",
+      "author": "Leonie Zettl",
+      "source": "https://unsplash.com/photos/a-view-of-a-mountain-range-at-dusk-swGD6c8XYHM",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1635001360483-6772df57f2f9?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "fa79a69de4f808be3209f2b52063bd0923f8964af8c46ed04a666cb672f30fc7"
+    },
+    {
+      "file": "weather/rain/afternoon.jpg",
+      "author": "Nathan Anderson",
+      "source": "https://unsplash.com/photos/landscape-photography-of-alps-mountain-4xvZoVGCEnk",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1478836543787-b077f2162745?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "42b72675a389370a9d98c14ba4e66d09f95dc17861df32566e502e5b2336e605"
+    },
+    {
+      "file": "weather/rain/dawn.jpg",
+      "author": "Lute",
+      "source": "https://unsplash.com/photos/a-foggy-field-with-a-lone-tree-in-the-foreground-amsYEtNUCMY",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1701251443858-b122a8a49a2e?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "a6a8481aa5e26f84ab3805c9c1643bf3fce911f28c89b14db5592566505eb460"
+    },
+    {
+      "file": "weather/rain/golden_hour.jpg",
+      "author": "Isaac Wendland",
+      "source": "https://unsplash.com/photos/landscape-photography-of-mountains-and-clouds-nNLeDLaaEFw",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1512441976778-2508910043fd?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "16162e33c07e46e171f7c2892affafdb913e4762694a9246fe43695d8af8f8f4"
+    },
+    {
+      "file": "weather/rain/late_morning.jpg",
+      "author": "Jason Miller",
+      "source": "https://unsplash.com/photos/green-woods-across-cloudy-mountain-JupMwzePqwg",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1551221236-30e276f9e0df?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "5002d3880f4e4ab0a970fe85ab91122a6c622602bf68533a6c27623d97409e80"
+    },
+    {
+      "file": "weather/rain/morning.jpg",
+      "author": "Jason Miller",
+      "source": "https://unsplash.com/photos/gray-concrete-road-across-cloudy-mountain-YNwmRnCGl_8",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1551221236-5785eaa85f94?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "b9e6d1a6089f47c030fc1f6f81e6436c372c975c4b043be18888e400d9082a04"
+    },
+    {
+      "file": "weather/rain/night.jpg",
+      "author": "natsuki",
+      "source": "https://unsplash.com/photos/close-up-photography-of-rain-drops-4DsowKunk84",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1562781105-c53c27ff6007?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "0a9ac1aeb75c92760312bb4d0085297656c83947cda6ce29b75c3d88b1928d71"
+    },
+    {
+      "file": "weather/rain/noon.jpg",
+      "author": "Malcolm Lightbody",
+      "source": "https://unsplash.com/photos/aerial-photography-of-cities-surrounded-of-mountain-during-gray-clouds-VVyBUBC-6rA",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1533836555383-8c5aa1844aaf?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "6294d01342bdcb3929fb22429ad84f3409c726fb2e2b99d5b9174c149095898f"
+    },
+    {
+      "file": "weather/rain/predawn.jpg",
+      "author": "Stephen Ellis",
+      "source": "https://unsplash.com/photos/blue-and-white-abstract-painting-XIHp9PdlTC0",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1547608763-e1fab6036a33?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "da77c7e48a49a9770bbe493be1a575cb8949fee45f97df5a507ca6ea7f6dfc47"
+    },
+    {
+      "file": "weather/rain/sunrise.jpg",
+      "author": "Darius Žukas",
+      "source": "https://unsplash.com/photos/a-view-of-the-ocean-through-a-rainy-window-4OoHGcism78",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1636366189951-02586e29ddcd?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "1cfbd5c2f2e5ab4cc105416d7104276671677c04892dc11b3e401f0e1398bddc"
+    },
+    {
+      "file": "weather/rain/sunset.jpg",
+      "author": "Mike Oug",
+      "source": "https://unsplash.com/photos/silhouette-of-mountains-under-cloudy-sky-Q0XdjgchcYA",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1503688606678-73209f98a6d8?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "3d2625832a83530682f396fd814f472da3915fefe48ba1f952de02c17595c879"
+    },
+    {
+      "file": "weather/rain/twilight.jpg",
+      "author": "Norbert Buduczki",
+      "source": "https://unsplash.com/photos/mountains-under-white-clouds-during-daytime-Ulbl1i3wxIM",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1617626934148-83aa91920420?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "7be2a4d51553e8e5416cb9bf4d282c1d45e87a743af0946373cc722eab154a63"
+    },
+    {
+      "file": "weather/snow/afternoon.jpg",
+      "author": "Francesca Hotchin",
+      "source": "https://unsplash.com/photos/landscape-photo-of-mountain-covered-with-snow-FN-cedy6NHA",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1507281736509-c6289f1ea0f8?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "48176da5556d1344af456266d7c141b80440efd2a8bd5bd8201e145ba18c1afe"
+    },
+    {
+      "file": "weather/snow/dawn.jpg",
+      "author": "DJ",
+      "source": "https://unsplash.com/photos/a-view-of-a-mountain-range-under-a-cloudy-sky-N9Z8rUCwUPU",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1716919400792-738a00ab1be7?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "d8f21c3d2571c87cc1eb6b3350dec194293023abd6b8c74ca8bc528d091db2f6"
+    },
+    {
+      "file": "weather/snow/golden_hour.jpg",
+      "author": "Jerry Zhang",
+      "source": "https://unsplash.com/photos/mountain-ranges-covered-in-snow-ePpaQC2c1xA",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1549880181-56a44cf4a9a5?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "cfdaeda8bcca0a1c840c860cdf16ada6149b59b6c3949c0e961597020773a95c"
+    },
+    {
+      "file": "weather/snow/late_morning.jpg",
+      "author": "Tomáš Malík",
+      "source": "https://unsplash.com/photos/snow-covered-trees-during-daytime-PrWCad_Vy_w",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1612099452850-ed8efe7d58ff?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "9d8ab9424f0eb3daa8e11cee96d6cb3b2dfb8761acf1db27841b33d20e702165"
+    },
+    {
+      "file": "weather/snow/morning.jpg",
+      "author": "Himal Rana",
+      "source": "https://unsplash.com/photos/snow-covered-mountain-under-blue-sky-during-daytime-ubCxU2ZhMZc",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1626163450208-0fb18eb43b99?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "e3e75edc5bbb87b6ff3e0ea7ecd8083447b6bcc265e88b54394c8e43f03ab37d"
+    },
+    {
+      "file": "weather/snow/night.jpg",
+      "author": "Explore with Joshua",
+      "source": "https://unsplash.com/photos/snow-covered-mountain-under-blue-sky-during-night-time-4yBogrmcEmM",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1596016691838-70260f1e21c6?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "f2acf9f168c1ff288ad2ca525f9e798c2c2d137e8c76aa8519ab51d785573616"
+    },
+    {
+      "file": "weather/snow/noon.jpg",
+      "author": "Cristina Gottardi",
+      "source": "https://unsplash.com/photos/snow-covered-pine-trees-and-mountains-during-daytime-Tr55sj841Fg",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1614093643263-7ebf3d099724?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "7ee76b688e590a98bdc192f8d8ad6c0dce05bc11fd11ea9b3ba88705cac3358b"
+    },
+    {
+      "file": "weather/snow/predawn.jpg",
+      "author": "Matt Sclarandis",
+      "source": "https://unsplash.com/photos/snow-capped-mountain-yH9IIxdaysM",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1549545957-d562cf142982?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "a21afbb50c779fd9ccd7452abbc948d993bcb62b623f7afcce2c3a8f4b25f783"
+    },
+    {
+      "file": "weather/snow/sunrise.jpg",
+      "author": "Anurag Bhgsain",
+      "source": "https://unsplash.com/photos/a-view-of-a-mountain-range-at-sunset-eJdiDYIzq9M",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1641310045101-fd176a42cd44?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "40d6c0d51c0fa8a9a44bb651834f62e60dbbc811a20eb61515a72446c227c9d9"
+    },
+    {
+      "file": "weather/snow/sunset.jpg",
+      "author": "Erika",
+      "source": "https://unsplash.com/photos/white-and-black-mountains-U6GYjO-9jBM",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1553117595-56534f5d7492?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "0380c094f395d44a0624f23c81ecbcce903cc0ef11e23dfff5314db9b691e138"
+    },
+    {
+      "file": "weather/snow/twilight.jpg",
+      "author": "Giorgia Finazzi",
+      "source": "https://unsplash.com/photos/a-snowy-landscape-with-trees-and-mountains-in-the-background-e62AeaW8Ks8",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1623057896740-99f8c2f090fc?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "beeb6943bb9b56217a69c5aff3484bfc11df2ce6da95b5864f6c0d7b48b03d98"
+    },
+    {
+      "file": "weather/storm/afternoon.jpg",
+      "author": "Chandler Cruttenden",
+      "source": "https://unsplash.com/photos/a-black-and-white-photo-of-storm-clouds-zO_bdw9pN5E",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1636492780045-85eca86d81cb?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "279820d662829dbe2ce95d8d2ed27225901c9466e796a49a0f9dc69e902e885b"
+    },
+    {
+      "file": "weather/storm/dawn.jpg",
+      "author": "CHUTTERSNAP",
+      "source": "https://unsplash.com/photos/gray-clouds-rk2s0sm8xF4",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1572162522099-7a0c28d7691b?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "9a03a9ce7e63036e9bd0149889bdb0335698eadc9038f940209e5a85cc1e51ee"
+    },
+    {
+      "file": "weather/storm/golden_hour.jpg",
+      "author": "Dave Hoefler",
+      "source": "https://unsplash.com/photos/a-field-with-trees-and-clouds-in-the-sky-Zymaf0qJKTg",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1657720976914-acf295711399?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "d84b4478d237e1e0d72e283a89abb931416d4fd170690e345580655e2837aaf5"
+    },
+    {
+      "file": "weather/storm/late_morning.jpg",
+      "author": "Anandu Vinod",
+      "source": "https://unsplash.com/photos/cloudy-sky-pbxwxwfI0B4",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1500740516770-92bd004b996e?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "94e2e16e686aedf57a31231a69cf2cba181c44aa7f866e32f84023a275e4a9fe"
+    },
+    {
+      "file": "weather/storm/morning.jpg",
+      "author": "Dave Hoefler",
+      "source": "https://unsplash.com/photos/green-grass-field-under-gray-clouds-IRHNxX5y_hg",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1595867005771-4d3e811d0886?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "fe3ecad0aed48ac666c37c9fd7d15e1f810c8242e8dc9eb3cb6941fb4412507d"
+    },
+    {
+      "file": "weather/storm/night.jpg",
+      "author": "Shlomo Shalev",
+      "source": "https://unsplash.com/photos/lightning-on-sky-over-the-sea-xM-xt8qyd3E",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1598336331578-0fe91c2a0abd?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "e351a1309de3dd3ab2ef450c7b86854a9ba49643eebd73a69b7dc54d6b4db0d9"
+    },
+    {
+      "file": "weather/storm/noon.jpg",
+      "author": "Dave Hoefler",
+      "source": "https://unsplash.com/photos/storm-cloud-over-green-field-llEjCH71E9o",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1595810033299-5a6fcda2aa71?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "bf6de9a99962030779c4999bbd483b8f1e5608f85bca9184e6aea8af5b9512f3"
+    },
+    {
+      "file": "weather/storm/predawn.jpg",
+      "author": "Marc Wieland",
+      "source": "https://unsplash.com/photos/thunderstorm-with-lightning-trnTvywx2Rg",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1461511669078-d46bf351cd6e?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "1e26b1a935be2d35f3729bb89e688a28fcf34640d9f4a42590e2ddb6dddbee25"
+    },
+    {
+      "file": "weather/storm/sunrise.jpg",
+      "author": "Clark Young",
+      "source": "https://unsplash.com/photos/green-grass-field-wJKubwhDwZo",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1513883232774-3139009c4464?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "2f5031c017be46ae1b134f6c28a88e5ffe2f17e8bde6fe8843f9be0faf61fd8b"
+    },
+    {
+      "file": "weather/storm/sunset.jpg",
+      "author": "Kevin Luke",
+      "source": "https://unsplash.com/photos/a-blue-sky-filled-with-lots-of-lightning-uJVRaSIn2nk",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1654638827522-c22e830b8a82?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "0211b2ad72cd204c7e37446780f7c666bad06079ac11ff4388e80c0ea5385ffe"
+    },
+    {
+      "file": "weather/storm/twilight.jpg",
+      "author": "Sotiris Savvides",
+      "source": "https://unsplash.com/photos/a-storm-is-coming-in-over-a-body-of-water-fl9PgDRwrnc",
+      "license": "https://unsplash.com/license",
+      "download": "https://images.unsplash.com/photo-1720711621766-c2d6581e49dd?w=2560&h=1600&fit=crop&fm=jpg&q=85",
+      "width": 2560,
+      "height": 1600,
+      "sha256": "ca28240ed1055db02836cd6b4a69aaead25fd6049e6e920b51cf49a71d616641"
+    }
+  ]
+}

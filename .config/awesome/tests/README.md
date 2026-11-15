@@ -76,6 +76,37 @@ bash test_service_migration.sh
 python test_suspend_hook.py
 ```
 
+Offline wallpaper and shared-weather tests require no display or network:
+
+```bash
+lua test_wallpaper_context.lua
+lua test_weather_service.lua
+lua test_dynamic_wallpaper.lua
+lua test_wallpaper_assets.lua
+python3 test_wallpaper_catalog.py
+```
+
+These cover darkman coordinate parsing, seasonal solar timing, polar fallback,
+local image precedence, asynchronous updates, disk-cache reuse/expiry, location
+changes, provider fallback, retry backoff, timeouts, and immediate wake handling.
+Asset checks also exercise every shipped weather/solar-phase combination,
+all profile schedule paths, and time-only fallback. The catalog suite validates
+all 63 downloaded JPEGs, their 2560x1600 dimensions, bounded download URLs,
+photographer attribution, and checksums without network access. All 55 weather
+images must have distinct sources and hashes, and every solar phase must select
+its own file rather than a shared fallback. Seasonal sweeps verify all 11 phases
+are reached at the configured San Jose coordinates.
+The actual scheduler is also exercised through complete offline rotations for
+all three profiles: exact clock boundaries, midnight wrap, every 15-second solar
+tick across four seasons, fresh/expired weather cache, and wake after missed
+slots. Every one of the 37 fallback images must be applied, and unscheduled
+top-level JPEGs fail the test.
+
+The AwesomeWM workflow discovers the Lua tests automatically. Its integration
+job also runs the wallpaper catalog checks and the five wallpaper/weather Lua
+suites with LuaJIT in UTC, America/Los_Angeles, and Asia/Kolkata. These checks
+use local assets and mocked weather responses, not internet access or darkman.
+
 ### Testing with awmtt (Advanced)
 
 Test your config in a real AwesomeWM instance:

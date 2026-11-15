@@ -19,6 +19,19 @@ local beautiful = require('beautiful')
 local Gio = require('lgi').Gio
 local filesystem = gears.filesystem
 local config = require('configuration.config')
+local context = require('library.wallpaper-context')
+local options = config.module.dynamic_wallpaper
+local environment_enabled = options.solar == true or options.weather_enabled == true
+local darkman_config = options.darkman_config or
+    ((os.getenv('XDG_CONFIG_HOME') or (os.getenv('HOME') .. '/.config')) .. '/darkman/config.yaml')
+local weather_service = options.weather_enabled and require('library.weather-service').default()
+local weather_config = {
+    providers = options.weather_providers or { 'open-meteo' },
+    units = ((config.widget or {}).weather or {}).units or 'metric',
+    update_interval = options.weather_interval or 1200,
+    max_age = options.weather_max_age or 7200,
+}
+local current_location
 
 
 --  ========================================
@@ -49,6 +62,10 @@ local wall_config = {
     -- Table mapping schedule to wallpaper filename
     wallpaper_schedule = config.module.dynamic_wallpaper.wallpaper_schedule or {
         ['00:00:00'] = 'am_12.jpg',
+        ['01:00:00'] = 'am_01.jpg',
+        ['02:00:00'] = 'am_02.jpg',
+        ['03:00:00'] = 'am_03.jpg',
+        ['04:00:00'] = 'am_04.jpg',
         ['05:00:00'] = 'am_05.jpg',
         ['05:30:00'] = 'am_05_30.jpg',
         ['06:00:00'] = 'am_06.jpg',
@@ -64,10 +81,12 @@ local wall_config = {
         ['11:00:00'] = 'am_11.jpg',
         ['11:30:00'] = 'am_11_30.jpg',
         ['12:00:00'] = 'pm_12.jpg',
-        ['12:30:00'] = 'pm_12_30.jpg',
         ['13:00:00'] = 'pm_01.jpg',
         ['14:00:00'] = 'pm_02.jpg',
         ['15:00:00'] = 'pm_03.jpg',
+        ['15:30:00'] = 'pm_03_30.jpg',
+        ['16:00:00'] = 'pm_04.jpg',
+        ['16:30:00'] = 'pm_04_30.jpg',
         ['17:00:00'] = 'pm_05.jpg',
         ['18:00:00'] = 'pm_06.jpg',
         ['18:30:00'] = 'pm_06_30.jpg',
@@ -77,7 +96,8 @@ local wall_config = {
         ['20:30:00'] = 'pm_08_30.jpg',
         ['21:00:00'] = 'pm_09.jpg',
         ['21:30:00'] = 'pm_09_30.jpg',
-        ['22:00:00'] = 'pm_10.jpg'
+        ['22:00:00'] = 'pm_10.jpg',
+        ['23:00:00'] = 'pm_11.jpg'
     },
 
     -- Explicit opt-in to one panorama across the combined desktop.
@@ -312,24 +332,34 @@ end
 -- So the wallpaper is not being updated on awesome (re)start without this timer
 -- We need some delay.
 -- Hey it's working, so whatever
+local applied_path
 local update_wallpaper = function(wall_name)
+    if not wall_name then return false end
     local wall_dir = wall_config.wall_dir .. wall_name
-    set_wallpaper(wall_dir)
+    if applied_path == wall_dir then return true, false end
+    local success = pcall(set_wallpaper, wall_dir)
+    if not success then return false end
+    applied_path = wall_dir
 
     -- Overwrite the default wallpaper
     -- This is important in case we add an extra monitor
     beautiful.wallpaper = wall_dir
+    return true, true
 end
 
 -- Updates variables
 local manage_timer = function()
-    if next(wall_config.wallpaper_schedule) == nil then
-        the_countdown = 24 * 3600
-        return
-    end
-
     -- Get current time
     local time_now = parse_to_seconds(current_time())
+    local solar, weather
+    if environment_enabled then
+        current_location = context.read_location(darkman_config)
+        if current_location then
+            if options.solar then solar = context.solar(os.time(), current_location) end
+            if weather_service then weather = weather_service:peek(current_location, weather_config) end
+        end
+        if solar then time_now = solar.seconds end
+    end
 
     local previous_time = ''      --Scheduled time that should activate now
     local next_time = ''          --Time that should activate next
@@ -378,11 +408,25 @@ local manage_timer = function()
     end
 
     -- Update Wallpaper
-    update_wallpaper(wall_config.wallpaper_schedule[previous_time])
-    set_wallpaper_name(wall_config.wallpaper_schedule[previous_time])
+    local name = context.choose(wall_config.wallpaper_schedule[previous_time],
+        solar and solar.phase, context.condition(weather), options, function(candidate)
+            return filesystem.file_readable(wall_config.wall_dir .. candidate)
+        end)
+    local updated, changed = update_wallpaper(name)
+    if updated then
+        set_wallpaper_name(name)
+        if changed then awesome.emit_signal('module::change_background_wallpaper') end
+    end
 
     -- Get the time difference to set as timeout for the wall_updater timer below
-    the_countdown = time_diff(next_time, current_time())
+    the_countdown = environment_enabled and 15 or math.max(1, time_diff(next_time, current_time()))
+end
+
+local function refresh_weather(force)
+    if not weather_service or not current_location then return end
+    weather_service:fetch(current_location, weather_config, function(ok, _, _, cached)
+        if ok and not cached then awesome.emit_signal('module::change_wallpaper') end
+    end, { force = force })
 end
 
 -- Update values at startup
@@ -396,7 +440,7 @@ local wall_updater = gears.timer {
     callback  = function()
         -- Emit signal to update wallpaper
         awesome.emit_signal('module::change_wallpaper')
-        awesome.emit_signal('module::change_background_wallpaper')
+        refresh_weather()
     end
 }
 
@@ -423,5 +467,11 @@ local function apply(s)
     end
 end
 screen.connect_signal('property::geometry', apply)
+awesome.connect_signal('module::sleep_resumed', function()
+    manage_timer()
+    refresh_weather(true)
+    wall_updater:again()
+end)
+gears.timer.delayed_call(refresh_weather)
 
 return { apply = apply }

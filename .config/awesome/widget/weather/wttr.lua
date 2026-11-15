@@ -58,18 +58,18 @@ fi
             return
         end
 
-        local data = json.parse(stdout)
-        if not data then
+        local parsed, data = pcall(json.parse, stdout)
+        if not parsed or type(data) ~= 'table' then
             callback(false, nil, 'parse_error')
             return
         end
 
-        local current = data.current_condition and data.current_condition[1]
-        local today = data.weather and data.weather[1]
-        local astronomy = today and today.astronomy and today.astronomy[1]
-        local weather_desc = current and current.weatherDesc and current.weatherDesc[1]
+        local current = type(data.current_condition) == 'table' and data.current_condition[1]
+        local today = type(data.weather) == 'table' and data.weather[1]
+        local astronomy = type(today) == 'table' and type(today.astronomy) == 'table' and today.astronomy[1]
+        local weather_desc = type(current) == 'table' and type(current.weatherDesc) == 'table' and current.weatherDesc[1]
 
-        if not current or not weather_desc then
+        if type(current) ~= 'table' or type(weather_desc) ~= 'table' then
             callback(false, nil, 'invalid_payload')
             return
         end
@@ -79,8 +79,8 @@ fi
         callback(true, {
             location = location.name,
             country = location.country,
-            sunrise = astronomy and astronomy.sunrise or '--:--',
-            sunset = astronomy and astronomy.sunset or '--:--',
+            sunrise = type(astronomy) == 'table' and astronomy.sunrise or '--:--',
+            sunset = type(astronomy) == 'table' and astronomy.sunset or '--:--',
             temperature = temperature,
             description = weather_desc.value,
             icon_code = to_icon_code(current.weatherCode),

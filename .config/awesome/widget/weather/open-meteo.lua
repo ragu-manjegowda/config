@@ -16,7 +16,8 @@ local function to_icon_code(weather_code, is_day)
         return '50' .. suffix
     elseif weather_code == 51 or weather_code == 53 or weather_code == 55 or weather_code == 56 or weather_code == 57 then
         return '09' .. suffix
-    elseif weather_code == 61 or weather_code == 63 or weather_code == 65 or weather_code == 66 or weather_code == 67 then
+    elseif weather_code == 61 or weather_code == 63 or weather_code == 65 or weather_code == 66 or weather_code == 67
+        or weather_code == 80 or weather_code == 81 or weather_code == 82 then
         return '10' .. suffix
     elseif weather_code == 71 or weather_code == 73 or weather_code == 75 or weather_code == 77 or weather_code == 85 or weather_code == 86 then
         return '13' .. suffix
@@ -107,21 +108,21 @@ fi
             return
         end
 
-        local data = json.parse(stdout)
-        if not data then
+        local parsed, data = pcall(json.parse, stdout)
+        if not parsed or type(data) ~= 'table' then
             callback(false, nil, 'parse_error')
             return
         end
 
-        if not data.current or not data.daily then
+        if type(data.current) ~= 'table' or type(data.daily) ~= 'table' then
             callback(false, nil, 'invalid_payload')
             return
         end
 
         local weather_code = tonumber(data.current.weather_code)
         local is_day = tonumber(data.current.is_day) == 1
-        local sunrise = data.daily.sunrise and data.daily.sunrise[1] or nil
-        local sunset = data.daily.sunset and data.daily.sunset[1] or nil
+        local sunrise = type(data.daily.sunrise) == 'table' and data.daily.sunrise[1] or nil
+        local sunset = type(data.daily.sunset) == 'table' and data.daily.sunset[1] or nil
 
         callback(true, {
             location = location.name,

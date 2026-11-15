@@ -147,6 +147,10 @@ return {
         },
 
         dynamic_wallpaper = {
+            solar = true,
+            weather_enabled = true,
+            weather_interval = 1200,
+            weather_max_age = 7200,
             -- Will look for wallpapers here
             wall_dir = 'theme/wallpapers/',
             -- Image formats
@@ -154,6 +158,10 @@ return {
             -- Leave this table empty for full auto scheduling
             wallpaper_schedule = {
                 ['00:00:00'] = 'am_12.jpg',
+                ['01:00:00'] = 'am_01.jpg',
+                ['02:00:00'] = 'am_02.jpg',
+                ['03:00:00'] = 'am_03.jpg',
+                ['04:00:00'] = 'am_04.jpg',
                 ['05:00:00'] = 'am_05.jpg',
                 ['05:30:00'] = 'am_05_30.jpg',
                 ['06:00:00'] = 'am_06.jpg',
@@ -169,10 +177,12 @@ return {
                 ['11:00:00'] = 'am_11.jpg',
                 ['11:30:00'] = 'am_11_30.jpg',
                 ['12:00:00'] = 'pm_12.jpg',
-                ['12:30:00'] = 'pm_12_30.jpg',
                 ['13:00:00'] = 'pm_01.jpg',
                 ['14:00:00'] = 'pm_02.jpg',
                 ['15:00:00'] = 'pm_03.jpg',
+                ['15:30:00'] = 'pm_03_30.jpg',
+                ['16:00:00'] = 'pm_04.jpg',
+                ['16:30:00'] = 'pm_04_30.jpg',
                 ['17:00:00'] = 'pm_05.jpg',
                 ['18:00:00'] = 'pm_06.jpg',
                 ['18:30:00'] = 'pm_06_30.jpg',
@@ -182,7 +192,8 @@ return {
                 ['20:30:00'] = 'pm_08_30.jpg',
                 ['21:00:00'] = 'pm_09.jpg',
                 ['21:30:00'] = 'pm_09_30.jpg',
-                ['22:00:00'] = 'pm_10.jpg'
+                ['22:00:00'] = 'pm_10.jpg',
+                ['23:00:00'] = 'pm_11.jpg'
                 -- Example of just using auto-scheduling with keywords
                 --[[
                     'midnight',

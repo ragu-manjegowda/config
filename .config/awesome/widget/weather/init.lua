@@ -44,11 +44,7 @@ if #secrets.locations == 0 then
     end
 end
 
-local weather_providers = {
-    ['open-meteo'] = require('widget.weather.open-meteo'),
-    ['wttr'] = require('widget.weather.wttr'),
-    ['open-weather'] = require('widget.weather.open-weather'),
-}
+local weather_service = require('library.weather-service').default()
 
 -- Constants for scrollable weather list
 local WEATHER_HEIGHT = dpi(75)
@@ -89,75 +85,12 @@ local get_weather_symbol = function()
     return symbol_tbl[secrets.units]
 end
 
-local function normalize_provider_name(name)
-    if not name then
-        return nil
-    end
-
-    local normalized = tostring(name):lower():gsub('_', '-')
-    if normalized == 'openweather' then
-        normalized = 'open-weather'
-    elseif normalized == 'openmeteo' then
-        normalized = 'open-meteo'
-    end
-
-    return normalized
-end
-
-local function get_fallback_providers()
-    local ordered = {}
-
-    for _, provider_name in ipairs(secrets.providers) do
-        local normalized = normalize_provider_name(provider_name)
-        if normalized and weather_providers[normalized] then
-            table.insert(ordered, normalized)
-        end
-    end
-
-    if #ordered == 0 then
-        ordered = { 'open-meteo', 'wttr', 'open-weather' }
-    end
-
-    return ordered
-end
-
-local provider_order = get_fallback_providers()
-
 local function get_location_label(location)
     return location.display_name or location.name or ('City ' .. tostring(location.openweather_city_id or '?'))
 end
 
 local function fetch_weather_with_fallback(location, callback)
-    local function try_provider(index, last_error)
-        if index > #provider_order then
-            callback(false, nil, last_error)
-            return
-        end
-
-        local provider_name = provider_order[index]
-        local provider = weather_providers[provider_name]
-        if not provider then
-            try_provider(index + 1, last_error)
-            return
-        end
-
-        if provider.is_available and not provider.is_available(location, secrets) then
-            try_provider(index + 1, last_error)
-            return
-        end
-
-        provider.fetch(location, secrets, function(ok, data, err)
-            if ok and data then
-                data.provider = provider_name
-                callback(true, data, nil)
-                return
-            end
-
-            try_provider(index + 1, err or last_error)
-        end)
-    end
-
-    try_provider(1, nil)
+    weather_service:fetch(location, secrets, callback, { force = true, allow_cached = false })
 end
 
 local weather_header = wibox.widget {
