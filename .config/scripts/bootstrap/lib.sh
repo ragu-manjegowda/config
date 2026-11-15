@@ -41,6 +41,10 @@ import sys
 from pathlib import Path
 source, destination, home, user = sys.argv[1:]
 text = Path(source).read_text().replace('/home/ragu', home).replace('--user ragu', '--user ' + user)
+if Path(source).suffix == '.desktop':
+    text = re.sub(r'^(Exec|TryExec)=/home/[^/\n]+/\.local/bin/awesome-session$',
+                  lambda match: match[1] + '=' + home + '/.local/bin/awesome-session',
+                  text, flags=re.MULTILINE)
 for pattern, replacement in (
     (r'^User=ragu$', 'User=' + user),
     (r'^AllowUsers ragu$', 'AllowUsers ' + user),

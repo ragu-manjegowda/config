@@ -110,6 +110,19 @@ class PackageRestoreTests(unittest.TestCase):
                          'AllowUsers bangari\nUser=bangari\nuser = "bangari"\n'
                          'ExecStart=/home/bangari/lock\nPermitRootLogin no\n')
 
+    def test_session_templates_rebind_any_previous_account(self):
+        source = self.root / "awesome.desktop"
+        destination = self.root / "rendered.desktop"
+        source.write_text('[Desktop Entry]\nExec=/home/bangari/.local/bin/awesome-session\n'
+                          'TryExec=/home/another-user/.local/bin/awesome-session\nName=awesome\n')
+        result = self.shell('source "$1/lib.sh"; id() { printf "alice\\n"; }; '
+                            'HOME=/home/alice; render_user_config "$2" "$3"',
+                            BOOTSTRAP, source, destination)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(destination.read_text(),
+                         '[Desktop Entry]\nExec=/home/alice/.local/bin/awesome-session\n'
+                         'TryExec=/home/alice/.local/bin/awesome-session\nName=awesome\n')
+
     def test_arch_build_environment_overrides_homebrew(self):
         self.env.pop("_BUILD_DOCS", None)
         self.env.update(PATH="/home/linuxbrew/.linuxbrew/bin:" + os.environ["PATH"],

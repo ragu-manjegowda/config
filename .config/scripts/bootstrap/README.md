@@ -90,6 +90,23 @@ the symlink and the executable source in the dotfiles; no separate root-owned
 launcher installation is required. Both `Exec` and `TryExec` in the session
 entry point to this launcher. The desktop bootstrap step restores the link,
 renders the session paths for the installing user, and validates the session.
+Rendering also replaces another account's existing Awesome launcher paths,
+not just the original template account.
+
+The launcher starts X with `startx` when `DISPLAY` is unset, so it also works
+as a free-form command from tuigreet's F2 menu. When tuigreet's normal X11
+session wrapper already started X, it reuses that display instead.
+
+To override the command at login, press F2 (Fn+F2 if the keyboard sends media
+keys), use Ctrl+U to clear the field, enter the full path to
+`~/.local/bin/awesome-session`, and press Enter to confirm before authenticating.
+Escape cancels the edit. Use an expanded absolute path such as
+`/home/bangari/.local/bin/awesome-session`, not a literal `~` path. Overrides
+are temporary unless session remembering is enabled. F3 selects a desktop
+entry instead and applies the configured X11 wrapper automatically. An already
+running greeter may retain the old desktop entry; reselecting F3 does not
+necessarily reread a changed file. The F2 launcher path is a recovery option
+without restarting greetd or interrupting other sessions.
 
 After updating dotfiles or upgrading the system, run this before logging out
 or rebooting:

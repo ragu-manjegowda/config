@@ -7,6 +7,7 @@ import unittest
 from pathlib import Path
 
 CHECK = Path(__file__).resolve().parents[2] / "check-awesome-session.sh"
+LAUNCHER = Path(__file__).resolve().parents[3] / "misc/usr/local/libexec/awesome-session"
 
 
 class DesktopSessionTests(unittest.TestCase):
@@ -84,6 +85,42 @@ class DesktopSessionTests(unittest.TestCase):
     def test_invalid_configuration(self):
         self.awesome.write_text("#!/bin/bash\nexit 1\n")
         self.assert_failure("configuration validation failed")
+
+    def prepare_launcher(self):
+        self.source.write_text(LAUNCHER.read_text())
+        self.arguments = self.home / "session-arguments"
+        self.environment["SESSION_TEST_ARGS"] = str(self.arguments)
+        self.environment.pop("DISPLAY", None)
+        self.startx = self.home / ".local/bin/startx"
+        self.startx.write_text(
+            '#!/bin/bash\nprintf "%s\\n" "$XDG_SESSION_TYPE" "$@" > "$SESSION_TEST_ARGS"\n'
+        )
+        self.startx.chmod(0o755)
+
+    def test_freeform_command_starts_x_without_display(self):
+        self.prepare_launcher()
+        (self.home / ".profile").write_text("exit 23\n")
+        result = subprocess.run([str(self.launcher)], env=self.environment,
+                                capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.arguments.read_text().splitlines(),
+                         ["x11", "/usr/bin/env", str(self.launcher), "--"])
+
+    def test_x11_wrapper_does_not_start_nested_x_server(self):
+        self.prepare_launcher()
+        self.environment["DISPLAY"] = ":42"
+        (self.home / ".profile").write_text("exit 23\n")
+        result = subprocess.run([str(self.launcher)], env=self.environment,
+                                capture_output=True, text=True)
+        self.assertEqual(result.returncode, 23, result.stderr)
+        self.assertFalse(self.arguments.exists())
+
+    def test_startx_failure_is_propagated(self):
+        self.prepare_launcher()
+        self.startx.write_text("#!/bin/bash\nexit 17\n")
+        result = subprocess.run([str(self.launcher)], env=self.environment,
+                                capture_output=True, text=True)
+        self.assertEqual(result.returncode, 17, result.stderr)
 
 
 if __name__ == "__main__":

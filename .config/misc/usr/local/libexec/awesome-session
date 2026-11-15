@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 # Initialize the user's desktop environment before starting the window manager.
+export XDG_SESSION_TYPE=x11
+if [[ -z "${DISPLAY:-}" ]]; then
+    exec startx /usr/bin/env "$HOME/.local/bin/awesome-session" --
+fi
 if [[ -f "$HOME/.profile" ]]; then
     source "$HOME/.profile"
 fi
