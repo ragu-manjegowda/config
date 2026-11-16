@@ -271,7 +271,11 @@ if config.module and config.module.lockscreen then
         assert_type(lock.fingerprint_unlock, "boolean", "fingerprint_unlock is a boolean")
     end
     if lock.capture_intruder then
-        local camera = config.machine == 'imac' and '/dev/video0' or '/dev/video90'
+        local cameras = {
+            imac = '/dev/video0',
+            lenovo = '/dev/v4l/by-path/pci-0000:00:14.0-usb-0:4:1.0-video-index0',
+        }
+        local camera = cameras[config.profile or config.machine] or '/dev/video90'
         assert_test(lock.camera_device == camera,
             "intruder capture uses the machine's configured camera",
             "Expected " .. camera .. ", got " .. tostring(lock.camera_device))

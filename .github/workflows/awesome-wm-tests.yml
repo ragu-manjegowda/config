@@ -161,20 +161,22 @@ jobs:
           if-no-files-found: ignore
 
   lua-unit-tests:
-    name: Lua Unit Tests (${{ matrix.config }})
+    name: Lua Unit Tests (${{ matrix.runtime }}, ${{ matrix.config }})
     strategy:
       fail-fast: false
       matrix:
-        config: [config.lua, config_imac.lua]
+        runtime: [lua, luajit]
+        config: [config.lua, config_lenovo.lua, config_imac.lua]
     env:
-      AWESOME_TEST_PROFILE: ${{ matrix.config == 'config_imac.lua' && 'imac' || 'laptop' }}
+      AWESOME_TEST_PROFILE: ${{ matrix.config == 'config_imac.lua' && 'imac' || matrix.config == 'config_lenovo.lua' && 'lenovo' || 'laptop' }}
+      LUA_RUNTIME: ${{ matrix.runtime }}
     runs-on: ubuntu-latest
     needs: lua-syntax-check
     container:
       image: archlinux:latest
     steps:
       - name: Install dependencies
-        run: pacman -Syu --noconfirm && pacman -S --noconfirm git lua findutils
+        run: pacman -Syu --noconfirm && pacman -S --noconfirm git lua luajit findutils
 
       - name: Checkout dotfiles
         uses: actions/checkout@v5
@@ -192,32 +194,61 @@ jobs:
       - name: Run general Lua unit tests
         run: |
           cd "$GITHUB_WORKSPACE"
+          logs="$GITHUB_WORKSPACE/test-logs/lua-unit"
+          mkdir -p "$logs"
+          failed=0
+          total=0
+          printf '## Lua unit tests: %s / %s\n\n' "$LUA_RUNTIME" "$AWESOME_TEST_PROFILE" >> "$GITHUB_STEP_SUMMARY"
           for test in "${{ env.AWESOME_CONFIG_DIR }}"/tests/test_*.lua; do
             case "$(basename "$test")" in
-              test_notification_*.lua) continue ;;
               test_screen_recorder_storage.lua|test_luajit_weak_signals.lua) continue ;;
               # Real Pango/LGI coverage runs explicitly in the integration job.
               test_text_sizing.lua) continue ;;
             esac
-            HOME="$GITHUB_WORKSPACE" lua "$test"
+            total=$((total + 1))
+            name="$(basename "$test")"
+            log="$logs/$name.log"
+            printf '::group::%s (%s / %s)\n' "$name" "$LUA_RUNTIME" "$AWESOME_TEST_PROFILE"
+            echo "Testing $(basename "$test") with $LUA_RUNTIME"
+            if HOME="$GITHUB_WORKSPACE" "$LUA_RUNTIME" "$test" > "$log" 2>&1; then
+              cat "$log"
+              echo '::endgroup::'
+            else
+              failed=$((failed + 1))
+              cat "$log"
+              echo '::endgroup::'
+              message="$(grep -m1 -E '\.lua:[0-9]+:|[Aa]ssertion|[Ee]rror:|FAIL|❌' "$log" || tail -n 1 "$log")"
+              message="$(printf '%s' "$message" | sed 's/%/%25/g; s/\r/%0D/g')"
+              printf '::error file=%s,title=%s (%s / %s)::%s\n' "$test" "$name" "$LUA_RUNTIME" "$AWESOME_TEST_PROFILE" "$message"
+              {
+                printf '### FAILED: %s\n\n' "$name"
+                echo '```text'
+                cat "$log"
+                echo '```'
+                echo
+              } >> "$GITHUB_STEP_SUMMARY"
+            fi
           done
+          printf '\n**%s suites; %s failed.**\n' "$total" "$failed" >> "$GITHUB_STEP_SUMMARY"
+          test "$failed" -eq 0
 
-      - name: Verify notification retention policy
-        run: |
-          cd "$GITHUB_WORKSPACE"
-          HOME="$GITHUB_WORKSPACE" lua "${{ env.AWESOME_CONFIG_DIR }}/tests/test_notification_retention.lua"
-          HOME="$GITHUB_WORKSPACE" lua "${{ env.AWESOME_CONFIG_DIR }}/tests/test_notification_lifecycle.lua"
-          HOME="$GITHUB_WORKSPACE" lua "${{ env.AWESOME_CONFIG_DIR }}/tests/test_notification_card_action.lua"
-          HOME="$GITHUB_WORKSPACE" lua "${{ env.AWESOME_CONFIG_DIR }}/tests/test_notification_suspension.lua"
+      - name: Upload Lua unit-test logs
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: lua-unit-logs-${{ matrix.runtime }}-${{ matrix.config }}
+          path: test-logs/lua-unit
+          if-no-files-found: warn
+          retention-days: 14
 
   awesome-config-load:
     name: AwesomeWM Configuration Load Test (Lua, ${{ matrix.config }})
     strategy:
       fail-fast: false
       matrix:
-        config: [config.lua, config_imac.lua]
+        config: [config.lua, config_lenovo.lua, config_imac.lua]
     env:
-      AWESOME_TEST_PROFILE: ${{ matrix.config == 'config_imac.lua' && 'imac' || 'laptop' }}
+      AWESOME_TEST_PROFILE: ${{ matrix.config == 'config_imac.lua' && 'imac' || matrix.config == 'config_lenovo.lua' && 'lenovo' || 'laptop' }}
     runs-on: ubuntu-latest
     needs:
       [lua-unit-tests, module-imports-test, integration-tests, security-scan]
@@ -343,9 +374,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        config: [config.lua, config_imac.lua]
+        config: [config.lua, config_lenovo.lua, config_imac.lua]
     env:
-      AWESOME_TEST_PROFILE: ${{ matrix.config == 'config_imac.lua' && 'imac' || 'laptop' }}
+      AWESOME_TEST_PROFILE: ${{ matrix.config == 'config_imac.lua' && 'imac' || matrix.config == 'config_lenovo.lua' && 'lenovo' || 'laptop' }}
     runs-on: ubuntu-latest
     needs:
       [lua-unit-tests, module-imports-test, integration-tests, security-scan]
@@ -685,9 +716,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        config: [config.lua, config_imac.lua]
+        config: [config.lua, config_lenovo.lua, config_imac.lua]
     env:
-      AWESOME_TEST_PROFILE: ${{ matrix.config == 'config_imac.lua' && 'imac' || 'laptop' }}
+      AWESOME_TEST_PROFILE: ${{ matrix.config == 'config_imac.lua' && 'imac' || matrix.config == 'config_lenovo.lua' && 'lenovo' || 'laptop' }}
     runs-on: ubuntu-latest
     needs: lua-syntax-check
     container:
@@ -801,9 +832,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        config: [config.lua, config_imac.lua]
+        config: [config.lua, config_lenovo.lua, config_imac.lua]
     env:
-      AWESOME_TEST_PROFILE: ${{ matrix.config == 'config_imac.lua' && 'imac' || 'laptop' }}
+      AWESOME_TEST_PROFILE: ${{ matrix.config == 'config_imac.lua' && 'imac' || matrix.config == 'config_lenovo.lua' && 'lenovo' || 'laptop' }}
     runs-on: ubuntu-latest
     needs: lua-syntax-check
     container:
@@ -898,9 +929,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        config: [config.lua, config_imac.lua]
+        config: [config.lua, config_lenovo.lua, config_imac.lua]
     env:
-      AWESOME_TEST_PROFILE: ${{ matrix.config == 'config_imac.lua' && 'imac' || 'laptop' }}
+      AWESOME_TEST_PROFILE: ${{ matrix.config == 'config_imac.lua' && 'imac' || matrix.config == 'config_lenovo.lua' && 'lenovo' || 'laptop' }}
     runs-on: ubuntu-latest
     needs: [bash-scripts-validation, display-config-test]
     container:
@@ -973,22 +1004,11 @@ jobs:
         run: |
           python -B .config/awesome/tests/test_display_control.py
           python -B .config/awesome/tests/test_audio_control.py
-          HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_display_audio.lua
-          HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_audio_reads.lua
-          HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_audio_monitor.lua
-          HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_bluetooth_lifecycle.lua
-          HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_display_brightness.lua
 
       - name: Test hardware-independent lockscreen power policy
         run: |
           cd "$GITHUB_WORKSPACE"
-          HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_lockscreen_fingerprint.lua
-          HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_lockscreen_auth.lua
-          HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_lockscreen_lifecycle.lua
-          HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_lockscreen_keygrabber.lua
-          HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_lockscreen_recovery_key.lua
           HOME="$GITHUB_WORKSPACE" python -B .config/awesome/tests/test_unlock.py
-          HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_lockscreen_intruder.lua
           HOME="$GITHUB_WORKSPACE" python -B .config/awesome/tests/test_vnc_server.py
           HOME="$GITHUB_WORKSPACE" python -B .config/awesome/tests/test_config_pull.py
           HOME="$GITHUB_WORKSPACE" python -B .config/awesome/tests/test_mail_sync.py
@@ -998,11 +1018,9 @@ jobs:
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_suspend_only_policy.sh
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_top_panel_lifecycle.sh
 
-      - name: Test calendar navigation and holiday cache (no network or credentials)
+      - name: Test holiday cache (no network or credentials)
         run: |
           python -B .config/awesome/tests/test_calendar_holidays.py
-          HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_calendar_navigation.lua
-          HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_calendar_widget.lua
 
       - name: Test system lifecycle configuration
         run: |
@@ -1013,7 +1031,6 @@ jobs:
           python -B .config/scripts/bootstrap/tests/test_packages.py
           python -B .config/awesome/tests/test_topgrade.py
           python -B .config/awesome/tests/test_chromium_theme.py
-          HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_lenovo_profile.lua
           HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_text_sizing.lua
           python -B .config/awesome/tests/test_rofi_sizing.py
           python -B .config/awesome/tests/test_toolkit_cursor.py
@@ -1034,21 +1051,9 @@ jobs:
           cd "$GITHUB_WORKSPACE"
           bash .config/awesome/tests/test_external_display_scripts.sh
 
-      - name: Test screen tag preservation
+      - name: Test screen recorder storage
         run: |
           cd "$GITHUB_WORKSPACE"
-          HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_screen_tag_state.lua
-          HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_screen_manager.lua
-
-      - name: Test screen recorder source selection
-        run: |
-          cd "$GITHUB_WORKSPACE"
-          HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_screen_recorder_state.lua
-          HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_screen_recorder_selector.lua
-          HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_screen_recorder_command.lua
-          HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_screen_recorder_settings.lua
-          HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_screen_recorder_icons.lua
-          HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_screen_recorder_source.lua
           HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_screen_recorder_storage.lua
 
       - name: Test monitor scripts integration
@@ -1197,34 +1202,25 @@ jobs:
     steps:
       - name: Check test results
         run: |
-          echo "╔════════════════════════════════════════╗"
-          echo "║   AwesomeWM Configuration Tests       ║"
-          echo "╚════════════════════════════════════════╝"
-          echo ""
-          echo "✓ Lua Syntax Check: ${{ needs.lua-syntax-check.result }}"
-          echo "✓ Lua Unit Tests: ${{ needs.lua-unit-tests.result }}"
-          echo "✓ Awesome Config Load (Lua): ${{ needs.awesome-config-load.result }}"
-          echo "✓ Awesome Config Load (LuaJIT): ${{ needs.awesome-luajit-config-load.result }}"
-          echo "✓ Workaround Status: ${{ needs.workaround.result }}"
-          echo "✓ Bash Scripts Validation: ${{ needs.bash-scripts-validation.result }}"
-          echo "✓ Display Config Test: ${{ needs.display-config-test.result }}"
-          echo "✓ Module Imports: ${{ needs.module-imports-test.result }}"
-          echo "✓ Integration Tests: ${{ needs.integration-tests.result }}"
-          echo "✓ Security Scan: ${{ needs.security-scan.result }}"
-          echo ""
-
-          if [ "${{ needs.lua-syntax-check.result }}" != "success" ] || \
-             [ "${{ needs.lua-unit-tests.result }}" != "success" ] || \
-             [ "${{ needs.awesome-config-load.result }}" != "success" ] || \
-             [ "${{ needs.awesome-luajit-config-load.result }}" != "success" ] || \
-             [ "${{ needs.workaround.result }}" != "success" ] || \
-             [ "${{ needs.bash-scripts-validation.result }}" != "success" ] || \
-             [ "${{ needs.display-config-test.result }}" != "success" ] || \
-             [ "${{ needs.module-imports-test.result }}" != "success" ] || \
-             [ "${{ needs.integration-tests.result }}" != "success" ] || \
-             [ "${{ needs.security-scan.result }}" != "success" ]; then
-            echo "❌ Some tests failed"
-            exit 1
-          else
-            echo "✓ All tests passed!"
-          fi
+          printf '## AwesomeWM CI results\n\n| Stage | Result |\n| --- | --- |\n' >> "$GITHUB_STEP_SUMMARY"
+          failed=0
+          while IFS='|' read -r stage result; do
+            printf '%s: %s\n' "$stage" "$result"
+            printf '| %s | %s |\n' "$stage" "$result" >> "$GITHUB_STEP_SUMMARY"
+            if [ "$result" != success ]; then
+              failed=$((failed + 1))
+              printf '::error title=Awesome CI failed::%s: %s. See its job annotations and summary.\n' "$stage" "$result"
+            fi
+          done <<'RESULTS'
+          Lua Syntax Check|${{ needs.lua-syntax-check.result }}
+          Lua Unit Tests|${{ needs.lua-unit-tests.result }}
+          Awesome Config Load (Lua)|${{ needs.awesome-config-load.result }}
+          Awesome Config Load (LuaJIT)|${{ needs.awesome-luajit-config-load.result }}
+          Workaround Status|${{ needs.workaround.result }}
+          Bash Scripts Validation|${{ needs.bash-scripts-validation.result }}
+          Display Config Test|${{ needs.display-config-test.result }}
+          Module Imports|${{ needs.module-imports-test.result }}
+          Integration Tests|${{ needs.integration-tests.result }}
+          Security Scan|${{ needs.security-scan.result }}
+          RESULTS
+          test "$failed" -eq 0

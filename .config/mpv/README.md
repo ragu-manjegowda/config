@@ -77,3 +77,12 @@ Logs, screenshots, helper requests, and final state are saved under `/artifacts`
 and uploaded by CI, including when assertions fail. These are behavioral and
 geometry checks, not pixel-perfect screenshot baselines or hardware playback
 certification. Missing GUI dependencies fail rather than skip the suite.
+
+The GUI workflow builds one Arch image, discovers the test cases, then runs
+each as an independent parallel job. Failures do not cancel sibling tests.
+Each job has its own result summary and evidence artifact, including a runner
+log. A final summary job requires the image build and every test to pass. The
+shared image artifact expires after one day; test evidence is retained for
+seven days.
+Failed cases also produce Actions error annotations and include their runner
+output directly in the job summary.

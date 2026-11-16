@@ -2,6 +2,7 @@
 -- luacheck: ignore 122
 local home = assert(os.getenv('HOME'))
 local callbacks = {}
+local signals = {}
 local health_events = {}
 local notifications = 0
 local now = 1000
@@ -32,7 +33,9 @@ package.loaded.wibox = {}
 package.loaded.beautiful = { xresources = { apply_dpi = function(value) return value end } }
 package.loaded.naughty = { notification = function() notifications = notifications + 1 end }
 awesome = {
+    connect_signal = function(name, callback) signals[name] = callback end,
     emit_signal = function(name, value)
+        if signals[name] then signals[name](value) end
         if name == 'module::vpn_health' then health_events[#health_events + 1] = value end
     end,
 }

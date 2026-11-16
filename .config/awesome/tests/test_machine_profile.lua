@@ -5,10 +5,11 @@ package.path = config_dir .. '?.lua;' .. config_dir .. '?/init.lua;' .. package.
 package.loaded['gears.filesystem'] = { get_configuration_dir = function() return config_dir end }
 local config = require('configuration.config')
 local expected = os.getenv('AWESOME_TEST_PROFILE')
+local selected_profile = config.profile or config.machine
 assert(config.machine == 'laptop' or config.machine == 'imac' or config.machine == 'desktop',
     'Configuration must declare a supported machine profile')
-if expected then assert(config.machine == expected, 'CI did not select the requested machine configuration') end
+if expected then assert(selected_profile == expected, 'CI did not select the requested machine configuration') end
 if config.machine == 'imac' then
     assert(config.module.lockscreen.fingerprint_unlock == false, 'iMac must not enable laptop fingerprint authentication')
 end
-print('selected machine profile tests passed: ' .. config.machine)
+print('selected machine profile tests passed: ' .. selected_profile)

@@ -14,28 +14,131 @@ on:
 permissions:
   contents: read
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
-  gui:
-    name: Real mpv and uosc interactions
+  build:
+    name: Build Arch GUI image
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    outputs:
+      cases: ${{ steps.discover.outputs.cases }}
     steps:
       - uses: actions/checkout@v5
         with:
           persist-credentials: false
       - name: Build Arch GUI environment
         run: docker build -f .config/mpv/tests/gui.Dockerfile -t mpv-gui .config/mpv/tests
+      - name: Discover GUI test cases
+        id: discover
+        run: |
+          docker run --rm --network none \
+            -v "$GITHUB_WORKSPACE:/workspace:ro" mpv-gui python3 -c '
+          import json
+          import runpy
+          import unittest
+          namespace = runpy.run_path(".config/mpv/tests/gui_mpv.py")
+          methods = unittest.defaultTestLoader.getTestCaseNames(namespace["MpvGuiTests"])
+          assert methods, "No mpv GUI tests discovered"
+          print(json.dumps([{"id": method, "name": method.removeprefix("test_").replace("_", " "), "method": method} for method in methods]))
+          ' > "$RUNNER_TEMP/mpv-gui-cases.json"
+          echo "cases=$(cat "$RUNNER_TEMP/mpv-gui-cases.json")" >> "$GITHUB_OUTPUT"
+      - name: Export GUI image
+        run: docker save mpv-gui | gzip -1 > "$RUNNER_TEMP/mpv-gui-image.tar.gz"
+      - name: Share GUI image with test jobs
+        uses: actions/upload-artifact@v6
+        with:
+          name: mpv-gui-image
+          path: ${{ runner.temp }}/mpv-gui-image.tar.gz
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 1
+
+  gui:
+    name: ${{ matrix.case.name }}
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        case: ${{ fromJSON(needs.build.outputs.cases) }}
+    env:
+      GUI_TEST: ${{ matrix.case.method }}
+      GUI_EVIDENCE: mpv-gui-${{ matrix.case.id }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Download GUI image
+        uses: actions/download-artifact@v7
+        with:
+          name: mpv-gui-image
+          path: ${{ runner.temp }}/gui-image
+      - name: Load GUI image
+        run: gzip -dc "$RUNNER_TEMP/gui-image/mpv-gui-image.tar.gz" | docker load
       - name: Run isolated GUI tests without network access
+        id: tests
         run: |
           mkdir -p "$RUNNER_TEMP/mpv-gui"
           docker run --rm --network none \
             -v "$GITHUB_WORKSPACE:/workspace:ro" \
-            -v "$RUNNER_TEMP/mpv-gui:/artifacts" mpv-gui
+            -v "$RUNNER_TEMP/mpv-gui:/artifacts" mpv-gui \
+            python3 -B .config/mpv/tests/gui_mpv.py "MpvGuiTests.$GUI_TEST" \
+            2>&1 | tee "$RUNNER_TEMP/mpv-gui/runner.log"
+      - name: Record GUI result
+        if: always()
+        env:
+          TEST_RESULT: ${{ steps.tests.outcome }}
+        run: |
+          {
+            echo "### mpv GUI: $GUI_TEST"
+            echo "- Test result: $TEST_RESULT"
+            echo "- Evidence artifact: $GUI_EVIDENCE"
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$TEST_RESULT" != success ]; then
+            log="$RUNNER_TEMP/mpv-gui/runner.log"
+            printf '::error title=mpv GUI %s::Test result: %s; see the job summary for failure output.\n' "$GUI_TEST" "$TEST_RESULT"
+            if [ -f "$log" ]; then
+              {
+                echo '### Failure output'
+                echo '```text'
+                cat "$log"
+                echo '```'
+              } >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo 'Tests did not produce a runner log; inspect the failed setup/image step.' >> "$GITHUB_STEP_SUMMARY"
+            fi
+          fi
       - name: Upload GUI evidence
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: mpv-gui-evidence
+          name: ${{ env.GUI_EVIDENCE }}
           path: ${{ runner.temp }}/mpv-gui
-          if-no-files-found: ignore
+          if-no-files-found: warn
           retention-days: 7
+
+  summary:
+    name: mpv GUI summary
+    needs: [build, gui]
+    if: always()
+    runs-on: ubuntu-latest
+    env:
+      BUILD_RESULT: ${{ needs.build.result }}
+      GUI_RESULT: ${{ needs.gui.result }}
+    steps:
+      - name: Require all GUI jobs to pass
+        run: |
+          {
+            echo '## mpv GUI checks'
+            echo '| Stage | Result |'
+            echo '| --- | --- |'
+            echo "| Image build | $BUILD_RESULT |"
+            echo "| Independent GUI checks | $GUI_RESULT |"
+            echo 'Each matrix job has its own logs, result summary, and evidence artifact.'
+          } >> "$GITHUB_STEP_SUMMARY"
+          test "$BUILD_RESULT" = success
+          test "$GUI_RESULT" = success

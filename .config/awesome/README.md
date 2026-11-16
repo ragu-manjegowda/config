@@ -647,16 +647,26 @@ helper source tree.
 ## CI/CD
 
 GitHub Actions workflow (`.github/workflows/awesome-wm-tests.yml`) runs on Arch
-Linux containers with 8 test jobs:
+Linux containers. Portable unit tests run across Lua and LuaJIT with Dell laptop,
+Lenovo laptop, and iMac profiles. Configuration loading under both runtimes,
+display checks, module imports, and integration tests also cover all three
+profiles. Runtime-specific weak-signal tests and dependency-heavy
+recorder storage and Pango/LGI tests remain in their dedicated jobs. Wallpaper
+scheduling also runs under LuaJIT across three timezones in integration tests.
+Unit-test failures produce named Actions error annotations, full failure output
+in the job summary, and downloadable per-suite logs. Other suites still run
+after a failure so one broken test does not hide further failures.
+The workflow includes:
 
 1. **Lua Syntax Validation** -- luacheck + luac on all Lua files
-2. **Config Load Test (Lua 5.4)** -- awesome-git from AUR, `awesome --check`, awmtt runtime test
-3. **Config Load Test (LuaJIT)** -- awesome-luajit-git from AUR, awmtt runtime test
-4. **Bash Scripts Validation** -- shellcheck + executability checks on all utilities
-5. **Display Configuration Tests** -- Validates `config.lua` display section and `read-display-config`
-6. **Module Import Tests** -- Tests standalone module imports (config, apps, keys.mod)
-7. **Integration Tests** -- Verifies monitor scripts use `read-display-config`
-8. **Security Scan** -- Checks for hardcoded secrets, API keys, file permissions
+2. **Lua Unit Tests** -- shared suites, including notifications, across the runtime/profile matrix
+3. **Config Load Test (Lua)** -- awesome-git from AUR, `awesome --check`, awmtt runtime test
+4. **Config Load Test (LuaJIT)** -- awesome-luajit-git from AUR, awmtt runtime test
+5. **Bash Scripts Validation** -- shellcheck + executability checks on all utilities
+6. **Display Configuration Tests** -- Validates `config.lua` display section and `read-display-config`
+7. **Module Import Tests** -- Tests standalone module imports (config, apps, keys.mod)
+8. **Integration Tests** -- Verifies monitor scripts use `read-display-config`
+9. **Security Scan** -- Checks for hardcoded secrets, API keys, file permissions
 
 The separate `.github/workflows/awesome-gui-tests.yml` workflow runs real widgets
 under Xvfb in an offline Arch container across machine profiles, resolutions and
@@ -664,6 +674,14 @@ DPI settings. `tests/gui_centers.py` covers interaction and viewport geometry;
 `tests/gui_lifecycle.py` checks collection after screen hotplug and discarded status
 views, hidden Bluetooth polling, and audio-event subprocess bounds. Both suites
 run only when the Awesome configuration or their workflow changes.
+
+The GUI workflow builds one Arch image, then fans out into eight independent
+jobs: centers and lifecycle suites across four profile/display combinations.
+Failures do not cancel sibling jobs. Each job uploads its own runner log and
+GUI evidence and writes a result summary. A final summary job requires the
+image build and every GUI job to pass. The shared image artifact expires after
+one day; test evidence is retained for seven days.
+Failed GUI cases are annotated and their runner output appears in the job summary.
 
 Audio status reads allow one in-flight helper per output/device kind, with one
 fresh follow-up for requests received while it runs. The shared `pactl subscribe`
