@@ -14,6 +14,7 @@ local lockscreen_lifecycle = require('module.lockscreen-lifecycle')
 local recovery_key = require('library.lockscreen-recovery-key')
 local intruder_alert = require('module.lockscreen-intruder')
 local notification_sound = require('library.notification-sound')
+local profile_image = require('library.profile-image')
 
 require('module.dynamic-wallpaper')
 require('module.auto-start')
@@ -225,10 +226,12 @@ end
 
 local profile_imagebox = wibox.widget {
     id = 'user_icon',
-    image = widget_icon_dir .. 'default.svg',
+    image = profile_image.square(widget_icon_dir .. 'default.svg'),
     resize = true,
     forced_height = dpi(130),
     forced_width = dpi(130),
+    halign = 'center',
+    valign = 'center',
     clip_shape = gears.shape.circle,
     widget = wibox.widget.imagebox
 }
@@ -335,12 +338,12 @@ local locker = function(s)
                 stdout = stdout:gsub('%\n', '')
                 if not stdout:match('default') then
                     current_profile_image = stdout
-                    profile_imagebox:set_image(stdout)
+                    profile_imagebox:set_image(profile_image.square(stdout))
                     awesome.emit_signal('module::lockscreen_profile_image', stdout)
                 else
                     local default_image = widget_icon_dir .. 'default.svg'
                     current_profile_image = default_image
-                    profile_imagebox:set_image(default_image)
+                    profile_imagebox:set_image(profile_image.square(default_image))
                     awesome.emit_signal('module::lockscreen_profile_image', default_image)
                 end
             end
@@ -871,10 +874,12 @@ local locker_ext = function(s)
     }
 
     local ext_profile_imagebox = wibox.widget {
-        image = current_profile_image,
+        image = profile_image.square(current_profile_image),
         resize = true,
         forced_height = dpi(130),
         forced_width = dpi(130),
+        halign = 'center',
+        valign = 'center',
         clip_shape = gears.shape.circle,
         widget = wibox.widget.imagebox
     }
@@ -937,7 +942,7 @@ local locker_ext = function(s)
         'module::lockscreen_profile_image',
         function(image)
             if not is_active() then return end
-            ext_profile_imagebox:set_image(image)
+            ext_profile_imagebox:set_image(profile_image.square(image))
         end
     )
 

@@ -5,6 +5,7 @@ local naughty = require('naughty')
 local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 local apps = require('configuration.apps')
+local profile_image = require('library.profile-image')
 local config_dir = gears.filesystem.get_configuration_dir()
 local widget_icon_dir = config_dir .. 'configuration/user-profile/'
 
@@ -37,10 +38,13 @@ local create_profile = function()
     local profile_imagebox = wibox.widget {
         {
             id = 'icon',
-            image = widget_icon_dir .. 'default.svg',
+            image = profile_image.square(widget_icon_dir .. 'default.svg'),
             widget = wibox.widget.imagebox,
             resize = true,
             forced_height = dpi(28),
+            forced_width = dpi(28),
+            halign = 'center',
+            valign = 'center',
             clip_shape = function(cr, width, height)
                 gears.shape.rounded_rect(cr, width, height, beautiful.groups_radius)
             end
@@ -89,9 +93,9 @@ local create_profile = function()
             function(stdout)
                 stdout = stdout:gsub('%\n', '')
                 if not stdout:match('default') then
-                    profile_imagebox.icon:set_image(stdout)
+                    profile_imagebox.icon:set_image(profile_image.square(stdout))
                 else
-                    profile_imagebox.icon:set_image(widget_icon_dir .. 'default.svg')
+                    profile_imagebox.icon:set_image(profile_image.square(widget_icon_dir .. 'default.svg'))
                 end
             end
         )

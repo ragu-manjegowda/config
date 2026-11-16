@@ -444,6 +444,60 @@ class CenterGuiTests(unittest.TestCase):
             self.wait(last_visible, marker + " reachable by mouse-wheel scrolling")
         self.capture("last-list-items")
 
+    def test_profile_avatar_crop_and_square_slot(self):
+        self.open("control")
+        self.lua(
+            """
+            local cairo = require('lgi').cairo
+            local profile = require('library.profile-image')
+            local panel = require('awful').screen.focused().control_center
+            local avatar
+            local size = require('beautiful').xresources.apply_dpi(28)
+            for _, widget in ipairs(panel.widget:get_all_children()) do
+                if widget.get_source_width and widget.forced_height == size and widget._private.clip_shape then
+                    avatar = widget
+                    break
+                end
+            end
+            assert(avatar, 'Control Center avatar not found')
+            assert(avatar.forced_width == avatar.forced_height, 'Avatar slot is not square')
+            assert(avatar:get_source_width() == avatar:get_source_height(), 'Default avatar is not square')
+            local original = avatar._private.original_image
+            local directory = assert(os.getenv('XDG_CACHE_HOME')) .. '/'
+            local function contents(path)
+                local input = assert(io.open(path, 'rb'))
+                local data = input:read('*a')
+                input:close()
+                return data
+            end
+            local expected = cairo.ImageSurface.create(cairo.Format.ARGB32, 60, 60)
+            local expected_context = cairo.Context(expected)
+            expected_context:set_source_rgb(0, 1, 0)
+            expected_context:paint()
+            expected:write_to_png(directory .. 'avatar-expected.png')
+            for _, dimensions in ipairs({ { 60, 100 }, { 100, 60 }, { 60, 60 } }) do
+                local width, height = dimensions[1], dimensions[2]
+                local image = cairo.ImageSurface.create(cairo.Format.ARGB32, width, height)
+                local context = cairo.Context(image)
+                context:set_source_rgb(1, 0, 0)
+                context:paint()
+                context:set_source_rgb(0, 1, 0)
+                context:rectangle((width - 60) / 2, (height - 60) / 2, 60, 60)
+                context:fill()
+                image:write_to_png(directory .. 'avatar-source.png')
+                local cropped = profile.square(directory .. 'avatar-source.png')
+                assert(cropped:get_width() == 60 and cropped:get_height() == 60)
+                cropped:write_to_png(directory .. 'avatar-actual.png')
+                assert(contents(directory .. 'avatar-actual.png') == contents(directory .. 'avatar-expected.png'),
+                    'Avatar is not center-cropped or reuses stale pixels')
+                avatar:set_image(cropped)
+                assert(avatar:get_source_width() == avatar:get_source_height())
+            end
+            avatar:set_image(original)
+            """
+        )
+        self.assert_bounds(self.state(), "control")
+
     def test_weather_fallback_and_close_during_refresh(self):
         self.lua("gui_test.scenario = 'fallback'")
         self.open("info")
