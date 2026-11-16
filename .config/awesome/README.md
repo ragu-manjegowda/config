@@ -205,8 +205,11 @@ system-wide controls such as Bluetooth, airplane mode and power profiles manage
 the host rather than a particular screen.
 
 After resume, audio controls refresh and the monitor microphone is reconciled
-through the same serialized, device-targeted queue. Recovery retries for at most
-ten seconds while the USB source returns. An unmuted source gets a brief
+through the same serialized, device-targeted queue. Startup, unlock, display wake
+and recreation of the selected USB source also request reconciliation when the
+monitor is present. Unrelated sources and ordinary mute-change events do not
+trigger recovery. Recovery retries for at most ten one-second ticks while the
+USB source returns. An unmuted source gets a brief
 mute/unmute transition to clear monitor firmware mute that is invisible to the
 PipeWire/ALSA cache; a software-muted source remains muted. This does not change
 the default source, redirect to the laptop microphone, or display an OSD.
@@ -654,3 +657,16 @@ Linux containers with 8 test jobs:
 6. **Module Import Tests** -- Tests standalone module imports (config, apps, keys.mod)
 7. **Integration Tests** -- Verifies monitor scripts use `read-display-config`
 8. **Security Scan** -- Checks for hardcoded secrets, API keys, file permissions
+
+The separate `.github/workflows/awesome-gui-tests.yml` workflow runs real widgets
+under Xvfb in an offline Arch container across machine profiles, resolutions and
+DPI settings. `tests/gui_centers.py` covers interaction and viewport geometry;
+`tests/gui_lifecycle.py` checks collection after screen hotplug and discarded status
+views, hidden Bluetooth polling, and audio-event subprocess bounds. Both suites
+run only when the Awesome configuration or their workflow changes.
+
+Audio status reads allow one in-flight helper per output/device kind, with one
+fresh follow-up for requests received while it runs. The shared `pactl subscribe`
+process reconnects with exponential backoff capped at 30 seconds and terminates
+only its own child on exit. Repeated desktop decoration reuses center popups;
+screen removal disconnects Info Center and notification-view callbacks.

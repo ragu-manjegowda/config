@@ -51,7 +51,7 @@ vol_osd_slider:connect_signal(
     'property::value',
     function()
         local volume_level = vol_osd_slider:get_value()
-        osd_value.text = volume_level .. '%'
+        osd_value.text = string.format('%d%%', math.floor(volume_level + 0.5))
         if is_programmatic_update then
             return
         end

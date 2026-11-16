@@ -152,6 +152,7 @@ grep -Fq 'module::fingerprint_stop' "$XIDLEHOOK_TEST_LOG"
 grep -Fq 'xset dpms force off' "$XIDLEHOOK_TEST_LOG"
 grep -Fq 'xset dpms force on' "$XIDLEHOOK_TEST_LOG"
 grep -Fq 'module::fingerprint_start' "$XIDLEHOOK_TEST_LOG"
+grep -Fq 'module::display_woke' "$XIDLEHOOK_TEST_LOG"
 
 cat > "$tmp_dir/xrandr" <<'EOF'
 #!/usr/bin/env bash

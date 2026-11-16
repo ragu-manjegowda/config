@@ -93,6 +93,7 @@ def describe(node, kind, scope):
         "available": True,
         "kind": kind,
         "scope": scope,
+        "index": node.get("index"),
         "name": node["name"],
         "description": node.get("description", node["name"]),
         "volume": volume,

@@ -16,6 +16,13 @@ local namespace_connecting_icon = config_dir .. 'widget/vpn/icons/prisma-access-
 local current_status = 'disconnected'
 local current_mode = 'none'
 local current_health = 'unknown'
+local views = setmetatable({}, { __mode = 'k' })
+awesome.connect_signal('module::vpn_status', function(status, mode)
+    for view in pairs(views) do view.update_status(status, mode) end
+end)
+awesome.connect_signal('module::vpn_health', function()
+    for view in pairs(views) do view.update_status(current_status, current_mode) end
+end)
 local health_failures = 0
 local health_check_running = false
 local health_reported = false
@@ -180,10 +187,8 @@ local return_button = function()
         end
     end
 
-    awesome.connect_signal('module::vpn_status', update_vpn)
-    awesome.connect_signal('module::vpn_health', function()
-        update_vpn(current_status, current_mode)
-    end)
+    vpn_widget.update_status = update_vpn
+    views[vpn_widget] = true
     update_vpn(current_status, current_mode)
 
     return vpn_widget

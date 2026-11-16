@@ -37,7 +37,12 @@ jobs:
             docker run --rm --network none \
               -e GUI_PROFILE="$profile" -e GUI_SCREEN="$screen" \
               -v "$GITHUB_WORKSPACE:/workspace:ro" \
-              -v "$artifacts:/artifacts" awesome-gui || status=1
+              -v "$artifacts:/artifacts" awesome-gui sh -c '
+                status=0
+                python3 -B .config/awesome/tests/gui_centers.py || status=1
+                python3 -B .config/awesome/tests/gui_lifecycle.py || status=1
+                exit "$status"
+              ' || status=1
           done
           exit "$status"
       - name: Upload GUI evidence

@@ -2,7 +2,6 @@ local awful = require('awful')
 local wibox = require('wibox')
 local gears = require('gears')
 local beautiful = require('beautiful')
-local watch = awful.widget.watch
 local dpi = beautiful.xresources.apply_dpi
 local clickable_container = require('widget.clickable-container')
 local config_dir = gears.filesystem.get_configuration_dir()
@@ -73,8 +72,14 @@ local check_device_state = function(stdout)
     update_widget()
 end
 
+local refreshing = false
 local function refresh_device_state()
-    awful.spawn.easy_async({ 'rfkill', 'list', 'bluetooth' }, check_device_state)
+    if refreshing then return end
+    refreshing = true
+    awful.spawn.easy_async({ 'rfkill', 'list', 'bluetooth' }, function(stdout)
+        refreshing = false
+        check_device_state(stdout)
+    end)
 end
 
 local power_on_cmd = [[
@@ -159,14 +164,10 @@ action_info:buttons(
     )
 )
 
-local _, bluetooth_timer = watch(
-    'rfkill list bluetooth',
-    5,
-    function(_, stdout)
-        check_device_state(stdout)
-    end
-)
-bluetooth_timer:stop()
+local bluetooth_timer = gears.timer {
+    timeout = 5,
+    callback = refresh_device_state,
+}
 
 awesome.connect_signal('control_center::visibility', function(visible)
     if visible then

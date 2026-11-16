@@ -126,6 +126,14 @@ class AudioControlTests(unittest.TestCase):
         self.assertFalse(self.mic["mute"])
         self.assertIn(("set-source-mute", "monitor-mic", "toggle"), self.calls)
 
+    def test_source_status_identifies_the_selected_hotplug_endpoint(self):
+        self.mic["index"] = 10
+        self.monitor_mic["index"] = 283
+        state = self.control(kind="source")
+        self.assertEqual(state["index"], 283)
+        self.assertEqual(state["name"], "monitor-mic")
+        self.assertFalse(any(call[0].startswith("set-") for call in self.calls))
+
     def test_missing_external_never_changes_global_default(self):
         self.nodes["source"] = [self.mic]
         self.assertFalse(self.control(kind="source", action="mute")["available"])

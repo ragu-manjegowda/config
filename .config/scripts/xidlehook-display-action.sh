@@ -13,6 +13,7 @@ case "$action" in
         ;;
     on)
         "$xset_bin" dpms force on
+        "$awesome_client_bin" 'awesome.emit_signal("module::display_woke")' >/dev/null || true
         "$awesome_client_bin" 'awesome.emit_signal("module::fingerprint_start")' >/dev/null || true
         ;;
     *)

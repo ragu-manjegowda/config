@@ -7,7 +7,7 @@ local config_dir = gears.filesystem.get_configuration_dir()
 local widget_icon_dir = config_dir .. 'widget/tray-toggle/icons/'
 
 -- Keep track of all widget instances
-local widget_instances = {}
+local widget_instances = setmetatable({}, { __mode = 'k' })
 
 -- Setup global signal handler (only once)
 if not awesome._tray_toggle_signal_setup then
@@ -30,10 +30,10 @@ if not awesome._tray_toggle_signal_setup then
 
                 -- Update all widget instances
                 local icon_name = systray_screen.systray.visible and 'right-arrow.svg' or 'left-arrow.svg'
-                for _, w in ipairs(widget_instances) do
-                    if w.icon then
+                for instance in pairs(widget_instances) do
+                    if instance.icon then
                         ---@diagnostic disable-next-line: param-type-mismatch
-                        w.icon:set_image(gears.surface.load_uncached(widget_icon_dir .. icon_name))
+                        instance.icon:set_image(gears.surface.load_uncached(widget_icon_dir .. icon_name))
                     end
                 end
             end
@@ -76,7 +76,7 @@ return function()
     )
 
     -- Store this widget instance
-    table.insert(widget_instances, widget)
+    widget_instances[widget] = true
 
     -- Update icon on start-up
     local systray_screen = nil

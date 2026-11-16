@@ -10,10 +10,10 @@ screen.connect_signal(
     'request::desktop_decoration',
     function(s)
         s.top_panel = top_panel(s)
-        s.control_center = control_center(s)
-        s.info_center = info_center(s)
-        s.calendar_center = calendar_center(s)
-        s.playerctl_center = playerctl_center(s)
+        s.control_center = s.control_center or control_center(s)
+        s.info_center = s.info_center or info_center(s)
+        s.calendar_center = s.calendar_center or calendar_center(s)
+        s.playerctl_center = s.playerctl_center or playerctl_center(s)
         s.control_center_show_again = false
         s.info_center_show_again = false
         s.calendar_center_show_again = false

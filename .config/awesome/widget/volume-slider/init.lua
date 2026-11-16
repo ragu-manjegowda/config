@@ -75,6 +75,16 @@ slider_hover.attach(volume_slider)
 local is_programmatic_update = false
 local refresh_generation = 0
 local current_state = { available = false }
+local myvolumemeter_t = awful.tooltip { text = 'Audio device unavailable' }
+
+local function update_tooltip()
+    if current_state.available then
+        myvolumemeter_t.text = string.format('Volume value = %d%%%s',
+            math.floor(volume_slider:get_value() + 0.5), current_state.muted and ' (muted)' or '')
+    else
+        myvolumemeter_t.text = 'Audio device unavailable'
+    end
+end
 
 volume_slider:connect_signal(
     'property::value',
@@ -85,6 +95,7 @@ volume_slider:connect_signal(
         end
 
         local volume_level = volume_slider:get_value()
+        update_tooltip()
         refresh_generation = refresh_generation + 1
         local output = display_audio.output()
         display_audio.set(output, volume_level)
@@ -111,6 +122,7 @@ local function apply_state(state, output)
     is_programmatic_update = true
     volume_slider:set_value(state.available and math.min(100, state.volume) or 0)
     is_programmatic_update = false
+    update_tooltip()
     volume_icon:set_image(state.available and not state.muted and icons.volume or icons.volume_muted)
     awesome.emit_signal('module::volume_osd:update_icon', not state.available or state.muted, output)
     awesome.emit_signal('module::volume_osd', state.available and state.volume or 0, output)
@@ -172,6 +184,7 @@ awesome.connect_signal(
         is_programmatic_update = true
         volume_slider:set_value(tonumber(value))
         is_programmatic_update = false
+        update_tooltip()
     end
 )
 
@@ -214,13 +227,11 @@ local volume_setting = wibox.widget {
     }
 }
 
-local myvolumemeter_t = awful.tooltip {}
-
 myvolumemeter_t:add_to_object(volume_setting)
 
 volume_setting:connect_signal('mouse::enter', function()
     update_slider(false)
-    myvolumemeter_t.text = current_state.description or 'Audio status unavailable'
+    update_tooltip()
 end)
 
 return volume_setting

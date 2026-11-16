@@ -24,7 +24,7 @@ def stop(process):
             process.wait(timeout=5)
 
 
-class CenterGuiTests(unittest.TestCase):
+class CenterGuiFixture(unittest.TestCase):
     def setUp(self):
         for executable in (
             "Xvfb",
@@ -260,6 +260,8 @@ class CenterGuiTests(unittest.TestCase):
                 + str(self.state()["errors"]),
             )
 
+
+class CenterGuiTests(CenterGuiFixture):
     def test_centers_fit_and_real_keymaps_are_exclusive(self):
         for name, other in (("control", "info"), ("info", "control")):
             state = self.open(name)

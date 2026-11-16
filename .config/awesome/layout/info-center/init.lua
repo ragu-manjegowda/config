@@ -68,16 +68,19 @@ local info_center = function(s)
     end
     panel:connect_signal('property::maximum_height', size_sections)
     panel:connect_signal('property::width', size_sections)
-    local queued = false
+    local queued, disposed = false, false
+    local section_handlers = {}
     for _, section in ipairs(sections) do
-        section:connect_signal('widget::layout_changed', function()
-            if sizing or queued or not panel.visible then return end
+        local function layout_changed()
+            if disposed or sizing or queued or not panel.visible then return end
             queued = true
             gears.timer.delayed_call(function()
                 queued = false
-                if panel.visible then size_sections() end
+                if not disposed and panel.visible then size_sections() end
             end)
-        end)
+        end
+        section_handlers[section] = layout_changed
+        section:connect_signal('widget::layout_changed', layout_changed)
     end
 
     panel.opened = false
@@ -139,6 +142,11 @@ local info_center = function(s)
     removed_handler = function(removed)
         if removed ~= s then
             return
+        end
+        disposed = true
+        panel.visible = false
+        for section, handler in pairs(section_handlers) do
+            section:disconnect_signal('widget::layout_changed', handler)
         end
         open_centers[panel] = nil
         center_manager.close(panel)

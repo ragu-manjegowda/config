@@ -18,6 +18,10 @@ local refresh_in_progress = false
 local refresh_pending = false
 local battery_timer
 local refresh_timer
+local views = setmetatable({}, { __mode = 'k' })
+awesome.connect_signal('module::kbd_battery_status', function(connected, left, right)
+    for view in pairs(views) do view.update_status(connected, left, right) end
+end)
 
 local function publish(connected, left, right)
     local changed = current.connected ~= connected or
@@ -224,7 +228,8 @@ local return_button = function()
     end
 
     battery_button:connect_signal('button::press', schedule_refresh)
-    awesome.connect_signal('module::kbd_battery_status', update_display)
+    battery_button.update_status = update_display
+    views[battery_button] = true
     update_display(current.connected, current.left, current.right)
 
     return battery_button

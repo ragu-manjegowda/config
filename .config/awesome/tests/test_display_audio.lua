@@ -5,6 +5,7 @@ local primary = { valid = true, outputs = { ['eDP-1'] = true }, geometry = { wid
 local external = { valid = true, outputs = { ['DP-1-1'] = true }, geometry = { width = 1000, height = 700 } }
 local focused = external
 local calls, timers, signals, events, nodes, decorations = {}, {}, {}, {}, {}, {}
+local textboxes, tooltips = {}, {}
 awesome = {
     connect_signal = function(name, fn)
         signals[name] = signals[name] or {}; table.insert(signals[name], fn)
@@ -21,6 +22,7 @@ local function node(spec)
         n[k] = type(k) == 'number' and type(v) == 'table' and node(v) or v
         if type(k) == 'number' then n.children[#n.children + 1] = n[k] end
     end
+    if n.text ~= nil then textboxes[#textboxes + 1] = n end
     function n:connect_signal(name, fn) self.handlers[name] = fn end
 
     function n:buttons(value) self.bindings = value end
@@ -81,7 +83,11 @@ package.loaded.gears = {
 package.loaded.awful = {
     screen = { focused = function() return focused end },
     spawn = { easy_async = function(argv, callback) calls[#calls + 1] = { argv = argv, callback = callback } end },
-    tooltip = function() return node() end,
+    tooltip = function(spec)
+        local tooltip = node(spec)
+        tooltips[#tooltips + 1] = tooltip
+        return tooltip
+    end,
     popup = function(spec) return node(spec) end,
     placement = { bottom = function() end },
     button = function(_, _, _, fn) return { fn = fn } end,
@@ -116,9 +122,19 @@ package.loaded['configuration.config'] = {
     widget = { audio = { primary_device_pattern = 'internal-card', external_device_pattern = 'usb-Monitor-*' } }
 }
 
-package.loaded['library.audio-monitor'] = { connect_signal = function() end }
+local audio_signals = {}
+package.loaded['library.audio-monitor'] = {
+    connect_signal = function(_, name, callback)
+        local previous = audio_signals[name]
+        audio_signals[name] = function(...)
+            if previous then previous(...) end
+            callback(...)
+        end
+    end,
+}
 screen = { connect_signal = function(_, fn) decorations[#decorations + 1] = fn end }
 local audio = require('library.display-audio')
+local startup_recovery = timers[#timers]
 local json = require('library.json')
 local function flush()
     timers[1].started = false; timers[1].callback()
@@ -136,15 +152,40 @@ reply(1, state(70, false)); flush()
 assert(calls[2].argv[6] == 'primary')
 reply(2, state(40, false))
 
-require('widget.volume-slider')
+local volume_widget = require('widget.volume-slider')
+local volume_tooltip = tooltips[#tooltips]
 local microphone = require('widget.microphone-toggle')
-require('module.volume-osd'); require('module.mic-osd')
+require('module.volume-osd')
+local volume_text = textboxes[#textboxes]
+assert(volume_text.text == '0%')
+require('module.mic-osd')
+local volume_osd_timer, mic_osd_timer = timers[#timers - 1], timers[#timers]
 for _, decorate in ipairs(decorations) do
     decorate(primary); decorate(external)
 end
 reply(3, state(34, true)); reply(4, state(100, false))
 local slider, osd = assert(nodes.volume_slider), assert(nodes.vol_osd_slider)
 assert(slider.value == 34 and not timers[1].started, 'status refresh issued hardware write')
+for _, fixture in ipairs({
+    { 0, '0%' }, { 34.499, '34%' }, { 34.5, '35%' },
+    { 34.9993896484375, '35%' }, { 99.999, '100%' }, { 100, '100%' },
+}) do
+    awesome.emit_signal('widget::audio:changed', 'eDP-1', 'sink', state(fixture[1], false))
+    assert(volume_text.text == fixture[2] and volume_tooltip.text == 'Volume value = ' .. fixture[2],
+        'Readback fractions must display as the same rounded percentage in the OSD and tooltip')
+    assert(slider.value == fixture[1] and not timers[1].started,
+        'Formatting must preserve raw volume precision and must not write to hardware')
+end
+awesome.emit_signal('widget::audio:changed', 'eDP-1', 'sink', state(34, true))
+assert(volume_tooltip.text == 'Volume value = 34% (muted)')
+volume_widget.handlers['mouse::enter']()
+reply(#calls, state(51.999, false))
+assert(volume_tooltip.text == 'Volume value = 52%' and volume_text.text == '52%',
+    'A hover query must update the tooltip when its asynchronous reply arrives')
+awesome.emit_signal('widget::volume:update', 66.6, 'eDP-1')
+assert(volume_tooltip.text == 'Volume value = 67%' and not timers[1].started,
+    'OSD-origin slider synchronization must refresh the tooltip without a second hardware write')
+awesome.emit_signal('widget::audio:changed', 'eDP-1', 'sink', state(34, true))
 focused = external
 awesome.emit_signal('control_center::visibility', true)
 local old_read = #calls - 1
@@ -160,12 +201,12 @@ assert(calls[#calls].argv[4] == 'source' and calls[#calls].argv[12] == 'mute')
 reply(#calls, state(100, true))
 assert(external.mic_osd_overlay.visible)
 focused = primary
-timers[3].callback()
+mic_osd_timer.callback()
 assert(not external.mic_osd_overlay.visible, 'microphone expiry hid wrong screen')
 focused = external
 awesome.emit_signal('module::volume_osd:show', true)
 focused = primary
-timers[2].callback()
+volume_osd_timer.callback()
 assert(not external.volume_osd_overlay.visible, 'volume expiry hid wrong screen')
 focused = external
 awesome.emit_signal('module::volume_osd:show', true)
@@ -173,6 +214,7 @@ osd:set_value(45); flush()
 assert(calls[#calls].argv[6] == 'external', 'OSD drag lost its original device')
 reply(#calls, { available = false }, 1)
 assert(slider.value == 0, 'unavailable monitor was represented as a working volume control')
+assert(volume_tooltip.text == 'Audio device unavailable', 'An absent device must not show a stale percentage')
 
 focused = primary
 awesome.emit_signal('module::sleep_resumed')
@@ -202,4 +244,44 @@ for attempt = 1, 10 do
     assert(recovery.callback() == (attempt < 10), 'Missing-device retries must be bounded')
     flush(); reply(#calls, { available = false }, 1)
 end
-print('focused audio queue, widget, unavailable-state and OSD tests passed')
+local function complete_recovery_probe(index, probe_call)
+    local selected = state(100, false)
+    selected.index = index
+    reply(probe_call or #calls, selected)
+    local retry = timers[#timers]
+    assert(retry.timeout == 1 and retry.started)
+    retry.callback(); flush()
+    assert(calls[#calls].argv[6] == 'external' and calls[#calls].argv[12] == 'resync')
+    reply(#calls, selected)
+    assert(not retry.started)
+end
+
+for _, trigger in ipairs({ 'module::display_woke', 'module::unlocked' }) do
+    local probe_call = #calls + 1
+    awesome.emit_signal(trigger)
+    complete_recovery_probe(283, probe_call)
+end
+assert(startup_recovery.timeout == 3 and not startup_recovery.callback())
+complete_recovery_probe(283)
+
+local before_timers = #timers
+audio_signals.source(nil, 'change', 283)
+audio_signals.source(nil, 'remove', 283)
+assert(#timers == before_timers and not timers[1].started,
+    'Mute-change events must not start a feedback loop or removal recovery')
+audio_signals.source(nil, 'new', 283)
+assert(not timers[#timers].callback())
+complete_recovery_probe(283)
+
+audio_signals.source(nil, 'new', 999)
+assert(not timers[#timers].callback())
+local unmatched_timers = #timers
+local selected = state(100, false)
+selected.index = 283
+reply(#calls, selected)
+assert(#timers == unmatched_timers and not timers[1].started,
+    'An unrelated new source must not cause a monitor mute transition')
+awesome.emit_signal('module::display_woke')
+reply(#calls, { available = false })
+assert(#timers == unmatched_timers, 'Wake without a monitor must not start needless retries')
+print('focused audio queue, wake/startup/hotplug recovery, widget and OSD tests passed')

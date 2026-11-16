@@ -103,6 +103,10 @@ local function request(command, callback)
         stdout = 'off'
     elseif text:find('power%-profile') then
         stdout = 'balanced'
+    elseif text:find('utilities/network/prisma-vpn-status', 1, true) then
+        stdout = 'disconnected none'
+    elseif text:find('utilities/input/read-kbd-battery', 1, true) then
+        stdout = 'disconnected'
     elseif text:find('getent passwd', 1, true) then
         stdout = 'GUI Fixture User'
     elseif text:find('utilities/desktop/profile-image', 1, true) then

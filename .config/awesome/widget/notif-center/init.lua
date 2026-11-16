@@ -194,7 +194,8 @@ local notif_center = function(s)
 
     s.notifbox_layout:connect_signal('widget::layout_changed', on_layout_changed)
 
-    screen.connect_signal('removed', function(removed)
+    local removed_handler
+    removed_handler = function(removed)
         if removed ~= s then
             return
         end
@@ -202,7 +203,9 @@ local notif_center = function(s)
         screen_active = false
         notif_manager.remove_view(notif_core)
         notif_core.notifbox_layout:disconnect_signal('widget::layout_changed', on_layout_changed)
-    end)
+        screen.disconnect_signal('removed', removed_handler)
+    end
+    screen.connect_signal('removed', removed_handler)
 
     -- Stack scrollbar on top of clipped content
     local scroll_area = wibox.widget {

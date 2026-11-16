@@ -3,10 +3,12 @@ local gears = require('gears')
 local json = require('library.json')
 local config = require('configuration.config')
 local display_brightness = require('library.display-brightness')
+local audio_monitor = require('library.audio-monitor')
 local helper = gears.filesystem.get_configuration_dir() .. 'utilities/desktop/audio-control'
 local M = { output = display_brightness.output }
 local queue, active = {}, nil
 local timer
+local reads = {}
 
 function M.scope(output)
     return output == config.display.primary.name and 'primary' or 'external'
@@ -39,11 +41,27 @@ function M.pending(output, kind)
     return false
 end
 
-function M.read(output, kind, callback)
+local function read_status(output, kind, key, request)
+    reads[key] = request
     awful.spawn.easy_async(command(output, kind, 'status'), function(stdout, _, _, code)
         local state = code == 0 and decode(stdout) or { available = false, description = 'Audio query failed' }
-        callback(state)
+        reads[key] = nil
+        if request.pending then
+            read_status(output, kind, key, { callbacks = request.pending })
+        end
+        for _, callback in ipairs(request.callbacks) do callback(state) end
     end)
+end
+
+function M.read(output, kind, callback)
+    local key = output .. '\0' .. kind
+    local request = reads[key]
+    if request then
+        request.pending = request.pending or {}
+        request.pending[#request.pending + 1] = callback
+    else
+        read_status(output, kind, key, { callbacks = { callback } })
+    end
 end
 
 local function apply_next()
@@ -92,7 +110,7 @@ function M.toggle(kind) enqueue(M.output(), kind, 'mute', nil, true) end
 
 local resume_generation = 0
 local resume_timer
-awesome.connect_signal('module::sleep_resumed', function()
+function M.reconcile_monitor()
     resume_generation = resume_generation + 1
     if resume_timer then resume_timer:stop() end
     local output = config.display.external and config.display.external.name
@@ -118,6 +136,32 @@ awesome.connect_signal('module::sleep_resumed', function()
         end
         return ticks < 10
     end)
+end
+
+local function reconcile_if_present(expected_index)
+    local output = config.display.external and config.display.external.name
+    local pattern = (config.widget.audio or {}).external_device_pattern
+    if not output or not pattern or pattern == '' then return end
+    M.read(output, 'source', function(state)
+        if state.available and (not expected_index or state.index == expected_index) then
+            M.reconcile_monitor()
+        end
+    end)
+end
+
+awesome.connect_signal('module::sleep_resumed', M.reconcile_monitor)
+awesome.connect_signal('module::display_woke', function() reconcile_if_present() end)
+awesome.connect_signal('module::unlocked', function() reconcile_if_present() end)
+audio_monitor:connect_signal('source', function(_, action, index)
+    if action ~= 'new' then return end -- Our mute writes emit changes, not new sources.
+    gears.timer.start_new(1, function()
+        reconcile_if_present(index)
+        return false
+    end)
+end)
+gears.timer.start_new(3, function()
+    reconcile_if_present()
+    return false
 end)
 
 return M

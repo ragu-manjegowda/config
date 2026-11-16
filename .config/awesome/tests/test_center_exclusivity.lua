@@ -25,6 +25,8 @@ local function widget(args)
 
     function value:connect_signal() end
 
+    function value:disconnect_signal() end
+
     function value:get_children_by_id()
         return { { visible = false } }
     end
@@ -87,9 +89,11 @@ for _, name in ipairs({
 end
 
 local removed_handlers = {}
+local decoration_handler
 screen = {
     connect_signal = function(name, handler)
         if name == 'removed' then removed_handlers[#removed_handlers + 1] = handler end
+        if name == 'request::desktop_decoration' then decoration_handler = handler end
     end,
     disconnect_signal = function() end,
 }
@@ -188,6 +192,13 @@ setmetatable(screen, {
     end
 })
 require('layout.init')
+local existing_centers = {}
+for _, name in ipairs(names) do existing_centers[name] = first[name] end
+decoration_handler(first)
+decoration_handler(first)
+for _, name in ipairs(names) do
+    assert(first[name] == existing_centers[name], 'Repeated decoration recreated ' .. name)
+end
 
 first.selected_tag = { clients = function() return {} end }
 focused = first
