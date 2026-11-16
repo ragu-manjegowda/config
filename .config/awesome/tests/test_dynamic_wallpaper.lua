@@ -9,6 +9,11 @@ local current_wallpaper
 local applied = {}
 local panorama, spans = false, 0
 local timer
+local watchdog
+local monotonic = 0
+local render_error, missing_files
+local errors, warnings = {}, {}
+local timer_count = 0
 local signals = {}
 local beautiful = {}
 local names = { 'am_08.jpg', 'pm_02.jpg', 'pm_03.jpg', 'AUTHORS' }
@@ -40,18 +45,28 @@ local Gio = {
     },
 }
 
-package.loaded.lgi = { Gio = Gio }
+package.loaded.lgi = {
+    Gio = Gio,
+    GLib = { get_monotonic_time = function() return monotonic * 1000000 end },
+}
 local timer_factory = setmetatable({ delayed_call = function(callback) callback() end }, {
     __call = function(_, settings)
-        timer = settings
-        function timer:again() self.restarted = true end
-        return timer
+        timer_count = timer_count + 1
+        settings.started = settings.autostart or false
+        function settings:again()
+            self.started, self.restarted = true, true
+            self.restarts = (self.restarts or 0) + 1
+        end
+        function settings:stop() self.started = false end
+        if settings.timeout == 30 then watchdog = settings else timer = settings end
+        return settings
     end,
 })
 package.loaded.gears = {
     filesystem = {
         get_configuration_dir = function() return home .. '/.config/awesome/' end,
         file_readable = function(path)
+            if missing_files then return false end
             local input = io.open(path, 'r')
             if input then input:close(); return true end
             return false
@@ -59,13 +74,17 @@ package.loaded.gears = {
     },
     wallpaper = {
         maximized = function(path, s, ignore_aspect)
+            if render_error then error(render_error) end
             assert((s ~= nil) == (not panorama), 'Wallpaper scope does not match the panorama setting')
             assert(ignore_aspect == false, 'Wallpaper aspect ratio must be preserved')
             if s then applied[s] = path else spans = spans + 1 end
             current_wallpaper = path
         end
     },
-    debug = { print_error = function(message) error(message) end },
+    debug = {
+        print_error = function(message) errors[#errors + 1] = message end,
+        print_warning = function(message) warnings[#warnings + 1] = message end,
+    },
     timer = timer_factory,
 }
 package.loaded.beautiful = beautiful
@@ -119,7 +138,7 @@ local wallpaper = dofile(home .. '/.config/awesome/module/dynamic-wallpaper.lua'
 assert(get_wallpaper_name() == 'pm_02.jpg', 'startup did not select the afternoon wallpaper')
 assert(current_wallpaper == wallpaper_dir .. 'pm_02.jpg', 'startup did not apply the selected wallpaper')
 assert(beautiful.wallpaper == current_wallpaper, 'new screens lost the selected wallpaper')
-assert(timer.timeout == 1800 and timer.autostart, 'next wallpaper change was not scheduled')
+assert(timer.timeout == 1800 and timer.started, 'next wallpaper change was not scheduled')
 assert(applied[primary] == current_wallpaper and applied[external] == current_wallpaper,
     'Each screen must get an independent aspect-preserving wallpaper')
 local update_count = background_updates
@@ -141,6 +160,75 @@ assert(timer.restarted and timer.timeout == 17 * 3600, 'timer was not reschedule
 assert(applied[primary] == current_wallpaper and applied[external] == current_wallpaper,
     'Scheduled changes must keep fitting every screen independently')
 
+assert(wallpaper.status().healthy and watchdog.started, 'scheduler must expose healthy startup status')
+local restarts = timer.restarts
+local original_timer_count = timer_count
+watchdog.callback()
+assert(timer.restarts == restarts, 'healthy long clock intervals must not trigger recovery')
+timer:stop()
+watchdog.callback()
+assert(timer.started and wallpaper.status().recoveries == 1, 'watchdog did not recover a stopped timer')
+assert(background_updates == update_count + 1, 'watchdog unnecessarily repainted unchanged wallpaper')
+monotonic = monotonic + timer.timeout + 31
+watchdog.callback()
+assert(wallpaper.status().recoveries == 2 and wallpaper.status().healthy,
+    'watchdog did not recover an overdue scheduler that still reports started')
+assert(#warnings == 2, 'recoveries must be logged once per recovery')
+assert(timer_count == original_timer_count, 'watchdog recovery created duplicate timers')
+
+now = '08:00:00'
+render_error = 'injected wallpaper rendering failure'
+timer.callback()
+assert(not wallpaper.status().healthy and wallpaper.status().failures == 1,
+    'rendering failures must not be recorded as successful updates')
+assert(timer.started and timer.timeout == 60, 'failure must arm a bounded retry')
+assert(get_wallpaper_name() == 'pm_03.jpg', 'render failure discarded the previous wallpaper')
+local error_count = #errors
+timer.callback()
+assert(#errors == error_count and wallpaper.status().failures == 2,
+    'repeated identical failures must not flood the log')
+render_error = nil
+monotonic = monotonic + 60
+timer.callback()
+assert(wallpaper.status().healthy and wallpaper.status().last_error == nil,
+    'successful retry did not clear failure status')
+assert(get_wallpaper_name() == 'am_08.jpg', 'retry did not apply the current wallpaper')
+assert(wallpaper.status().last_success_age == 0, 'success heartbeat was not updated')
+
+missing_files = true
+timer.callback()
+assert(not wallpaper.status().healthy and wallpaper.status().last_error:match('no readable wallpaper'),
+    'missing wallpaper assets must fail with a diagnostic')
+assert(get_wallpaper_name() == 'am_08.jpg' and timer.timeout == 60,
+    'missing assets must preserve the desktop and schedule a retry')
+missing_files = false
+now = '15:00:00'
+signals['module::sleep_resumed']()
+assert(wallpaper.status().healthy and timer.timeout == 17 * 3600,
+    'resume did not recover failed updates and reset the schedule')
+watchdog:stop()
+assert(not wallpaper.status().healthy, 'status must detect an inactive watchdog')
+watchdog:again()
+
+local selection = require('library.wallpaper-context')
+local choose = selection.choose
+selection.choose = function() error('injected selection exception') end
+timer.callback()
+assert(not wallpaper.status().healthy and wallpaper.status().last_error:match('injected selection'),
+    'unexpected selection exceptions must be contained and reported')
+selection.choose = choose
+timer.callback()
+assert(wallpaper.status().healthy, 'selection exception prevented subsequent recovery')
+
+missing_files = true
+wallpaper = dofile(home .. '/.config/awesome/module/dynamic-wallpaper.lua')
+assert(not wallpaper.status().healthy and timer.started and watchdog.started,
+    'startup failure must still create a live scheduler and watchdog')
+assert(wallpaper.status().last_success_age == nil, 'failed startup must not record a success')
+missing_files = false
+timer.callback()
+assert(wallpaper.status().healthy, 'failed startup could not recover without reloading Awesome')
+
 panorama = true
 package.loaded['configuration.config'].module.dynamic_wallpaper.stretch = true
 wallpaper = dofile(home .. '/.config/awesome/module/dynamic-wallpaper.lua')
@@ -156,19 +244,27 @@ local context = require('library.wallpaper-context')
 local read_location, solar = context.read_location, context.solar
 local position = { latitude = 37.3, longitude = -121.8 }
 local requests, weather_data, pending, force = 0, nil, nil, nil
+local weather_error
 context.read_location = function() return position end
 context.solar = function() return { seconds = 15 * 3600, phase = 'night' } end
 package.loaded['library.weather-service'] = { default = function() return {
     peek = function() return weather_data end,
     fetch = function(_, requested, _, callback, settings)
+        if weather_error then error('injected weather exception') end
         requests = requests + 1
         assert(requested == position, 'weather must use current darkman coordinates')
         pending, force = callback, settings.force
     end,
 } end }
-dofile(home .. '/.config/awesome/module/dynamic-wallpaper.lua')
+local environmental_wallpaper = dofile(home .. '/.config/awesome/module/dynamic-wallpaper.lua')
 assert(get_wallpaper_name() == 'pm_03.jpg', 'offline solar time must select the image before fetching weather')
 assert(timer.timeout == 15 and requests == 1)
+weather_error = true
+timer.callback()
+assert(environmental_wallpaper.status().healthy and timer.started and timer.timeout == 15,
+    'weather exception must not affect the local scheduler')
+assert(errors[#errors]:match('injected weather exception'), 'weather exception must be logged')
+weather_error = false
 weather_data = { icon_code = '10n' }
 pending(true, weather_data, nil, false)
 assert(get_wallpaper_name() == 'am_08.jpg', 'successful weather update must select a matching local variant')
@@ -321,4 +417,4 @@ end
 
 context.read_location, context.solar = read_location, solar
 os.date, os.time = date, real_time
-print('dynamic wallpaper tests passed: full offline clock/solar rotations, cache expiry and wake')
+print('dynamic wallpaper tests passed: clock/solar rotations, weather, wake, watchdog and failure recovery')

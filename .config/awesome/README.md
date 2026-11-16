@@ -471,6 +471,12 @@ Identical concurrent requests are coalesced. The widget retains its configured
 provider fallback order and explicit-refresh behavior. `weather_providers`
 can override the wallpaper provider order.
 
+The in-memory weather and retry-backoff caches each retain at most 32
+location/unit combinations, evicting the least recently used entry when full.
+Repeated refreshes of the same location reuse its entry. Eviction does not
+cancel active requests or delete the disk cache: returning to an evicted
+location can still restore valid saved weather without a network request.
+
 On startup/resume, a local wallpaper is selected **before** starting a background
 request. Cached weather remains usable for two hours by default, including
 across Awesome restarts. Failed requests do not replace good cache entries or
@@ -479,6 +485,25 @@ failure. Each provider request has a 12-second curl limit, with a service
 watchdog as an additional safeguard. Expired/malformed cache data simply means
 time-only selection. An unavailable network never blocks Awesome or clears the
 wallpaper. Unchanged selections do not repaint the desktop.
+
+A separate 30-second watchdog checks that the wallpaper scheduler is started
+and has not missed its next deadline by more than 30 seconds. It rearms the
+existing timer rather than creating another scheduler. Update exceptions,
+rendering failures, and missing local images retain the previous wallpaper
+and retry after 60 seconds. Repeated identical failures are logged once until
+recovery or a different error; successful retries count as healthy even when
+the selected image is unchanged. Resume immediately refreshes the selection
+and resets the deadline. Weather refresh errors cannot prevent timer rearming.
+
+Inspect the scheduler without changing the wallpaper:
+
+```sh
+awesome-client 'local s = require("module.dynamic-wallpaper").status(); return s.healthy, s.started, s.watchdog_started, s.last_success_age, s.next_update_in, s.failures, s.recoveries, s.last_error'
+```
+
+The status reports successful-update age, next deadline, consecutive failures,
+and watchdog recovery count. The watchdog runs inside Awesome, so it cannot
+recover a frozen or crashed window manager, or restart itself if stopped.
 
 Weather image selection tries these local candidates in order:
 

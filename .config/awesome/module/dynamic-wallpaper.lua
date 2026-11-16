@@ -12,11 +12,13 @@
 -- It checks the difference between the current time and the next scheduled time
 -- Then convert it to seconds to set it as a timeout value
 
--- Limitations:
--- Timeout paused when laptop/pc is suspended or in sleep mode, and there's probably some bugs too so whatever
 local gears = require('gears')
 local beautiful = require('beautiful')
-local Gio = require('lgi').Gio
+local lgi = require('lgi')
+local Gio = lgi.Gio
+local function monotonic_time()
+    return lgi.GLib.get_monotonic_time() / 1000000
+end
 local filesystem = gears.filesystem
 local config = require('configuration.config')
 local context = require('library.wallpaper-context')
@@ -334,11 +336,11 @@ end
 -- Hey it's working, so whatever
 local applied_path
 local update_wallpaper = function(wall_name)
-    if not wall_name then return false end
+    if not wall_name then return false, 'no readable wallpaper candidate' end
     local wall_dir = wall_config.wall_dir .. wall_name
     if applied_path == wall_dir then return true, false end
-    local success = pcall(set_wallpaper, wall_dir)
-    if not success then return false end
+    local success, err = pcall(set_wallpaper, wall_dir)
+    if not success then return false, err end
     applied_path = wall_dir
 
     -- Overwrite the default wallpaper
@@ -413,6 +415,7 @@ local manage_timer = function()
             return filesystem.file_readable(wall_config.wall_dir .. candidate)
         end)
     local updated, changed = update_wallpaper(name)
+    if not updated then error(tostring(changed)) end
     if updated then
         set_wallpaper_name(name)
         if changed then awesome.emit_signal('module::change_background_wallpaper') end
@@ -429,37 +432,62 @@ local function refresh_weather(force)
     end, { force = force })
 end
 
--- Update values at startup
-manage_timer()
+local watchdog_interval = 30
+local retry_interval = 60
+local last_success, next_update, last_error, last_error_key
+local failures, recoveries = 0, 0
+local wall_updater
 
-local wall_updater = gears.timer {
-    -- The timeout is the difference of current time and the scheduled time we set above.
-    timeout   = the_countdown,
-    autostart = true,
-    call_now  = true,
-    callback  = function()
-        -- Emit signal to update wallpaper
+local function update()
+    local ok, err = xpcall(manage_timer, debug.traceback)
+    local now = monotonic_time()
+    if ok then
+        if failures > 0 then gears.debug.print_warning('Wallpaper updates recovered') end
+        last_success = now
+        failures, last_error, last_error_key = 0, nil, nil
+    else
+        failures = failures + 1
+        local error_key = tostring(err):match('^[^\n]+')
+        if last_error_key ~= error_key then
+            gears.debug.print_error('Wallpaper update failed: ' .. tostring(err))
+        end
+        last_error, last_error_key = err, error_key
+    end
+    local timeout = ok and the_countdown or retry_interval
+    next_update = now + timeout
+    wall_updater.timeout = timeout
+    wall_updater:again()
+end
+
+local function request_weather(force)
+    local ok, err = pcall(refresh_weather, force)
+    if not ok then
+        gears.debug.print_error('Wallpaper weather refresh failed: ' .. tostring(err))
+    end
+end
+
+wall_updater = gears.timer {
+    timeout = retry_interval,
+    callback = function()
         awesome.emit_signal('module::change_wallpaper')
-        refresh_weather()
-    end
+        request_weather()
+    end,
 }
+awesome.connect_signal('module::change_wallpaper', update)
+update()
 
--- Update wallpaper here and update the timeout for the next schedule
-awesome.connect_signal(
-    'module::change_wallpaper',
-    function()
-        --set_wallpaper(wall_dir .. wall_data[2])
-
-        -- Update values for the next specified schedule
-        manage_timer()
-
-        -- Update timer timeout for the next specified schedule
-        wall_updater.timeout = the_countdown
-
-        -- Restart timer
-        wall_updater:again()
-    end
-)
+local watchdog = gears.timer {
+    timeout = watchdog_interval,
+    autostart = true,
+    callback = function()
+        if not wall_updater.started or monotonic_time() > next_update + watchdog_interval then
+            recoveries = recoveries + 1
+            gears.debug.print_warning('Wallpaper watchdog: recovering stopped or overdue scheduler')
+            update()
+            request_weather()
+        end
+    end,
+}
 
 local function apply(s)
     if type(beautiful.wallpaper) == 'string' and beautiful.wallpaper:sub(1, 1) == '/' then
@@ -468,10 +496,24 @@ local function apply(s)
 end
 screen.connect_signal('property::geometry', apply)
 awesome.connect_signal('module::sleep_resumed', function()
-    manage_timer()
-    refresh_weather(true)
-    wall_updater:again()
+    update()
+    request_weather(true)
 end)
-gears.timer.delayed_call(refresh_weather)
+gears.timer.delayed_call(request_weather)
 
-return { apply = apply }
+local function status()
+    local now = monotonic_time()
+    return {
+        started = wall_updater.started,
+        watchdog_started = watchdog.started,
+        healthy = wall_updater.started and watchdog.started and failures == 0
+            and now <= next_update + watchdog_interval,
+        last_success_age = last_success and now - last_success,
+        next_update_in = next_update - now,
+        failures = failures,
+        recoveries = recoveries,
+        last_error = last_error,
+    }
+end
+
+return { apply = apply, status = status }

@@ -7,6 +7,29 @@ function service.new(dependencies)
     local save = dependencies.save or function() end
     local memory, requests, failures = {}, {}, {}
     local instance = {}
+    local cache_limit = 32
+    local access_sequence = 0
+
+    local function cache_get(cache, key)
+        local entry = cache[key]
+        if not entry then return nil end
+        access_sequence = access_sequence + 1
+        entry.accessed = access_sequence
+        return entry.value
+    end
+
+    local function remember(cache, key, value)
+        access_sequence = access_sequence + 1
+        cache[key] = { value = value, accessed = access_sequence }
+        local count, oldest_key, oldest_access = 0, nil, math.huge
+        for candidate, entry in pairs(cache) do
+            count = count + 1
+            if entry.accessed < oldest_access then
+                oldest_key, oldest_access = candidate, entry.accessed
+            end
+        end
+        if count > cache_limit then cache[oldest_key] = nil end
+    end
 
     local function identity(location, config)
         local latitude, longitude = tonumber(location.latitude), tonumber(location.longitude)
@@ -40,11 +63,14 @@ function service.new(dependencies)
     function instance.peek(_instance, location, config)
         config = config or {}
         local key = identity(location, config)
-        if not memory[key] then
-            local success, record = pcall(load, key)
-            if success and type(record) == 'table' and record.key == key then memory[key] = record end
+        local record = cache_get(memory, key)
+        if not record then
+            local success, loaded = pcall(load, key)
+            if success and type(loaded) == 'table' and loaded.key == key then
+                remember(memory, key, loaded)
+            end
+            record = cache_get(memory, key)
         end
-        local record = memory[key]
         if valid(record, config.max_age or 7200) then return record.data, record.fetched_at end
     end
 
@@ -56,7 +82,7 @@ function service.new(dependencies)
             callback(true, cached, nil, true)
             return
         end
-        local failure = failures[key]
+        local failure = cache_get(failures, key)
         if failure and now() < failure.retry_at and not options.force then
             callback(options.allow_cached ~= false and cached ~= nil,
                 options.allow_cached ~= false and cached or nil, 'retry_pending', cached ~= nil)
@@ -78,11 +104,15 @@ function service.new(dependencies)
             if watchdog then watchdog:stop() end
             if data then
                 local record = { key = key, fetched_at = now(), data = data }
-                memory[key], failures[key] = record, nil
+                remember(memory, key, record)
+                failures[key] = nil
                 pcall(save, key, record)
             else
                 local count = failure and failure.count + 1 or 1
-                failures[key] = { count = count, retry_at = now() + math.min(120, 15 * 2 ^ math.min(count - 1, 3)) }
+                remember(failures, key, {
+                    count = count,
+                    retry_at = now() + math.min(120, 15 * 2 ^ math.min(count - 1, 3)),
+                })
             end
             local waiters = requests[key]
             requests[key] = nil
