@@ -1080,25 +1080,19 @@ end
 
 -- Filter background image
 local filter_bg_image = function(wall_name, index, ap, width, height)
-    -- Checks if the blur has to be blurred
-    local blur_filter_param = ''
+    local output = locker_config.tmp_wall_dir .. index .. wall_name
+    local command = { 'magick', locker_config.bg_dir .. wall_name,
+        '-quality', '100', '-brightness-contrast', '-20x0' }
     if locker_config.blur_background then
-        blur_filter_param = '-filter Gaussian -blur 0x10'
+        for _, argument in ipairs({ '-filter', 'Gaussian', '-blur', '0x10' }) do
+            command[#command + 1] = argument
+        end
     end
-
-    -- Create imagemagick command
-    local magic = [[
-	sh -c "
-	if [ ! -d ]] .. locker_config.tmp_wall_dir .. [[ ];
-	then
-		mkdir -p ]] .. locker_config.tmp_wall_dir .. [[;
-	fi
-	convert -quality 100 -brightness-contrast -20x0 ]] ..
-        ' ' .. blur_filter_param .. ' ' .. locker_config.bg_dir .. wall_name ..
-        [[ -gravity center -crop ]] .. ap .. [[:1 +repage -resize ]] .. width .. 'x' .. height ..
-        [[! ]] .. locker_config.tmp_wall_dir .. index .. wall_name .. [[
-	"]]
-    return magic
+    for _, argument in ipairs({ '-gravity', 'center',
+        '-crop', ap .. ':1', '+repage', '-resize', width .. 'x' .. height .. '!', output }) do
+        command[#command + 1] = argument
+    end
+    return command, output
 end
 
 -- Apply lockscreen background image
@@ -1120,19 +1114,31 @@ local apply_ls_bg_image = function(wall_name)
         aspect_ratio = math.floor(aspect_ratio * 100) / 100
 
         -- Create image filter command
-        local cmd = filter_bg_image(wall_name, index, aspect_ratio, screen_width, screen_height)
+        local cmd, output = filter_bg_image(wall_name, index, aspect_ratio, screen_width, screen_height)
 
         local target = lockscreen_for_screen(s)
         if target then
-            local output = locker_config.tmp_wall_dir .. index .. wall_name
-            awful.spawn.easy_async_with_shell(
-                cmd,
-                function(_, _, _, exit_code)
-                    if exit_code == 0 and filesystem.file_readable(output) and target == lockscreen_for_screen(s) then
-                        target.bgimage = output
+            local created, err = filesystem.make_parent_directories(output)
+            if not created then
+                gears.debug.print_error('Cannot create lockscreen background directory: ' .. tostring(err))
+            else
+                local pid, spawn_error = awful.spawn.easy_async(
+                    cmd,
+                    function(_, stderr, _, exit_code)
+                        if exit_code ~= 0 then
+                            gears.debug.print_error('Lockscreen background conversion failed: ' .. tostring(stderr))
+                        elseif filesystem.file_readable(output) and target == lockscreen_for_screen(s)
+                            and get_wallpaper_name() == wall_name
+                            and s.geometry.width == screen_width and s.geometry.height == screen_height then
+                            target.bgimage = gears.surface.load_uncached(output)
+                        end
                     end
+                )
+                if type(pid) ~= 'number' then
+                    gears.debug.print_error('Cannot start lockscreen background conversion: ' ..
+                        tostring(spawn_error or pid))
                 end
-            )
+            end
         end
     end
 end

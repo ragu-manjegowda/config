@@ -92,7 +92,7 @@ return {
             -- Units: 'metric' or 'imperial'
             units = 'metric',
             -- Update in N seconds
-            update_interval = 1200
+            update_interval = 300
         },
 
         clock             = {
@@ -153,7 +153,7 @@ return {
         dynamic_wallpaper = {
             solar = true,
             weather_enabled = true,
-            weather_interval = 1200,
+            weather_interval = 300,
             weather_max_age = 7200,
             -- Will look for wallpapers here
             wall_dir = 'theme/wallpapers/',

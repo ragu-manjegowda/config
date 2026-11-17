@@ -28,7 +28,7 @@ end
 
 local secrets = {
     units = weather_cfg.units or 'metric',
-    update_interval = weather_cfg.update_interval or 1200,
+    update_interval = weather_cfg.update_interval or 300,
     providers = weather_cfg.providers or { 'open-meteo', 'wttr', 'open-weather' },
     locations = weather_cfg.locations or {},
     open_weather = open_weather_cfg,

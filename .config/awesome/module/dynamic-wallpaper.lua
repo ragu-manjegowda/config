@@ -30,7 +30,7 @@ local weather_service = options.weather_enabled and require('library.weather-ser
 local weather_config = {
     providers = options.weather_providers or { 'open-meteo' },
     units = ((config.widget or {}).weather or {}).units or 'metric',
-    update_interval = options.weather_interval or 1200,
+    update_interval = options.weather_interval or 300,
     max_age = options.weather_max_age or 7200,
 }
 local current_location
@@ -422,7 +422,7 @@ local manage_timer = function()
     end
 
     -- Get the time difference to set as timeout for the wall_updater timer below
-    the_countdown = environment_enabled and 15 or math.max(1, time_diff(next_time, current_time()))
+    the_countdown = environment_enabled and 60 or math.max(1, time_diff(next_time, current_time()))
 end
 
 local function refresh_weather(force)
@@ -432,7 +432,8 @@ local function refresh_weather(force)
     end, { force = force })
 end
 
-local watchdog_interval = 30
+local watchdog_interval = 120
+local overdue_grace = 30
 local retry_interval = 60
 local last_success, next_update, last_error, last_error_key
 local failures, recoveries = 0, 0
@@ -480,7 +481,7 @@ local watchdog = gears.timer {
     timeout = watchdog_interval,
     autostart = true,
     callback = function()
-        if not wall_updater.started or monotonic_time() > next_update + watchdog_interval then
+        if not wall_updater.started or monotonic_time() > next_update + overdue_grace then
             recoveries = recoveries + 1
             gears.debug.print_warning('Wallpaper watchdog: recovering stopped or overdue scheduler')
             update()
@@ -507,7 +508,7 @@ local function status()
         started = wall_updater.started,
         watchdog_started = watchdog.started,
         healthy = wall_updater.started and watchdog.started and failures == 0
-            and now <= next_update + watchdog_interval,
+            and now <= next_update + overdue_grace,
         last_success_age = last_success and now - last_success,
         next_update_in = next_update - now,
         failures = failures,

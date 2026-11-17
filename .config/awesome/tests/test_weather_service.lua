@@ -9,12 +9,14 @@ local config = { providers = { 'open-meteo' }, update_interval = 1200, max_age =
 local weather = { temperature = 18, icon_code = '04d', description = 'overcast' }
 local dependencies = {
     now = function() return clock end,
-    providers = { ['open-meteo'] = {
-        fetch = function(position, _, callback)
-            calls[#calls + 1] = position
-            pending[#pending + 1] = callback
-        end,
-    } },
+    providers = {
+        ['open-meteo'] = {
+            fetch = function(position, _, callback)
+                calls[#calls + 1] = position
+                pending[#pending + 1] = callback
+            end,
+        }
+    },
     load = function(key) return storage[key] and json.parse(storage[key]) end,
     save = function(key, record) storage[key] = json.stringify(record) end,
     start_timeout = function(_, callback)
@@ -116,11 +118,30 @@ local fallback = service.new {
     save = function() error('read-only filesystem') end,
     providers = {
         ['open-meteo'] = { fetch = function(_, _, callback) callback(true, { temperature = 'invalid' }) end },
-        wttr = { fetch = function(_, _, callback) fallback_calls = fallback_calls + 1; callback(true, weather) end },
+        wttr = { fetch = function(_, _, callback)
+            fallback_calls = fallback_calls + 1; callback(true, weather)
+        end },
     },
 }
 fallback:fetch(location, { providers = { 'unknown', 'open_meteo', 'wttr' } }, collect)
 assert(results[#results].ok and fallback_calls == 1 and weather.provider == 'wttr')
 assert(fallback:peek(location, {}) ~= nil, 'cache-write failure must not discard successful weather')
+
+local default_calls = 0
+local default_interval = service.new {
+    now = function() return clock end,
+    providers = { ['open-meteo'] = { fetch = function(_, _, callback)
+        default_calls = default_calls + 1
+        callback(true, weather)
+    end } },
+}
+local default_config = { providers = { 'open-meteo' } }
+default_interval:fetch(location, default_config, collect)
+clock = clock + 299
+default_interval:fetch(location, default_config, collect)
+assert(default_calls == 1, 'default weather refresh must reuse cache before five minutes')
+clock = clock + 1
+default_interval:fetch(location, default_config, collect)
+assert(default_calls == 2, 'default weather refresh must fetch again at five minutes')
 
 print('weather service tests passed')

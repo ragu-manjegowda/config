@@ -78,7 +78,7 @@ function service.new(dependencies)
         config, options = config or {}, options or {}
         local key = identity(location, config)
         local cached, fetched_at = self:peek(location, config)
-        if cached and not options.force and now() - fetched_at < (config.update_interval or 1200) then
+        if cached and not options.force and now() - fetched_at < (config.update_interval or 300) then
             callback(true, cached, nil, true)
             return
         end
@@ -123,16 +123,22 @@ function service.new(dependencies)
             end
         end
         try_provider = function(index, last_error)
-            if index > #order then finish(nil, last_error or 'unavailable'); return end
+            if index > #order then
+                finish(nil, last_error or 'unavailable'); return
+            end
             local name = tostring(order[index]):lower():gsub('_', '-')
             if name == 'openmeteo' then name = 'open-meteo' end
             if name == 'openweather' then name = 'open-weather' end
             local provider = providers[name]
-            if not provider then try_provider(index + 1, last_error); return end
+            if not provider then
+                try_provider(index + 1, last_error); return
+            end
             local available, supported = pcall(function()
                 return not provider.is_available or provider.is_available(location, config)
             end)
-            if not available or not supported then try_provider(index + 1, last_error); return end
+            if not available or not supported then
+                try_provider(index + 1, last_error); return
+            end
             local completed = false
             local success = pcall(provider.fetch, location, config, function(ok, data, error_message)
                 if completed or requests[key] ~= request then return end

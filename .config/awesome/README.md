@@ -438,7 +438,7 @@ The shipped profiles enable offline solar scheduling and weather variants:
 dynamic_wallpaper = {
     solar = true,
     weather_enabled = true,
-    weather_interval = 1200,
+    weather_interval = 300,
     weather_max_age = 7200,
 }
 ```
@@ -446,7 +446,7 @@ dynamic_wallpaper = {
 Location comes from `lat` and `lng` in
 `${XDG_CONFIG_HOME:-~/.config}/darkman/config.yaml`, not the weather widget's
 list of cities. Set `darkman_config` to override that path. Coordinates are
-read again every 15 seconds and immediately after resume; no GeoClue or network
+read again every minute and immediately after resume; no GeoClue or network
 access is needed for daylight calculations. A location change cannot reuse the
 previous location's weather cache.
 
@@ -477,6 +477,10 @@ Repeated refreshes of the same location reuse its entry. Eviction does not
 cancel active requests or delete the disk cache: returning to an evicted
 location can still restore valid saved weather without a network request.
 
+Wallpaper selection is checked once per minute; unchanged selections do not
+repaint. Both the weather widget and wallpaper scheduler use a five-minute
+weather refresh interval, with shared caching and request coalescing.
+
 On startup/resume, a local wallpaper is selected **before** starting a background
 request. Cached weather remains usable for two hours by default, including
 across Awesome restarts. Failed requests do not replace good cache entries or
@@ -486,8 +490,11 @@ watchdog as an additional safeguard. Expired/malformed cache data simply means
 time-only selection. An unavailable network never blocks Awesome or clears the
 wallpaper. Unchanged selections do not repaint the desktop.
 
-A separate 30-second watchdog checks that the wallpaper scheduler is started
-and has not missed its next deadline by more than 30 seconds. It rearms the
+A separate two-minute watchdog checks that the wallpaper scheduler is started
+and has not missed its next deadline by more than an independent 30-second
+grace period. Stopped timers are recovered at the next watchdog check;
+overdue timers are recovered at the first check after their grace period.
+It rearms the
 existing timer rather than creating another scheduler. Update exceptions,
 rendering failures, and missing local images retain the previous wallpaper
 and retry after 60 seconds. Repeated identical failures are logged once until
@@ -504,6 +511,12 @@ awesome-client 'local s = require("module.dynamic-wallpaper").status(); return s
 The status reports successful-update age, next deadline, consecutive failures,
 and watchdog recovery count. The watchdog runs inside Awesome, so it cannot
 recover a frozen or crashed window manager, or restart itself if stopped.
+
+Lockscreen backgrounds use the same selected image, including nested weather
+paths. Their parent cache directories are created before ImageMagick runs;
+conversion failures are logged without clearing the previous background.
+Successful conversions reload fresh pixels, and results for obsolete
+wallpapers, screen sizes, or removed screens are ignored.
 
 Weather image selection tries these local candidates in order:
 

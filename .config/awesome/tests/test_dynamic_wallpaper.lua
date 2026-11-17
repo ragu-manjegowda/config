@@ -57,8 +57,10 @@ local timer_factory = setmetatable({ delayed_call = function(callback) callback(
             self.started, self.restarted = true, true
             self.restarts = (self.restarts or 0) + 1
         end
+
         function settings:stop() self.started = false end
-        if settings.timeout == 30 then watchdog = settings else timer = settings end
+
+        if settings.autostart then watchdog = settings else timer = settings end
         return settings
     end,
 })
@@ -68,7 +70,9 @@ package.loaded.gears = {
         file_readable = function(path)
             if missing_files then return false end
             local input = io.open(path, 'r')
-            if input then input:close(); return true end
+            if input then
+                input:close(); return true
+            end
             return false
         end,
     },
@@ -161,6 +165,7 @@ assert(applied[primary] == current_wallpaper and applied[external] == current_wa
     'Scheduled changes must keep fitting every screen independently')
 
 assert(wallpaper.status().healthy and watchdog.started, 'scheduler must expose healthy startup status')
+assert(watchdog.timeout == 120, 'watchdog must check scheduler health every two minutes')
 local restarts = timer.restarts
 local original_timer_count = timer_count
 watchdog.callback()
@@ -169,7 +174,13 @@ timer:stop()
 watchdog.callback()
 assert(timer.started and wallpaper.status().recoveries == 1, 'watchdog did not recover a stopped timer')
 assert(background_updates == update_count + 1, 'watchdog unnecessarily repainted unchanged wallpaper')
-monotonic = monotonic + timer.timeout + 31
+monotonic = monotonic + timer.timeout + 30
+local before_grace = timer.restarts
+watchdog.callback()
+assert(timer.restarts == before_grace and wallpaper.status().healthy,
+    'watchdog must allow the independent 30-second overdue grace')
+monotonic = monotonic + 1
+assert(not wallpaper.status().healthy, 'overdue health must not wait for the two-minute watchdog interval')
 watchdog.callback()
 assert(wallpaper.status().recoveries == 2 and wallpaper.status().healthy,
     'watchdog did not recover an overdue scheduler that still reports started')
@@ -247,21 +258,26 @@ local requests, weather_data, pending, force = 0, nil, nil, nil
 local weather_error
 context.read_location = function() return position end
 context.solar = function() return { seconds = 15 * 3600, phase = 'night' } end
-package.loaded['library.weather-service'] = { default = function() return {
-    peek = function() return weather_data end,
-    fetch = function(_, requested, _, callback, settings)
-        if weather_error then error('injected weather exception') end
-        requests = requests + 1
-        assert(requested == position, 'weather must use current darkman coordinates')
-        pending, force = callback, settings.force
-    end,
-} end }
+package.loaded['library.weather-service'] = {
+    default = function()
+        return {
+            peek = function() return weather_data end,
+            fetch = function(_, requested, weather_options, callback, settings)
+                if weather_error then error('injected weather exception') end
+                requests = requests + 1
+                assert(requested == position, 'weather must use current darkman coordinates')
+                assert(weather_options.update_interval == 300, 'wallpaper weather must refresh every five minutes')
+                pending, force = callback, settings.force
+            end,
+        }
+    end
+}
 local environmental_wallpaper = dofile(home .. '/.config/awesome/module/dynamic-wallpaper.lua')
 assert(get_wallpaper_name() == 'pm_03.jpg', 'offline solar time must select the image before fetching weather')
-assert(timer.timeout == 15 and requests == 1)
+assert(timer.timeout == 60 and requests == 1)
 weather_error = true
 timer.callback()
-assert(environmental_wallpaper.status().healthy and timer.started and timer.timeout == 15,
+assert(environmental_wallpaper.status().healthy and timer.started and timer.timeout == 60,
     'weather exception must not affect the local scheduler')
 assert(errors[#errors]:match('injected weather exception'), 'weather exception must be logged')
 weather_error = false
@@ -323,6 +339,8 @@ for _, profile in ipairs({ 'config', 'config_lenovo', 'config_imac' }) do
     local actual = dofile(home .. '/.config/awesome/configuration/' .. profile .. '.lua')
     package.loaded['configuration.config'] = actual
     local settings = actual.module.dynamic_wallpaper
+    assert(settings.weather_interval == 300 and actual.widget.weather.update_interval == 300,
+        'widget and wallpaper weather intervals must both be five minutes for ' .. profile)
     settings.solar, settings.weather_enabled, settings.stretch = false, false, false
     local schedule = settings.wallpaper_schedule
     local slots = slots_for(schedule)
@@ -353,26 +371,30 @@ for _, profile in ipairs({ 'config', 'config_lenovo', 'config_imac' }) do
     context.read_location = function() return { latitude = 37.3, longitude = -121.8 } end
     local cached
     local fetched_at
-    package.loaded['library.weather-service'] = { default = function() return {
-        peek = function(_, _, weather_options)
-            if cached and timestamp - fetched_at <= weather_options.max_age then return cached end
-        end,
-        fetch = function(_, _, _, callback) callback(false, nil, 'offline') end,
-    } end }
+    package.loaded['library.weather-service'] = {
+        default = function()
+            return {
+                peek = function(_, _, weather_options)
+                    if cached and timestamp - fetched_at <= weather_options.max_age then return cached end
+                end,
+                fetch = function(_, _, _, callback) callback(false, nil, 'offline') end,
+            }
+        end
+    }
     for _, month in ipairs({ 3, 6, 11, 12 }) do
         midnight = real_time({ year = 2026, month = month, day = 15, hour = 0 })
         timestamp = midnight
         dofile(home .. '/.config/awesome/module/dynamic-wallpaper.lua')
         local expected_slots = slots_for(schedule)
         seen = {}
-        for elapsed = 0, 86385, 15 do
+        for elapsed = 0, 86340, 60 do
             timestamp = midnight + elapsed
             timer.callback()
             local position_now = assert(context.solar(timestamp, { latitude = 37.3, longitude = -121.8 }))
             local expected = expected_at(expected_slots, position_now.seconds)
             assert(get_wallpaper_name() == expected, 'offline solar rotation selected the wrong image')
             assert(current_wallpaper == wallpaper_dir .. expected, 'solar wallpaper was not applied')
-            assert(timer.timeout == 15, 'offline solar scheduling must keep checking without a network')
+            assert(timer.timeout == 60, 'offline solar scheduling must check once per minute without a network')
             seen[expected] = true
         end
         check_all_seen(schedule, seen)
@@ -402,7 +424,7 @@ for _, profile in ipairs({ 'config', 'config_lenovo', 'config_imac' }) do
         dofile(home .. '/.config/awesome/module/dynamic-wallpaper.lua')
         assert(get_wallpaper_name() == expected_at(slots, 14 * 3600 + 30 * 60),
             'offline startup without usable solar timing must use the local clock')
-        assert(timer.timeout == 15, 'clock fallback must keep checking for restored coordinates')
+        assert(timer.timeout == 60, 'clock fallback must keep checking for restored coordinates')
         timestamp = timestamp + 3 * 3600
         signals['module::sleep_resumed']()
         assert(get_wallpaper_name() == expected_at(slots, 17 * 3600 + 30 * 60),
