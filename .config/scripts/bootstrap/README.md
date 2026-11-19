@@ -87,11 +87,13 @@ python3 ~/.config/scripts/bootstrap/tests/test_packages.py
 The Awesome session launches `~/.local/bin/awesome-session`, a relative symlink
 to the maintained `~/.config/misc/usr/local/libexec/awesome-session`. Keep both
 the symlink and the executable source in the dotfiles; no separate root-owned
-launcher installation is required. Both `Exec` and `TryExec` in the session
-entry point to this launcher. The desktop bootstrap step restores the link,
-renders the session paths for the installing user, and validates the session.
-Rendering also replaces another account's existing Awesome launcher paths,
-not just the original template account.
+launcher installation is required. The session entry uses `/usr/bin/sh` to
+expand `~/.local/bin/awesome-session` for the authenticated user. No account's
+absolute home path is stored in the tracked entry, so pulling dotfiles cannot
+restore another account's launcher path. `TryExec` checks `/usr/bin/sh`; the
+session safety check also verifies the actual launcher and its symlink. The
+desktop bootstrap step restores the link and validates the session. Rendering
+also replaces another account's existing legacy Awesome launcher paths.
 
 The launcher starts X with `startx` when `DISPLAY` is unset, so it also works
 as a free-form command from tuigreet's F2 menu. When tuigreet's normal X11

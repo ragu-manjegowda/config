@@ -17,7 +17,12 @@ configuration="$HOME/.config/awesome/rc.lua"
 [[ -f "$session" ]] || fail "session entry is missing: $session"
 for key in Exec TryExec; do
     value="$(sed -n "s/^${key}=//p" "$session")"
-    [[ "$value" == "$launcher" ]] || fail "$key must point to $launcher in $session"
+    if [[ "$key" == Exec ]]; then
+        portable='/usr/bin/sh -c "exec ~/.local/bin/awesome-session"'
+    else
+        portable='/usr/bin/sh'
+    fi
+    [[ "$value" == "$portable" || "$value" == "$launcher" ]] || fail "$key must point to the portable launcher or $launcher in $session"
 done
 bash -n "$launcher" || fail "launcher has invalid shell syntax"
 command -v awesome >/dev/null || fail "awesome is not installed or not in PATH"
