@@ -95,6 +95,13 @@ session safety check also verifies the actual launcher and its symlink. The
 desktop bootstrap step restores the link and validates the session. Rendering
 also replaces another account's existing legacy Awesome launcher paths.
 
+Keep the shell's `-c` command to the single word `~/.local/bin/awesome-session`.
+The configured `startx /usr/bin/env` wrapper flattens and splits client arguments;
+adding `exec ` inside the quoted command makes the inner shell run only `exec`
+and exit successfully without starting Awesome. The session regression suite
+exercises the installed `startx` script with a fake `xinit` (no X server starts),
+instead of testing only the desktop entry's shell command in isolation.
+
 The launcher starts X with `startx` when `DISPLAY` is unset, so it also works
 as a free-form command from tuigreet's F2 menu. When tuigreet's normal X11
 session wrapper already started X, it reuses that display instead.

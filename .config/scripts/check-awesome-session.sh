@@ -18,7 +18,7 @@ configuration="$HOME/.config/awesome/rc.lua"
 for key in Exec TryExec; do
     value="$(sed -n "s/^${key}=//p" "$session")"
     if [[ "$key" == Exec ]]; then
-        portable='/usr/bin/sh -c "exec ~/.local/bin/awesome-session"'
+        portable='/usr/bin/sh -c "~/.local/bin/awesome-session"'
     else
         portable='/usr/bin/sh'
     fi

@@ -5,6 +5,7 @@ import os
 import shlex
 import subprocess
 import tempfile
+import tomllib
 import unittest
 from pathlib import Path
 
@@ -13,6 +14,7 @@ LAUNCHER = (
     Path(__file__).resolve().parents[3] / "misc/usr/local/libexec/awesome-session"
 )
 SESSION = Path(__file__).resolve().parents[4] / ".local/share/xsessions/awesome.desktop"
+GREETER = Path(__file__).resolve().parents[3] / "misc/etc/greetd/config.toml"
 
 
 class DesktopSessionTests(unittest.TestCase):
@@ -71,6 +73,15 @@ class DesktopSessionTests(unittest.TestCase):
         result = self.check()
         self.assertEqual(result.returncode, 0, result.stderr)
 
+    def test_reject_compound_command_broken_by_startx(self):
+        self.session.write_text(
+            self.session.read_text().replace(
+                'Exec=/usr/bin/sh -c "~/.local/bin/awesome-session"',
+                'Exec=/usr/bin/sh -c "exec ~/.local/bin/awesome-session"',
+            )
+        )
+        self.assert_failure("Exec must point to")
+
     def test_portable_entry_launches_authenticated_users_home(self):
         self.prepare_launcher()
         command = next(
@@ -94,6 +105,52 @@ class DesktopSessionTests(unittest.TestCase):
     def test_missing_launcher(self):
         self.launcher.unlink()
         self.assert_failure("launcher is missing")
+
+    @unittest.skipUnless(
+        Path("/usr/bin/startx").is_file(), "xorg-xinit is not installed"
+    )
+    def test_greetd_wrapper_through_real_startx(self):
+        self.source.write_text(LAUNCHER.read_text())
+        self.environment.pop("DISPLAY", None)
+        self.environment.pop("XINITRC", None)
+        self.environment.pop("XSERVERRC", None)
+        self.environment["XAUTHORITY"] = str(self.home / ".Xauthority")
+        marker = self.home / "profile-reached"
+        self.environment["SESSION_TEST_ARGS"] = str(marker)
+        (self.home / ".profile").write_text(
+            'printf "reached\\n" > "$SESSION_TEST_ARGS"\nexit 23\n'
+        )
+        for name in ("xauth", "deallocvt"):
+            stub = self.awesome.parent / name
+            stub.write_text("#!/bin/sh\nexit 0\n")
+            stub.chmod(0o755)
+        xinit = self.awesome.parent / "xinit"
+        xinit.write_text(
+            "#!/bin/bash\nclient=()\n"
+            'while [[ "$#" -gt 0 && "$1" != -- ]]; do\n'
+            '    client+=("$1")\n    shift\ndone\n'
+            'export DISPLAY=:99\nexec "${client[@]}"\n'
+        )
+        xinit.chmod(0o755)
+        greeter = shlex.split(
+            tomllib.loads(GREETER.read_text())["default_session"]["command"]
+        )
+        wrapper = greeter[greeter.index("--xsession-wrapper") + 1]
+        command = next(
+            line.removeprefix("Exec=")
+            for line in self.session.read_text().splitlines()
+            if line.startswith("Exec=")
+        )
+        result = subprocess.run(
+            ["/usr/bin/sh", "-c", f"{wrapper} {command}"],
+            cwd="/",
+            env=self.environment,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 23, result.stderr)
+        self.assertEqual(marker.read_text(), "reached\n")
 
     def test_nonexecutable_source(self):
         self.source.chmod(0o644)

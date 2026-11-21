@@ -950,7 +950,7 @@ jobs:
       - name: Install test dependencies
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm lua luajit lua51-lgi python python-pillow ffmpeg zsh glib2 diffutils findutils rofi xorg-server-xvfb xorg-xwininfo ttf-hack-nerd
+          pacman -S --noconfirm lua luajit lua51-lgi python python-pillow ffmpeg zsh glib2 diffutils findutils rofi xorg-server-xvfb xorg-xwininfo xorg-xinit ttf-hack-nerd
 
       - name: Select machine configuration
         env:
@@ -1029,6 +1029,7 @@ jobs:
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_service_migration.sh
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_package_manifests.sh
           python -B .config/scripts/bootstrap/tests/test_packages.py
+          python -B .config/scripts/bootstrap/tests/test_desktop_session.py
           python -B .config/awesome/tests/test_topgrade.py
           python -B .config/awesome/tests/test_chromium_theme.py
           HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_text_sizing.lua
