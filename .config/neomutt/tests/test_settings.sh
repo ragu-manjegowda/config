@@ -129,6 +129,29 @@ else
     ((failed++))
 fi
 
+for account in work personal; do
+    for mode in config config-offline; do
+        account_config="$HOME/.config/neomutt/accounts/$account/$mode"
+        echo -n "Testing $account/$mode sender-priority icons use the exclamation glyph... "
+        if is_git_crypt_locked "$account_config"; then
+            echo -e "${YELLOW}⚠ SKIPPED${NC} (git-crypt locked)"
+        elif awk '
+            /^index-format-hook priority_info / && /~h / {
+                priority_hooks++
+                if ($NF != "\"\"") invalid_hooks++
+            }
+            END { exit !(priority_hooks > 0 && invalid_hooks == 0) }
+        ' "$account_config"; then
+            echo -e "${GREEN}✓ PASSED${NC}"
+            ((passed++))
+        else
+            echo -e "${RED}✗ FAILED${NC}"
+            echo "  Sender-priority hooks must render  instead of the warning triangle"
+            ((failed++))
+        fi
+    done
+done
+
 # Test editor setting contains nvim
 echo -n "Testing editor is nvim... "
 editor=$(neomutt -F "$CONFIG_FILE" -Q editor 2>/dev/null | cut -d'=' -f2- | tr -d '"')

@@ -35,7 +35,7 @@ color tree          red             default
 # message index ------ foreground ---- background -----------------------------
 color index         red             default     ~D # deleted messages
 color index         yellow          default     ~F # flagged messages
-color index         yellow          default     ~h\ X-Priority.* # messages marked priority
+color index         red             default     ~h\ X-Priority.* # messages marked priority
 color index         magenta         default     ~P # messages from me
 color index         magenta         default     ~Q # messages which have been replied to
 color index         brightcyan      default     ~T # tagged messages
