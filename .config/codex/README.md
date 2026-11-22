@@ -17,6 +17,12 @@ The picker reads only thread metadata from Codex's SQLite state. It excludes
 archived and subagent threads; deletion uses `codex delete --force`. Cancelling
 the picker does not start Codex. `--session=UUID` also works.
 
+Local interactive `cx` launches use the shared daemon. When the client exits,
+`cx` asks Codex to stop the daemon only if the local socket has no other
+clients and the server reports no active turns or queued work. Remote-control
+daemons and inconclusive checks are left alone. This best-effort cleanup uses
+Linux `ss` and Python `websockets`.
+
 ## Sandbox
 
 `--sandbox` requires Firejail and a Git checkout root. It makes the host home

@@ -1,6 +1,9 @@
 *
 !.gitignore
 !config.toml
+!model-catalog.json
+!app-server-daemon/
+!app-server-daemon/settings.json
 !tools.py
 !README.md
 !themes/

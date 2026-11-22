@@ -2,14 +2,18 @@
 
 import copy
 import datetime
+import fcntl
+import json
 import os
 import plistlib
 import re
 import shutil
 import sqlite3
 import stat
+import subprocess
 import sys
 import tempfile
+import time
 import tomllib
 import uuid
 from pathlib import Path
@@ -130,6 +134,98 @@ def sessions():
             print(f"{identifier}\t{display}\t{clean(title)}")
 
 
+def daemon_socket_is_idle(socket):
+    connections = subprocess.run(
+        ["ss", "-xanH"], check=True, capture_output=True, text=True, timeout=1,
+    ).stdout
+    endpoint = re.compile(rf"^u_str\s+(\S+)\s+\d+\s+\d+\s+{re.escape(str(socket))}\s+\d+\s")
+    states = [match[1] for line in connections.splitlines() if (match := endpoint.match(line))]
+    return states == ["LISTEN"]
+
+
+def daemon_work_is_idle(connection):
+    deadline = time.monotonic() + 2
+    request_id = 0
+
+    def request(method, params=None):
+        nonlocal request_id
+        request_id += 1
+        message = {"id": request_id, "method": method}
+        if params is not None:
+            message["params"] = params
+        connection.send(json.dumps(message))
+        while time.monotonic() < deadline:
+            response = json.loads(connection.recv(timeout=max(0, deadline - time.monotonic())))
+            if response.get("id") == request_id:
+                return response["result"]
+        raise TimeoutError("Codex did not answer the idle check")
+
+    request("initialize", {
+        "clientInfo": {"name": "cx-idle-check", "version": "1"},
+        "capabilities": {"experimentalApi": True},
+    })
+    connection.send(json.dumps({"method": "initialized"}))
+    if request("remoteControl/status/read")["status"] != "disabled":
+        return False
+    loaded = request("thread/loaded/list", {"limit": 100})
+    if loaded.get("nextCursor"):
+        return False
+    if not isinstance(loaded["data"], list):
+        return False
+    for identifier in loaded["data"]:
+        thread = request("thread/read", {"threadId": identifier, "includeTurns": False})["thread"]
+        if thread["status"]["type"] != "idle":
+            return False
+        queue = request("thread/queue/list", {"threadId": identifier, "limit": 1})
+        if queue["data"] != [] or queue.get("nextCursor"):
+            return False
+    return True
+
+
+def stop_idle_daemon():
+    try:
+        from websockets.exceptions import WebSocketException
+        from websockets.sync.client import unix_connect
+    except ImportError:
+        return
+
+    home = codex_home()
+    state = home / "app-server-daemon"
+    control = home / "app-server-control/app-server-control.sock"
+    pid_file = state / "daemon.pid"
+    settings_file = state / "settings.json"
+
+    def snapshot():
+        socket = control.resolve(strict=True)
+        info = socket.stat()
+        if not stat.S_ISSOCK(info.st_mode):
+            raise ValueError("Codex control endpoint is not a socket")
+        try:
+            settings = settings_file.read_bytes()
+        except FileNotFoundError:
+            settings = b"{}"
+        return socket, info.st_dev, info.st_ino, pid_file.read_bytes(), settings
+
+    try:
+        with (state / "cx-idle.lock").open("a") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            before = snapshot()
+            socket = before[0]
+            settings = json.loads(before[-1])
+            if settings.get("remoteControlEnabled", False) is not False or settings.get("shutdownGraceSeconds", 60) <= 5:
+                return
+            if not daemon_socket_is_idle(socket):
+                return
+            with unix_connect(str(socket), open_timeout=1, close_timeout=0.25) as connection:
+                if not daemon_work_is_idle(connection):
+                    return
+            if snapshot() == before and daemon_socket_is_idle(socket):
+                subprocess.run(["codex", "app-server", "daemon", "stop"], timeout=5, check=True)
+    except (OSError, ValueError, KeyError, TypeError, AttributeError, RuntimeError,
+            subprocess.SubprocessError, WebSocketException):
+        return
+
+
 def main():
     try:
         if sys.argv[1:2] == ["theme"] and len(sys.argv) == 3:
@@ -138,8 +234,10 @@ def main():
             sessions()
         elif sys.argv[1:] == ["palette"]:
             palette()
+        elif sys.argv[1:] == ["stop-idle-daemon"]:
+            stop_idle_daemon()
         else:
-            raise ValueError("usage: tools.py theme light|dark | sessions | palette")
+            raise ValueError("usage: tools.py theme light|dark | sessions | palette | stop-idle-daemon")
     except (OSError, ValueError, sqlite3.Error) as error:
         print(f"cx: {error}", file=sys.stderr)
         return 1

@@ -18,6 +18,7 @@ sandbox_home="$state_home/codex/sandbox-home"
 users="$state_home/codex/sandbox-home-users"
 marker=
 child=
+check_daemon_on_exit=0
 theme_pane=
 pane_style=
 pane_active_style=
@@ -132,6 +133,9 @@ cleanup() (
             tmux set-option -pu -t "$theme_pane" window-active-style
         fi
     fi
+    if [[ "$check_daemon_on_exit" -eq 1 ]]; then
+        "$python" "$tools" stop-idle-daemon >/dev/null 2>&1 || true
+    fi
     [[ -n "$marker" ]] || return 0
     exec 9>"$state_home/codex/sandbox-home.lock" || return 1
     flock -x 9 || return 1
@@ -148,6 +152,19 @@ cleanup() (
         (shopt -s dotglob nullglob; rm -rf -- "$sandbox_home"/*)
     fi
 )
+
+uses_shared_tui() {
+    [[ -t 0 && -t 1 ]] || return 1
+    local argument
+    for argument in "$@"; do
+        case "$argument" in
+            --) break ;;
+            --no-daemon|--remote|--remote=*|-V|--version|e|exec|review|login|logout|mcp|plugin|app-server|remote-control|completion|update|doctor|sandbox|debug|a|apply|queue|archive|delete|migrate-rollouts|migrate-nfs-db|unarchive|cloud|exec-server|features|help)
+                return 1 ;;
+        esac
+    done
+    return 0
+}
 
 set_terminal_theme() {
     # Codex uses terminal defaults, not tmTheme colors, for editable text and
@@ -288,7 +305,10 @@ if [[ "$sandbox" -eq 1 ]]; then
     launch_sandbox "${arguments[@]}"
     exit $?
 fi
-if [[ -n "$theme_pane" ]]; then
+if uses_shared_tui "${arguments[@]}"; then
+    check_daemon_on_exit=1
+fi
+if [[ -n "$theme_pane" || "$check_daemon_on_exit" -eq 1 ]]; then
     codex "${arguments[@]}" <&0 &
     child=$!
     wait "$child"

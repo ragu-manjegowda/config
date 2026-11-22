@@ -16,6 +16,7 @@ import tomllib
 import unittest
 import uuid
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 CONFIG = Path(__file__).resolve().parents[1]
 HOME = CONFIG.parents[1]
@@ -135,6 +136,83 @@ class LauncherTests(unittest.TestCase):
         result = self.run_cx("--session", identifier, "follow up")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(self.calls()[0]["args"], ["resume", identifier, "follow up"])
+
+    def test_idle_cleanup_runs_only_after_a_local_interactive_client(self):
+        invocation_log = self.root / "idle-check"
+        (self.codex_home / "tools.py").write_text(
+            "import os, sys\nfrom pathlib import Path\n"
+            "if sys.argv[1:] == ['stop-idle-daemon']:\n"
+            "    assert Path(os.environ['TEST_CODEX']).is_file()\n"
+            f"    Path({str(invocation_log)!r}).touch()\n"
+        )
+        for arguments, should_check in (
+            ((), True), (("resume", "--last"), True), (("--no-daemon",), False),
+            (("--remote=unix://",), False), (("app-server", "daemon", "start"), False),
+            (("-p", "custom"), True),
+        ):
+            with self.subTest(arguments=arguments):
+                invocation_log.unlink(missing_ok=True)
+                Path(self.env["TEST_CODEX"]).unlink(missing_ok=True)
+                master, slave = pty.openpty()
+                try:
+                    result = subprocess.run(
+                        [str(LAUNCHER), *arguments], cwd=self.repo,
+                        env=self.env | {"TMUX_PANE": "", "TEST_EXIT": "7"},
+                        stdin=slave, stdout=slave, stderr=slave, check=False, timeout=10,
+                    )
+                finally:
+                    os.close(master)
+                    os.close(slave)
+                self.assertEqual(result.returncode, 7)
+                self.assertEqual(invocation_log.exists(), should_check)
+                self.assertEqual(self.calls()[0]["args"], list(arguments))
+
+    def test_idle_cleanup_rechecks_clients_before_stopping(self):
+        if importlib.util.find_spec("websockets") is None:
+            self.skipTest("websockets is unavailable")
+        state = self.codex_home / "app-server-daemon"
+        state.mkdir()
+        (state / "daemon.pid").write_text('{"pid": 123}')
+        control = self.codex_home / "app-server-control"
+        control.mkdir()
+        endpoint = self.root / "codex.sock"
+        endpoint.touch()
+        (control / "app-server-control.sock").symlink_to(endpoint)
+        for socket_checks, active_work, should_stop in (
+            ([True, True], False, True),
+            ([False], False, False),
+            ([True, False], False, False),
+            ([True], True, False),
+        ):
+            with self.subTest(socket_checks=socket_checks, active_work=active_work), \
+                 patch.object(TOOLS, "codex_home", return_value=self.codex_home), \
+                 patch.object(TOOLS.stat, "S_ISSOCK", return_value=True), \
+                 patch.object(TOOLS, "daemon_socket_is_idle", side_effect=socket_checks), \
+                 patch.object(TOOLS, "daemon_work_is_idle", return_value=not active_work), \
+                 patch("websockets.sync.client.unix_connect"), \
+                 patch.object(TOOLS.subprocess, "run") as run:
+                TOOLS.stop_idle_daemon()
+                if should_stop:
+                    run.assert_called_once_with(["codex", "app-server", "daemon", "stop"], timeout=5, check=True)
+                else:
+                    run.assert_not_called()
+
+    def test_daemon_work_probe_checks_turns_and_queue(self):
+        for status, thread_status, queue, expected in (
+            ("disabled", "idle", [], True),
+            ("disabled", "active", [], False),
+            ("disabled", "idle", [{"id": "queued-work"}], False),
+            ("connected", "idle", [], False),
+        ):
+            with self.subTest(status=status, thread_status=thread_status, queue=queue):
+                connection = MagicMock()
+                responses = (
+                    {}, {"status": status}, {"data": ["thread-id"], "nextCursor": None},
+                    {"thread": {"status": {"type": thread_status}}}, {"data": queue},
+                )
+                connection.recv.side_effect = [json.dumps({"id": index, "result": result})
+                                               for index, result in enumerate(responses, 1)]
+                self.assertEqual(TOOLS.daemon_work_is_idle(connection), expected)
 
     def test_metadata_picker_and_cancellation(self):
         identifier = self.seed_sessions()
