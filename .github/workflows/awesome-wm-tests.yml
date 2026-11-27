@@ -443,6 +443,10 @@ jobs:
           set -e
           git clone https://aur.archlinux.org/luajit-lgi.git
           cd luajit-lgi
+          if grep -Fq 'source = https://patch-diff.githubusercontent.com/raw/lgi-devs/lgi/pull/352.patch' .SRCINFO; then
+            curl --fail --silent --show-error --location --retry 3 --output 352.patch \
+              https://github.com/lgi-devs/lgi/commit/c9361c6e8f6b101c78aa7ca5ea8ca8d86176bcd0.patch
+          fi
           MAKEFLAGS="-j$(nproc)" makepkg -si --noconfirm
           EOFLGI
 

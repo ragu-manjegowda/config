@@ -1,5 +1,6 @@
 acpilight
 android-sdk-platform-tools
+android-tv-remote-git
 anydesk-bin
 awesome-luajit-git
 awmtt

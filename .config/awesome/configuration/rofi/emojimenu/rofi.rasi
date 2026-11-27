@@ -10,7 +10,6 @@
 configuration {
 	font:							"Hack Nerd Font 10";
     show-icons:                     true;
-	icon-theme: 					"Papirus";
     display-emoji: 					" Emojis";
     emoji-display-format:            "{name}";
     disable-history:                false;

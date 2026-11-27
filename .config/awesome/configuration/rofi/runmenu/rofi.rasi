@@ -10,7 +10,6 @@
 configuration {
 	font:							"Hack Nerd Font 14";
     show-icons:                     true;
-	icon-theme: 					"Papirus";
     display-run: 					" ";
     run-display-format:            "{name}";
     disable-history:                false;

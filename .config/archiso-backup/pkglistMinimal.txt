@@ -1,5 +1,6 @@
 alacritty
 alsa-utils
+android-tv-remote-git
 apparmor
 avahi
 awesome-luajit-git

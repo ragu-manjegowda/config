@@ -112,6 +112,7 @@
 /.config/advanced-rest-client
 /.config/alacritty/alacritty.toml-e
 /.config/alacritty/colors.yml-e
+/.config/android-tv-remote
 /.config/autostart
 /.config/awesome/configuration/api_keys.lua
 /.config/awesome/configuration/rofi/appmenu/rofi.rasi-e

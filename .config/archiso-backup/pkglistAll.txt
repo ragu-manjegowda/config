@@ -3,6 +3,7 @@ alacritty
 alsa-firmware
 alsa-utils
 android-sdk-platform-tools
+android-tv-remote-git
 anydesk-bin
 apparmor
 arch-install-scripts
