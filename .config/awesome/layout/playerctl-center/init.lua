@@ -1,3 +1,4 @@
+local bindings         = require('theme.bindings')
 local awful            = require('awful')
 local wibox            = require('wibox')
 local gears            = require('gears')
@@ -26,8 +27,7 @@ local playerctl_center = function(s)
                                 cr, width, height, true, true, true, true,
                                 beautiful.groups_radius)
                         end,
-                        bg = beautiful.groups_bg,
-                        widget = wibox.container.background,
+                        widget = bindings.widget(wibox.container.background, { bg = 'groups_bg' }),
                     },
                     layout = wibox.layout.fixed.vertical,
                     spacing = dpi(10),
@@ -36,11 +36,10 @@ local playerctl_center = function(s)
                 widget = wibox.container.margin
             },
             id = 'playerctl_center',
-            bg = beautiful.background,
             shape = function(cr, w, h)
                 gears.shape.rounded_rect(cr, w, h, beautiful.groups_radius)
             end,
-            widget = wibox.container.background
+            widget = bindings.widget(wibox.container.background, { bg = 'background' })
         },
         screen        = s,
         type          = 'dock',
@@ -49,11 +48,11 @@ local playerctl_center = function(s)
         width         = panel_width,
         maximum_width = panel_width,
         bg            = beautiful.transparent,
-        fg            = beautiful.fg_normal,
         shape         = function(cr, w, h)
             gears.shape.rounded_rect(cr, w, h, beautiful.groups_radius)
         end,
     }
+    bindings.bind(panel, { fg = 'fg_normal' })
 
     center_geometry.bind(panel, s, 'top_right')
 

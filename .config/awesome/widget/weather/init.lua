@@ -1,3 +1,5 @@
+local symbolic = require('theme.symbolic')
+local bindings = require('theme.bindings')
 local wibox = require('wibox')
 local awful = require('awful')
 local gears = require('gears')
@@ -114,7 +116,7 @@ local refresh_icon_widget = wibox.widget {
     resize = true,
     forced_height = dpi(14),
     forced_width = dpi(14),
-    widget = wibox.widget.imagebox,
+    widget = symbolic.imagebox,
 }
 
 local refresh_button = wibox.widget {
@@ -126,9 +128,8 @@ local refresh_button = wibox.widget {
         },
         widget = clickable_container,
     },
-    bg = beautiful.accent,
     shape = gears.shape.circle,
-    widget = wibox.container.background,
+    widget = bindings.widget(wibox.container.background, { bg = 'accent' }),
 }
 
 -- Layout for weather cards
@@ -148,7 +149,7 @@ local function create_weather_card(location)
         resize = true,
         forced_height = dpi(45),
         forced_width = dpi(45),
-        widget = wibox.widget.imagebox,
+        widget = symbolic.imagebox,
     }
 
     local sunrise_icon = wibox.widget {
@@ -156,7 +157,7 @@ local function create_weather_card(location)
         resize = true,
         forced_height = dpi(18),
         forced_width = dpi(18),
-        widget = wibox.widget.imagebox,
+        widget = symbolic.imagebox,
     }
 
     local sunset_icon = wibox.widget {
@@ -164,7 +165,7 @@ local function create_weather_card(location)
         resize = true,
         forced_height = dpi(18),
         forced_width = dpi(18),
-        widget = wibox.widget.imagebox,
+        widget = symbolic.imagebox,
     }
 
     local weather_location = wibox.widget {
@@ -247,8 +248,7 @@ local function create_weather_card(location)
             -- Accent left border
             {
                 forced_width = dpi(4),
-                bg = beautiful.accent,
-                widget = wibox.container.background,
+                widget = bindings.widget(wibox.container.background, { bg = 'accent' }),
             },
             -- Content area with inner background
             {
@@ -258,11 +258,10 @@ local function create_weather_card(location)
                         margins = dpi(10),
                         widget = wibox.container.margin
                     },
-                    bg = beautiful.background,
                     shape = function(cr, w, h)
                         gears.shape.rounded_rect(cr, w, h, beautiful.groups_radius)
                     end,
-                    widget = wibox.container.background,
+                    widget = bindings.widget(wibox.container.background, { bg = 'background' }),
                 },
                 left = dpi(8),
                 right = dpi(8),
@@ -272,12 +271,11 @@ local function create_weather_card(location)
             },
             layout = wibox.layout.align.horizontal,
         },
-        bg = beautiful.groups_bg,
         shape = function(cr, w, h)
             gears.shape.rounded_rect(cr, w, h, beautiful.groups_radius)
         end,
         forced_height = WEATHER_HEIGHT,
-        widget = wibox.container.background,
+        widget = bindings.widget(wibox.container.background, { bg = 'groups_bg' }),
     }
 
     return {
@@ -306,9 +304,8 @@ local visible_height = MAX_HEIGHT
 local scrollbar_thumb = wibox.widget {
     forced_width = dpi(4),
     forced_height = dpi(30),
-    bg = beautiful.fg_normal .. 'AA',
     shape = gears.shape.rounded_bar,
-    widget = wibox.container.background,
+    widget = bindings.widget(wibox.container.background, { bg = 'scrollbar_thumb' }),
 }
 
 local scrollbar_container = wibox.widget {
@@ -320,10 +317,9 @@ local scrollbar_container = wibox.widget {
 local scrollbar_track = wibox.widget {
     scrollbar_container,
     forced_width = dpi(6),
-    bg = beautiful.bg_focus .. '40',
     shape = gears.shape.rounded_bar,
     visible = false,
-    widget = wibox.container.background,
+    widget = bindings.widget(wibox.container.background, { bg = 'scrollbar_track' }),
 }
 
 -- Scroll content container
@@ -521,11 +517,10 @@ local weather_report = wibox.widget {
         margins = dpi(10),
         widget = wibox.container.margin
     },
-    bg = beautiful.groups_bg,
     shape = function(cr, width, height)
         gears.shape.rounded_rect(cr, width, height, beautiful.groups_radius)
     end,
-    widget = wibox.container.background
+    widget = bindings.widget(wibox.container.background, { bg = 'groups_bg' })
 }
 
 function weather_report:get_viewport_height() return visible_height end

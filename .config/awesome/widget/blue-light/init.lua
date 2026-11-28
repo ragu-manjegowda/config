@@ -1,3 +1,5 @@
+local symbolic = require('theme.symbolic')
+local bindings = require('theme.bindings')
 local awful = require('awful')
 local wibox = require('wibox')
 local gears = require('gears')
@@ -32,7 +34,7 @@ local button_widget = wibox.widget {
     {
         id = 'icon',
         image = widget_icon_dir .. 'blue-light-off.svg',
-        widget = wibox.widget.imagebox,
+        widget = symbolic.imagebox,
         resize = true
     },
     layout = wibox.layout.align.horizontal
@@ -49,9 +51,8 @@ local widget_button = wibox.widget {
         },
         widget = clickable_container
     },
-    bg = beautiful.background,
     shape = gears.shape.circle,
-    widget = wibox.container.background
+    widget = bindings.widget(wibox.container.background, { bg = 'background' })
 }
 
 local blue_light_state = false
@@ -59,11 +60,11 @@ local blue_light_state = false
 local update_widget = function()
     if blue_light_state then
         action_status:set_text('On')
-        widget_button.bg = beautiful.accent
+        bindings.bind(widget_button, { bg = 'accent' })
         button_widget.icon:set_image(widget_icon_dir .. 'blue-light.svg')
     else
         action_status:set_text('Off')
-        widget_button.bg = beautiful.background
+        bindings.bind(widget_button, { bg = 'background' })
         button_widget.icon:set_image(widget_icon_dir .. 'blue-light-off.svg')
     end
 end

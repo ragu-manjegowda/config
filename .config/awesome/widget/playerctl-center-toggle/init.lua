@@ -1,3 +1,4 @@
+local symbolic = require('theme.symbolic')
 local awful = require('awful')
 local wibox = require('wibox')
 local gears = require('gears')
@@ -11,8 +12,8 @@ local return_button = function()
         wibox.widget {
             {
                 id = 'icon',
-                image = widget_icon_dir .. 'playerctl-center.png',
-                widget = wibox.widget.imagebox,
+                image = widget_icon_dir .. 'playerctl-center.svg',
+                widget = symbolic.imagebox,
                 resize = true
             },
             layout = wibox.layout.align.horizontal

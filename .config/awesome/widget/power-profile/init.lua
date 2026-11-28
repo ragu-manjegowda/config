@@ -1,3 +1,4 @@
+local bindings = require('theme.bindings')
 local awful = require('awful')
 local wibox = require('wibox')
 local gears = require('gears')
@@ -10,19 +11,19 @@ local profiles = {
     {
         key = 'performance',
         label = 'Performance',
-        color = beautiful.system_green_light,
+        role = 'system_green_light',
         tooltip = '100% brightness · keep Bluetooth state · CPU performance · turbo on',
     },
     {
         key = 'balanced',
         label = 'Balanced',
-        color = beautiful.system_yellow_light,
+        role = 'system_yellow_light',
         tooltip = '60% brightness · keep Bluetooth state · balanced CPU policy',
     },
     {
         key = 'power-saver',
         label = 'Power Saver',
-        color = beautiful.system_red_light,
+        role = 'system_red_light',
         tooltip = '35% brightness · Bluetooth off · CPU power policy · turbo off',
     },
 }
@@ -40,13 +41,12 @@ local function update_widget(active_profile)
         local button = buttons[profile.key]
         if button then
             local selected = profile.key == active_profile
-            button.bg = selected and beautiful.accent or beautiful.background
             button.shape_border_width = selected and dpi(2) or dpi(1)
-            button.shape_border_color = selected and beautiful.accent or beautiful.background_light
-            button.label:set_markup(
-                '<span foreground="' .. (selected and beautiful.background or profile.color) .. '">' ..
-                profile.label .. '</span>'
-            )
+            bindings.bind(button, {
+                bg = selected and 'accent' or 'background',
+                fg = selected and 'background' or profile.role,
+                shape_border_color = selected and 'accent' or 'background_light',
+            })
         end
     end
 end
@@ -77,7 +77,7 @@ local selector = wibox.widget {
 
 for _, profile in ipairs(profiles) do
     local label = wibox.widget {
-        markup = '<span foreground="' .. profile.color .. '">' .. profile.label .. '</span>',
+        text = profile.label,
         font = beautiful.font_bold(12),
         align = 'center',
         valign = 'center',
@@ -94,18 +94,16 @@ for _, profile in ipairs(profiles) do
             forced_height = dpi(40),
             widget = clickable_container,
         },
-        bg = beautiful.background,
         shape = gears.shape.rounded_rect,
         shape_border_width = dpi(1),
         shape_border_color = beautiful.transparent,
         forced_height = dpi(40),
-        widget = wibox.container.background,
+        widget = bindings.widget(wibox.container.background, { bg = 'background', fg = profile.role }),
     }
 
     button:buttons(gears.table.join(
         awful.button({}, 1, nil, function() select_profile(profile.key) end)
     ))
-    button.label = label
     buttons[profile.key] = button
     awful.tooltip {
         objects = { button },

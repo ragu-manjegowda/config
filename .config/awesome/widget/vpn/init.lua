@@ -1,3 +1,4 @@
+local symbolic = require('theme.symbolic')
 local awful = require('awful')
 local gears = require('gears')
 local wibox = require('wibox')
@@ -139,7 +140,7 @@ local return_button = function()
         resize = true,
         forced_width = dpi(24),
         forced_height = dpi(24),
-        widget = wibox.widget.imagebox
+        widget = symbolic.imagebox
     }
 
     local vpn_widget = wibox.widget {

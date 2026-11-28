@@ -1,3 +1,5 @@
+local symbolic = require('theme.symbolic')
+local bindings = require('theme.bindings')
 local awful = require('awful')
 local wibox = require('wibox')
 local gears = require('gears')
@@ -17,7 +19,7 @@ local function new_clear_all_button()
                 resize = true,
                 forced_height = dpi(17),
                 forced_width = dpi(17),
-                widget = wibox.widget.imagebox,
+                widget = symbolic.imagebox,
             },
             layout = wibox.layout.fixed.horizontal
         },
@@ -40,9 +42,8 @@ local function new_clear_all_button()
         nil,
         {
             clear_all_button,
-            bg = beautiful.accent,
             shape = gears.shape.circle,
-            widget = wibox.container.background
+            widget = bindings.widget(wibox.container.background, { bg = 'accent' })
         },
         nil,
         expand = 'none',

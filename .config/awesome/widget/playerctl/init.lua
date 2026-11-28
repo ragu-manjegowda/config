@@ -2,6 +2,7 @@
 -- @reference https://github.com/clistoq/yadr
 -------------------------------------------------
 
+local bindings = require('theme.bindings')
 local gears = require("gears")
 local awful = require("awful")
 local wibox = require("wibox")
@@ -77,9 +78,9 @@ end
 
 local old_cursor, old_wibox
 
-local create_button = function(symbol, color, command, playpause)
+local create_button = function(symbol, command, playpause)
     local icon = wibox.widget {
-        markup = "<span foreground='" .. color .. "'>" .. symbol .. "</span>",
+        text = symbol,
         font = beautiful.font_mono(20),
         align = "center",
         valigin = "center",
@@ -96,11 +97,7 @@ local create_button = function(symbol, color, command, playpause)
     playerctl_daemon:connect_signal(
         "playback_status", function(_, playing, _)
             if playpause then
-                if playing then
-                    icon.markup = "<span foreground='" .. color .. "'>" .. "󰏤" .. "</span>"
-                else
-                    icon.markup = "<span foreground='" .. color .. "'>" .. "󰐊" .. "</span>"
-                end
+                icon.text = playing and "󰏤" or "󰐊"
             end
         end)
 
@@ -110,9 +107,6 @@ local create_button = function(symbol, color, command, playpause)
     button:connect_signal(
         "mouse::enter",
         function()
-            icon.markup = "<span foreground='" .. beautiful.fg_normal
-                .. "'>" .. icon.text .. "</span>"
-
             local w = mouse.current_wibox
             if w then
                 old_cursor, old_wibox = w.cursor, w
@@ -124,9 +118,6 @@ local create_button = function(symbol, color, command, playpause)
     button:connect_signal(
         "mouse::leave",
         function()
-            icon.markup = "<span foreground='" .. color .. "'>"
-                .. icon.text .. "</span>"
-
             if old_wibox then
                 old_wibox.cursor = old_cursor
                 old_wibox = nil
@@ -174,15 +165,16 @@ local slider = wibox.widget {
         id                  = 'blur_strength_slider',
         bar_shape           = gears.shape.rounded_rect,
         bar_height          = dpi(24),
-        bar_color           = beautiful.fg_focus,
-        bar_active_color    = beautiful.accent,
-        handle_color        = beautiful.accent,
         handle_shape        = gears.shape.circle,
         handle_width        = dpi(24),
-        handle_border_color = beautiful.background,
         handle_border_width = dpi(1),
         maximum             = 100,
-        widget              = wibox.widget.slider
+        widget              = bindings.widget(wibox.widget.slider, {
+            bar_color = 'fg_focus',
+            bar_active_color = 'accent',
+            handle_color = 'accent',
+            handle_border_color = 'background',
+        })
     },
     nil,
     expand = 'none',
@@ -209,10 +201,8 @@ playerctl_daemon:connect_signal("metadata",
         art:set_image(gears.surface.load_uncached(album_path))
 
         -- Set, title and artist widgets
-        title_widget:set_markup_silently(
-            '<span foreground="' .. beautiful.accent .. '">' .. title .. '</span>')
-        artist_widget:set_markup_silently(
-            '<span foreground="' .. beautiful.accent .. '">' .. artist .. '</span>')
+        title_widget.text = title
+        artist_widget.text = artist
 
         seek_slider.value = 0
         current_time:set_text("00:00")
@@ -230,10 +220,8 @@ playerctl_daemon:connect_signal("no_players", function(_)
     art:set_image(gears.surface.load_uncached(album_path))
 
     -- Set, title and artist widgets
-    title_widget:set_markup_silently(
-        '<span foreground="' .. beautiful.accent .. '">' .. title .. '</span>')
-    artist_widget:set_markup_silently(
-        '<span foreground="' .. beautiful.accent .. '">' .. artist .. '</span>')
+    title_widget.text = title
+    artist_widget.text = artist
 
     seek_slider.value = 0
     current_time:set_text("00:00")
@@ -252,12 +240,12 @@ local next_command = function()
     playerctl_daemon:next()
 end
 
-local playerctl_play_symbol = create_button("󰐊", beautiful.fg_normal,
+local playerctl_play_symbol = create_button("󰐊",
     play_command, true)
 
-local playerctl_prev_symbol = create_button("󰒮", beautiful.fg_normal,
+local playerctl_prev_symbol = create_button("󰒮",
     prev_command, false)
-local playerctl_next_symbol = create_button("󰒭", beautiful.fg_normal,
+local playerctl_next_symbol = create_button("󰒭",
     next_command, false)
 
 local time_info = wibox.widget {
@@ -338,9 +326,12 @@ local playerctl = wibox.widget {
         {
             {
                 {
-                    scroll_container(title_widget),
-                    scroll_container(artist_widget),
-                    layout = wibox.layout.fixed.vertical
+                    {
+                        scroll_container(title_widget),
+                        scroll_container(artist_widget),
+                        layout = wibox.layout.fixed.vertical
+                    },
+                    widget = bindings.widget(wibox.container.background, { fg = 'accent' })
                 },
                 top = 10,
                 left = 25,

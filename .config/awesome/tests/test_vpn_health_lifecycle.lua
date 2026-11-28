@@ -1,6 +1,7 @@
 -- Test-only override of the read-only os.time function.
 -- luacheck: ignore 122
 local home = assert(os.getenv('HOME'))
+package.path = home .. '/.config/awesome/?.lua;' .. package.path
 local callbacks = {}
 local signals = {}
 local health_events = {}

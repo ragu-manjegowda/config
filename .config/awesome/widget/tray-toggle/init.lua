@@ -1,3 +1,4 @@
+local symbolic = require('theme.symbolic')
 local awful = require('awful')
 local wibox = require('wibox')
 local gears = require('gears')
@@ -33,7 +34,7 @@ if not awesome._tray_toggle_signal_setup then
                 for instance in pairs(widget_instances) do
                     if instance.icon then
                         ---@diagnostic disable-next-line: param-type-mismatch
-                        instance.icon:set_image(gears.surface.load_uncached(widget_icon_dir .. icon_name))
+                        instance.icon:set_image(widget_icon_dir .. icon_name)
                     end
                 end
             end
@@ -47,7 +48,7 @@ return function()
         {
             id = 'icon',
             image = widget_icon_dir .. 'right-arrow' .. '.svg',
-            widget = wibox.widget.imagebox,
+            widget = symbolic.imagebox,
             resize = true
         },
         layout = wibox.layout.align.horizontal
@@ -90,7 +91,7 @@ return function()
     if systray_screen and systray_screen.systray then
         local icon_name = systray_screen.systray.visible and 'right-arrow.svg' or 'left-arrow.svg'
         ---@diagnostic disable-next-line: param-type-mismatch
-        widget.icon:set_image(gears.surface.load_uncached(widget_icon_dir .. icon_name))
+        widget.icon:set_image(widget_icon_dir .. icon_name)
     end
 
     return widget_button

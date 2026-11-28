@@ -94,7 +94,7 @@ local function request(command, callback)
         end
     elseif text:find('outlook%-calendar') then
         stdout = json.stringify(failing and { ok = false, error = 'Fixture calendar offline' } or
-        { ok = true, events = {} })
+            { ok = true, events = {} })
     elseif text:find('picom.conf', 1, true) then
         stdout = text:find('strength', 1, true) and '5' or 'methodnone'
     elseif text:find('rfkill', 1, true) then
@@ -145,7 +145,12 @@ end
 getmetatable(awful.spawn).__call = function(_, command) return request(command) end
 beautiful.xresources.set_dpi(config.display.dpi)
 for display in screen do beautiful.xresources.set_dpi(config.display.dpi, display) end
-beautiful.init(require('theme'))
+if os.getenv('GUI_INITIAL_SCHEME') then
+    assert(os.getenv('GSETTINGS_BACKEND') == 'memory')
+    fixture.settings = require('lgi').Gio.Settings.new('org.gnome.desktop.interface')
+    fixture.settings:set_string('color-scheme', os.getenv('GUI_INITIAL_SCHEME'))
+end
+require('theme').start()
 gears.wallpaper.set('#203040')
 local actual_switch = require('widget.control-center-switch')
 package.loaded['widget.control-center-switch'] = function(...)

@@ -1,3 +1,5 @@
+local symbolic = require('theme.symbolic')
+local bindings = require('theme.bindings')
 local awful = require('awful')
 local gears = require('gears')
 local wibox = require('wibox')
@@ -29,15 +31,16 @@ local slider_osd = wibox.widget {
         id                  = 'bri_osd_slider',
         bar_shape           = gears.shape.rounded_rect,
         bar_height          = dpi(24),
-        bar_color           = beautiful.groups_bg,
-        bar_active_color    = beautiful.fg_focus,
-        handle_color        = beautiful.fg_focus,
         handle_shape        = gears.shape.circle,
         handle_width        = dpi(24),
-        handle_border_color = beautiful.background,
         handle_border_width = dpi(1),
         maximum             = 100,
-        widget              = wibox.widget.slider
+        widget              = bindings.widget(wibox.widget.slider, {
+            bar_color = 'groups_bg',
+            bar_active_color = 'fg_focus',
+            handle_color = 'fg_focus',
+            handle_border_color = 'background',
+        })
     },
     nil,
     expand = 'none',
@@ -100,7 +103,7 @@ local icon = wibox.widget {
     {
         image = icons.brightness,
         resize = true,
-        widget = wibox.widget.imagebox
+        widget = symbolic.imagebox
     },
     forced_height = dpi(150),
     top = dpi(12),
@@ -135,6 +138,7 @@ screen.connect_signal(
             preferred_positions = { 'left', 'right', 'top', 'bottom' }
         }
 
+        bindings.bind(s.brightness_osd_overlay, { fg = 'fg_normal' })
         s.brightness_osd_overlay:setup {
             {
                 {
@@ -167,9 +171,8 @@ screen.connect_signal(
                 right = dpi(24),
                 widget = wibox.container.margin
             },
-            bg = beautiful.groups_bg .. "44",
             shape = gears.shape.rounded_rect,
-            widget = wibox.container.background()
+            widget = bindings.widget(wibox.container.background, { bg = 'osd_bg' })
         }
 
         -- Remove overlay when mouse right clicked
@@ -186,9 +189,9 @@ screen.connect_signal(
 )
 
 local hide_osd = gears.timer {
-    timeout   = 2,
+    timeout     = 2,
     single_shot = true,
-    callback  = function()
+    callback    = function()
         if shown_screen and shown_screen.valid ~= false and shown_screen.brightness_osd_overlay then
             shown_screen.brightness_osd_overlay.visible = false
             shown_screen.show_bri_osd = false

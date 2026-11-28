@@ -1,3 +1,5 @@
+local symbolic = require('theme.symbolic')
+local bindings = require('theme.bindings')
 local awful = require('awful')
 local wibox = require('wibox')
 local dpi = require('beautiful').xresources.apply_dpi
@@ -55,7 +57,7 @@ local function list_update(w, buttons, label, data, objects)
                     {
                         image = icons.close,
                         resize = true,
-                        widget = wibox.widget.imagebox
+                        widget = symbolic.imagebox
                     },
                     margins = dpi(4),
                     widget = wibox.container.margin
@@ -216,7 +218,7 @@ local tasklist_buttons = awful.util.table.join(
 )
 
 local task_list = function(s)
-    return awful.widget.tasklist {
+    local list = awful.widget.tasklist {
         screen          = s,
         filter          = awful.widget.tasklist.filter.currenttags,
         buttons         = tasklist_buttons,
@@ -225,6 +227,7 @@ local task_list = function(s)
             layout = wibox.layout.flex.horizontal,
         }
     }
+    return bindings.on_change(list, function(widget) widget._do_tasklist_update() end)
 end
 
 return task_list

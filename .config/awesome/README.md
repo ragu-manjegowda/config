@@ -369,8 +369,19 @@ Solarized color scheme with light and dark variants, switchable via
 
 - `theme/solarized-dark-theme/` -- Default dark theme
 - `theme/solarized-light-theme/` -- Light theme
-- Theme selection in `theme/init.lua`
-- Darkman integration auto-switches theme based on time/location
+- Awesome reads the desktop appearance preference (`org.gnome.desktop.interface color-scheme`) at startup
+  and listens for changes. `prefer-light` selects light; dark, default, or a missing schema selects dark.
+  Open panels repaint in place. There is no polling, Awesome restart, or on-disk icon conversion.
+- For a theme-colored control, use `require('theme.symbolic').imagebox` instead of a plain imagebox.
+  Store its symbolic foreground as Solarized base02 (`#073642`) in both SVGs and PNGs.
+  Awesome recolors that SVG fill or the PNG’s alpha mask at draw time; leave warning and
+  other accent colors intact in SVGs. Use a plain imagebox for application icons, photos, and album covers.
+- Keep icon sources tracked normally. On older clones, removing icons from
+  `config-ignore-local.sh` does not clear existing Git index flags: use
+  `update-index --no-assume-unchanged` on previously hidden icon paths once. Fresh clones need no action.
+- Bind widget colors by role with `theme.bindings`, e.g.
+  `bindings.widget(wibox.container.background, { bg = 'groups_bg' })`. For a state change,
+  use `bindings.bind(button, { bg = 'accent' })` rather than storing a copy of today's color.
 
 Fonts: Hack Nerd Font throughout (configurable via theme).
 

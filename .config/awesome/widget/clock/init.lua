@@ -17,11 +17,6 @@ return function()
         font = beautiful.font_bold(12),
     })
 
-    clock.markup = "<span foreground='" .. beautiful.fg_normal .. "'>" .. clock.text .. "</span>"
-    clock:connect_signal("widget::redraw_needed", function()
-        clock.markup = "<span foreground='" .. beautiful.fg_normal .. "'>" .. clock.text .. "</span>"
-    end)
-
     local widget_button = wibox.widget {
         {
             clock,

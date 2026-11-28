@@ -1,3 +1,5 @@
+local symbolic = require('theme.symbolic')
+local bindings = require('theme.bindings')
 local awful = require('awful')
 local gears = require('gears')
 local wibox = require('wibox')
@@ -54,15 +56,14 @@ local email_count_widget = wibox.widget {
         bottom = 0,
         widget = wibox.container.margin,
     },
-    bg = beautiful.accent or beautiful.bg_focus,
-    fg = beautiful.fg_focus or beautiful.fg_normal,
     shape = gears.shape.rounded_bar,
     visible = false,
-    widget = wibox.container.background,
+    widget = bindings.widget(wibox.container.background, { bg = 'accent', fg = 'fg_focus' }),
 }
 
 -- Layout for email items
 local email_list_layout = wibox.widget {
+    id = 'email_list',
     layout = wibox.layout.fixed.vertical,
     spacing = EMAIL_SPACING,
 }
@@ -112,11 +113,10 @@ local function create_email_item(from, subject, date)
             margins = dpi(10),
             widget = wibox.container.margin
         },
-        bg = beautiful.background,
         shape = function(cr, w, h)
             gears.shape.rounded_rect(cr, w, h, beautiful.groups_radius)
         end,
-        widget = wibox.container.background,
+        widget = bindings.widget(wibox.container.background, { bg = 'background' }),
     }
 
     return wibox.widget {
@@ -124,8 +124,7 @@ local function create_email_item(from, subject, date)
             -- Accent left border
             {
                 forced_width = dpi(4),
-                bg = beautiful.accent,
-                widget = wibox.container.background,
+                widget = bindings.widget(wibox.container.background, { bg = 'accent' }),
             },
             -- Content area with inner background
             {
@@ -138,12 +137,11 @@ local function create_email_item(from, subject, date)
             },
             layout = wibox.layout.align.horizontal,
         },
-        bg = beautiful.groups_bg,
         shape = function(cr, w, h)
             gears.shape.rounded_rect(cr, w, h, beautiful.groups_radius)
         end,
         forced_height = EMAIL_HEIGHT,
-        widget = wibox.container.background,
+        widget = bindings.widget(wibox.container.background, { bg = 'groups_bg' }),
     }
 end
 
@@ -156,7 +154,7 @@ local empty_email_widget = wibox.widget {
                 resize = true,
                 forced_height = dpi(30),
                 forced_width = dpi(30),
-                widget = wibox.widget.imagebox,
+                widget = symbolic.imagebox,
             },
             {
                 text = 'No unread emails',
@@ -169,11 +167,10 @@ local empty_email_widget = wibox.widget {
         margins = dpi(15),
         widget = wibox.container.margin,
     },
-    bg = beautiful.background,
     shape = function(cr, w, h)
         gears.shape.rounded_rect(cr, w, h, beautiful.groups_radius)
     end,
-    widget = wibox.container.background,
+    widget = bindings.widget(wibox.container.background, { bg = 'background' }),
 }
 
 -- Initialize with empty state
@@ -199,9 +196,8 @@ local fit_context = { dpi = beautiful.xresources.get_dpi() }
 local scrollbar_thumb = wibox.widget {
     forced_width = dpi(4),
     forced_height = dpi(30),
-    bg = beautiful.fg_normal .. 'AA',
     shape = gears.shape.rounded_bar,
-    widget = wibox.container.background,
+    widget = bindings.widget(wibox.container.background, { bg = 'scrollbar_thumb' }),
 }
 
 local scrollbar_container = wibox.widget {
@@ -213,10 +209,9 @@ local scrollbar_container = wibox.widget {
 local scrollbar_track = wibox.widget {
     scrollbar_container,
     forced_width = dpi(6),
-    bg = beautiful.bg_focus .. '40',
     shape = gears.shape.rounded_bar,
     visible = false,
-    widget = wibox.container.background,
+    widget = bindings.widget(wibox.container.background, { bg = 'scrollbar_track' }),
 }
 
 -- Scroll content container
@@ -341,11 +336,10 @@ local email_report = wibox.widget {
         margins = dpi(10),
         widget = wibox.container.margin
     },
-    bg = beautiful.groups_bg,
     shape = function(cr, w, h)
         gears.shape.rounded_rect(cr, w, h, beautiful.groups_radius)
     end,
-    widget = wibox.container.background
+    widget = bindings.widget(wibox.container.background, { bg = 'groups_bg' })
 }
 
 function email_report:get_viewport_height() return visible_height end

@@ -1,3 +1,4 @@
+local bindings = require('theme.bindings')
 local wibox = require('wibox')
 local gears = require('gears')
 local awful = require('awful')
@@ -38,11 +39,9 @@ local notif_center = function(s)
             bottom = dpi(2),
             widget = wibox.container.margin,
         },
-        bg = beautiful.accent or beautiful.bg_focus,
-        fg = beautiful.fg_focus or beautiful.fg_normal,
         shape = gears.shape.rounded_bar,
         visible = false,
-        widget = wibox.container.background,
+        widget = bindings.widget(wibox.container.background, { bg = 'accent', fg = 'fg_focus' }),
     }
 
     local function update_notif_count(count)
@@ -83,9 +82,8 @@ local notif_center = function(s)
     local scrollbar_thumb = wibox.widget {
         forced_width = dpi(4),
         forced_height = dpi(30),
-        bg = beautiful.fg_normal .. 'AA',
         shape = gears.shape.rounded_bar,
-        widget = wibox.container.background,
+        widget = bindings.widget(wibox.container.background, { bg = 'scrollbar_thumb' }),
     }
 
     -- Scrollbar container
@@ -98,10 +96,9 @@ local notif_center = function(s)
     local scrollbar_track = wibox.widget {
         scrollbar_container,
         forced_width = dpi(6),
-        bg = beautiful.bg_focus .. '40',
         shape = gears.shape.rounded_bar,
         visible = false,
-        widget = wibox.container.background,
+        widget = bindings.widget(wibox.container.background, { bg = 'scrollbar_track' }),
     }
 
     -- Scroll content container with margin for offset
@@ -262,11 +259,10 @@ local notif_center = function(s)
             margins = dpi(10),
             widget = wibox.container.margin
         },
-        bg = beautiful.groups_bg,
         shape = function(cr, w, h)
             gears.shape.rounded_rect(cr, w, h, beautiful.groups_radius)
         end,
-        widget = wibox.container.background
+        widget = bindings.widget(wibox.container.background, { bg = 'groups_bg' })
     }
     function report:get_viewport_height() return visible_height end
 

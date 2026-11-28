@@ -1,13 +1,38 @@
-local gtable = require('gears.table')
-local default_theme = require('theme.default-theme')
+local beautiful = require('beautiful')
+local bindings = require('theme.bindings')
+local theme = {}
+local settings, active
 
--- PICK THEME HERE
-local theme = require('theme.solarized-light-theme')
+local function apply(preference)
+    local mode = preference == 'prefer-light' and 'light' or 'dark'
+    if mode == active then return end
+    local defaults = require('theme.default-theme')
+    local variant = require('theme.solarized-' .. mode .. '-theme')
+    local palette = {}
+    for key, value in pairs(defaults.theme) do palette[key] = value end
+    for key, value in pairs(variant.theme) do palette[key] = value end
+    defaults.awesome_overrides(palette)
+    variant.awesome_overrides(palette)
+    beautiful.init(palette)
+    active = mode
+    bindings.refresh()
+end
 
-local final_theme = {}
-gtable.crush(final_theme, default_theme.theme, true)
-gtable.crush(final_theme, theme.theme, true)
-default_theme.awesome_overrides(final_theme)
-theme.awesome_overrides(final_theme)
+function theme.start()
+    if active then return end
+    local Gio = require('lgi').Gio
+    local source = Gio.SettingsSchemaSource.get_default()
+    local schema = source and source:lookup('org.gnome.desktop.interface', true)
+    if not schema or not schema:has_key('color-scheme') then
+        apply(nil)
+        return
+    end
+    settings = Gio.Settings.new_full(schema, nil, nil)
+    local function changed()
+        apply(settings:get_string('color-scheme'))
+    end
+    settings.on_changed['color-scheme'] = changed
+    changed()
+end
 
-return final_theme
+return theme

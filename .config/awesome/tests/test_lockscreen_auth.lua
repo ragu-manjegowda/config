@@ -289,8 +289,8 @@ assert_test(
 )
 
 assert_test(
-    source:match("local fingerprint_text_widget%s*=%s*wibox%.widget%s*{%s*bg%s*=%s*beautiful%.bg_normal") ~= nil and
-    source:match("local ext_fingerprint_text_widget%s*=%s*wibox%.widget%s*{%s*bg%s*=%s*beautiful%.bg_normal") ~= nil,
+    source:match("local fingerprint_text_widget%s*=%s*wibox%.widget%s*{[^}]-bg = 'bg_normal'") ~= nil and
+    source:match("local ext_fingerprint_text_widget%s*=%s*wibox%.widget%s*{[^}]-bg = 'bg_normal'") ~= nil,
     "Fingerprint instructions use a contrasting background on every screen"
 )
 

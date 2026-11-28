@@ -1,5 +1,6 @@
 -- This returns the "Wow, such empty." message.
 
+local symbolic = require('theme.symbolic')
 local wibox = require('wibox')
 local beautiful = require('beautiful')
 
@@ -22,7 +23,7 @@ local function new_empty_notifbox()
                     resize = true,
                     forced_height = dpi(35),
                     forced_width = dpi(35),
-                    widget = wibox.widget.imagebox,
+                    widget = symbolic.imagebox,
                 },
                 nil
             },

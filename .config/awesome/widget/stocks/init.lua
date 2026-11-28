@@ -1,3 +1,5 @@
+local symbolic = require('theme.symbolic')
+local bindings = require('theme.bindings')
 local awful = require('awful')
 local wibox = require('wibox')
 local gears = require('gears')
@@ -41,7 +43,7 @@ local refresh_icon = wibox.widget {
     resize = true,
     forced_height = dpi(14),
     forced_width = dpi(14),
-    widget = wibox.widget.imagebox
+    widget = symbolic.imagebox
 }
 
 local refresh_button = wibox.widget {
@@ -53,9 +55,8 @@ local refresh_button = wibox.widget {
         },
         widget = clickable_container,
     },
-    bg = beautiful.accent,
     shape = gears.shape.circle,
-    widget = wibox.container.background,
+    widget = bindings.widget(wibox.container.background, { bg = 'accent' }),
 }
 
 -- Layout for stock items
@@ -106,11 +107,10 @@ local function create_stock_card(symbol)
             margins = dpi(10),
             widget = wibox.container.margin
         },
-        bg = beautiful.background,
         shape = function(cr, w, h)
             gears.shape.rounded_rect(cr, w, h, beautiful.groups_radius)
         end,
-        widget = wibox.container.background,
+        widget = bindings.widget(wibox.container.background, { bg = 'background' }),
     }
 
     local card = wibox.widget {
@@ -118,8 +118,7 @@ local function create_stock_card(symbol)
             -- Accent left border
             {
                 forced_width = dpi(4),
-                bg = beautiful.accent,
-                widget = wibox.container.background,
+                widget = bindings.widget(wibox.container.background, { bg = 'accent' }),
             },
             -- Content area with inner background
             {
@@ -132,12 +131,11 @@ local function create_stock_card(symbol)
             },
             layout = wibox.layout.align.horizontal,
         },
-        bg = beautiful.groups_bg,
         shape = function(cr, w, h)
             gears.shape.rounded_rect(cr, w, h, beautiful.groups_radius)
         end,
         forced_height = STOCK_HEIGHT,
-        widget = wibox.container.background,
+        widget = bindings.widget(wibox.container.background, { bg = 'groups_bg' }),
     }
 
     return {
@@ -164,9 +162,8 @@ local visible_height = MAX_HEIGHT
 local scrollbar_thumb = wibox.widget {
     forced_width = dpi(4),
     forced_height = dpi(30),
-    bg = beautiful.fg_normal .. 'AA',
     shape = gears.shape.rounded_bar,
-    widget = wibox.container.background,
+    widget = bindings.widget(wibox.container.background, { bg = 'scrollbar_thumb' }),
 }
 
 local scrollbar_container = wibox.widget {
@@ -178,10 +175,9 @@ local scrollbar_container = wibox.widget {
 local scrollbar_track = wibox.widget {
     scrollbar_container,
     forced_width = dpi(6),
-    bg = beautiful.bg_focus .. '40',
     shape = gears.shape.rounded_bar,
     visible = false,
-    widget = wibox.container.background,
+    widget = bindings.widget(wibox.container.background, { bg = 'scrollbar_track' }),
 }
 
 -- Scroll content container
@@ -316,9 +312,7 @@ local set_refreshing_state = function()
     for i, _ in ipairs(stocks_symbols) do
         local widget_set = stock_cards[i]
         if widget_set then
-            widget_set.price_widget:set_markup(
-                '<span foreground="' .. beautiful.fg_normal ..
-                '">Refreshing...</span>')
+            widget_set.price_widget:set_text('Refreshing...')
         end
     end
 end
@@ -382,7 +376,7 @@ local update_stocks = function(show_refreshing)
 
                 -- Format price display
                 local price_str
-                local change_color = beautiful.fg_normal
+                local change_color
                 if price and price > 0 then
                     local abs_change = math.abs(change)
                     local abs_pct = math.abs(change_pct)
@@ -411,14 +405,13 @@ local update_stocks = function(show_refreshing)
                     extended_info = extended_info .. string.format(" | Post: $%.2f", data.postmarket)
                 end
 
-                widget_set.price_widget:set_markup(
-                    '<span foreground="' .. change_color .. '">' ..
-                    price_str .. '</span>')
-
-                widget_set.status_widget:set_markup(
-                    '<span foreground="' ..
-                    beautiful.fg_normal .. '">' .. xml_escape(status) ..
-                    extended_info .. '</span>')
+                if change_color then
+                    widget_set.price_widget:set_markup(
+                        '<span foreground="' .. change_color .. '">' .. price_str .. '</span>')
+                else
+                    widget_set.price_widget:set_text(price_str)
+                end
+                widget_set.status_widget:set_text(status .. extended_info)
                 finish_update()
             end
         )
@@ -485,11 +478,10 @@ local stocksbox = wibox.widget {
         margins = dpi(10),
         widget = wibox.container.margin
     },
-    bg = beautiful.groups_bg,
     shape = function(cr, w, h)
         gears.shape.rounded_rect(cr, w, h, beautiful.groups_radius)
     end,
-    widget = wibox.container.background
+    widget = bindings.widget(wibox.container.background, { bg = 'groups_bg' })
 }
 
 function stocksbox:get_viewport_height() return visible_height end

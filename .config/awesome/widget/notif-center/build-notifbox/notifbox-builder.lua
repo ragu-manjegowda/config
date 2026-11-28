@@ -1,3 +1,4 @@
+local bindings = require('theme.bindings')
 local wibox = require('wibox')
 local awful = require('awful')
 local gears = require('gears')
@@ -79,7 +80,7 @@ local notifbox_box = function(notif, icon, title, message, app, _, notifbox_core
             {
                 layout = wibox.layout.fixed.horizontal,
                 spacing = dpi(5),
-                builder.notifbox_icon(icon),
+                builder.notifbox_icon(icon, notif.app_icon),
                 builder.notifbox_appname(app),
             },
             nil,
@@ -109,11 +110,10 @@ local notifbox_box = function(notif, icon, title, message, app, _, notifbox_core
             margins = dpi(10),
             widget = wibox.container.margin
         },
-        bg = beautiful.background,
         shape = function(cr, width, height)
             gears.shape.rounded_rect(cr, width, height, beautiful.groups_radius)
         end,
-        widget = wibox.container.background,
+        widget = bindings.widget(wibox.container.background, { bg = 'background' }),
     }
 
     -- Put the generated template to a container with accent-colored left border
@@ -122,8 +122,7 @@ local notifbox_box = function(notif, icon, title, message, app, _, notifbox_core
             -- Accent left border
             {
                 forced_width = dpi(4),
-                bg = beautiful.accent,
-                widget = wibox.container.background,
+                widget = bindings.widget(wibox.container.background, { bg = 'accent' }),
             },
             -- Content area with inner background
             {
@@ -136,11 +135,10 @@ local notifbox_box = function(notif, icon, title, message, app, _, notifbox_core
             },
             layout = wibox.layout.align.horizontal,
         },
-        bg = beautiful.groups_bg,
         shape = function(cr, width, height)
             gears.shape.rounded_rect(cr, width, height, beautiful.groups_radius)
         end,
-        widget = wibox.container.background
+        widget = bindings.widget(wibox.container.background, { bg = 'groups_bg' })
     }
     register_age(notifbox, notifbox_timepop, created_at)
     notifbox:connect_signal('widget::dismiss', function()
@@ -188,9 +186,9 @@ local notifbox_box = function(notif, icon, title, message, app, _, notifbox_core
     -- This tells the app to open the relevant content (tab, conversation, etc.)
     local invoke_default_action = function()
         if lifecycle.invoke_default(
-            notif,
-            naughty.notification_closed_reason.dismissed_by_user
-        ) then
+                notif,
+                naughty.notification_closed_reason.dismissed_by_user
+            ) then
             notif = nil
             return true
         end
@@ -262,7 +260,7 @@ local notifbox_box = function(notif, icon, title, message, app, _, notifbox_core
     notifbox_template:connect_signal(
         'mouse::enter',
         function()
-            notifbox.bg = beautiful.groups_bg
+            bindings.bind(notifbox, { bg = 'groups_bg' })
             notifbox_timepop.visible = false
             notifbox_dismiss.visible = true
         end
@@ -271,7 +269,7 @@ local notifbox_box = function(notif, icon, title, message, app, _, notifbox_core
     notifbox_template:connect_signal(
         'mouse::leave',
         function()
-            notifbox.bg = beautiful.transparent
+            bindings.bind(notifbox, { bg = 'transparent' })
             notifbox_timepop.visible = true
             notifbox_dismiss.visible = false
         end

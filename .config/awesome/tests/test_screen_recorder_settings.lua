@@ -10,7 +10,9 @@ package.loaded.awful = {
     keygrabber = function(args)
         keygrabber = args
         function args:start() self.started = true end
+
         function args:stop() self.started = false end
+
         return args
     end
 }
@@ -21,12 +23,15 @@ package.loaded.gears = {
 local function fake_button(source)
     local label = { text = '' }
     function label:set_text(value) self.text = value end
+
     local button = {}
     function button:get_children_by_id(id)
         if id == source .. '_source_label' then return { label } end
         return {}
     end
+
     function button:buttons(value) self.binding = value[1] end
+
     button.label = label
     return button
 end
@@ -43,9 +48,11 @@ local source_controller = {
 function source_controller:available(source)
     return source ~= 'external' and source ~= 'both'
 end
+
 function source_controller:resolve()
     return self.state.region
 end
+
 function source_controller:save()
     self.saved = true
     return true
@@ -53,10 +60,13 @@ end
 
 local area = { text = '' }
 function area:set_text(value) self.text = value end
+
 local source_hint = { text = '' }
 function source_hint:set_text(value) self.text = value end
+
 local cancel_hint = { text = '' }
 function cancel_hint:set_text(value) self.text = value end
+
 local escaped = false
 local area_requested
 
@@ -67,8 +77,9 @@ local settings = require("widget.screen-recorder.screen-recorder-settings").new 
     source_hint = source_hint,
     cancel_hint = cancel_hint,
     dpi = function(value) return value end,
-    accent = 'accent',
-    transparent = 'transparent',
+    set_selected_border = function(button, selected)
+        button.shape_border_color = selected and 'accent' or 'transparent'
+    end,
     summary = function() return '800x600 at 10,20' end,
     can_update = function() return true end,
     on_select_area = function() area_requested = true end,

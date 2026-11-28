@@ -1,3 +1,5 @@
+local symbolic = require('theme.symbolic')
+local bindings = require('theme.bindings')
 local awful = require('awful')
 local gears = require('gears')
 local wibox = require('wibox')
@@ -132,13 +134,12 @@ local build_power_button = function(name, icon, callback)
                 {
                     {
                         image = icon,
-                        widget = wibox.widget.imagebox
+                        widget = symbolic.imagebox
                     },
                     margins = dpi(16),
                     widget = wibox.container.margin
                 },
-                bg = beautiful.groups_bg,
-                widget = wibox.container.background
+                widget = bindings.widget(wibox.container.background, { bg = 'groups_bg' })
             },
             shape = gears.shape.rounded_rect,
             forced_width = dpi(90),
@@ -246,13 +247,12 @@ local create_exit_screen = function(s)
             type = 'splash',
             visible = false,
             ontop = true,
-            bg = beautiful.background,
-            fg = beautiful.fg_normal,
             height = s.geometry.height,
             width = s.geometry.width,
             x = s.geometry.x,
             y = s.geometry.y
         }
+    bindings.bind(s.exit_screen, { bg = 'background', fg = 'fg_normal' })
 
     s.exit_screen:buttons(
         gears.table.join(

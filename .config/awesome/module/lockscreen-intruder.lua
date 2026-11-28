@@ -1,3 +1,4 @@
+local bindings = require('theme.bindings')
 local awful = require('awful')
 local beautiful = require('beautiful')
 local gears = require('gears')
@@ -71,9 +72,8 @@ function intruder.attach(s)
                 margins = dpi(20),
                 widget = wibox.container.margin
             },
-            bg = beautiful.background,
             shape = gears.shape.rounded_rect,
-            widget = wibox.container.background
+            widget = bindings.widget(wibox.container.background, { bg = 'background' })
         },
         bg = beautiful.transparent,
         type = 'utility',

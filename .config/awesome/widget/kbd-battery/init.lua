@@ -1,3 +1,4 @@
+local symbolic = require('theme.symbolic')
 local awful = require('awful')
 local beautiful = require('beautiful')
 local gears = require('gears')
@@ -124,7 +125,7 @@ local return_button = function()
         nil,
         {
             image = icon_dir .. 'kinesis-left-cropped.svg',
-            widget = wibox.widget.imagebox,
+            widget = symbolic.imagebox,
             resize = true
         },
         nil,
@@ -144,7 +145,7 @@ local return_button = function()
         nil,
         {
             image = icon_dir .. 'kinesis-right-cropped.svg',
-            widget = wibox.widget.imagebox,
+            widget = symbolic.imagebox,
             resize = true
         },
         nil,

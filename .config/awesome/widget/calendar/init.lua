@@ -11,6 +11,8 @@
 -- @github      ragu-manjegowda
 -------------------------------------------------
 
+local symbolic            = require('theme.symbolic')
+local bindings            = require('theme.bindings')
 local awful               = require("awful")
 local beautiful           = require("beautiful")
 local wibox               = require("wibox")
@@ -23,13 +25,6 @@ local config              = require('configuration.config')
 local config_dir          = gears.filesystem.get_configuration_dir()
 local widget_icon_dir     = config_dir .. 'widget/calendar/icons/'
 local dpi                 = beautiful.xresources.apply_dpi
-
-local bg                  = beautiful.transparent
-local fg                  = beautiful.fg_normal
-local focus_date_bg       = beautiful.accent
-local focus_date_fg       = beautiful.fg_focus
-local weekend_day_bg      = beautiful.fg_normal
-local weekend_day_fg      = beautiful.groups_bg
 
 local start_sunday        = false
 local state               = navigation.new(os.date('*t'))
@@ -61,9 +56,8 @@ local function text_button(text, callback)
     }
     button = wibox.widget {
         button,
-        bg = beautiful.background,
         shape = gears.shape.rounded_bar,
-        widget = wibox.container.background,
+        widget = bindings.widget(wibox.container.background, { bg = 'background' }),
     }
     button:buttons(gears.table.join(awful.button({}, 1, nil, callback)))
     return button
@@ -98,7 +92,6 @@ end
 
 styles.month = {
     padding = 4,
-    bg_color = bg,
     border_width = 0,
 }
 
@@ -108,21 +101,17 @@ styles.normal = {
 }
 
 styles.focus = {
-    fg_color = focus_date_fg,
-    bg_color = focus_date_bg,
+    fg_color = 'fg_focus',
+    bg_color = 'accent',
     markup = function(t) return '<b>' .. t .. '</b>' end,
     shape = rounded_shape(4)
 }
 
 styles.header = {
-    fg_color = fg,
-    bg_color = bg,
     markup = function(t) return '<b>' .. t .. '</b>' end
 }
 
 styles.weekday = {
-    fg_color = fg,
-    bg_color = bg,
     markup = function(t) return '<b>' .. t .. '</b>' end,
 }
 
@@ -149,19 +138,19 @@ local function decorate_cell(widget, flag, date)
     local weekday = tonumber(os.date('%w', os.time(d)))
     local is_weekend = (weekday == 0 or weekday == 6)
         and (flag == 'normal' or flag == 'weekday')
-    local cell_bg = is_weekend and weekend_day_bg or (props.bg_color or bg)
-    local cell_fg = is_weekend and weekend_day_fg or (props.fg_color or fg)
+    local cell_bg = is_weekend and 'fg_normal' or (props.bg_color or 'transparent')
+    local cell_fg = is_weekend and 'groups_bg' or (props.fg_color or 'fg_normal')
     local entries = (flag == 'normal' or flag == 'focus') and holiday_dates[navigation.key(date)] or nil
-    local border_color, border_width = props.border_color or '#000000', props.border_width or 0
+    local border_role, border_width = nil, props.border_width or 0
     if entries then
-        border_color = beautiful.system_cyan_light
+        border_role = 'system_cyan_light'
         for _, event in ipairs(entries) do
-            if event.source == 'work' then border_color = beautiful.system_magenta_light end
+            if event.source == 'work' then border_role = 'system_magenta_light' end
         end
         border_width = dpi(2)
     elseif state.day == date.day and state.month == date.month and state.year == date.year
         and flag == 'normal' then
-        border_color, border_width = beautiful.accent, dpi(1)
+        border_role, border_width = 'accent', dpi(1)
     end
     local ret = wibox.widget {
         {
@@ -174,12 +163,10 @@ local function decorate_cell(widget, flag, date)
             widget = wibox.container.margin
         },
         shape = props.shape,
-        border_color = border_color,
         border_width = border_width,
-        fg = cell_fg,
-        bg = cell_bg,
         widget = wibox.container.background
     }
+    bindings.bind(ret, { bg = cell_bg, fg = cell_fg, border_color = border_role })
 
     if entries then
         ret:connect_signal('mouse::enter', function()
@@ -217,7 +204,7 @@ local function nav_button(icon_path)
                     resize = true,
                     forced_width = dpi(20),
                     forced_height = dpi(20),
-                    widget = wibox.widget.imagebox,
+                    widget = symbolic.imagebox,
                 },
                 margins = dpi(4),
                 widget = wibox.container.margin,
@@ -226,9 +213,8 @@ local function nav_button(icon_path)
         },
         forced_width = dpi(28),
         forced_height = dpi(28),
-        bg = beautiful.accent,
         shape = gears.shape.circle,
-        widget = wibox.container.background,
+        widget = bindings.widget(wibox.container.background, { bg = 'accent' }),
     }
 end
 
@@ -275,13 +261,11 @@ local prompt_card = wibox.widget {
         widget = wibox.container.margin,
     },
     id = 'calendar_date_input_card',
-    bg = beautiful.background,
-    fg = beautiful.fg_normal,
-    border_color = beautiful.background,
     border_width = 0,
     shape = gears.shape.rounded_bar,
     widget = wibox.container.background,
 }
+bindings.bind(prompt_card, { bg = 'background', fg = 'fg_normal', border_color = 'background' })
 local date_tooltip = awful.tooltip {
     objects = { prompt_card }, mode = 'outside', align = 'right',
     preferred_positions = { 'top', 'bottom', 'right', 'left' },
@@ -313,7 +297,7 @@ local function reset_prompt_ui()
     prompt_box.text = ''
     prompt_row.visible = false
     prompt_error.visible = false
-    prompt_card.border_color = beautiful.background
+    bindings.bind(prompt_card, { border_color = 'background' })
     prompt_card.border_width = 0
     date_tooltip.visible = false
     restore_input_cursor()
@@ -332,7 +316,7 @@ prompt_grabber = awful.keygrabber {
             else
                 prompt_error.text = 'Enter a valid YYYY-MM-DD, YYYY-MM or YYYY'
                 prompt_error.visible = true
-                prompt_card.border_color = beautiful.system_red_light or beautiful.accent
+                bindings.bind(prompt_card, { border_color = 'system_red_light' })
                 prompt_card.border_width = dpi(1)
             end
             return
@@ -348,7 +332,7 @@ prompt_grabber = awful.keygrabber {
             end
         end
         prompt_error.visible = false
-        prompt_card.border_color = beautiful.background
+        bindings.bind(prompt_card, { border_color = 'background' })
         prompt_card.border_width = 0
         caret_visible = true
         update_prompt_text()
@@ -385,7 +369,7 @@ begin_prompt = function()
     prompt_grabber:start()
     if awful.keygrabber.current_instance ~= prompt_grabber then return end
     prompt_error.visible = false
-    prompt_card.border_color = beautiful.background
+    bindings.bind(prompt_card, { border_color = 'background' })
     prompt_card.border_width = 0
     date_input = ''
     caret_visible = true

@@ -1,3 +1,4 @@
+local symbolic = require('theme.symbolic')
 local wibox = require('wibox')
 local awful = require('awful')
 local gears = require('gears')
@@ -33,7 +34,7 @@ local return_button = function()
         {
             id = 'icon',
             image = widget_icon_dir .. 'battery' .. '.svg',
-            widget = wibox.widget.imagebox,
+            widget = symbolic.imagebox,
             resize = true
         },
         nil,
@@ -196,10 +197,7 @@ local return_button = function()
             battery_widget.spacing = dpi(0)
             battery_percentage_text.visible = false
             battery_tooltip:set_text('Battery status unavailable!')
-            battery_imagebox.icon:set_image(
-                gears.surface.load_uncached(
-                ---@diagnostic disable-next-line: param-type-mismatch
-                    widget_icon_dir .. 'battery-unknown.svg'))
+            battery_imagebox.icon:set_image(widget_icon_dir .. 'battery-unknown.svg')
             return
         end
 
@@ -220,10 +218,7 @@ local return_button = function()
         if (status == 'fully-charged' or status == 'charging') and
             battery_percentage == 100 then
             icon_name = icon_name .. '-fully-charged'
-            battery_imagebox.icon:set_image(
-                gears.surface.load_uncached(
-                ---@diagnostic disable-next-line: param-type-mismatch
-                    widget_icon_dir .. icon_name .. '.svg'))
+            battery_imagebox.icon:set_image(widget_icon_dir .. icon_name .. '.svg')
             return
         end
 
@@ -237,10 +232,7 @@ local return_button = function()
         if battery_percentage > 0 and battery_percentage < 20 then
             if status == 'discharging' then
                 icon_name = icon_name .. '-alert-red'
-                battery_imagebox.icon:set_image(
-                    gears.surface.load_uncached(
-                    ---@diagnostic disable-next-line: param-type-mismatch
-                        widget_icon_dir .. icon_name .. '.svg'))
+                battery_imagebox.icon:set_image(widget_icon_dir .. icon_name .. '.svg')
                 return
             else
                 icon_name = icon_name .. '-' .. icon_status .. '-10'
@@ -263,10 +255,7 @@ local return_button = function()
             icon_name = icon_name .. '-' .. icon_status .. '-100'
         end
 
-        battery_imagebox.icon:set_image(
-            gears.surface.load_uncached(
-            ---@diagnostic disable-next-line: param-type-mismatch
-                widget_icon_dir .. icon_name .. '.svg'))
+        battery_imagebox.icon:set_image(widget_icon_dir .. icon_name .. '.svg')
     end
 
     -- Create the battery widget (wrapped in pcall for CI environment):

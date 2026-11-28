@@ -1,3 +1,4 @@
+local bindings = require('theme.bindings')
 local awful = require('awful')
 local wibox = require('wibox')
 local gears = require('gears')
@@ -22,11 +23,10 @@ local format_item = function(widget)
             widget = wibox.container.margin
         },
         forced_height = dpi(88),
-        bg = beautiful.groups_bg,
         shape = function(cr, width, height)
             gears.shape.rounded_rect(cr, width, height, beautiful.groups_radius)
         end,
-        widget = wibox.container.background
+        widget = bindings.widget(wibox.container.background, { bg = 'groups_bg' })
     }
 end
 
@@ -43,11 +43,10 @@ local format_item_no_fix_height = function(widget)
             margins = dpi(10),
             widget = wibox.container.margin
         },
-        bg = beautiful.groups_bg,
         shape = function(cr, width, height)
             gears.shape.rounded_rect(cr, width, height, beautiful.groups_radius)
         end,
-        widget = wibox.container.background
+        widget = bindings.widget(wibox.container.background, { bg = 'groups_bg' })
     }
 end
 
@@ -174,11 +173,10 @@ local control_center = function(s)
                 widget = wibox.container.margin
             },
             id = 'control_center',
-            bg = beautiful.background,
             shape = function(cr, w, h)
                 gears.shape.rounded_rect(cr, w, h, beautiful.groups_radius)
             end,
-            widget = wibox.container.background
+            widget = bindings.widget(wibox.container.background, { bg = 'background' })
         },
         screen = s,
         type = 'dock',
@@ -187,11 +185,11 @@ local control_center = function(s)
         width = panel_width,
         maximum_width = panel_width,
         bg = beautiful.transparent,
-        fg = beautiful.fg_normal,
         shape = function(cr, width, height)
             gears.shape.rounded_rect(cr, width, height, beautiful.groups_radius)
         end,
     }
+    bindings.bind(panel, { fg = 'fg_normal' })
 
     center_geometry.bind(panel, s, 'top_right')
 

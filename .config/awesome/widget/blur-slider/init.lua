@@ -1,3 +1,5 @@
+local symbolic = require('theme.symbolic')
+local bindings = require('theme.bindings')
 local wibox = require('wibox')
 local gears = require('gears')
 local awful = require('awful')
@@ -21,7 +23,7 @@ local icon = wibox.widget {
     {
         image = icons.effects,
         resize = true,
-        widget = wibox.widget.imagebox
+        widget = symbolic.imagebox
     },
     nil
 }
@@ -35,11 +37,10 @@ local action_level = wibox.widget {
         },
         widget = clickable_container,
     },
-    bg = beautiful.groups_bg,
     shape = function(cr, width, height)
         gears.shape.rounded_rect(cr, width, height, beautiful.groups_radius)
     end,
-    widget = wibox.container.background
+    widget = bindings.widget(wibox.container.background, { bg = 'groups_bg' })
 }
 local slider = wibox.widget {
     nil,
@@ -47,15 +48,16 @@ local slider = wibox.widget {
         id                  = 'blur_strength_slider',
         bar_shape           = gears.shape.rounded_rect,
         bar_height          = dpi(24),
-        bar_color           = beautiful.background,
-        bar_active_color    = beautiful.accent,
-        handle_color        = beautiful.accent,
         handle_shape        = gears.shape.circle,
         handle_width        = dpi(24),
-        handle_border_color = beautiful.background,
         handle_border_width = dpi(1),
         maximum             = 100,
-        widget              = wibox.widget.slider
+        widget              = bindings.widget(wibox.widget.slider, {
+            bar_color = 'background',
+            bar_active_color = 'accent',
+            handle_color = 'accent',
+            handle_border_color = 'background',
+        })
     },
     nil,
     expand = 'none',

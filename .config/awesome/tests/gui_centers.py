@@ -82,7 +82,10 @@ class CenterGuiFixture(unittest.TestCase):
             GUI_CONFIG=str(settings),
             GUI_STATE=str(self.state_file),
             GUI_DPI=dpi,
+            GSETTINGS_BACKEND="memory",
         )
+        if self._testMethodName == "test_live_theme_preserves_open_center":
+            self.environment["GUI_INITIAL_SCHEME"] = "prefer-light"
         if self._testMethodName == "test_offline_missing_hardware_and_recovery":
             self.environment["GUI_SCENARIO"] = "offline"
         read_fd, write_fd = os.pipe()
@@ -262,6 +265,101 @@ class CenterGuiFixture(unittest.TestCase):
 
 
 class CenterGuiTests(CenterGuiFixture):
+    def test_email_popup_fits_unread_icon(self):
+        self.lua("""
+            local widgets = require('wibox').widget
+            local alpha = require('lgi').cairo.Format.A8
+            local popup = require('widget.notification-icon').popup
+            local path = require('gears.filesystem').get_configuration_dir() .. 'widget/email/icons/email-unread.svg'
+            local reference = widgets.imagebox(path)
+            local function save_mask(view, size, name)
+                local mask = widgets.draw_to_image_surface(view, size, size, alpha)
+                mask:write_to_png(os.getenv('XDG_RUNTIME_DIR') .. '/' .. name .. size .. '.png')
+            end
+            for _, size in ipairs({ 32, 64 }) do
+                local message = require('naughty').notification {
+                    app_name = 'Email', icon = path, icon_size = size, ignore = true,
+                }
+                assert(reference.source_width > size)
+                save_mask(reference, size, 'expected')
+                save_mask(popup(message), size, 'popup')
+                message:destroy()
+            end
+        """)
+        runtime = Path(self.environment["XDG_RUNTIME_DIR"])
+        for size in (32, 64):
+            self.assertTrue(
+                (runtime / f"popup{size}.png").read_bytes()
+                == (runtime / f"expected{size}.png").read_bytes(),
+                f"Unread envelope clipped at {size}px",
+            )
+
+    def test_live_theme_preserves_open_center(self):
+        self.open("info")
+        self.lua("""
+            local panel = screen.primary.info_center
+            local section = gui_test.targets.email_section
+            local surface = assert(panel.widget:get_children_by_id('info_center')[1])
+            local colors = require('gears.color')
+            local theme = require('beautiful')
+            local indicator = require('awful').widget.layoutbox { screen = screen.primary }
+            require('widget.layoutbox')(screen.primary)
+            local layout_icon = indicator.imagebox
+            local png = theme.layout_tile
+            local native = require('wibox').widget.imagebox(png)
+            local alert = require('widget.notification-icon')
+            local root_dir = require('gears.filesystem').get_configuration_dir()
+            local touchpad = root_dir .. 'theme/icons/touchpad/input-touchpad-disabled.svg'
+            local message = require('gears.object')()
+            message.icon = touchpad
+            local icon_view = alert.popup(message)
+            local own_icon = icon_view.widget
+            assert(own_icon._private.symbolic_source == touchpad)
+            message.icon = png
+            message:emit_signal('property::icon')
+            assert(icon_view.widget ~= own_icon and icon_view.widget.set_notification)
+            message.icon = touchpad
+            message:emit_signal('property::icon')
+            assert(icon_view.widget == own_icon and not alert.source('/usr/share/icons/firefox.svg'))
+            local widget = require('wibox').widget
+            local function image_bytes(box)
+                local pixels = widget.draw_to_image_surface(box, 32, 32)
+                local path = os.getenv('XDG_RUNTIME_DIR') .. '/theme-probe.png'
+                pixels:write_to_png(path)
+                local file = assert(io.open(path, 'rb'))
+                local bytes = file:read('*a')
+                file:close()
+                return bytes
+            end
+            local original_art = image_bytes(native)
+            local expected = {}
+            local alert_ink = {}
+            function gui_test.check_theme(ink, background)
+                assert(panel == screen.primary.info_center and panel.visible and panel.opened)
+                assert(section == require('widget.email') and section == gui_test.targets.email_section)
+                assert(theme.fg_normal == ink and theme.background == background)
+                assert(colors.to_rgba_string(surface.bg) == colors.to_rgba_string(background))
+                assert(colors.to_rgba_string(section.bg) == colors.to_rgba_string(theme.groups_bg))
+                local bytes = image_bytes(layout_icon)
+                assert(image_bytes(native) == original_art)
+                if expected[ink] then assert(bytes == expected[ink]) end
+                for other, previous in pairs(expected) do
+                    if other ~= ink then
+                        assert(bytes ~= previous and image_bytes(own_icon) ~= alert_ink[other])
+                    end
+                end
+                expected[ink] = bytes
+                alert_ink[ink] = image_bytes(own_icon)
+            end
+            gui_test.check_theme('#073642', '#fdf6e366')
+        """)
+        for mode, ink, background in (
+            ("prefer-dark", "#eee8d5", "#002b3666"),
+            ("prefer-light", "#073642", "#fdf6e366"),
+        ):
+            self.lua(f"assert(gui_test.settings:set_string('color-scheme', '{mode}'))")
+            self.lua(f"gui_test.check_theme('{ink}', '{background}')")
+
     def test_centers_fit_and_real_keymaps_are_exclusive(self):
         for name, other in (("control", "info"), ("info", "control")):
             state = self.open(name)

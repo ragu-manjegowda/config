@@ -3,7 +3,7 @@ FROM archlinux:latest
 RUN pacman -Syu --noconfirm --needed base-devel git lua cairo pango gdk-pixbuf2 \
     xcb-util-cursor xcb-util-keysyms xcb-util-wm xcb-util-xrm libxdg-basedir libxkbcommon-x11 \
     startup-notification xorg-server-xvfb dbus imagemagick ttf-hack-nerd upower playerctl \
-    libcanberra gtk3 python xdotool
+    libcanberra gtk3 gsettings-desktop-schemas python xdotool
 RUN useradd -m -s /bin/bash builder \
     && printf 'builder ALL=(ALL) NOPASSWD: ALL\n' > /etc/sudoers.d/gui-builder \
     && chmod 440 /etc/sudoers.d/gui-builder

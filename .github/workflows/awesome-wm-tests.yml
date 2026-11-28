@@ -289,6 +289,7 @@ jobs:
         run: |
           pacman -S --noconfirm \
             lua \
+            gsettings-desktop-schemas \
             cairo \
             pango \
             gdk-pixbuf2 \
@@ -336,6 +337,9 @@ jobs:
         run: |
           cd "$GITHUB_WORKSPACE"
           HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/test_screen_recorder_storage.lua
+
+      - name: Test live theme with Lua and LGI
+        run: GSETTINGS_BACKEND=memory HOME="$GITHUB_WORKSPACE" lua .config/awesome/tests/live_theme_lgi.lua
 
       - name: Test configuration with awesome --check
         run: |
@@ -419,6 +423,7 @@ jobs:
         run: |
           pacman -S --noconfirm \
             luajit \
+            gsettings-desktop-schemas \
             cairo \
             pango \
             gdk-pixbuf2 \
@@ -506,6 +511,9 @@ jobs:
         run: |
           cd "$GITHUB_WORKSPACE"
           HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/test_screen_recorder_storage.lua
+
+      - name: Test live theme with LuaJIT and LGI
+        run: GSETTINGS_BACKEND=memory HOME="$GITHUB_WORKSPACE" luajit .config/awesome/tests/live_theme_lgi.lua
 
       - name: Test LuaJIT weak-signal proxy bookkeeping
         run: |
@@ -1048,6 +1056,9 @@ jobs:
           cd "$GITHUB_WORKSPACE"
           bash .config/awesome/tests/test_imapnotify_timeout.sh
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_vpn_status.sh
+
+      - name: Test power profile policy and monitor
+        run: |
           HOME="$GITHUB_WORKSPACE" bash .config/awesome/tests/test_power_profile.sh
           HOME="$GITHUB_WORKSPACE" python .config/awesome/tests/test_power_profile_monitor.py
 

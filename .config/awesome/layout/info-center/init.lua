@@ -1,3 +1,4 @@
+local bindings = require('theme.bindings')
 local awful = require('awful')
 local wibox = require('wibox')
 local gears = require('gears')
@@ -38,11 +39,10 @@ local info_center = function(s)
                 widget = wibox.container.margin
             },
             id = 'info_center',
-            bg = beautiful.background,
             shape = function(cr, w, h)
                 gears.shape.rounded_rect(cr, w, h, beautiful.groups_radius)
             end,
-            widget = wibox.container.background
+            widget = bindings.widget(wibox.container.background, { bg = 'background' })
         },
         screen = s,
         type = 'dock',
@@ -51,11 +51,11 @@ local info_center = function(s)
         width = panel_width,
         maximum_width = panel_width,
         bg = beautiful.transparent,
-        fg = beautiful.fg_normal,
         shape = function(cr, w, h)
             gears.shape.rounded_rect(cr, w, h, beautiful.groups_radius)
         end,
     }
+    bindings.bind(panel, { fg = 'fg_normal' })
 
     center_geometry.bind(panel, s, 'top_right')
 

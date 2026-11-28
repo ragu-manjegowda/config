@@ -1,3 +1,5 @@
+local symbolic = require('theme.symbolic')
+local bindings = require('theme.bindings')
 local awful = require('awful')
 local gears = require('gears')
 local wibox = require('wibox')
@@ -29,15 +31,16 @@ local slider_osd = wibox.widget {
         id                  = 'vol_osd_slider',
         bar_shape           = gears.shape.rounded_rect,
         bar_height          = dpi(24),
-        bar_color           = beautiful.groups_bg,
-        bar_active_color    = beautiful.fg_focus,
-        handle_color        = beautiful.fg_focus,
         handle_shape        = gears.shape.circle,
         handle_width        = dpi(24),
-        handle_border_color = beautiful.background,
         handle_border_width = dpi(1),
         maximum             = 100,
-        widget              = wibox.widget.slider
+        widget              = bindings.widget(wibox.widget.slider, {
+            bar_color = 'groups_bg',
+            bar_active_color = 'fg_focus',
+            handle_color = 'fg_focus',
+            handle_border_color = 'background',
+        })
     },
     nil,
     expand = 'none',
@@ -99,7 +102,7 @@ awesome.connect_signal(
 local vol_icon = wibox.widget {
     image = icons.volume,
     resize = true,
-    widget = wibox.widget.imagebox
+    widget = symbolic.imagebox
 }
 
 local icon = wibox.widget {
@@ -137,6 +140,7 @@ screen.connect_signal(
             preferred_positions = { 'left', 'right', 'top', 'bottom' }
         }
 
+        bindings.bind(s.volume_osd_overlay, { fg = 'fg_normal' })
         s.volume_osd_overlay:setup {
             {
                 {
@@ -169,9 +173,8 @@ screen.connect_signal(
                 right = dpi(24),
                 widget = wibox.container.margin
             },
-            bg = beautiful.groups_bg .. "44",
             shape = gears.shape.rounded_rect,
-            widget = wibox.container.background()
+            widget = bindings.widget(wibox.container.background, { bg = 'osd_bg' })
         }
 
         -- Remove overlay when mouse right clicked
@@ -232,14 +235,14 @@ awesome.connect_signal(
         if output and output ~= display_audio.output() then return end
         if muted then
             vol_icon:set_image(icons.volume_muted)
-            vol_osd_slider.bar_active_color = beautiful.background_light
-            vol_osd_slider.handle_color = beautiful.background_light
-            awful.screen.focused().volume_osd_overlay.fg = beautiful.background_light
+            bindings.bind(vol_osd_slider, { bar_active_color = 'background_light' })
+            bindings.bind(vol_osd_slider, { handle_color = 'background_light' })
+            bindings.bind(awful.screen.focused().volume_osd_overlay, { fg = 'background_light' })
         else
             vol_icon:set_image(icons.volume)
-            vol_osd_slider.bar_active_color = beautiful.fg_focus
-            vol_osd_slider.handle_color = beautiful.fg_focus
-            awful.screen.focused().volume_osd_overlay.fg = beautiful.fg_focus
+            bindings.bind(vol_osd_slider, { bar_active_color = 'fg_focus' })
+            bindings.bind(vol_osd_slider, { handle_color = 'fg_focus' })
+            bindings.bind(awful.screen.focused().volume_osd_overlay, { fg = 'fg_focus' })
         end
     end
 )

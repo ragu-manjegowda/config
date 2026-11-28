@@ -1,3 +1,6 @@
+local symbolic = require('theme.symbolic')
+local notification_icon = require('widget.notification-icon')
+local bindings = require('theme.bindings')
 local wibox = require('wibox')
 local beautiful = require('beautiful')
 local naughty = require('naughty')
@@ -34,18 +37,19 @@ local function bounded_textbox(text, font, max_height)
 end
 
 -- Notification icon container
-ui_noti_builder.notifbox_icon = function(ico_image)
+ui_noti_builder.notifbox_icon = function(ico_image, app_icon)
+    local path = notification_icon.source(ico_image) or notification_icon.source(app_icon)
     local noti_icon = wibox.widget {
         {
             id = 'icon',
             resize = true,
             forced_height = dpi(25),
             forced_width = dpi(25),
-            widget = wibox.widget.imagebox
+            widget = path and symbolic.imagebox or wibox.widget.imagebox
         },
         layout = wibox.layout.fixed.horizontal
     }
-    noti_icon.icon:set_image(ico_image)
+    noti_icon.icon:set_image(path or ico_image)
     return noti_icon
 end
 
@@ -91,10 +95,9 @@ ui_noti_builder.notifbox_actions = function(n)
                     },
                     widget = clickable_container
                 },
-                bg            = beautiful.groups_bg,
                 shape         = gears.shape.rounded_rect,
                 forced_height = 30,
-                widget        = wibox.container.background
+                widget        = bindings.widget(wibox.container.background, { bg = 'groups_bg' })
             },
             margins = 4,
             widget  = wibox.container.margin
@@ -115,7 +118,7 @@ ui_noti_builder.notifbox_dismiss = function()
             image = widget_icon_dir .. 'delete.svg',
             resize = true,
             forced_height = dpi(5),
-            widget = wibox.widget.imagebox
+            widget = symbolic.imagebox
         },
         layout = wibox.layout.fixed.horizontal
     }
@@ -132,18 +135,17 @@ ui_noti_builder.notifbox_dismiss = function()
     local notifbox_dismiss = wibox.widget {
         dismiss_button,
         visible = false,
-        bg = beautiful.accent,
         shape = gears.shape.circle,
-        widget = wibox.container.background
+        widget = bindings.widget(wibox.container.background, { bg = 'accent' })
     }
 
     -- Change background on hover
     notifbox_dismiss:connect_signal('mouse::enter', function()
-        notifbox_dismiss.bg = beautiful.groups_title_bg
+        bindings.bind(notifbox_dismiss, { bg = 'groups_title_bg' })
     end)
 
     notifbox_dismiss:connect_signal('mouse::leave', function()
-        notifbox_dismiss.bg = beautiful.accent
+        bindings.bind(notifbox_dismiss, { bg = 'accent' })
     end)
 
     return notifbox_dismiss

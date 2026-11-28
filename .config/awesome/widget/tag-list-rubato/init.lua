@@ -1,3 +1,5 @@
+local symbolic = require('theme.symbolic')
+local bindings = require('theme.bindings')
 local awful = require("awful")
 local beautiful = require("beautiful")
 local xresources = require("beautiful.xresources")
@@ -13,25 +15,25 @@ local function get_taglist(s)
     local update_tags = function(self, c3)
         self:get_children_by_id("tag_id")[1].image = c3.icon
         if c3.selected then
-            self:get_children_by_id("indicator_id")[1].bg = beautiful.taglist_bg_focus
+            bindings.bind(self:get_children_by_id("indicator_id")[1], { bg = 'taglist_bg_focus' })
             self.anim.target = 34
         else
             -- this can also be s.clients if only visible client needs to be included
             for _, c in ipairs(screen_for_taglist.all_clients) do
                 for _, t in ipairs(c:tags()) do
                     if c3 == t and c.urgent then
-                        self:get_children_by_id("indicator_id")[1].bg = beautiful.taglist_bg_urgent
+                        bindings.bind(self:get_children_by_id("indicator_id")[1], { bg = 'taglist_bg_urgent' })
                         self.anim.target = 34
                         return
                     elseif c3 == t then
-                        self:get_children_by_id("indicator_id")[1].bg = beautiful.taglist_bg_occupied
+                        bindings.bind(self:get_children_by_id("indicator_id")[1], { bg = 'taglist_bg_occupied' })
                         self.anim.target = 25
                         return
                     end
                 end
             end
 
-            self:get_children_by_id("indicator_id")[1].bg = beautiful.taglist_bg_empty
+            bindings.bind(self:get_children_by_id("indicator_id")[1], { bg = 'taglist_bg_empty' })
             self.anim.target = 8
         end
     end
@@ -48,7 +50,7 @@ local function get_taglist(s)
                     {
                         {
                             id = 'tag_id',
-                            widget = wibox.widget.imagebox,
+                            widget = symbolic.imagebox,
                         },
                         layout = wibox.layout.fixed.horizontal,
                     },

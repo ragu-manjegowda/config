@@ -1,3 +1,5 @@
+local symbolic = require('theme.symbolic')
+local bindings = require('theme.bindings')
 local wibox = require('wibox')
 local gears = require('gears')
 local awful = require('awful')
@@ -20,7 +22,7 @@ local icon = wibox.widget {
     {
         image = icons.harddisk,
         resize = true,
-        widget = wibox.widget.imagebox
+        widget = symbolic.imagebox
     },
     nil
 }
@@ -31,24 +33,21 @@ local meter_icon = wibox.widget {
         margins = dpi(5),
         widget = wibox.container.margin
     },
-    bg = beautiful.groups_bg,
     shape = function(cr, width, height)
         gears.shape.rounded_rect(cr, width, height, beautiful.groups_radius)
     end,
-    widget = wibox.container.background
+    widget = bindings.widget(wibox.container.background, { bg = 'groups_bg' })
 }
 
 local slider = wibox.widget {
     nil,
     {
-        id               = 'hdd_usage',
-        max_value        = 100,
-        value            = 29,
-        forced_height    = dpi(24),
-        color            = beautiful.fg_focus,
-        background_color = beautiful.background,
-        shape            = gears.shape.rounded_rect,
-        widget           = wibox.widget.progressbar
+        id            = 'hdd_usage',
+        max_value     = 100,
+        value         = 29,
+        forced_height = dpi(24),
+        shape         = gears.shape.rounded_rect,
+        widget        = bindings.widget(wibox.widget.progressbar, { color = 'fg_focus', background_color = 'background' })
     },
     nil,
     expand = 'none',

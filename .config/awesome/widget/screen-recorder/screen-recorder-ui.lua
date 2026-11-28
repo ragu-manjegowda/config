@@ -1,3 +1,5 @@
+local symbolic = require('theme.symbolic')
+local bindings = require('theme.bindings')
 local gears = require('gears')
 local wibox = require('wibox')
 local beautiful = require('beautiful')
@@ -9,11 +11,11 @@ local record_tbl = {}
 local function accent_hover(widget)
     widget:connect_signal('mouse::enter', function()
         widget.shape_border_width = dpi(2)
-        widget.shape_border_color = beautiful.accent
+        bindings.bind(widget, { shape_border_color = 'accent' })
     end)
     widget:connect_signal('mouse::leave', function()
         widget.shape_border_width = dpi(0)
-        widget.shape_border_color = beautiful.transparent
+        bindings.bind(widget, { shape_border_color = 'transparent' })
     end)
 end
 
@@ -21,7 +23,7 @@ end
 record_tbl.screen_rec_toggle_imgbox = wibox.widget {
     image = recorder_icons.normal('start-recording-button'),
     resize = true,
-    widget = wibox.widget.imagebox
+    widget = symbolic.imagebox
 }
 
 record_tbl.screen_rec_toggle_button = wibox.widget {
@@ -46,7 +48,7 @@ record_tbl.screen_rec_countdown_txt = wibox.widget {
 record_tbl.screen_rec_main_imgbox = wibox.widget {
     image = recorder_icons.normal('recorder-off'),
     resize = true,
-    widget = wibox.widget.imagebox
+    widget = symbolic.imagebox
 }
 
 record_tbl.screen_rec_main_button = wibox.widget {
@@ -61,9 +63,8 @@ record_tbl.screen_rec_main_button = wibox.widget {
         },
         forced_width = dpi(200),
         forced_height = dpi(200),
-        bg = beautiful.groups_bg,
         shape = gears.shape.circle,
-        widget = wibox.container.background
+        widget = bindings.widget(wibox.container.background, { bg = 'groups_bg' })
     },
     margins = dpi(24),
     widget = wibox.container.margin
@@ -72,7 +73,7 @@ record_tbl.screen_rec_main_button = wibox.widget {
 record_tbl.screen_rec_audio_imgbox = wibox.widget {
     image = recorder_icons.normal('audio'),
     resize = true,
-    widget = wibox.widget.imagebox
+    widget = symbolic.imagebox
 }
 
 record_tbl.screen_rec_audio_button = wibox.widget {
@@ -92,15 +93,14 @@ record_tbl.screen_rec_audio_button = wibox.widget {
     },
     forced_width = dpi(60),
     forced_height = dpi(60),
-    bg = beautiful.groups_bg,
     shape = gears.shape.circle,
-    widget = wibox.container.background
+    widget = bindings.widget(wibox.container.background, { bg = 'groups_bg' })
 }
 
 record_tbl.screen_rec_close_imgbox = wibox.widget {
     image = recorder_icons.normal('close-screen'),
     resize = true,
-    widget = wibox.widget.imagebox
+    widget = symbolic.imagebox
 }
 
 record_tbl.screen_rec_close_button = wibox.widget {
@@ -120,15 +120,14 @@ record_tbl.screen_rec_close_button = wibox.widget {
     },
     forced_width = dpi(60),
     forced_height = dpi(60),
-    bg = beautiful.groups_bg,
     shape = gears.shape.circle,
-    widget = wibox.container.background
+    widget = bindings.widget(wibox.container.background, { bg = 'groups_bg' })
 }
 
 record_tbl.screen_rec_settings_imgbox = wibox.widget {
     image = recorder_icons.normal('settings'),
     resize = true,
-    widget = wibox.widget.imagebox
+    widget = symbolic.imagebox
 }
 
 record_tbl.screen_rec_settings_button = wibox.widget {
@@ -149,15 +148,14 @@ record_tbl.screen_rec_settings_button = wibox.widget {
     },
     forced_width = dpi(60),
     forced_height = dpi(60),
-    bg = beautiful.groups_bg,
     shape = gears.shape.circle,
-    widget = wibox.container.background
+    widget = bindings.widget(wibox.container.background, { bg = 'groups_bg' })
 }
 
 record_tbl.screen_rec_back_imgbox = wibox.widget {
     image = recorder_icons.normal('back'),
     resize = true,
-    widget = wibox.widget.imagebox
+    widget = symbolic.imagebox
 }
 
 record_tbl.screen_rec_back_button = wibox.widget {
@@ -177,11 +175,10 @@ record_tbl.screen_rec_back_button = wibox.widget {
     },
     forced_width = dpi(48),
     forced_height = dpi(48),
-    bg = beautiful.groups_bg,
     shape = function(cr, width, height)
         gears.shape.rounded_rect(cr, width, height, beautiful.groups_radius)
     end,
-    widget = wibox.container.background
+    widget = bindings.widget(wibox.container.background, { bg = 'groups_bg' })
 }
 
 accent_hover(record_tbl.screen_rec_main_button:get_children()[1])
@@ -233,17 +230,16 @@ local function source_button(id, label)
         },
         forced_width = dpi(150),
         forced_height = dpi(44),
-        bg = beautiful.groups_bg,
         shape = function(cr, width, height)
             gears.shape.rounded_rect(cr, width, height, beautiful.groups_radius)
         end,
-        widget = wibox.container.background
+        widget = bindings.widget(wibox.container.background, { bg = 'groups_bg' })
     }
     local old_cursor, old_wibox
     button:connect_signal('mouse::enter', function()
         if button.available ~= false then
             button.shape_border_width = dpi(2)
-            button.shape_border_color = beautiful.accent
+            bindings.bind(button, { shape_border_color = 'accent' })
             local active_wibox = mouse.current_wibox
             if active_wibox then
                 old_cursor, old_wibox = active_wibox.cursor, active_wibox
@@ -253,17 +249,17 @@ local function source_button(id, label)
     end)
     button:connect_signal('mouse::leave', function()
         button.shape_border_width = button.selected and dpi(2) or dpi(0)
-        button.shape_border_color = button.selected and beautiful.accent or beautiful.transparent
+        bindings.bind(button, { shape_border_color = button.selected and 'accent' or 'transparent' })
         if old_wibox then
             old_wibox.cursor = old_cursor
             old_wibox = nil
         end
     end)
     button:connect_signal('button::press', function()
-        if button.available ~= false then button.bg = beautiful.press_event end
+        if button.available ~= false then bindings.bind(button, { bg = 'press_event' }) end
     end)
     button:connect_signal('button::release', function()
-        button.bg = beautiful.groups_bg
+        bindings.bind(button, { bg = 'groups_bg' })
     end)
     return button
 end
@@ -316,11 +312,10 @@ record_tbl.screen_rec_area_txtbox = wibox.widget {
     margins = dpi(10),
     forced_width = dpi(308),
     forced_height = dpi(44),
-    bg = beautiful.groups_bg,
     shape = function(cr, width, height)
         gears.shape.rounded_rect(cr, width, height, beautiful.groups_radius)
     end,
-    widget = wibox.container.background
+    widget = bindings.widget(wibox.container.background, { bg = 'groups_bg' })
 }
 
 record_tbl.screen_rec_area_hint = wibox.widget {
@@ -363,10 +358,9 @@ screen.connect_signal("request::desktop_decoration", function(s)
             width = s.geometry.width,
             x = s.geometry.x,
             y = s.geometry.y,
-            bg = beautiful.background,
-            fg = beautiful.fg_normal
         }
     )
+    bindings.bind(s.recorder_screen, { bg = 'background', fg = 'fg_normal' })
 
     s.recorder_screen:setup {
         layout = wibox.layout.stack,

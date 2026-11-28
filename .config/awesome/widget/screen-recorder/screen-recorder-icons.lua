@@ -1,24 +1,23 @@
 local gears = require('gears')
-local beautiful = require('beautiful')
 
 local icons = {}
 local directory = gears.filesystem.get_configuration_dir() ..
     'widget/screen-recorder/icons/'
 
-local function recolor(name, color)
-    return gears.color.recolor_image(directory .. name .. '.svg', color)
+local function icon(name, role)
+    return { path = directory .. name .. '.svg', role = role }
 end
 
 function icons.normal(name)
-    return recolor(name, beautiful.fg_normal)
+    return icon(name, 'fg_normal')
 end
 
 function icons.accent(name)
-    return recolor(name, beautiful.accent)
+    return icon(name, 'accent')
 end
 
 function icons.urgent(name)
-    return recolor(name, beautiful.bg_urgent)
+    return icon(name, 'bg_urgent')
 end
 
 return icons

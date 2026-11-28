@@ -395,7 +395,7 @@ assert_test(
 assert_test(
     calendar_source:match('local calendar_report%s*=%s*wibox%.widget') ~= nil and
     calendar_source:match('local calendar_report.-margins%s*=%s*dpi%(10%).-' ..
-        'bg%s*=%s*beautiful%.groups_bg.-return calendar_report') ~= nil,
+        "bg%s*=%s*'groups_bg'.-return calendar_report") ~= nil,
     "calendar header and events share the grouped Info Center background"
 )
 assert_test(
@@ -412,9 +412,8 @@ assert_test(
     calendar_source:match("awesome%.connect_signal%('info_center::visibility', function%(visible%)") ~= nil and
     calendar_source:match('if visible then%s+refresh%(%)') ~= nil and
     calendar_source:match('local refresh_button%s*=%s*wibox%.widget%s*{%s*{%s*{%s*refresh_icon') ~= nil and
-    calendar_source:match('bg%s*=%s*beautiful%.accent') ~= nil and
-    calendar_source:match('shape%s*=%s*gears%.shape%.circle') ~= nil and
-    calendar_source:match('widget%s*=%s*wibox%.container%.background') ~= nil,
+    calendar_source:match(
+        "shape%s*=%s*gears%.shape%.circle,.-bindings%.widget%(wibox%.container%.background, { bg = 'accent' }%)") ~= nil,
     "calendar refreshes when Info Center opens and uses the accent refresh button"
 )
 

@@ -1,4 +1,5 @@
 local home = assert(os.getenv('HOME'))
+package.path = home .. '/.config/awesome/?.lua;' .. package.path
 local signals = {}
 local status_callback
 local watches = {}
@@ -7,14 +8,16 @@ local imagebox
 local tooltip
 
 local function widget(attributes)
-    if attributes.widget == 'imagebox' then imagebox = attributes end
+    if attributes.widget == require('theme.symbolic').imagebox then imagebox = attributes end
     return attributes
 end
 package.loaded.awful = {
-    widget = { watch = function(_, _, callback)
-        status_callback = callback
-        return {}, { again = function() end }
-    end },
+    widget = {
+        watch = function(_, _, callback)
+            status_callback = callback
+            return {}, { again = function() end }
+        end
+    },
     spawn = {
         easy_async = function(argv, callback)
             watches[#watches + 1] = { argv = argv, callback = callback }
@@ -23,6 +26,7 @@ package.loaded.awful = {
     tooltip = function(attributes)
         tooltip = attributes
         function attributes:set_text(value) self.text = value end
+
         return attributes
     end,
 }
@@ -30,7 +34,9 @@ package.loaded.gears = {
     filesystem = { get_configuration_dir = function() return home .. '/.config/awesome/' end },
     timer = function(attributes)
         function attributes:again() self.running = true end
+
         function attributes:stop() self.running = false end
+
         timers[#timers + 1] = attributes
         return attributes
     end,

@@ -10,6 +10,8 @@
 -- ===================================================================
 
 
+local symbolic = require('theme.symbolic')
+local bindings = require('theme.bindings')
 local awful = require('awful')
 local wibox = require('wibox')
 local dpi = require('beautiful').xresources.apply_dpi
@@ -36,7 +38,7 @@ local function list_update(w, _, label, data, objects)
             ibm = cache.ibm
         else
             local icondpi = 5
-            ib = wibox.widget.imagebox()
+            ib = symbolic.imagebox()
             tb = wibox.widget.textbox()
             bgb = wibox.container.background()
             ibm = wibox.container.margin(ib, dpi(icondpi), dpi(icondpi), dpi(icondpi), dpi(icondpi))
@@ -82,12 +84,13 @@ end
 
 -- create the tag list widget
 tag_list.create = function(s)
-    return awful.widget.taglist {
+    local list = awful.widget.taglist {
         screen = s,
         filter = awful.widget.taglist.filter.noempty,
         update_function = list_update,
         layout = wibox.layout.fixed.horizontal(),
     }
+    return bindings.on_change(list, function(widget) widget._do_taglist_update() end)
 end
 
 return tag_list

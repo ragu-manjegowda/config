@@ -1,3 +1,5 @@
+local symbolic = require('theme.symbolic')
+local bindings = require('theme.bindings')
 local awful = require('awful')
 local gears = require('gears')
 local wibox = require('wibox')
@@ -55,11 +57,9 @@ local count_badge = wibox.widget {
         right = dpi(6),
         widget = wibox.container.margin,
     },
-    bg = beautiful.accent,
-    fg = beautiful.fg_focus,
     shape = gears.shape.rounded_bar,
     visible = false,
-    widget = wibox.container.background,
+    widget = bindings.widget(wibox.container.background, { bg = 'accent', fg = 'fg_focus' }),
 }
 
 local refresh_icon = wibox.widget {
@@ -67,7 +67,7 @@ local refresh_icon = wibox.widget {
     resize = true,
     forced_height = dpi(14),
     forced_width = dpi(14),
-    widget = wibox.widget.imagebox,
+    widget = symbolic.imagebox,
 }
 
 local refresh_button = wibox.widget {
@@ -79,9 +79,8 @@ local refresh_button = wibox.widget {
         },
         widget = clickable_container,
     },
-    bg = beautiful.accent,
     shape = gears.shape.circle,
-    widget = wibox.container.background,
+    widget = bindings.widget(wibox.container.background, { bg = 'accent' }),
 }
 
 local header_time = wibox.widget {
@@ -113,9 +112,8 @@ local snap_offsets = { 0 }
 local scrollbar_thumb = wibox.widget {
     forced_width = dpi(4),
     forced_height = dpi(30),
-    bg = beautiful.fg_normal .. 'AA',
     shape = gears.shape.rounded_bar,
-    widget = wibox.container.background,
+    widget = bindings.widget(wibox.container.background, { bg = 'scrollbar_thumb' }),
 }
 
 local scrollbar_container = wibox.widget {
@@ -127,10 +125,9 @@ local scrollbar_container = wibox.widget {
 local scrollbar_track = wibox.widget {
     scrollbar_container,
     forced_width = dpi(6),
-    bg = beautiful.bg_focus .. '40',
     shape = gears.shape.rounded_bar,
     visible = false,
-    widget = wibox.container.background,
+    widget = bindings.widget(wibox.container.background, { bg = 'scrollbar_track' }),
 }
 
 local function date_to_timestamp(date_text, time_text)
@@ -300,19 +297,17 @@ local function build_event_row(title_text, details_text, options)
             margins = dpi(10),
             widget = wibox.container.margin,
         },
-        bg = beautiful.background,
         shape = function(cr, w, h)
             gears.shape.rounded_rect(cr, w, h, beautiful.groups_radius)
         end,
-        widget = wibox.container.background,
+        widget = bindings.widget(wibox.container.background, { bg = 'background' }),
     }
 
     return wibox.widget {
         {
             {
                 forced_width = dpi(4),
-                bg = options.border_color or beautiful.accent,
-                widget = wibox.container.background,
+                widget = bindings.widget(wibox.container.background, { bg = options.border_role or 'accent' }),
             },
             {
                 card_inner,
@@ -322,12 +317,11 @@ local function build_event_row(title_text, details_text, options)
             },
             layout = wibox.layout.align.horizontal,
         },
-        bg = beautiful.groups_bg,
         shape = function(cr, w, h)
             gears.shape.rounded_rect(cr, w, h, beautiful.groups_radius)
         end,
         forced_height = options.height or EVENT_HEIGHT,
-        widget = wibox.container.background,
+        widget = bindings.widget(wibox.container.background, { bg = 'groups_bg' }),
     }
 end
 
@@ -349,16 +343,14 @@ local function event_row(event, concurrent_count)
                 bottom = dpi(2),
                 widget = wibox.container.margin,
             },
-            bg = beautiful.bg_focus,
             shape = gears.shape.rounded_bar,
-            widget = wibox.container.background,
+            widget = bindings.widget(wibox.container.background, { bg = 'bg_focus' }),
         }
     end
 
     return build_event_row(event.subject or '(No title)', event_details_text(event), {
         badge = badge,
         height = EVENT_HEIGHT,
-        border_color = beautiful.accent,
     })
 end
 
@@ -372,7 +364,7 @@ local function concurrent_detail_row(event, idx)
     return build_event_row(title, details, {
         height = SUB_EVENT_HEIGHT,
         title_height = TITLE_LINE_HEIGHT,
-        border_color = beautiful.fg_normal .. '88',
+        border_role = 'muted_border',
     })
 end
 
@@ -422,12 +414,11 @@ local function status_row(message)
             margins = dpi(12),
             widget = wibox.container.margin,
         },
-        bg = beautiful.background,
         shape = function(cr, w, h)
             gears.shape.rounded_rect(cr, w, h, beautiful.groups_radius)
         end,
         forced_height = EVENT_HEIGHT,
-        widget = wibox.container.background,
+        widget = bindings.widget(wibox.container.background, { bg = 'background' }),
     }
 end
 
@@ -809,11 +800,10 @@ local calendar_report = wibox.widget {
         margins = dpi(10),
         widget = wibox.container.margin,
     },
-    bg = beautiful.groups_bg,
     shape = function(cr, w, h)
         gears.shape.rounded_rect(cr, w, h, beautiful.groups_radius)
     end,
-    widget = wibox.container.background
+    widget = bindings.widget(wibox.container.background, { bg = 'groups_bg' })
 }
 
 function calendar_report:get_viewport_height() return visible_height end

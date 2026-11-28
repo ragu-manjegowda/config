@@ -1,3 +1,5 @@
+local symbolic = require('theme.symbolic')
+local bindings = require('theme.bindings')
 local awful = require('awful')
 local gears = require('gears')
 local wibox = require('wibox')
@@ -28,11 +30,9 @@ local slider_osd = wibox.widget {
     {
         bar_shape    = gears.shape.rounded_rect,
         bar_height   = dpi(24),
-        bar_color    = beautiful.groups_bg,
-        handle_color = beautiful.fg_focus,
         handle_shape = gears.shape.circle,
         handle_width = dpi(0),
-        widget       = wibox.widget.slider
+        widget       = bindings.widget(wibox.widget.slider, { bar_color = 'groups_bg', handle_color = 'fg_focus' })
     },
     nil,
     expand = 'none',
@@ -43,7 +43,7 @@ local icon = wibox.widget {
     {
         image = icons.microphone_high,
         resize = true,
-        widget = wibox.widget.imagebox
+        widget = symbolic.imagebox
     },
     forced_height = dpi(150),
     top = dpi(12),
@@ -77,6 +77,7 @@ screen.connect_signal(
             preferred_positions = { 'left', 'right', 'top', 'bottom' }
         }
 
+        bindings.bind(s.mic_osd_overlay, { fg = 'fg_normal' })
         s.mic_osd_overlay:setup {
             {
                 {
@@ -109,9 +110,8 @@ screen.connect_signal(
                 right = dpi(24),
                 widget = wibox.container.margin
             },
-            bg = beautiful.groups_bg .. "44",
             shape = gears.shape.rounded_rect,
-            widget = wibox.container.background()
+            widget = bindings.widget(wibox.container.background, { bg = 'osd_bg' })
         }
 
         -- Remove overlay when mouse right clicked

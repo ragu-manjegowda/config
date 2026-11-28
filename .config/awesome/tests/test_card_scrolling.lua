@@ -154,7 +154,7 @@ end
 local email = require('widget.email')
 local email_list
 for _, value in ipairs(nodes) do
-    if value.layout == 'vertical' and value.spacing == 5 and value.children[1] and value.children[1].widget == 'background' then
+    if value.id == 'email_list' then
         email_list = value; break
     end
 end
@@ -162,7 +162,7 @@ assert(email_list)
 local data = 'Unread Count: 4\n'
 for i = 1, 4 do
     data = data ..
-    'From: Example Sender ' .. i .. '\nSubject: Fixture message ' .. i .. '\nLocal Date: 2026-01-01 10:00:00\n'
+        'From: Example Sender ' .. i .. '\nSubject: Fixture message ' .. i .. '\nLocal Date: 2026-01-01 10:00:00\n'
 end
 signals['module::email:show'](); requests[#requests](data, '', 'exit', 0)
 assert(#email_list.children == 4 and email:get_minimum_viewport_height() == 88)

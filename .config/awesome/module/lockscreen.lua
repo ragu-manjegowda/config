@@ -1,3 +1,4 @@
+local bindings = require('theme.bindings')
 local wibox = require('wibox')
 local gears = require('gears')
 local awful = require('awful')
@@ -214,8 +215,7 @@ local fingerprint_text = wibox.widget {
 }
 
 local fingerprint_text_widget = wibox.widget {
-    bg = beautiful.bg_normal,
-    widget = wibox.container.background,
+    widget = bindings.widget(wibox.container.background, { bg = 'bg_normal' }),
     fingerprint_text
 }
 
@@ -308,9 +308,8 @@ local locker = function(s)
         type = 'splash',
         width = s.geometry.width,
         height = s.geometry.height,
-        bg = beautiful.bg_focus,
-        fg = beautiful.fg_normal
     }
+    bindings.bind(lockscreen, { bg = 'bg_focus', fg = 'fg_normal' })
 
     -- Update username textbox
     awful.spawn.easy_async_with_shell(
@@ -366,10 +365,10 @@ local locker = function(s)
                 local caps_on = stdout:match('on') ~= nil
                 if caps_on then
                     caps_text.opacity = 1.0
-                    caps_text_widget.bg = beautiful.accent
+                    bindings.bind(caps_text_widget, { bg = 'accent' })
                 else
                     caps_text.opacity = 0.0
-                    caps_text_widget.bg = beautiful.transparent
+                    bindings.bind(caps_text_widget, { bg = 'transparent' })
                 end
                 caps_text:emit_signal('widget::redraw_needed')
                 awesome.emit_signal('module::lockscreen_caps_state', caps_on)
@@ -658,8 +657,7 @@ local locker = function(s)
                         expand = 'none',
                         nil,
                         {
-                            bg     = beautiful.bg_normal,
-                            widget = wibox.container.background,
+                            widget = bindings.widget(wibox.container.background, { bg = 'bg_normal' }),
                             time
                         },
                         nil
@@ -690,8 +688,7 @@ local locker = function(s)
                         layout = wibox.layout.stack
                     },
                     {
-                        bg     = beautiful.bg_normal,
-                        widget = wibox.container.background,
+                        widget = bindings.widget(wibox.container.background, { bg = 'bg_normal' }),
                         uname_text
                     },
                     fingerprint_text_widget,
@@ -832,9 +829,8 @@ local locker_ext = function(s)
         y = s.geometry.y,
         width = s.geometry.width,
         height = s.geometry.height,
-        bg = beautiful.bg_focus,
-        fg = beautiful.fg_normal
     }
+    bindings.bind(extended_lockscreen, { bg = 'bg_focus', fg = 'fg_normal' })
 
     local ext_uname_text = wibox.widget {
         markup = current_user_name,
@@ -868,8 +864,7 @@ local locker_ext = function(s)
     }
 
     local ext_fingerprint_text_widget = wibox.widget {
-        bg = beautiful.bg_normal,
-        widget = wibox.container.background,
+        widget = bindings.widget(wibox.container.background, { bg = 'bg_normal' }),
         ext_fingerprint_text
     }
 
@@ -981,10 +976,10 @@ local locker_ext = function(s)
             if not is_active() then return end
             if caps_on then
                 ext_caps_text.opacity = 1.0
-                ext_caps_text_widget.bg = beautiful.accent
+                bindings.bind(ext_caps_text_widget, { bg = 'accent' })
             else
                 ext_caps_text.opacity = 0.0
-                ext_caps_text_widget.bg = beautiful.transparent
+                bindings.bind(ext_caps_text_widget, { bg = 'transparent' })
             end
             ext_caps_text:emit_signal('widget::redraw_needed')
         end
@@ -1020,8 +1015,7 @@ local locker_ext = function(s)
                         expand = 'none',
                         nil,
                         {
-                            bg = beautiful.bg_normal,
-                            widget = wibox.container.background,
+                            widget = bindings.widget(wibox.container.background, { bg = 'bg_normal' }),
                             ext_time
                         },
                         nil
@@ -1052,8 +1046,7 @@ local locker_ext = function(s)
                         layout = wibox.layout.stack
                     },
                     {
-                        bg = beautiful.bg_normal,
-                        widget = wibox.container.background,
+                        widget = bindings.widget(wibox.container.background, { bg = 'bg_normal' }),
                         ext_uname_text
                     },
                     ext_fingerprint_text_widget,

@@ -36,7 +36,7 @@ function settings.new(options)
             button.available, button.selected = available, selected
             button.opacity = available and 1 or 0.55
             button.shape_border_width = selected and options.dpi(2) or options.dpi(0)
-            button.shape_border_color = selected and options.accent or options.transparent
+            options.set_selected_border(button, selected)
             local label = button:get_children_by_id(source .. '_source_label')[1]
             local label_text = labels[source]
             if source == 'region' and state.region then label_text = 'Saved area' end

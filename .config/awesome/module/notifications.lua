@@ -1,3 +1,4 @@
+local bindings = require('theme.bindings')
 local gears = require('gears')
 local wibox = require('wibox')
 local awful = require('awful')
@@ -13,6 +14,7 @@ local retention = require('library.notification-retention')
 local lifecycle = require('library.notification-lifecycle')
 local popup_reflow = require('library.notification-popup-reflow')
 local notif_manager = require('widget.notif-center.build-notifbox')
+local notification_icon = require('widget.notification-icon')
 local displaying_error = false
 
 -- Keep strong references to notification popup widgets so they are not
@@ -222,12 +224,11 @@ end
 -- Apply theme variables
 naughty.config.padding = dpi(8)
 naughty.config.spacing = dpi(8)
-naughty.config.icon_dirs = {
-    '/usr/share/icons/Solarized-FLAT-Blue/',
-    '/usr/share/icons/Solarized-Dark-Green-Numix/',
-    '/usr/share/icons/hicolor/',
-    '/usr/share/pixmaps/'
-}
+bindings.bind(naughty.config, {
+    icon_dirs = function(_, theme)
+        return { '/usr/share/icons/' .. theme.icon_theme .. '/', '/usr/share/icons/hicolor/', '/usr/share/pixmaps/' }
+    end
+})
 
 naughty.config.icon_formats = { 'svg', 'png', 'jpg', 'gif' }
 
@@ -240,11 +241,11 @@ ruled.notification.connect_signal(
         ruled.notification.append_rule {
             rule       = { urgency = 'critical' },
             properties = {
-                font             = beautiful.font_bold(12),
-                bg               = beautiful.colors.red,
-                fg               = beautiful.colors.red,
-                margin           = dpi(16),
-                position         = 'top_left'
+                font     = beautiful.font_bold(12),
+                bg       = beautiful.colors.red,
+                fg       = beautiful.colors.red,
+                margin   = dpi(16),
+                position = 'top_left'
             }
         }
 
@@ -252,11 +253,11 @@ ruled.notification.connect_signal(
         ruled.notification.append_rule {
             rule       = { urgency = 'normal' },
             properties = {
-                font             = beautiful.font_regular(12),
-                bg               = beautiful.bg_focus,
-                fg               = beautiful.fg_normal,
-                margin           = dpi(16),
-                position         = 'top_left'
+                font     = beautiful.font_regular(12),
+                bg       = function() return beautiful.bg_focus end,
+                fg       = function() return beautiful.fg_normal end,
+                margin   = dpi(16),
+                position = 'top_left'
             }
         }
 
@@ -264,11 +265,11 @@ ruled.notification.connect_signal(
         ruled.notification.append_rule {
             rule       = { urgency = 'low' },
             properties = {
-                font             = beautiful.font_regular(12),
-                bg               = beautiful.transparent,
-                fg               = beautiful.fg_normal,
-                margin           = dpi(16),
-                position         = 'top_left'
+                font     = beautiful.font_regular(12),
+                bg       = beautiful.transparent,
+                fg       = function() return beautiful.fg_normal end,
+                margin   = dpi(16),
+                position = 'top_left'
             }
         }
 
@@ -423,10 +424,9 @@ naughty.connect_signal(
                         },
                         widget = clickable_container
                     },
-                    bg            = beautiful.bg_normal,
                     shape         = gears.shape.rounded_rect,
                     forced_height = dpi(30),
-                    widget        = wibox.container.background
+                    widget        = bindings.widget(wibox.container.background, { bg = 'bg_normal' })
                 },
                 margins = dpi(4),
                 widget  = wibox.container.margin
@@ -436,7 +436,10 @@ naughty.connect_signal(
         }
 
         local timeout_arc = wibox.widget({
-            widget = wibox.container.arcchart,
+            widget = bindings.widget(wibox.container.arcchart, {
+                bg = 'notification_bg',
+                colors = function(_, theme) return { theme.accent } end,
+            }),
             forced_width = dpi(26),
             forced_height = dpi(26),
             max_value = 100,
@@ -444,21 +447,6 @@ naughty.connect_signal(
             value = 0,
             thickness = dpi(4),
             rounded_edge = true,
-            bg = beautiful.notification_bg,
-            colors = {
-                {
-                    type = "linear",
-                    from = { 0, 0 },
-                    to = { 400, 400 },
-                    stops = {
-                        { 0,   beautiful.accent },
-                        { 0.2, beautiful.accent },
-                        { 0.4, beautiful.accent },
-                        { 0.6, beautiful.accent },
-                        { 0.8, beautiful.accent },
-                    },
-                },
-            },
             nil,
         })
 
@@ -501,21 +489,16 @@ naughty.connect_signal(
                                                     margins = beautiful.notification_margin,
                                                     widget  = wibox.container.margin,
                                                 },
-                                                bg     = beautiful.background:sub(1, 7),
-                                                widget = wibox.container.background,
+                                                widget = bindings.widget(wibox.container.background, { bg = 'opaque_background' }),
                                             },
                                             {
                                                 forced_height = dpi(2),
-                                                color         = beautiful.accent,
                                                 orientation   = 'horizontal',
-                                                widget        = wibox.widget.separator,
+                                                widget        = bindings.widget(wibox.widget.separator, { color = 'accent' }),
                                             },
                                             {
                                                 {
-                                                    {
-                                                        resize_strategy = 'center',
-                                                        widget = naughty.widget.icon,
-                                                    },
+                                                    notification_icon.popup(n),
                                                     margins = beautiful.notification_margin,
                                                     widget  = wibox.container.margin,
                                                 },
@@ -551,8 +534,7 @@ naughty.connect_signal(
                                         margins = dpi(0),
                                         widget  = wibox.container.margin,
                                     },
-                                    bg     = beautiful.background_light,
-                                    widget = wibox.container.background,
+                                    widget = bindings.widget(wibox.container.background, { bg = 'background_light' }),
                                 },
                                 -- Actions
                                 actions_template,
@@ -572,12 +554,12 @@ naughty.connect_signal(
                     width    = notif_w / 6,
                     widget   = wibox.container.constraint
                 },
-                bg = beautiful.background,
                 shape = gears.shape.rounded_rect,
                 border_width = dpi(2),
-                border_color = beautiful.accent,
                 border_strategy = 'inner',
-                widget = wibox.container.background
+                widget = bindings.widget(wibox.container.background, {
+                    bg = 'background', fg = 'fg_normal', border_color = 'accent',
+                })
             }
         }
 

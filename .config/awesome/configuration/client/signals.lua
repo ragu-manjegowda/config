@@ -1,5 +1,6 @@
 local awful = require('awful')
 local beautiful = require('beautiful')
+local bindings = require('theme.bindings')
 
 local update_client = function(c)
     -- Set client's shape based on its tag's layout and status (floating, maximized, etc.)
@@ -72,14 +73,14 @@ client.connect_signal(
 client.connect_signal(
     'focus',
     function(c)
-        c.border_color = beautiful.border_focus
+        bindings.bind(c, { border_color = 'border_focus' })
     end
 )
 
 client.connect_signal(
     'unfocus',
     function(c)
-        c.border_color = beautiful.border_normal
+        bindings.bind(c, { border_color = 'border_normal' })
     end
 )
 

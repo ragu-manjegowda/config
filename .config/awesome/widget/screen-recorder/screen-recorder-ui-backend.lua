@@ -1,3 +1,4 @@
+local bindings = require('theme.bindings')
 local awful = require('awful')
 local gears = require('gears')
 local naughty = require('naughty')
@@ -105,8 +106,9 @@ settings_controller = recorder_settings.new {
     source_hint = source_keys,
     cancel_hint = cancel_hint,
     dpi = dpi,
-    accent = beautiful.accent,
-    transparent = beautiful.transparent,
+    set_selected_border = function(button, selected)
+        bindings.bind(button, { shape_border_color = selected and 'accent' or 'transparent' })
+    end,
     summary = recorder_state.summary,
     can_update = function()
         return not status_recording and not status_countdown and not recorder_selector.active

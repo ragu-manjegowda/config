@@ -40,8 +40,11 @@ if ! pgrep -x "gsettings" > /dev/null
 then
     gsettings set org.gnome.desktop.interface icon-theme "Solarized-FLAT-Blue"
     gsettings set org.gnome.desktop.interface gtk-theme "NumixSolarizedLightBlue"
-    gsettings set org.gnome.desktop.interface color-scheme "prefer-light"
 fi
+
+# AwesomeWM watches color-scheme. Even a read-only gsettings monitor matches
+# the pgrep above, so always write the preference outside that guard.
+gsettings set org.gnome.desktop.interface color-scheme "prefer-light"
 
 /usr/bin/python3 "${XDG_CONFIG_HOME:-$HOME/.config}/scripts/toolkit-cursor.py"
 

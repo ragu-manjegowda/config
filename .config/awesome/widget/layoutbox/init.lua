@@ -1,13 +1,16 @@
 local wibox = require('wibox')
+local symbolic = require('theme.symbolic')
 local awful = require('awful')
 local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 local clickable_container = require('widget.clickable-container')
 
 local layout_box = function(s)
+    local indicator = awful.widget.layoutbox { screen = s }
+    symbolic.attach(indicator.imagebox)
     local layoutbox = wibox.widget {
         {
-            awful.widget.layoutbox(s),
+            indicator,
             margins = dpi(7),
             widget = wibox.container.margin
         },
@@ -49,4 +52,3 @@ local layout_box = function(s)
 end
 
 return layout_box
-

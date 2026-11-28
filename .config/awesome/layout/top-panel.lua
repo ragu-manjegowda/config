@@ -1,3 +1,4 @@
+local bindings = require('theme.bindings')
 local wibox = require('wibox')
 local gears = require('gears')
 local beautiful = require('beautiful')
@@ -37,8 +38,8 @@ local top_panel = function(s)
             y = s.geometry.y,
             stretch = false,
             bg = "#0000", -- fake transparency (uses wallpaper as background)
-            fg = beautiful.fg_normal
         }
+    bindings.bind(panel, { fg = 'fg_normal' })
 
     panel:struts
     {
@@ -95,9 +96,8 @@ local top_panel = function(s)
                             -- taglist,
                             tag_list.create(s),
                         },
-                        bg = beautiful.accent,
                         shape = gears.shape.rounded_rect,
-                        widget = wibox.container.background,
+                        widget = bindings.widget(wibox.container.background, { bg = 'accent' }),
                     },
                     vseparator,
                     {
@@ -106,9 +106,8 @@ local top_panel = function(s)
                                 layout = wibox.layout.fixed.horizontal,
                                 task_list(s),
                             },
-                            bg = beautiful.accent,
                             shape = gears.shape.rounded_rect,
-                            widget = wibox.container.background,
+                            widget = bindings.widget(wibox.container.background, { bg = 'accent' }),
                         },
                         right = dpi(7),
                         widget = wibox.container.margin,
@@ -126,9 +125,8 @@ local top_panel = function(s)
                     s.clock,
                 },
 
-                bg = beautiful.groups_bg,
                 shape = gears.shape.rounded_rect,
-                widget = wibox.container.background,
+                widget = bindings.widget(wibox.container.background, { bg = 'groups_bg' }),
             },
             {
                 {
@@ -151,10 +149,8 @@ local top_panel = function(s)
                     s.info_center_toggle
                 },
 
-                bg = beautiful.groups_bg,
-                fg = beautiful.fg_normal,
                 shape = gears.shape.rounded_rect,
-                widget = wibox.container.background,
+                widget = bindings.widget(wibox.container.background, { bg = 'groups_bg', fg = 'fg_normal' }),
             },
         },
         left = dpi(10),

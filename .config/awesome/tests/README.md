@@ -2,6 +2,12 @@
 
 Comprehensive test suite for AwesomeWM dotfiles configuration.
 
+The Lua and LuaJIT runtime jobs both run `GSETTINGS_BACKEND=memory <interpreter>
+~/.config/awesome/tests/live_theme_lgi.lua` with their matching LGI bindings. This
+exercises real GSettings notifications and checks rendered SVG pixels without X11 or
+access to your desktop settings. The center GUI suite also switches themes with a
+panel open and checks that its widgets and native artwork survive unchanged.
+
 ## Interactive center tests
 
 `gui_centers.py` is a dedicated GUI suite, separate from `test_*.lua` and
