@@ -55,9 +55,15 @@ export CARGO_EMAIL="raghavendrahm0410@gmail.com"
 # Sphinx-doc
 _path_append "$HOMEBREW_PATH/opt/sphinx-doc/bin"
 
-# Ruby
-export GEM_HOME="$(ruby -e 'print Gem.user_dir')"
-_path_append "$GEM_HOME/bin"
+if command -v ruby >/dev/null 2>&1 &&
+    _gem_home=$(ruby -rrubygems -e 'print Gem.user_dir'); then
+    export GEM_HOME="$_gem_home"
+    case ":$PATH:" in
+        *":$GEM_HOME/bin:"*) ;;
+        *) PATH="$PATH:$GEM_HOME/bin" ;;
+    esac
+fi
+unset _gem_home
 
 export PATH
 

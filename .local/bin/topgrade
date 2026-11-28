@@ -9,6 +9,7 @@ cache_home=${XDG_CACHE_HOME:-$HOME/.cache}
 npm_packages="$config_home/npm-backup/packages.in"
 npm_tool_commands="$config_home/npm-backup/package-tools.in"
 pip_packages="$config_home/pip-backup/packages.in"
+gem_packages="$config_home/gem-backup/packages.in"
 brewfile="$config_home/homebrew-backup/Brewfile"
 
 log() {
@@ -129,6 +130,25 @@ upgrade_pip_packages() {
     warn "uv and python3 not found; skipping $pip_packages"
 }
 
+upgrade_gem_packages() {
+    local package
+    local -a packages=()
+
+    [ -f "$gem_packages" ] || return 0
+    if ! have gem; then
+        warn "gem not found; skipping $gem_packages"
+        return 0
+    fi
+    while IFS= read -r -d '' package; do
+        packages+=("$package")
+    done < <(read_manifest "$gem_packages")
+    [ "${#packages[@]}" -gt 0 ] || return 0
+
+    log "Upgrading user gems from $gem_packages"
+    mkdir -p "$HOME/.local/bin"
+    gem install --user-install --bindir "$HOME/.local/bin" --no-document "${packages[@]}"
+}
+
 upgrade_homebrew_packages() {
     local package
     local -a greedy_outdated=()
@@ -177,8 +197,17 @@ run_npm_tool_commands() {
     done <"$npm_tool_commands"
 }
 
+if [[ ${BASH_SOURCE[0]} == "$0" && $# -gt 0 ]]; then
+    case "$*" in
+        --gems) upgrade_gem_packages; exit ;;
+        -h|--help) printf 'Usage: topgrade [--gems]\n'; exit 0 ;;
+        *) warn 'Usage: topgrade [--gems]'; exit 2 ;;
+    esac
+fi
+
 upgrade_npm_packages
 upgrade_pip_packages
+upgrade_gem_packages
 upgrade_homebrew_packages
 run_npm_tool_commands
 
