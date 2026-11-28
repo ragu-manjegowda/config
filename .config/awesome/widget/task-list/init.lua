@@ -1,6 +1,7 @@
 local symbolic = require('theme.symbolic')
 local bindings = require('theme.bindings')
 local awful = require('awful')
+local new_tooltip = require('theme.tooltip').new
 local wibox = require('wibox')
 local dpi = require('beautiful').xresources.apply_dpi
 local gears = require('gears')
@@ -120,7 +121,7 @@ local function list_update(w, buttons, label, data, objects)
             l:buttons(create_buttons(buttons, o))
 
             -- Tooltip to display whole title, if it was truncated
-            tt = awful.tooltip({
+            tt = new_tooltip({
                 objects = { tb },
                 mode = 'outside',
                 align = 'bottom',

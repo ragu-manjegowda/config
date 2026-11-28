@@ -6,7 +6,9 @@ The Lua and LuaJIT runtime jobs both run `GSETTINGS_BACKEND=memory <interpreter>
 ~/.config/awesome/tests/live_theme_lgi.lua` with their matching LGI bindings. This
 exercises real GSettings notifications and checks rendered SVG pixels without X11 or
 access to your desktop settings. The center GUI suite also switches themes with a
-panel open and checks that its widgets and native artwork survive unchanged.
+panel open and checks notification text, visible tooltips, scheduled wallpaper,
+and native artwork. Temporary XDG icon themes verify named notification and action
+icons after a light → dark → light switch without relying on installed icon packs.
 
 ## Interactive center tests
 

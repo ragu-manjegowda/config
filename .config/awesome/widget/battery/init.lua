@@ -1,6 +1,7 @@
 local symbolic = require('theme.symbolic')
 local wibox = require('wibox')
 local awful = require('awful')
+local new_tooltip = require('theme.tooltip').new
 local gears = require('gears')
 local beautiful = require('beautiful')
 local naughty = require('naughty')
@@ -70,7 +71,7 @@ local return_button = function()
         widget = wibox.container.background
     }
 
-    local battery_tooltip = awful.tooltip {
+    local battery_tooltip = new_tooltip {
         objects = { battery_button },
         text = 'None',
         mode = 'outside',

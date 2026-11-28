@@ -37,8 +37,8 @@ local function bounded_textbox(text, font, max_height)
 end
 
 -- Notification icon container
-ui_noti_builder.notifbox_icon = function(ico_image, app_icon)
-    local path = notification_icon.source(ico_image) or notification_icon.source(app_icon)
+ui_noti_builder.notifbox_icon = function(ico_image)
+    local path = notification_icon.source(ico_image)
     local noti_icon = wibox.widget {
         {
             id = 'icon',

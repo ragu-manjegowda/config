@@ -16,7 +16,7 @@ function icons.source(value)
     local path = value:gsub('^file://', ''):gsub('/+', '/')
     if path:sub(1, #root) ~= root then return nil end
     local relative = path:sub(#root + 1)
-    if relative == 'theme/icons/awesome.svg' or directories[relative:match('^(.+/)[%w_%-]+%.svg$')] then
+    if relative == 'theme/icons/awesome.svg' or directories[relative:match('^(.+/)[%w_+%-]+%.svg$')] then
         return path
     end
 end
@@ -28,7 +28,7 @@ function icons.popup(notification)
     local container = wibox.container.place()
     local glyph
     local function update()
-        local path = icons.source(notification.icon) or icons.source(notification.app_icon)
+        local path = icons.source(notification.icon or notification.app_icon)
         if path then
             glyph = glyph or symbolic.imagebox()
             local size = notification.icon_size or require('beautiful').notification_icon_size

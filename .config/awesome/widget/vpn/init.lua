@@ -1,5 +1,6 @@
 local symbolic = require('theme.symbolic')
 local awful = require('awful')
+local new_tooltip = require('theme.tooltip').new
 local gears = require('gears')
 local wibox = require('wibox')
 local beautiful = require('beautiful')
@@ -153,7 +154,7 @@ local return_button = function()
         widget = wibox.container.margin
     }
 
-    local tooltip = awful.tooltip {
+    local tooltip = new_tooltip {
         objects = { vpn_widget },
         text = 'VPN disconnected',
         mode = 'outside',

@@ -3,6 +3,7 @@ local bindings = require('theme.bindings')
 local wibox = require('wibox')
 local gears = require('gears')
 local awful = require('awful')
+local new_tooltip = require('theme.tooltip').new
 local beautiful = require('beautiful')
 local display_audio = require('library.display-audio')
 local dpi = beautiful.xresources.apply_dpi
@@ -77,7 +78,7 @@ slider_hover.attach(volume_slider)
 local is_programmatic_update = false
 local refresh_generation = 0
 local current_state = { available = false }
-local myvolumemeter_t = awful.tooltip { text = 'Audio device unavailable' }
+local myvolumemeter_t = new_tooltip { text = 'Audio device unavailable' }
 
 local function update_tooltip()
     if current_state.available then

@@ -1,5 +1,6 @@
 local bindings = require('theme.bindings')
 local awful = require('awful')
+local new_tooltip = require('theme.tooltip').new
 local wibox = require('wibox')
 local gears = require('gears')
 local beautiful = require('beautiful')
@@ -105,7 +106,7 @@ for _, profile in ipairs(profiles) do
         awful.button({}, 1, nil, function() select_profile(profile.key) end)
     ))
     buttons[profile.key] = button
-    awful.tooltip {
+    new_tooltip {
         objects = { button },
         text = profile.tooltip,
         mode = 'outside',

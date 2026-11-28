@@ -2,7 +2,7 @@ local symbolic = require('theme.symbolic')
 local bindings = require('theme.bindings')
 local wibox = require('wibox')
 local gears = require('gears')
-local awful = require('awful')
+local new_tooltip = require('theme.tooltip').new
 local beautiful = require('beautiful')
 local Gio = require('lgi').Gio
 local dpi = beautiful.xresources.apply_dpi
@@ -103,7 +103,7 @@ local harddrive_meter = wibox.widget {
     }
 }
 
-local myhdmeter_t = awful.tooltip {}
+local myhdmeter_t = new_tooltip {}
 
 myhdmeter_t:add_to_object(harddrive_meter)
 

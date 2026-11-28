@@ -2,7 +2,7 @@ local symbolic = require('theme.symbolic')
 local bindings = require('theme.bindings')
 local wibox = require('wibox')
 local gears = require('gears')
-local awful = require('awful')
+local new_tooltip = require('theme.tooltip').new
 local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 local icons = require('theme.icons')
@@ -123,7 +123,7 @@ local cpu_meter = wibox.widget {
     }
 }
 
-local mycpumeter_t = awful.tooltip {}
+local mycpumeter_t = new_tooltip {}
 
 mycpumeter_t:add_to_object(cpu_meter)
 

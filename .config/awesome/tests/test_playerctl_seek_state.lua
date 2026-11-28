@@ -1,6 +1,7 @@
 #!/usr/bin/env lua
 
 local emitted_positions = {}
+local emitted_metadata
 local fake_player = {
     player_name = 'test',
     playback_status = 'PAUSED',
@@ -9,15 +10,15 @@ local fake_player = {
 }
 
 function fake_player:get_title()
-    return 'Track'
+    return 'Rock <Live>'
 end
 
 function fake_player:get_artist()
-    return 'Artist'
+    return 'Hall & Oates'
 end
 
 function fake_player:get_album()
-    return 'Album'
+    return '"Greatest Hits"'
 end
 
 function fake_player:print_metadata_prop()
@@ -33,7 +34,9 @@ function fake_player:set_position(position)
 end
 
 function fake_player:play_pause() end
+
 function fake_player:previous() end
+
 function fake_player:next() end
 
 local manager = {
@@ -61,9 +64,11 @@ setmetatable(timer, {
         function args:start()
             self.started = true
         end
+
         function args:stop()
             self.started = false
         end
+
         return args
     end,
 })
@@ -79,18 +84,15 @@ package.loaded.awful = {
 package.loaded.gears = {
     object = function()
         return {
-            emit_signal = function(_, signal, position, length)
+            emit_signal = function(_, signal, first, second, artwork, album)
                 if signal == 'position' then
-                    emitted_positions[#emitted_positions + 1] = { position, length }
+                    emitted_positions[#emitted_positions + 1] = { first, second }
+                elseif signal == 'metadata' then
+                    emitted_metadata = { first, second, album }
                 end
             end,
         }
     end,
-    string = {
-        xml_escape = function(value)
-            return value
-        end,
-    },
     timer = timer,
 }
 
@@ -115,6 +117,8 @@ package.loaded.lgi = {
 }
 
 local service = dofile(os.getenv('HOME') .. '/.config/awesome/library/playerctl.lua')
+assert(emitted_metadata[1] == 'Rock <Live>' and emitted_metadata[2] == 'Hall & Oates'
+    and emitted_metadata[3] == '"Greatest Hits"', 'Metadata must be plain text, not Pango markup')
 service:set_position(400)
 
 fake_player.position = 0

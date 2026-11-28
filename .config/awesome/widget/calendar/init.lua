@@ -14,6 +14,7 @@
 local symbolic            = require('theme.symbolic')
 local bindings            = require('theme.bindings')
 local awful               = require("awful")
+local new_tooltip         = require('theme.tooltip').new
 local beautiful           = require("beautiful")
 local wibox               = require("wibox")
 local gears               = require("gears")
@@ -35,7 +36,7 @@ local holiday_dates       = {}
 local holiday_cells       = {}
 local sync_in_progress    = false
 local render, begin_prompt, refresh_holidays
-local holiday_tooltip     = awful.tooltip {
+local holiday_tooltip     = new_tooltip {
     mode = 'outside', align = 'right', text = '', preferred_positions = { 'top', 'bottom', 'right', 'left' },
 }
 
@@ -266,7 +267,7 @@ local prompt_card = wibox.widget {
     widget = wibox.container.background,
 }
 bindings.bind(prompt_card, { bg = 'background', fg = 'fg_normal', border_color = 'background' })
-local date_tooltip = awful.tooltip {
+local date_tooltip = new_tooltip {
     objects = { prompt_card }, mode = 'outside', align = 'right',
     preferred_positions = { 'top', 'bottom', 'right', 'left' },
     text = 'format: `yyyy-mm-dd` or `yyyy-mm` or `yyyy`'
@@ -392,7 +393,7 @@ end)
 prompt_card:connect_signal('mouse::leave', restore_input_cursor)
 
 local refresh_button = nav_button(config_dir .. 'widget/weather/icons/refresh.svg')
-local sync_tooltip = awful.tooltip {
+local sync_tooltip = new_tooltip {
     objects = { refresh_button }, text = 'Refresh US and available work holidays',
 }
 footer_actions = wibox.widget {

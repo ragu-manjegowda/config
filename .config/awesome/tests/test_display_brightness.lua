@@ -23,15 +23,21 @@ local function node(spec)
         n[k] = type(k) == 'number' and type(v) == 'table' and node(v) or v
     end
     function n:connect_signal(name, fn) self.handlers[name] = fn end
+
     function n:buttons() end
+
     function n:add_to_object() end
+
     function n:setup() end
+
     function n:get_value() return self.value end
+
     function n:set_value(value)
         if self.value == value then return end
         self.value = value
         if self.handlers['property::value'] then self.handlers['property::value']() end
     end
+
     local function visit(value)
         if type(value) ~= 'table' then return end
         if value.id then
@@ -44,17 +50,23 @@ local function node(spec)
     for index, child in pairs(n) do if type(index) == 'number' then visit(child) end end
     return n
 end
-local wibox = { widget = setmetatable({}, { __call = function(_, spec) return node(spec) end }),
-    layout = { align = {}, fixed = {} }, container = { background = function() end } }
+local wibox = {
+    widget = setmetatable({}, { __call = function(_, spec) return node(spec) end }),
+    layout = { align = {}, fixed = {} },
+    container = { background = function() end }
+}
 package.loaded.wibox = wibox
 package.loaded.gears = {
-    filesystem = { get_configuration_dir = function() return root end }, shape = {},
+    filesystem = { get_configuration_dir = function() return root end },
+    shape = {},
     debug = { print_warning = function() end },
     timer = function(spec)
         local timer = spec
         function timer:again() self.started = true end
+
         timer.start = timer.again
         function timer:stop() self.started = false end
+
         timers[#timers + 1] = timer
         return timer
     end,
@@ -62,12 +74,17 @@ package.loaded.gears = {
 package.loaded.awful = {
     screen = { focused = function() return focused end },
     spawn = { easy_async = function(argv, callback) calls[#calls + 1] = { argv = argv, callback = callback } end },
-    tooltip = function() return node() end, popup = function(spec) return node(spec) end,
+    tooltip = function() return node { backgroundbox = {} } end,
+    popup = function(spec) return node(spec) end,
     placement = { bottom = function() end },
-    button = function() end, util = { table = { join = function() end } },
+    button = function() end,
+    util = { table = { join = function() end } },
 }
-package.loaded.beautiful = { xresources = { apply_dpi = function(n) return n end },
-    font_bold = function() return '' end, groups_bg = '#000000' }
+package.loaded.beautiful = {
+    xresources = { apply_dpi = function(n) return n end },
+    font_bold = function() return '' end,
+    groups_bg = '#000000'
+}
 package.loaded['theme.icons'] = {}
 package.loaded['widget.clickable-container'] = {}
 package.loaded['widget.slider-hover'] = { attach = function() end }
@@ -75,7 +92,9 @@ package.loaded['configuration.config'] = { display = { primary = { name = 'eDP-1
 local decorations = {}
 _G.screen = { connect_signal = function(_, fn) decorations[#decorations + 1] = fn end }
 local brightness = require('library.display-brightness')
-local function flush() timers[1].started = false; timers[1].callback() end
+local function flush()
+    timers[1].started = false; timers[1].callback()
+end
 local function reply(index, value, code) calls[index].callback(tostring(value), '', 'exit', code or 0) end
 
 brightness.adjust(-10)
@@ -100,7 +119,9 @@ reply(3, 45)
 
 require('widget.brightness-slider')
 require('module.brightness-osd')
-for _, callback in ipairs(decorations) do callback(primary); callback(external) end
+for _, callback in ipairs(decorations) do
+    callback(primary); callback(external)
+end
 local slider = assert(nodes.brightness_slider)
 local osd = assert(nodes.bri_osd_slider)
 reply(4, 35)

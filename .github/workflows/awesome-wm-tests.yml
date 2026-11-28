@@ -424,6 +424,7 @@ jobs:
           pacman -S --noconfirm \
             luajit \
             gsettings-desktop-schemas \
+            gtk3 \
             cairo \
             pango \
             gdk-pixbuf2 \

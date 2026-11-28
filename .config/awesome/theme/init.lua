@@ -13,6 +13,7 @@ local function apply(preference)
     for key, value in pairs(variant.theme) do palette[key] = value end
     defaults.awesome_overrides(palette)
     variant.awesome_overrides(palette)
+    if active then palette.wallpaper = beautiful.wallpaper end
     beautiful.init(palette)
     active = mode
     bindings.refresh()

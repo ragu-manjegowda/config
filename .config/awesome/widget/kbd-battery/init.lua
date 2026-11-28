@@ -1,5 +1,6 @@
 local symbolic = require('theme.symbolic')
 local awful = require('awful')
+local new_tooltip = require('theme.tooltip').new
 local beautiful = require('beautiful')
 local gears = require('gears')
 local Gio = require('lgi').Gio
@@ -188,7 +189,7 @@ local return_button = function()
         widget = clickable_container
     }
 
-    local tooltip = awful.tooltip {
+    local tooltip = new_tooltip {
         objects = { battery_button },
         text = 'Kinesis Keyboard Battery\nDisconnected',
         mode = 'outside',

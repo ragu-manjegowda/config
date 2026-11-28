@@ -84,8 +84,20 @@ class CenterGuiFixture(unittest.TestCase):
             GUI_DPI=dpi,
             GSETTINGS_BACKEND="memory",
         )
-        if self._testMethodName == "test_live_theme_preserves_open_center":
+        if self._testMethodName.startswith("test_live_theme"):
             self.environment["GUI_INITIAL_SCHEME"] = "prefer-light"
+        if self._testMethodName == "test_live_theme_notifications":
+            self.environment["GUI_NOTIFICATIONS"] = "1"
+            for theme in ("Solarized-FLAT-Blue", "Solarized-Dark-Green-Numix"):
+                directory = Path(self.environment["XDG_DATA_HOME"]) / "icons" / theme
+                apps = directory / "32x32/apps"
+                apps.mkdir(parents=True)
+                (directory / "index.theme").write_text(
+                    f"[Icon Theme]\nName={theme}\nDirectories=32x32/apps\n"
+                    "[32x32/apps]\nSize=32\nType=Fixed\nContext=Applications\n"
+                )
+                for name in ("gui-notify", "gui-action"):
+                    shutil.copyfile(settings / "theme/icons/close.svg", apps / f"{name}.svg")
         if self._testMethodName == "test_offline_missing_hardware_and_recovery":
             self.environment["GUI_SCENARIO"] = "offline"
         read_fd, write_fd = os.pipe()
@@ -265,6 +277,24 @@ class CenterGuiFixture(unittest.TestCase):
 
 
 class CenterGuiTests(CenterGuiFixture):
+    def test_playerctl_displays_plain_metadata(self):
+        self.lua("""
+            local player = require('widget.playerctl')
+            local title, artist = 'Rock <Live>', 'Hall & Oates'
+            require('library.playerctl'):emit_signal('metadata', title, artist, '', '', 'fixture')
+            local displayed = {}
+            for _, widget in ipairs(player:get_all_children()) do
+                if widget.get_text then displayed[widget.text] = true end
+            end
+            assert(displayed[title] and displayed[artist], 'Playerctl reinterpreted plain metadata as markup')
+        """)
+
+    def test_live_theme_notifications(self):
+        self.lua("gui_test.check_notifications = require('tests.gui_notification_theme')")
+        for mode in ("prefer-light", "prefer-dark", "prefer-light"):
+            self.lua(f"assert(gui_test.settings:set_string('color-scheme', '{mode}'))")
+            self.lua("gui_test.check_notifications()")
+
     def test_email_popup_fits_unread_icon(self):
         self.lua("""
             local widgets = require('wibox').widget
@@ -304,6 +334,11 @@ class CenterGuiTests(CenterGuiFixture):
             local theme = require('beautiful')
             local indicator = require('awful').widget.layoutbox { screen = screen.primary }
             require('widget.layoutbox')(screen.primary)
+            local tip = indicator._layoutbox_tooltip
+            local visible_tip = require('theme.tooltip').new { text = 'Open during appearance changes' }
+            visible_tip.visible = true
+            local scheduled = require('gears.filesystem').get_configuration_dir() .. 'theme/wallpapers/pm_02.jpg'
+            theme.wallpaper = scheduled
             local layout_icon = indicator.imagebox
             local png = theme.layout_tile
             local native = require('wibox').widget.imagebox(png)
@@ -338,6 +373,11 @@ class CenterGuiTests(CenterGuiFixture):
                 assert(panel == screen.primary.info_center and panel.visible and panel.opened)
                 assert(section == require('widget.email') and section == gui_test.targets.email_section)
                 assert(theme.fg_normal == ink and theme.background == background)
+                assert(theme.wallpaper == scheduled, 'Theme change discarded the scheduled wallpaper')
+                assert(colors.to_rgba_string(tip.backgroundbox.bg) == colors.to_rgba_string(theme.tooltip_bg))
+                assert(colors.to_rgba_string(tip.backgroundbox.fg) == colors.to_rgba_string(theme.tooltip_fg))
+                assert(visible_tip.visible and colors.to_rgba_string(visible_tip.backgroundbox.bg)
+                    == colors.to_rgba_string(theme.tooltip_bg), 'Open tooltip was hidden or kept its old background')
                 assert(colors.to_rgba_string(surface.bg) == colors.to_rgba_string(background))
                 assert(colors.to_rgba_string(section.bg) == colors.to_rgba_string(theme.groups_bg))
                 local bytes = image_bytes(layout_icon)

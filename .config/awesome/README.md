@@ -371,7 +371,10 @@ Solarized color scheme with light and dark variants, switchable via
 - `theme/solarized-light-theme/` -- Light theme
 - Awesome reads the desktop appearance preference (`org.gnome.desktop.interface color-scheme`) at startup
   and listens for changes. `prefer-light` selects light; dark, default, or a missing schema selects dark.
-  Open panels repaint in place. There is no polling, Awesome restart, or on-disk icon conversion.
+  Open panels, notifications, and tooltips repaint in place without changing the scheduled wallpaper.
+  There is no polling, Awesome restart, or on-disk icon conversion.
+- Named notification and action icons use GTK 3's icon lookup in the active Solarized icon theme.
+  Artwork supplied by an application takes precedence over its fallback icon, including in notification history.
 - For a theme-colored control, use `require('theme.symbolic').imagebox` instead of a plain imagebox.
   Store its symbolic foreground as Solarized base02 (`#073642`) in both SVGs and PNGs.
   Awesome recolors that SVG fill or the PNG’s alpha mask at draw time; leave warning and
@@ -382,6 +385,7 @@ Solarized color scheme with light and dark variants, switchable via
 - Bind widget colors by role with `theme.bindings`, e.g.
   `bindings.widget(wibox.container.background, { bg = 'groups_bg' })`. For a state change,
   use `bindings.bind(button, { bg = 'accent' })` rather than storing a copy of today's color.
+  Create tooltips with `require('theme.tooltip').new` so their colors stay in sync, too.
 
 Fonts: Hack Nerd Font throughout (configurable via theme).
 

@@ -85,6 +85,7 @@ package.loaded.awful = {
     spawn = { easy_async = function(argv, callback) calls[#calls + 1] = { argv = argv, callback = callback } end },
     tooltip = function(spec)
         local tooltip = node(spec)
+        tooltip.backgroundbox = {}
         tooltips[#tooltips + 1] = tooltip
         return tooltip
     end,
@@ -167,7 +168,7 @@ reply(3, state(34, true)); reply(4, state(100, false))
 local slider, osd = assert(nodes.volume_slider), assert(nodes.vol_osd_slider)
 assert(slider.value == 34 and not timers[1].started, 'status refresh issued hardware write')
 for _, fixture in ipairs({
-    { 0, '0%' }, { 34.499, '34%' }, { 34.5, '35%' },
+    { 0,                '0%' }, { 34.499, '34%' }, { 34.5, '35%' },
     { 34.9993896484375, '35%' }, { 99.999, '100%' }, { 100, '100%' },
 }) do
     awesome.emit_signal('widget::audio:changed', 'eDP-1', 'sink', state(fixture[1], false))

@@ -80,7 +80,7 @@ local notifbox_box = function(notif, icon, title, message, app, _, notifbox_core
             {
                 layout = wibox.layout.fixed.horizontal,
                 spacing = dpi(5),
-                builder.notifbox_icon(icon, notif.app_icon),
+                builder.notifbox_icon(icon),
                 builder.notifbox_appname(app),
             },
             nil,

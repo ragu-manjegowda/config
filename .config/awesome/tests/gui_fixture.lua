@@ -151,6 +151,7 @@ if os.getenv('GUI_INITIAL_SCHEME') then
     fixture.settings:set_string('color-scheme', os.getenv('GUI_INITIAL_SCHEME'))
 end
 require('theme').start()
+if os.getenv('GUI_NOTIFICATIONS') then require('module.notifications') end
 gears.wallpaper.set('#203040')
 local actual_switch = require('widget.control-center-switch')
 package.loaded['widget.control-center-switch'] = function(...)

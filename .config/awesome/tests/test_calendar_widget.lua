@@ -154,6 +154,7 @@ package.loaded.awful = {
     spawn = { easy_async = function(argv, callback) requests[#requests + 1] = { argv = argv, callback = callback } end },
     tooltip = function(args)
         local tooltip = args
+        tooltip.backgroundbox = {}
         tooltip.cells = {}
         function tooltip:add_to_object(cell) self.cells[cell] = true end
 

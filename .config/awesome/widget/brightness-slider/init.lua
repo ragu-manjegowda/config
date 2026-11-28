@@ -3,6 +3,7 @@ local bindings = require('theme.bindings')
 local wibox = require('wibox')
 local gears = require('gears')
 local awful = require('awful')
+local new_tooltip = require('theme.tooltip').new
 local beautiful = require('beautiful')
 local display_brightness = require('library.display-brightness')
 local dpi = beautiful.xresources.apply_dpi
@@ -205,7 +206,7 @@ local brightness_setting = wibox.widget {
     }
 }
 
-local mybrightnessmeter_t = awful.tooltip {}
+local mybrightnessmeter_t = new_tooltip {}
 
 mybrightnessmeter_t:add_to_object(brightness_setting)
 

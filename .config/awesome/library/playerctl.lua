@@ -27,11 +27,6 @@ local function emit_metadata(title, artist, art_url, album, player_name)
     artwork_generation = artwork_generation + 1
     local generation = artwork_generation
 
-    title = gears.string.xml_escape(title or '')
-    artist = gears.string.xml_escape(artist or '')
-    album = gears.string.xml_escape(album or '')
-    art_url = art_url or ''
-
     if player_name == 'spotify' then
         art_url = art_url:gsub('open.spotify.com', 'i.scdn.co')
     end

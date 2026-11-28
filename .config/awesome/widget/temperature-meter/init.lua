@@ -1,7 +1,7 @@
 local symbolic = require('theme.symbolic')
 local bindings = require('theme.bindings')
 local wibox = require('wibox')
-local awful = require('awful')
+local new_tooltip = require('theme.tooltip').new
 local gears = require('gears')
 local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
@@ -99,7 +99,7 @@ local temp_meter = wibox.widget {
     }
 }
 
-local mytempmeter_t = awful.tooltip {}
+local mytempmeter_t = new_tooltip {}
 
 mytempmeter_t:add_to_object(temp_meter)
 

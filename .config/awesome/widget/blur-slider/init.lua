@@ -3,6 +3,7 @@ local bindings = require('theme.bindings')
 local wibox = require('wibox')
 local gears = require('gears')
 local awful = require('awful')
+local new_tooltip = require('theme.tooltip').new
 local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 local icons = require('theme.icons')
@@ -212,7 +213,7 @@ local blur_setting = wibox.widget {
     }
 }
 
-local myblurmeter_t = awful.tooltip {}
+local myblurmeter_t = new_tooltip {}
 
 myblurmeter_t:add_to_object(blur_setting)
 

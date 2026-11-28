@@ -25,6 +25,7 @@ package.loaded.awful = {
     },
     tooltip = function(attributes)
         tooltip = attributes
+        tooltip.backgroundbox = {}
         function attributes:set_text(value) self.text = value end
 
         return attributes

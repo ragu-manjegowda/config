@@ -4,7 +4,7 @@ local wibox = require('wibox')
 local awful = require('awful')
 local ruled = require('ruled')
 local naughty = require('naughty')
-local menubar = require('menubar')
+local lookup_icon = require('theme.desktop-icons')
 local beautiful = require('beautiful')
 local dpi = beautiful.xresources.apply_dpi
 local clickable_container = require('widget.clickable-container')
@@ -254,8 +254,7 @@ ruled.notification.connect_signal(
             rule       = { urgency = 'normal' },
             properties = {
                 font     = beautiful.font_regular(12),
-                bg       = function() return beautiful.bg_focus end,
-                fg       = function() return beautiful.fg_normal end,
+                bg       = beautiful.transparent,
                 margin   = dpi(16),
                 position = 'top_left'
             }
@@ -267,7 +266,6 @@ ruled.notification.connect_signal(
             properties = {
                 font     = beautiful.font_regular(12),
                 bg       = beautiful.transparent,
-                fg       = function() return beautiful.fg_normal end,
                 margin   = dpi(16),
                 position = 'top_left'
             }
@@ -312,31 +310,27 @@ naughty.connect_signal(
 )
 
 -- XDG icon lookup
+naughty.disconnect_signal("request::icon", naughty.icon_path_handler)
 naughty.connect_signal(
     "request::icon",
-    function(n, _, hints)
-        -- Handle cases where hints.app_icon is `nil`
-        if hints.app_icon == nil then
-            if n.app_name == nil then
-                return
+    function(n, context, hints)
+        if context == 'image' or context == 'path' then
+            local path = notification_icon.source(hints.image or hints.path)
+            if path and gears.filesystem.file_readable(path) then
+                n.icon = path
             else
-                -- handle cases where n.app_name is not nil ex: slack
-                hints.app_icon = n.app_name
+                naughty.icon_path_handler(n, context, hints)
             end
-        end
-
-        local path = menubar.utils.lookup_icon(hints.app_icon) or
-            menubar.utils.lookup_icon(hints.app_icon:lower())
-
-        if path then
-            n.icon = path
+        elseif context == 'app_icon' or context == 'clients' then
+            local path = lookup_icon(hints.app_icon or n.app_name, n.icon_size)
+            if path then n.icon = path end
         end
     end
 )
 
 --- Use XDG icon
 naughty.connect_signal("request::action_icon", function(a, _, hints)
-    a.icon = menubar.utils.lookup_icon(hints.id)
+    a.icon = lookup_icon(hints.id)
 end)
 
 -- Raise client, if destroyed by user
@@ -558,10 +552,13 @@ naughty.connect_signal(
                 border_width = dpi(2),
                 border_strategy = 'inner',
                 widget = bindings.widget(wibox.container.background, {
-                    bg = 'background', fg = 'fg_normal', border_color = 'accent',
+                    bg = n.urgency == 'normal' and 'bg_focus' or 'background',
+                    fg = 'fg_normal', border_color = 'accent',
                 })
             }
         }
+
+        bindings.bind(widget, { bg = 'notification_bg' })
 
         -- Hold a strong reference so the wibox is not garbage-collected
         -- while naughty's internal weak-value table still tracks it.
