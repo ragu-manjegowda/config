@@ -316,6 +316,8 @@ function M.servers_opts()
             },
             marksman = M.markdown_setup(),
             pylsp = {
+                root_dir = require("user.python-lsp").root_dir,
+                cmd = require("user.python-lsp").start,
                 flags = {
                     debounce_text_changes = 150
                 },
@@ -329,7 +331,8 @@ function M.servers_opts()
                             pylsp_mypy = { enabled = true },
                             ruff = {
                                 enabled = true,
-                                extendSelect = { "D,E,F" }, -- Enable docstring (D) and other common checks
+                                extendSelect = { "D", "E", "F", "I" },
+                                format = { "I" },
                                 pydocstyle = { convention = "google" }
                             },
                             black = {

@@ -1,0 +1,7 @@
+#!/bin/sh
+exec "$NVIM_PYLSP_PYTHON" -c '
+import os, runpy, sys
+sys.argv = sys.argv[1:]
+sys.path.extend(os.environ["NVIM_PYLSP_FALLBACKS"].split(os.pathsep))
+runpy.run_path(sys.argv[0], run_name="__main__")
+' "$@"

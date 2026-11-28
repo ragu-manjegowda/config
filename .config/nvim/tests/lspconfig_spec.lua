@@ -117,6 +117,8 @@ describe("LSP Config", function()
                 local pylsp = opts.servers.pylsp
                 assert.is_true(pylsp.settings.pylsp.plugins.ruff.enabled,
                     "pylsp should have ruff enabled per user config")
+                assert.same({ "I" }, pylsp.settings.pylsp.plugins.ruff.format)
+                assert.is_true(vim.tbl_contains(pylsp.settings.pylsp.plugins.ruff.extendSelect, "I"))
             end
         end)
 
